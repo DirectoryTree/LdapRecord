@@ -21,9 +21,9 @@
 </p>
 
 <h4 align="center">
-    <a href="http://ldaprecord.com/docs/1.0#quick-start">Quickstart</a>
+    <a href="https://ldaprecord.com/docs/1.0#quick-start">Quickstart</a>
     <span> · </span>
-    <a href="http://adldap-docs.test/docs">Documentation</a>
+    <a href="https://ldaprecord.com/docs">Documentation</a>
 </h4>
 
 - **Up and running in minutes.** Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.

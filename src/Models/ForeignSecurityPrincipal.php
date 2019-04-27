@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class ForeignSecurityPrincipal
  *
  * Represents an LDAP ForeignSecurityPrincipal.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class ForeignSecurityPrincipal extends Entry
 {

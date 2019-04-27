@@ -1,18 +1,18 @@
 <?php
 
-namespace Adldap\Auth;
+namespace LdapRecord\Auth;
 
-use Adldap\AdldapException;
-use Adldap\Connections\DetailedError;
+use LdapRecord\LdapRecordException;
+use LdapRecord\Connections\DetailedError;
 
 /**
  * Class BindException
  *
  * Thrown when binding to an LDAP connection fails.
  *
- * @package Adldap\Auth
+ * @package LdapRecord\Auth
  */
-class BindException extends AdldapException
+class BindException extends LdapRecordException
 {
     /**
      * The detailed LDAP error.

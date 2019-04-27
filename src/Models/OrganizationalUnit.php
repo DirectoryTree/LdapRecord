@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class OrganizationalUnit
  *
  * Represents an LDAP organizational unit.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class OrganizationalUnit extends Entry
 {

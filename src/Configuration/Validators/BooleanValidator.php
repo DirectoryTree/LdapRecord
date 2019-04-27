@@ -1,15 +1,15 @@
 <?php
 
-namespace Adldap\Configuration\Validators;
+namespace LdapRecord\Configuration\Validators;
 
-use Adldap\Configuration\ConfigurationException;
+use LdapRecord\Configuration\ConfigurationException;
 
 /**
  * Class BooleanValidator
  *
  * Validates that the configuration value is a boolean.
  *
- * @package Adldap\Configuration\Validators
+ * @package LdapRecord\Configuration\Validators
  */
 class BooleanValidator extends Validator
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Events;
+namespace LdapRecord\Events;
 
 trait DispatchesEvents
 {

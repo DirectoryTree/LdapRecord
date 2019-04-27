@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Configuration\Validators;
+namespace LdapRecord\Configuration\Validators;
 
-use Adldap\Configuration\ConfigurationException;
+use LdapRecord\Configuration\ConfigurationException;
 
 class ClassValidator extends Validator
 {

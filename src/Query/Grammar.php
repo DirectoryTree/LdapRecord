@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Query;
+namespace LdapRecord\Query;
 
 class Grammar
 {

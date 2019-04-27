@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Configuration\Validators;
+namespace LdapRecord\Configuration\Validators;
 
 /**
  * Class Validator
  *
  * Validates configuration values.
  *
- * @package Adldap\Configuration\Validators
+ * @package LdapRecord\Configuration\Validators
  */
 abstract class Validator
 {
@@ -42,7 +42,7 @@ abstract class Validator
      *
      * @return bool
      *
-     * @throws \Adldap\Configuration\ConfigurationException When the value given fails validation.
+     * @throws \LdapRecord\Configuration\ConfigurationException When the value given fails validation.
      */
     abstract public function validate();
 }

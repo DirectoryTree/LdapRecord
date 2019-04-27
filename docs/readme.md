@@ -44,7 +44,7 @@ Use Adldap2:
 
 ```php
 // Construct new Adldap instance.
-$ad = new \Adldap\Adldap();
+$ad = new \LdapRecord\Adldap();
 
 // Create a configuration array.
 $config = [  
@@ -89,7 +89,7 @@ try {
     if ($user->save()) {
         // User was saved!
     }
-} catch (\Adldap\Auth\BindException $e) {
+} catch (\LdapRecord\Auth\BindException $e) {
 
     // There was an issue binding / connecting to the server.
 

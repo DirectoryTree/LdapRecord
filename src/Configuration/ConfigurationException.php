@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Configuration;
+namespace LdapRecord\Configuration;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class ConfigurationException
@@ -10,9 +10,9 @@ use Adldap\AdldapException;
  * Thrown when a configuration value does not exist, or a
  * configuration value being set is not valid.
  *
- * @package Adldap\Configuration
+ * @package LdapRecord\Configuration
  */
-class ConfigurationException extends AdldapException
+class ConfigurationException extends LdapRecordException
 {
     //
 }

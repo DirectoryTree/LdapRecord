@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Models\Attributes;
 
-use Adldap\Tests\TestCase;
-use Adldap\Models\Attributes\DistinguishedName;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\Attributes\DistinguishedName;
 
 class DistinguishedNameTest extends TestCase
 {

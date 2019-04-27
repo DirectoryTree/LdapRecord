@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class Entry
  *
  * Represents an LDAP record that could not be identified as another type of model.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Entry extends Model
 {

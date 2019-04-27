@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Query;
+namespace LdapRecord\Tests\Query;
 
-use Adldap\Query\Grammar;
-use Adldap\Tests\TestCase;
+use LdapRecord\Query\Grammar;
+use LdapRecord\Tests\TestCase;
 
 class GrammarTest extends TestCase
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Adldap\Tests\Classes;
+namespace LdapRecord\Tests\Classes;
 
-use Adldap\Query\Builder;
-use Adldap\Query\Factory;
-use Adldap\Tests\TestCase;
-use Adldap\Schemas\OpenLDAP;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Factory;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Schemas\OpenLDAP;
 
 class FactoryTest extends TestCase
 {

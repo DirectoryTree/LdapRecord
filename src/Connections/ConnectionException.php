@@ -1,10 +1,10 @@
 <?php
 
-namespace Adldap\Connections;
+namespace LdapRecord\Connections;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
-class ConnectionException extends AdldapException
+class ConnectionException extends LdapRecordException
 {
     //
 }

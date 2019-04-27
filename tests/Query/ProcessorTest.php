@@ -1,11 +1,11 @@
 <?php
 
-namespace Adldap\Tests\Query;
+namespace LdapRecord\Tests\Query;
 
-use Adldap\Models\Entry;
-use Adldap\Tests\TestCase;
-use Adldap\Query\Processor;
-use Adldap\Schemas\SchemaInterface;
+use LdapRecord\Models\Entry;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Processor;
+use LdapRecord\Schemas\SchemaInterface;
 
 class ProcessorTest extends TestCase
 {

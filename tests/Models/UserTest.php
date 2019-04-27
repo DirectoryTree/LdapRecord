@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Tests\Models;
+namespace LdapRecord\Tests\Models;
 
 use DateTime;
-use Adldap\Utilities;
-use Adldap\Models\User;
-use Adldap\Models\Entry;
-use Adldap\Query\Builder;
-use Adldap\Tests\TestCase;
-use Adldap\Models\Attributes\AccountControl;
-use Adldap\Models\Attributes\TSProperty;
-use Adldap\Models\Attributes\TSPropertyArray;
+use LdapRecord\Utilities;
+use LdapRecord\Models\User;
+use LdapRecord\Models\Entry;
+use LdapRecord\Query\Builder;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\Attributes\TSProperty;
+use LdapRecord\Models\Attributes\TSPropertyArray;
 
 class UserTest extends TestCase
 {
@@ -72,7 +72,7 @@ class UserTest extends TestCase
 
     public function test_set_password_without_ssl_or_tls()
     {
-        $this->expectException(\Adldap\AdldapException::class);
+        $this->expectException(\LdapRecord\LdapRecordException::class);
 
         $connection = $this->newConnectionMock();
 
@@ -85,7 +85,7 @@ class UserTest extends TestCase
 
     public function test_change_password_policy_failure()
     {
-        $this->expectException(\Adldap\Models\UserPasswordPolicyException::class);
+        $this->expectException(\LdapRecord\Models\UserPasswordPolicyException::class);
 
         $connection = $this->newConnectionMock();
 
@@ -101,7 +101,7 @@ class UserTest extends TestCase
 
     public function test_change_password_wrong_failure()
     {
-        $this->expectException(\Adldap\Models\UserPasswordIncorrectException::class);
+        $this->expectException(\LdapRecord\Models\UserPasswordIncorrectException::class);
 
         $connection = $this->newConnectionMock();
 
@@ -117,7 +117,7 @@ class UserTest extends TestCase
 
     public function test_change_password_without_ssl_or_tls()
     {
-        $this->expectException(\Adldap\AdldapException::class);
+        $this->expectException(\LdapRecord\LdapRecordException::class);
 
         $connection = $this->newConnectionMock();
 

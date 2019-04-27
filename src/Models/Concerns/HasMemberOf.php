@@ -1,11 +1,11 @@
 <?php
 
-namespace Adldap\Models\Concerns;
+namespace LdapRecord\Models\Concerns;
 
-use Adldap\Utilities;
-use Adldap\Models\User;
-use Adldap\Models\Group;
-use Adldap\Query\Collection;
+use LdapRecord\Utilities;
+use LdapRecord\Models\User;
+use LdapRecord\Models\Group;
+use LdapRecord\Query\Collection;
 
 trait HasMemberOf
 {

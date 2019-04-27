@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models\Events;
+namespace LdapRecord\Models\Events;
 
-use Adldap\Models\Model;
+use LdapRecord\Models\Model;
 
 abstract class Event
 {

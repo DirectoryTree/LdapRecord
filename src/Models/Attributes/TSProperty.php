@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models\Attributes;
+namespace LdapRecord\Models\Attributes;
 
 class TSProperty
 {

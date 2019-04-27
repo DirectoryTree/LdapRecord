@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Models\Attributes;
 
-use Adldap\Tests\TestCase;
-use Adldap\Models\Attributes\Sid;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\Attributes\Sid;
 
 class SidTest extends TestCase
 {

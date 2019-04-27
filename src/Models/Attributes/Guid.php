@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models\Attributes;
+namespace LdapRecord\Models\Attributes;
 
-use Adldap\Utilities;
+use LdapRecord\Utilities;
 use InvalidArgumentException;
 
 class Guid

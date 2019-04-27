@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Tests\Models;
+namespace LdapRecord\Tests\Models;
 
-use Adldap\Models\User;
-use Adldap\Models\Entry;
-use Adldap\Models\Group;
-use Adldap\Models\Contact;
-use Adldap\Models\Computer;
-use Adldap\Models\Container;
-use Adldap\Models\OrganizationalUnit;
-use Adldap\Models\Factory as ModelFactory;
-use Adldap\Tests\TestCase;
+use LdapRecord\Models\User;
+use LdapRecord\Models\Entry;
+use LdapRecord\Models\Group;
+use LdapRecord\Models\Contact;
+use LdapRecord\Models\Computer;
+use LdapRecord\Models\Container;
+use LdapRecord\Models\OrganizationalUnit;
+use LdapRecord\Models\Factory as ModelFactory;
+use LdapRecord\Tests\TestCase;
 
 class FactoryTest extends TestCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class UserPasswordPolicyException
@@ -10,9 +10,9 @@ use Adldap\AdldapException;
  * Thrown when a users password is being changed but their new password
  * does not conform to the LDAP servers password policy.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
-class UserPasswordPolicyException extends AdldapException
+class UserPasswordPolicyException extends LdapRecordException
 {
     //
 }

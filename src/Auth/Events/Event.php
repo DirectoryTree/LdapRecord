@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Auth\Events;
+namespace LdapRecord\Auth\Events;
 
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Connections\ConnectionInterface;
 
 abstract class Event
 {

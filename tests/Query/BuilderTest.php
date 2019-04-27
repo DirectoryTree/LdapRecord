@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Tests\Query;
+namespace LdapRecord\Tests\Query;
 
 use DateTime;
-use Adldap\Models\Model;
-use Adldap\Tests\TestCase;
-use Adldap\Query\Paginator;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Models\Model;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Paginator;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Connections\ConnectionInterface;
 use Illuminate\Support\Collection;
 
 class BuilderTest extends TestCase

@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models\Concerns;
+namespace LdapRecord\Models\Concerns;
 
-use Adldap\Models\Attributes\AccountControl;
+use LdapRecord\Models\Attributes\AccountControl;
 
 trait HasUserAccountControl
 {

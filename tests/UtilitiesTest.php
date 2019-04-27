@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Tests;
+namespace LdapRecord\Tests;
 
-use Adldap\Utilities;
+use LdapRecord\Utilities;
 
 class UtilitiesTest extends TestCase
 {

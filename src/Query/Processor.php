@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Query;
+namespace LdapRecord\Query;
 
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
-use Adldap\Models\Entry;
-use Adldap\Models\Model;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Connections\ConnectionInterface;
 
 class Processor
 {

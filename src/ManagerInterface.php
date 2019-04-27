@@ -1,11 +1,11 @@
 <?php
 
-namespace Adldap;
+namespace LdapRecord;
 
-use Adldap\Connections\ProviderInterface;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Connections\ProviderInterface;
+use LdapRecord\Connections\ConnectionInterface;
 
-interface AdldapInterface
+interface ManagerInterface
 {
     /**
      * Add a provider by the specified name.
@@ -32,7 +32,7 @@ interface AdldapInterface
      *
      * @param string $name
      *
-     * @throws AdldapException When the specified provider does not exist.
+     * @throws LdapRecordException When the specified provider does not exist.
      *
      * @return ProviderInterface
      */
@@ -43,14 +43,14 @@ interface AdldapInterface
      *
      * @param string $name
      *
-     * @throws AdldapException When the specified provider does not exist.
+     * @throws LdapRecordException When the specified provider does not exist.
      */
     public function setDefaultProvider($name);
 
     /**
      * Retrieves the first default provider.
      *
-     * @throws AdldapException When no default provider exists.
+     * @throws LdapRecordException When no default provider exists.
      *
      * @return ProviderInterface
      */

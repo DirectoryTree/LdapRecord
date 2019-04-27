@@ -1,24 +1,24 @@
 <?php
 
-namespace Adldap\Auth;
+namespace LdapRecord\Auth;
 
 use Throwable;
 use Exception;
-use Adldap\Auth\Events\Bound;
-use Adldap\Auth\Events\Failed;
-use Adldap\Auth\Events\Passed;
-use Adldap\Auth\Events\Binding;
-use Adldap\Auth\Events\Attempting;
-use Adldap\Events\DispatcherInterface;
-use Adldap\Connections\ConnectionInterface;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Auth\Events\Bound;
+use LdapRecord\Auth\Events\Failed;
+use LdapRecord\Auth\Events\Passed;
+use LdapRecord\Auth\Events\Binding;
+use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Events\DispatcherInterface;
+use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Configuration\DomainConfiguration;
 
 /**
  * Class Guard
  *
  * Binds users to the current connection.
  *
- * @package Adldap\Auth
+ * @package LdapRecord\Auth
  */
 class Guard implements GuardInterface
 {
@@ -151,7 +151,7 @@ class Guard implements GuardInterface
      *
      * @return string
      *
-     * @throws \Adldap\Configuration\ConfigurationException If account_suffix or account_prefix do not
+     * @throws \LdapRecord\Configuration\ConfigurationException If account_suffix or account_prefix do not
      *                                                      exist in the providers domain configuration
      */
     protected function applyPrefixAndSuffix($username)

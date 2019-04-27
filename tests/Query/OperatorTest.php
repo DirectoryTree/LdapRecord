@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Query;
+namespace LdapRecord\Tests\Query;
 
-use Adldap\Query\Operator;
-use Adldap\Tests\TestCase;
+use LdapRecord\Query\Operator;
+use LdapRecord\Tests\TestCase;
 
 class OperatorTest extends TestCase
 {

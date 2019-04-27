@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 use DateTime;
 
@@ -9,7 +9,7 @@ use DateTime;
  *
  * Represents the LDAP connections Root DSE record.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class RootDse extends Model
 {

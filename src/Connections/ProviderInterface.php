@@ -1,10 +1,10 @@
 <?php
 
-namespace Adldap\Connections;
+namespace LdapRecord\Connections;
 
-use Adldap\Auth\GuardInterface;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Auth\GuardInterface;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Configuration\DomainConfiguration;
 
 interface ProviderInterface
 {
@@ -33,7 +33,7 @@ interface ProviderInterface
     /**
      * Returns the current Guard instance.
      *
-     * @return \Adldap\Auth\Guard
+     * @return \LdapRecord\Auth\Guard
      */
     public function getGuard();
 
@@ -43,7 +43,7 @@ interface ProviderInterface
      * @param ConnectionInterface $connection
      * @param DomainConfiguration $configuration
      *
-     * @return \Adldap\Auth\Guard
+     * @return \LdapRecord\Auth\Guard
      */
     public function getDefaultGuard(ConnectionInterface $connection, DomainConfiguration $configuration);
 
@@ -61,7 +61,7 @@ interface ProviderInterface
      *
      * @param DomainConfiguration|array $configuration
      *
-     * @throws \Adldap\Configuration\ConfigurationException
+     * @throws \LdapRecord\Configuration\ConfigurationException
      */
     public function setConfiguration($configuration = []);
 
@@ -93,21 +93,21 @@ interface ProviderInterface
     /**
      * Returns a new Model factory instance.
      *
-     * @return \Adldap\Models\Factory
+     * @return \LdapRecord\Models\Factory
      */
     public function make();
 
     /**
      * Returns a new Search factory instance.
      *
-     * @return \Adldap\Query\Factory
+     * @return \LdapRecord\Query\Factory
      */
     public function search();
 
     /**
      * Returns a new Auth Guard instance.
      *
-     * @return \Adldap\Auth\Guard
+     * @return \LdapRecord\Auth\Guard
      */
     public function auth();
 
@@ -120,7 +120,7 @@ interface ProviderInterface
      * @param string|null $username
      * @param string|null $password
      *
-     * @throws \Adldap\Auth\BindException When binding to your LDAP server fails.
+     * @throws \LdapRecord\Auth\BindException When binding to your LDAP server fails.
      *
      * @return ProviderInterface
      */

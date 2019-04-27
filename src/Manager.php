@@ -1,18 +1,18 @@
 <?php
 
-namespace Adldap;
+namespace LdapRecord;
 
 use InvalidArgumentException;
-use Adldap\Log\EventLogger;
-use Adldap\Log\LogsInformation;
-use Adldap\Events\DispatchesEvents;
-use Adldap\Connections\Ldap;
-use Adldap\Connections\Provider;
-use Adldap\Connections\ProviderInterface;
-use Adldap\Connections\ConnectionInterface;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Log\EventLogger;
+use LdapRecord\Log\LogsInformation;
+use LdapRecord\Events\DispatchesEvents;
+use LdapRecord\Connections\Ldap;
+use LdapRecord\Connections\Provider;
+use LdapRecord\Connections\ProviderInterface;
+use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Configuration\DomainConfiguration;
 
-class Adldap implements AdldapInterface
+class Manager implements ManagerInterface
 {
     use DispatchesEvents, LogsInformation;
 
@@ -62,7 +62,7 @@ class Adldap implements AdldapInterface
         }
 
         throw new InvalidArgumentException(
-            "You must provide a configuration array or an instance of Adldap\Connections\ProviderInterface."
+            "You must provide a configuration array or an instance of LdapRecord\Connections\ProviderInterface."
         );
     }
 
@@ -95,7 +95,7 @@ class Adldap implements AdldapInterface
             return $this->providers[$name];
         }
 
-        throw new AdldapException("The connection provider '$name' does not exist.");
+        throw new LdapRecordException("The connection provider '$name' does not exist.");
     }
 
     /**
@@ -163,13 +163,13 @@ class Adldap implements AdldapInterface
 
         $logger = $this->newEventLogger();
 
-        $dispatcher->listen('Adldap\Auth\Events\*', function ($eventName, $events) use ($logger) {
+        $dispatcher->listen('LdapRecord\Auth\Events\*', function ($eventName, $events) use ($logger) {
             foreach ($events as $event) {
                 $logger->auth($event);
             }
         });
 
-        $dispatcher->listen('Adldap\Models\Events\*', function ($eventName, $events) use ($logger) {
+        $dispatcher->listen('LdapRecord\Models\Events\*', function ($eventName, $events) use ($logger) {
             foreach ($events as $event) {
                 $logger->model($event);
             }

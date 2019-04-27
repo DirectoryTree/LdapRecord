@@ -26,7 +26,7 @@ To register a listener on an event, retrieve the event dispatcher and call the `
 ```php
 use Adldap\Auth\Events\Binding;
 
-$dispatcher = \Adldap\Adldap::getEventDispatcher();
+$dispatcher = \LdapRecord\Adldap::getEventDispatcher();
 
 $dispatcher->listen(Binding::class, function (Binding $event) {
     // Do something with the Binding event information:
@@ -76,7 +76,7 @@ Simply call the event dispatcher `listen()` method with the model event you are 
 ```php
 use Adldap\Models\Events\Saving;
 
-$dispatcher = \Adldap\Adldap::getEventDispatcher();
+$dispatcher = \LdapRecord\Adldap::getEventDispatcher();
 
 $dispatcher->listen(Saving::class, function (Saving $event) {
     // Do something with the Saving event information:
@@ -118,7 +118,7 @@ Here's an example:
 ```php
 $dispatcher = Adldap::getEventDispatcher();
 
-$dispatcher->listen(\Adldap\Models\Events\Creating::class, function ($event) {
+$dispatcher->listen(\LdapRecord\Models\Events\Creating::class, function ($event) {
     $connection = $event->model->getConnection();
     
     $host = $connection->getHost();
@@ -132,7 +132,7 @@ Another example with auth events:
 ```php
 $dispatcher = Adldap::getEventDispatcher();
 
-$dispatcher->listen(\Adldap\Auth\Events\Binding::class, function ($event) {
+$dispatcher->listen(\LdapRecord\Auth\Events\Binding::class, function ($event) {
     $connection = $event->connection;
     
     $host = $connection->getHost();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models\Concerns;
+namespace LdapRecord\Models\Concerns;
 
 trait HasLastLogonAndLogOff
 {

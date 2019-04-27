@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models\Events;
+namespace LdapRecord\Models\Events;
 
 class Created extends Event
 {

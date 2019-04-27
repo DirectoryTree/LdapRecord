@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Log;
+namespace LdapRecord\Log;
 
 use Psr\Log\LoggerInterface;
 

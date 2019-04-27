@@ -1,14 +1,14 @@
 <?php
 
-namespace Adldap\Tests;
+namespace LdapRecord\Tests;
 
-use Adldap\Adldap;
-use Adldap\Connections\Ldap;
-use Adldap\Connections\Provider;
-use Adldap\Configuration\DomainConfiguration;
-use Adldap\Connections\ProviderInterface;
+use LdapRecord\Manager;
+use LdapRecord\Connections\Ldap;
+use LdapRecord\Connections\Provider;
+use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Connections\ProviderInterface;
 
-class AdldapTest extends TestCase
+class LdapRecordTest extends TestCase
 {
     public function test_construct()
     {
@@ -17,7 +17,7 @@ class AdldapTest extends TestCase
             'second' => new Provider(),
         ];
 
-        $ad = new Adldap($providers);
+        $ad = new Manager($providers);
 
         $this->assertEquals($providers['first'], $ad->getProvider('first'));
         $this->assertEquals($providers['second'], $ad->getProvider('second'));
@@ -25,7 +25,7 @@ class AdldapTest extends TestCase
 
     public function test_add_provider_with_configuration_instance()
     {
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $ad->addProvider(new DomainConfiguration(), 'first');
 
@@ -34,7 +34,7 @@ class AdldapTest extends TestCase
 
     public function test_add_provider_with_configuration_array()
     {
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $ad->addProvider([], 'first');
 
@@ -48,7 +48,7 @@ class AdldapTest extends TestCase
             'second' => new Provider(),
         ];
 
-        $ad = new Adldap($providers);
+        $ad = new Manager($providers);
 
         $this->assertEquals($providers, $ad->getProviders());
     }
@@ -57,7 +57,7 @@ class AdldapTest extends TestCase
     {
         $provider = $this->mock(Provider::class);
 
-        $ad = new Adldap([
+        $ad = new Manager([
             'default' => $provider,
         ]);
 
@@ -66,7 +66,7 @@ class AdldapTest extends TestCase
 
     public function test_get_default_provider()
     {
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $provider = new Provider();
 
@@ -86,7 +86,7 @@ class AdldapTest extends TestCase
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $provider = new Provider([], $connection);
 
@@ -97,9 +97,9 @@ class AdldapTest extends TestCase
 
     public function test_invalid_default_provider()
     {
-        $this->expectException(\Adldap\AdldapException::class);
+        $this->expectException(\LdapRecord\LdapRecordException::class);
 
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $ad->getDefaultProvider();
     }
@@ -108,14 +108,14 @@ class AdldapTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $ad->addProvider('first', 'invalid');
     }
 
     public function test_the_first_provider_is_set_as_default()
     {
-        $ad = new Adldap([
+        $ad = new Manager([
             'test1' => [
                 'hosts' => ['test1.dc']
             ],
@@ -132,7 +132,7 @@ class AdldapTest extends TestCase
 
     public function test_adding_providers_sets_connection_name()
     {
-        $ad = new Adldap();
+        $ad = new Manager();
 
         $ad->addProvider(new DomainConfiguration(), 'domain-a');
 

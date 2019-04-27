@@ -1,23 +1,23 @@
 <?php
 
-namespace Adldap\Tests\Auth;
+namespace LdapRecord\Tests\Auth;
 
-use Adldap\Auth\Guard;
-use Adldap\Tests\TestCase;
-use Adldap\Connections\Ldap;
-use Adldap\Connections\DetailedError;
-use Adldap\Events\Dispatcher;
-use Adldap\Auth\Events\Bound;
-use Adldap\Auth\Events\Binding;
-use Adldap\Auth\Events\Passed;
-use Adldap\Auth\Events\Attempting;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Auth\Guard;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Connections\Ldap;
+use LdapRecord\Connections\DetailedError;
+use LdapRecord\Events\Dispatcher;
+use LdapRecord\Auth\Events\Bound;
+use LdapRecord\Auth\Events\Binding;
+use LdapRecord\Auth\Events\Passed;
+use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Configuration\DomainConfiguration;
 
 class GuardTest extends TestCase
 {
     public function test_validate_username()
     {
-        $this->expectException(\Adldap\Auth\UsernameRequiredException::class);
+        $this->expectException(\LdapRecord\Auth\UsernameRequiredException::class);
 
         $guard = new Guard(new Ldap(), new DomainConfiguration());
 
@@ -26,7 +26,7 @@ class GuardTest extends TestCase
 
     public function test_validate_password()
     {
-        $this->expectException(\Adldap\Auth\PasswordRequiredException::class);
+        $this->expectException(\LdapRecord\Auth\PasswordRequiredException::class);
 
         $guard = new Guard(new Ldap(), new DomainConfiguration());
 
@@ -67,7 +67,7 @@ class GuardTest extends TestCase
     
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $this->expectException(\Adldap\Auth\BindException::class);
+        $this->expectException(\LdapRecord\Auth\BindException::class);
 
         $config = $this->mock(DomainConfiguration::class);
 
@@ -232,7 +232,7 @@ class GuardTest extends TestCase
 
         $totalFired = 0;
 
-        $events->listen('Adldap\Auth\Events\*', function ($eventName) use (&$totalFired) {
+        $events->listen('LdapRecord\Auth\Events\*', function ($eventName) use (&$totalFired) {
             $totalFired++;
         });
 

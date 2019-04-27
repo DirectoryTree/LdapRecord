@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Query;
+namespace LdapRecord\Query;
 
 use Closure;
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
-use Adldap\Utilities;
-use Adldap\Models\Model;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Models\ModelNotFoundException;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Utilities;
+use LdapRecord\Models\Model;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Connections\ConnectionInterface;
 
 class Builder
 {
@@ -330,7 +330,7 @@ class Builder
      *
      * @param string $query
      *
-     * @return \Adldap\Query\Collection|array
+     * @return \LdapRecord\Query\Collection|array
      */
     public function query($query)
     {
@@ -491,7 +491,7 @@ class Builder
      * @param array $values
      * @param array $columns
      *
-     * @return \Adldap\Query\Collection|array
+     * @return \LdapRecord\Query\Collection|array
      */
     public function findMany(array $values = [], $columns = [])
     {
@@ -543,7 +543,7 @@ class Builder
      * @param array  $values
      * @param array  $columns
      *
-     * @return \Adldap\Query\Collection|array
+     * @return \LdapRecord\Query\Collection|array
      */
     public function findManyBy($attribute, array $values = [], $columns = [])
     {

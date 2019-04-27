@@ -10,7 +10,7 @@
          stopOnFailure="false"
         >
     <testsuites>
-        <testsuite name="Adldap2 Test Suite">
+        <testsuite name="LdapRecord Test Suite">
             <directory suffix="Test.php">./tests/</directory>
         </testsuite>
     </testsuites>

@@ -1,11 +1,11 @@
 <?php
 
-namespace Adldap\Log;
+namespace LdapRecord\Log;
 
 use Psr\Log\LoggerInterface;
-use Adldap\Auth\Events\Failed;
-use Adldap\Auth\Events\Event as AuthEvent;
-use Adldap\Models\Events\Event as ModelEvent;
+use LdapRecord\Auth\Events\Failed;
+use LdapRecord\Auth\Events\Event as AuthEvent;
+use LdapRecord\Models\Events\Event as ModelEvent;
 
 class EventLogger
 {

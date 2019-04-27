@@ -1,20 +1,20 @@
 <?php
 
-namespace Adldap\Tests\Models;
+namespace LdapRecord\Tests\Models;
 
-use Adldap\Adldap;
-use Adldap\Tests\TestCase;
-use Adldap\Models\Entry;
-use Adldap\Models\Model;
-use Adldap\Models\BatchModification;
-use Adldap\Models\Events\Created;
-use Adldap\Models\Events\Creating;
-use Adldap\Models\Events\Deleted;
-use Adldap\Models\Events\Deleting;
-use Adldap\Models\Events\Updated;
-use Adldap\Models\Events\Updating;
-use Adldap\Schemas\OpenLDAP;
-use Adldap\Schemas\ActiveDirectory;
+use LdapRecord\Manager;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
+use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\Events\Created;
+use LdapRecord\Models\Events\Creating;
+use LdapRecord\Models\Events\Deleted;
+use LdapRecord\Models\Events\Deleting;
+use LdapRecord\Models\Events\Updated;
+use LdapRecord\Models\Events\Updating;
+use LdapRecord\Schemas\OpenLDAP;
+use LdapRecord\Schemas\ActiveDirectory;
 
 class ModelTest extends TestCase
 {
@@ -437,7 +437,7 @@ class ModelTest extends TestCase
 
     public function test_delete_failure()
     {
-        $this->expectException(\Adldap\AdldapException::class);
+        $this->expectException(\LdapRecord\LdapRecordException::class);
 
         $entry = $this->newModel();
 
@@ -479,7 +479,7 @@ class ModelTest extends TestCase
 
     public function test_convert_string_to_bool()
     {
-        $entry = $this->mock('Adldap\Models\Entry')->makePartial();
+        $entry = $this->mock('LdapRecord\Models\Entry')->makePartial();
 
         $entry->setSchema(new ActiveDirectory());
 
@@ -939,7 +939,7 @@ class ModelTest extends TestCase
 
         $m = $this->newModel([], $this->newBuilder($c));
 
-        $d = Adldap::getEventDispatcher();
+        $d = Manager::getEventDispatcher();
 
         $firedCreating = false;
         $firedCreated = false;
@@ -979,7 +979,7 @@ class ModelTest extends TestCase
             'dn' => 'cn=jdoe,dc=acme,dc=org'
         ]);
 
-        $d = Adldap::getEventDispatcher();
+        $d = Manager::getEventDispatcher();
 
         $firedUpdating = false;
         $firedUpdated = false;
@@ -1019,7 +1019,7 @@ class ModelTest extends TestCase
             'dn' => 'cn=jdoe,dc=acme,dc=org'
         ]);
 
-        $d = Adldap::getEventDispatcher();
+        $d = Manager::getEventDispatcher();
 
         $firedDeleting = false;
         $firedDeleted = false;
@@ -1054,15 +1054,15 @@ class ModelTest extends TestCase
             'dn' => 'cn=jdoe,dc=acme,dc=org'
         ]);
 
-        $d = Adldap::getEventDispatcher();
+        $d = Manager::getEventDispatcher();
 
         $firedDeleting = false;
         $firedDeleted = false;
 
-        $d->listen('Adldap\Models\Events\*', function ($event, $payload) use (&$firedDeleting, &$firedDeleted) {
-            if ($event == 'Adldap\Models\Events\Deleting') {
+        $d->listen('LdapRecord\Models\Events\*', function ($event, $payload) use (&$firedDeleting, &$firedDeleted) {
+            if ($event == 'LdapRecord\Models\Events\Deleting') {
                 $firedDeleting = true;
-            } else if ($event == 'Adldap\Models\Events\Deleted') {
+            } else if ($event == 'LdapRecord\Models\Events\Deleted') {
                 $firedDeleted = true;
             }
         });

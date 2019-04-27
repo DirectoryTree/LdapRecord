@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class Computer
  *
  * Represents an LDAP computer / server.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Computer extends Entry
 {

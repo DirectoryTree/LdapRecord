@@ -1,10 +1,10 @@
 <?php
 
-namespace Adldap\Auth;
+namespace LdapRecord\Auth;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
-class PasswordRequiredException extends AdldapException
+class PasswordRequiredException extends LdapRecordException
 {
     //
 }

@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Tests\Connections;
+namespace LdapRecord\Tests\Connections;
 
-use Adldap\Query\Builder;
-use Adldap\Query\Factory as SearchFactory;
-use Adldap\Models\Factory as ModelFactory;
-use Adldap\Tests\TestCase;
-use Adldap\Connections\Ldap;
-use Adldap\Connections\Provider;
-use Adldap\Connections\DetailedError;
-use Adldap\Connections\ConnectionInterface;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Factory as SearchFactory;
+use LdapRecord\Models\Factory as ModelFactory;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Connections\Ldap;
+use LdapRecord\Connections\Provider;
+use LdapRecord\Connections\DetailedError;
+use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Configuration\DomainConfiguration;
 
 class ProviderTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ProviderTest extends TestCase
 
     public function test_auth_username_failure()
     {
-        $this->expectException(\Adldap\Auth\UsernameRequiredException::class);
+        $this->expectException(\LdapRecord\Auth\UsernameRequiredException::class);
 
         $connection = $this->newConnectionMock();
 
@@ -46,7 +46,7 @@ class ProviderTest extends TestCase
 
     public function test_auth_password_failure()
     {
-        $this->expectException(\Adldap\Auth\PasswordRequiredException::class);
+        $this->expectException(\LdapRecord\Auth\PasswordRequiredException::class);
 
         $connection = $this->newConnectionMock();
 
@@ -121,7 +121,7 @@ class ProviderTest extends TestCase
 
     public function test_auth_rebind_failure()
     {
-        $this->expectException(\Adldap\Auth\BindException::class);
+        $this->expectException(\LdapRecord\Auth\BindException::class);
 
         $config = new DomainConfiguration([
             'username' => 'test',
@@ -184,7 +184,7 @@ class ProviderTest extends TestCase
         $config
             ->shouldReceive('get')->withArgs(['hosts'])->once()->andReturn('')
             ->shouldReceive('get')->withArgs(['port'])->once()->andReturn('389')
-            ->shouldReceive('get')->withArgs(['schema'])->once()->andReturn('Adldap\Schemas\ActiveDirectory')
+            ->shouldReceive('get')->withArgs(['schema'])->once()->andReturn('LdapRecord\Schemas\ActiveDirectory')
             ->shouldReceive('get')->withArgs(['use_ssl'])->once()->andReturn(false)
             ->shouldReceive('get')->withArgs(['use_tls'])->once()->andReturn(false)
             ->shouldReceive('get')->withArgs(['version'])->once()->andReturn(3)

@@ -1,10 +1,10 @@
 <?php
 
-namespace Adldap\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Models\Attributes;
 
-use Adldap\Tests\TestCase;
-use Adldap\Models\BatchModification;
-use Adldap\Models\Attributes\DistinguishedName;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\Attributes\DistinguishedName;
 
 class BatchModificationTest extends TestCase
 {

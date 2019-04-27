@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class Container
  *
  * Represents an LDAP container.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Container extends Entry
 {

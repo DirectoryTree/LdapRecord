@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Events;
+namespace LdapRecord\Events;
 
 use Illuminate\Support\Arr;
 
@@ -16,7 +16,7 @@ use Illuminate\Support\Arr;
  * @author Taylor Otwell
  * @see https://github.com/laravel/framework
  *
- * @package Adldap\Events
+ * @package LdapRecord\Events
  */
 class Dispatcher implements DispatcherInterface
 {

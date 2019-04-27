@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Connections;
+namespace LdapRecord\Connections;
 
-use Adldap\Adldap;
+use LdapRecord\Manager;
 use InvalidArgumentException;
-use Adldap\Auth\Guard;
-use Adldap\Auth\GuardInterface;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Query\Factory as SearchFactory;
-use Adldap\Models\Factory as ModelFactory;
-use Adldap\Configuration\DomainConfiguration;
+use LdapRecord\Auth\Guard;
+use LdapRecord\Auth\GuardInterface;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Query\Factory as SearchFactory;
+use LdapRecord\Models\Factory as ModelFactory;
+use LdapRecord\Configuration\DomainConfiguration;
 
 /**
  * Class Provider
@@ -19,7 +19,7 @@ use Adldap\Configuration\DomainConfiguration;
  * instantiate factories for retrieving and creating
  * LDAP records as well as authentication (binding).
  *
- * @package Adldap\Connections
+ * @package LdapRecord\Connections
  */
 class Provider implements ProviderInterface
 {
@@ -185,7 +185,7 @@ class Provider implements ProviderInterface
     {
         $guard = new Guard($connection, $configuration);
 
-        $guard->setDispatcher(Adldap::getEventDispatcher());
+        $guard->setDispatcher(Manager::getEventDispatcher());
 
         return $guard;
     }
@@ -245,7 +245,7 @@ class Provider implements ProviderInterface
      *
      * @return void
      *
-     * @throws \Adldap\Configuration\ConfigurationException When configuration options requested do not exist
+     * @throws \LdapRecord\Configuration\ConfigurationException When configuration options requested do not exist
      */
     protected function prepareConnection()
     {

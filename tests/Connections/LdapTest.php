@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Connections;
+namespace LdapRecord\Tests\Connections;
 
-use Adldap\Tests\TestCase;
-use Adldap\Connections\Ldap;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Connections\Ldap;
 
 class LdapTest extends TestCase
 {

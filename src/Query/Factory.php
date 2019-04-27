@@ -1,18 +1,18 @@
 <?php
 
-namespace Adldap\Query;
+namespace LdapRecord\Query;
 
-use Adldap\Models\RootDse;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Models\RootDse;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Connections\ConnectionInterface;
 
 /**
  * Adldap2 Search Factory.
  *
  * Constructs new LDAP queries.
  *
- * @package Adldap\Search
+ * @package LdapRecord\Search
  *
  * @mixin Builder
  */
@@ -108,7 +108,7 @@ class Factory
      * connection by performing a search for all entries
      * that contain a common name attribute.
      *
-     * @return \Adldap\Query\Collection|array
+     * @return \LdapRecord\Query\Collection|array
      */
     public function get()
     {

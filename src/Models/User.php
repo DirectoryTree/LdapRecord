@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 use DateTime;
-use Adldap\Utilities;
-use Adldap\AdldapException;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Models\Attributes\AccountControl;
-use Adldap\Models\Attributes\TSPropertyArray;
+use LdapRecord\Utilities;
+use LdapRecord\LdapRecordException;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\Attributes\TSPropertyArray;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
@@ -15,7 +15,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
  *
  * Represents an LDAP user.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class User extends Entry implements Authenticatable
 {
@@ -774,7 +774,7 @@ class User extends Entry implements Authenticatable
      *
      * @param string $password
      *
-     * @throws AdldapException When no SSL or TLS secured connection is present.
+     * @throws LdapRecordException When no SSL or TLS secured connection is present.
      *
      * @return $this
      */
@@ -839,7 +839,7 @@ class User extends Entry implements Authenticatable
      *
      * @throws UserPasswordPolicyException When the new password does not match your password policy.
      * @throws UserPasswordIncorrectException When the old password is incorrect.
-     * @throws AdldapException When an unknown cause of failure occurs.
+     * @throws LdapRecordException When an unknown cause of failure occurs.
      *
      * @return true
      */
@@ -896,7 +896,7 @@ class User extends Entry implements Authenticatable
                         "Error: $code. Your old password is incorrect."
                     );
                 default:
-                    throw new AdldapException($error);
+                    throw new LdapRecordException($error);
             }
         }
 

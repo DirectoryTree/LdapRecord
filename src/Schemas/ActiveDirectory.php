@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Schemas;
+namespace LdapRecord\Schemas;
 
 class ActiveDirectory extends Schema
 {

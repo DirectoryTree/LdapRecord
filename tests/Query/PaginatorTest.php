@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Tests\Query;
+namespace LdapRecord\Tests\Query;
 
-use Adldap\Tests\TestCase;
-use Adldap\Query\Paginator;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Paginator;
 
 class PaginatorTest extends TestCase
 {

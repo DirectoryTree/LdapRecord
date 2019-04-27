@@ -1,12 +1,12 @@
 <?php
 
-namespace Adldap\tests\Models;
+namespace LdapRecord\tests\Models;
 
-use Adldap\Models\Group;
-use Adldap\Query\Builder;
-use Adldap\Tests\TestCase;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Schemas\SchemaInterface;
+use LdapRecord\Models\Group;
+use LdapRecord\Query\Builder;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Schemas\SchemaInterface;
 use Illuminate\Support\Collection;
 
 class GroupTest extends TestCase

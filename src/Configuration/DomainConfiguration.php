@@ -1,16 +1,16 @@
 <?php
 
-namespace Adldap\Configuration;
+namespace LdapRecord\Configuration;
 
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Connections\ConnectionInterface;
 
 /**
  * Class DomainConfiguration
  *
  * Contains an array of configuration options for a single LDAP connection.
  *
- * @package Adldap\Configuration
+ * @package LdapRecord\Configuration
  */
 class DomainConfiguration
 {

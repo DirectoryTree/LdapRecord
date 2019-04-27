@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Query;
+namespace LdapRecord\Query;
 
-use Adldap\Models\Model;
+use LdapRecord\Models\Model;
 use Illuminate\Support\Collection as BaseCollection;
 
 class Collection extends BaseCollection

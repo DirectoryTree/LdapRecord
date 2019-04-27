@@ -1,14 +1,14 @@
 <?php
 
-namespace Adldap\Tests\Log;
+namespace LdapRecord\Tests\Log;
 
-use Adldap\Models\User;
-use Adldap\Tests\TestCase;
-use Adldap\Log\EventLogger;
-use Adldap\Auth\Events\Failed;
-use Adldap\Auth\Events\Event as AuthEvent;
-use Adldap\Models\Events\Event as ModelEvent;
-use Adldap\Connections\ConnectionInterface;
+use LdapRecord\Models\User;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Log\EventLogger;
+use LdapRecord\Auth\Events\Failed;
+use LdapRecord\Auth\Events\Event as AuthEvent;
+use LdapRecord\Models\Events\Event as ModelEvent;
+use LdapRecord\Connections\ConnectionInterface;
 use Psr\Log\LoggerInterface;
 
 class EventLoggerTest extends TestCase
@@ -19,7 +19,7 @@ class EventLoggerTest extends TestCase
         $l = $this->mock(LoggerInterface::class);
         $c = $this->mock(ConnectionInterface::class);
 
-        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_4_Adldap_Auth_Events_Event - Username: jdoe@acme.org';
+        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_4_LdapRecord_Auth_Events_Event - Username: jdoe@acme.org';
 
         $l->shouldReceive('info')->once()->with($log);
 
@@ -43,7 +43,7 @@ class EventLoggerTest extends TestCase
 
         $e = new Failed($c, 'jdoe@acme.org', 'super-secret');
 
-        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Adldap\Auth\Events\Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
+        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: LdapRecord\Auth\Events\Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
 
         $l->shouldReceive('warning')->once()->with($log);
 
@@ -75,7 +75,7 @@ class EventLoggerTest extends TestCase
 
         $me->shouldReceive('getModel')->once()->andReturn($u);
 
-        $log = "LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_6_Adldap_Models_Events_Event - On: Adldap\Models\User - Distinguished Name: $dn";
+        $log = "LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_6_LdapRecord_Models_Events_Event - On: LdapRecord\Models\User - Distinguished Name: $dn";
 
         $l->shouldReceive('info')->once()->with($log);
 

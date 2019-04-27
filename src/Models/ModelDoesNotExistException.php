@@ -1,17 +1,17 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class ModelDoesNotExistException
  *
  * Thrown when a model being saved / updated does not actually exist.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
-class ModelDoesNotExistException extends AdldapException
+class ModelDoesNotExistException extends LdapRecordException
 {
     /**
      * The class name of the model that does not exist.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap;
+namespace LdapRecord;
 
 class Utilities
 {

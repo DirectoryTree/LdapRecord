@@ -1,15 +1,15 @@
 <?php
 
-namespace Adldap\Configuration\Validators;
+namespace LdapRecord\Configuration\Validators;
 
-use Adldap\Configuration\ConfigurationException;
+use LdapRecord\Configuration\ConfigurationException;
 
 /**
  * Class StringOrNullValidator
  *
  * Validates that the configuration value is a string or null.
  *
- * @package Adldap\Configuration\Validators
+ * @package LdapRecord\Configuration\Validators
  */
 class StringOrNullValidator extends Validator
 {

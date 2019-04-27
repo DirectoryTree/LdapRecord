@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class UserPasswordIncorrectException
@@ -10,9 +10,9 @@ use Adldap\AdldapException;
  * Thrown when a users password is being changed
  * and their current password given is incorrect.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
-class UserPasswordIncorrectException extends AdldapException
+class UserPasswordIncorrectException extends LdapRecordException
 {
     //
 }

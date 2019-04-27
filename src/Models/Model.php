@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 use DateTime;
 use ArrayAccess;
@@ -8,15 +8,15 @@ use JsonSerializable;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use Illuminate\Support\Arr;
-use Adldap\Utilities;
-use Adldap\Query\Builder;
-use Adldap\Query\Collection;
-use Adldap\Schemas\SchemaInterface;
-use Adldap\Models\Attributes\Sid;
-use Adldap\Models\Attributes\Guid;
-use Adldap\Models\Attributes\MbString;
-use Adldap\Models\Attributes\DistinguishedName;
-use Adldap\Connections\ConnectionException;
+use LdapRecord\Utilities;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Collection;
+use LdapRecord\Schemas\SchemaInterface;
+use LdapRecord\Models\Attributes\Sid;
+use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Models\Attributes\MbString;
+use LdapRecord\Models\Attributes\DistinguishedName;
+use LdapRecord\Connections\ConnectionException;
 
 /**
  * Class Model
@@ -24,7 +24,7 @@ use Adldap\Connections\ConnectionException;
  * Represents an LDAP record and provides the ability
  * to modify / retrieve data from the record.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 abstract class Model implements ArrayAccess, JsonSerializable
 {

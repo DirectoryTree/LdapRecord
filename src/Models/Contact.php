@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class Contact
  *
  * Represents an LDAP contact.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Contact extends Entry
 {

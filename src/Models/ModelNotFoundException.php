@@ -1,17 +1,17 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\AdldapException;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class ModelNotFoundException
  *
  * Thrown when an LDAP record is not found.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
-class ModelNotFoundException extends AdldapException
+class ModelNotFoundException extends LdapRecordException
 {
     /**
      * The query filter that was used.

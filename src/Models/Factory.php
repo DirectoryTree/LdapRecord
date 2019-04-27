@@ -1,17 +1,17 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\Query\Builder;
-use Adldap\Schemas\ActiveDirectory;
-use Adldap\Schemas\SchemaInterface;
+use LdapRecord\Query\Builder;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Schemas\SchemaInterface;
 
 /**
  * Class Factory
  *
  * Constructs and scopes LDAP queries.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Factory
 {

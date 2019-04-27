@@ -45,7 +45,7 @@ try {
     
     // Disable logging anything else.
     Adldap::setLogger(null);
-} catch (\Adldap\Connections\BindException $e) {
+} catch (\LdapRecord\Connections\BindException $e) {
     //
 }
 ```

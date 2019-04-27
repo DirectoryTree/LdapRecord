@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Adldap\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Models\Attributes;
 
-use Adldap\Models\Entry;
-use Adldap\Models\Group;
-use Adldap\Models\Printer;
-use Adldap\Models\RootDse;
-use Adldap\Models\Computer;
-use Adldap\Models\Container;
-use Adldap\Models\OrganizationalUnit;
-use Adldap\Tests\TestCase;
+use LdapRecord\Models\Entry;
+use LdapRecord\Models\Group;
+use LdapRecord\Models\Printer;
+use LdapRecord\Models\RootDse;
+use LdapRecord\Models\Computer;
+use LdapRecord\Models\Container;
+use LdapRecord\Models\OrganizationalUnit;
+use LdapRecord\Tests\TestCase;
 
 class AccessorAndMutatorTest extends TestCase
 {

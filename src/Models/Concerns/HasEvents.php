@@ -1,9 +1,9 @@
 <?php
 
-namespace Adldap\Models\Concerns;
+namespace LdapRecord\Models\Concerns;
 
-use Adldap\Adldap;
-use Adldap\Models\Events\Event;
+use LdapRecord\Manager;
+use LdapRecord\Models\Events\Event;
 
 trait HasEvents
 {
@@ -16,6 +16,6 @@ trait HasEvents
      */
     protected function fireModelEvent(Event $event)
     {
-        return Adldap::getEventDispatcher()->fire($event);
+        return Manager::getEventDispatcher()->fire($event);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
-use Adldap\Utilities;
+use LdapRecord\Utilities;
 use InvalidArgumentException;
 
 /**
@@ -10,7 +10,7 @@ use InvalidArgumentException;
  *
  * Represents an LDAP group (security / distribution).
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Group extends Entry
 {
@@ -22,7 +22,7 @@ class Group extends Entry
      *
      * @link https://msdn.microsoft.com/en-us/library/ms677097(v=vs.85).aspx
      *
-     * @return \Adldap\Query\Collection
+     * @return \LdapRecord\Query\Collection
      */
     public function getMembers()
     {

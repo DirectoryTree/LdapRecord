@@ -1,13 +1,13 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 /**
  * Class Printer
  *
  * Represents an LDAP printer.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class Printer extends Entry
 {

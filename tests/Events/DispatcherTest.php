@@ -1,10 +1,10 @@
 <?php
 
-namespace Adldap\Tests\Events;
+namespace LdapRecord\Tests\Events;
 
 use Exception;
-use Adldap\Tests\TestCase;
-use Adldap\Events\Dispatcher;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Events\Dispatcher;
 
 /**
  * Class DispatcherTest
@@ -12,7 +12,7 @@ use Adldap\Events\Dispatcher;
  * @author Taylor Otwell
  * @see https://github.com/laravel/framework
  *
- * @package Adldap\Tests\Events
+ * @package LdapRecord\Tests\Events
  */
 class DispatcherTest extends TestCase
 {

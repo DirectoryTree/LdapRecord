@@ -1,6 +1,6 @@
 <?php
 
-namespace Adldap\Models;
+namespace LdapRecord\Models;
 
 use InvalidArgumentException;
 
@@ -10,7 +10,7 @@ use InvalidArgumentException;
  * A utility class to assist in the creation of LDAP
  * batch modifications and ensure their validity.
  *
- * @package Adldap\Models
+ * @package LdapRecord\Models
  */
 class BatchModification
 {

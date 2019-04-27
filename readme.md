@@ -1,6 +1,6 @@
 <!-- readme.md -->
 
-<h1 align="center">Adldap2</h1>
+<h1 align="center">LdapRecord</h1>
 
 <p align="center">
     <a href="https://travis-ci.org/Adldap2/Adldap2"><img src="https://img.shields.io/travis/Adldap2/Adldap2.svg?style=flat-square"/></a>
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-    Adldap2 is a PHP package that provides LDAP authentication and directory management tools using the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>.
+    LdapRecord is a PHP package that provides LDAP authentication and directory management tools using the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>.
 </p>
 
 <h4 align="center">

@@ -1,5 +1,5 @@
 {
-    "name": "adldap2/adldap2",
+    "name": "directorytree/ldaprecord",
     "type": "library",
     "description": "A PHP LDAP Package for humans.",
     "keywords": [
@@ -9,13 +9,14 @@
         "ldap",
         "windows",
         "adldap",
-        "adldap2"
+        "adldap2",
+        "ldaprecord"
     ],
     "license": "MIT",
     "support": {
-        "docs": "https://github.com/Adldap2/Adldap2/blob/master/readme.md",
-        "issues": "https://github.com/Adldap2/Adldap2/issues",
-        "source": "https://github.com/Adldap2/Adldap2",
+        "docs": "https://ldaprecord.com/docs",
+        "issues": "https://github.com/DirectoryTree/LdapRecord/issues",
+        "source": "https://github.com/DirectoryTree/LdapRecord",
         "email": "steven_bauman@outlook.com"
     },
     "authors": [
@@ -40,16 +41,16 @@
         "ext-fileinfo": "fileinfo is required when retrieving user encoded thumbnails"
     },
     "archive": {
-        "exclude": ["/examples", "/tests"]
+        "exclude": ["/tests"]
     },
     "autoload": {
         "psr-4": {
-            "Adldap\\": "src/"
+            "LdapRecord\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Adldap\\Tests\\": "tests/"
+            "LdapRecord\\Tests\\": "tests/"
         }
     }
 }

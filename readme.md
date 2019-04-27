@@ -1,13 +1,15 @@
 <!-- readme.md -->
 
-<h1 align="center">LdapRecord</h1>
+<div style="text-align:center">
+    <img src="https://ldaprecord.com/assets/img/ldap-record.png" width="250">
+</div>
 
 <p align="center">
-    <a href="https://travis-ci.org/Adldap2/Adldap2"><img src="https://img.shields.io/travis/Adldap2/Adldap2.svg?style=flat-square"/></a>
-    <a href="https://scrutinizer-ci.com/g/Adldap2/Adldap2/?branch=master"><img src="https://img.shields.io/scrutinizer/g/adLDAP2/adLDAP2/master.svg?style=flat-square"/></a>
-    <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/dt/adldap2/adldap2.svg?style=flat-square"/></a>
-    <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/v/adldap2/adldap2.svg?style=flat-square"/></a>
-    <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/l/adldap2/adldap2.svg?style=flat-square"/></a>
+    <a href="https://travis-ci.org/DirectoryTree/LdapRecord"><img src="https://img.shields.io/travis/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+    <a href="https://scrutinizer-ci.com/g/DirectoryTree/LdapRecord/?branch=master"><img src="https://img.shields.io/scrutinizer/g/DirectoryTree/LdapRecord/master.svg?style=flat-square"/></a>
+    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/dt/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/v/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/l/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
 </p>
 
 <p align="center">
@@ -19,9 +21,9 @@
 </p>
 
 <h4 align="center">
-    <a href="http://adldap2.github.io/Adldap2/#/?id=quick-start">Quickstart</a>
+    <a href="http://ldaprecord.com/docs/1.0#quick-start">Quickstart</a>
     <span> · </span>
-    <a href="http://adldap2.github.io/Adldap2/">Documentation</a>
+    <a href="http://adldap-docs.test/docs">Documentation</a>
 </h4>
 
 - **Up and running in minutes.** Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.

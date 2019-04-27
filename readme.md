@@ -1,8 +1,8 @@
 <!-- readme.md -->
 
-<div style="text-align:center">
+<p align="center">
     <img src="https://ldaprecord.com/assets/img/ldap-record.png" width="250">
-</div>
+</p>
 
 <p align="center">
     <a href="https://travis-ci.org/DirectoryTree/LdapRecord"><img src="https://img.shields.io/travis/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>

@@ -2,28 +2,25 @@
 
 namespace LdapRecord\Tests\Connections;
 
-use LdapRecord\Query\Builder;
-use LdapRecord\Query\Factory as SearchFactory;
-use LdapRecord\Models\Factory as ModelFactory;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Connections\Ldap;
-use LdapRecord\Connections\Provider;
+use LdapRecord\Connections\Connection;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Connections\DetailedError;
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Models\Factory as ModelFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
-class ProviderTest extends TestCase
+class ConnectionTest extends TestCase
 {
-    protected function newProvider($connection, $configuration = [])
+    protected function newConnection($configuration = [])
     {
-        return new Provider($configuration, $connection);
+        return new Connection($configuration);
     }
 
     public function test_construct()
     {
-        $m = $this->newProvider(new Ldap(), new DomainConfiguration());
+        $m = $this->newConnection(new DomainConfiguration());
 
-        $this->assertInstanceOf(ConnectionInterface::class, $m->getConnection());
+        $this->assertInstanceOf(LdapInterface::class, $m->getLdapConnection());
         $this->assertInstanceOf(DomainConfiguration::class, $m->getConfiguration());
     }
 
@@ -31,42 +28,46 @@ class ProviderTest extends TestCase
     {
         $this->expectException(\LdapRecord\Auth\UsernameRequiredException::class);
 
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
-        $connection
+        $ldap
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('connect')->once()
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection);
+        $c = $this->newConnection();
 
-        $m->auth()->attempt(0000000, 'password');
+        $c->setLdapConnection($ldap);
+
+        $c->auth()->attempt(0000000, 'password');
     }
 
     public function test_auth_password_failure()
     {
         $this->expectException(\LdapRecord\Auth\PasswordRequiredException::class);
 
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
-        $connection
+        $ldap
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('connect')->once()
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection);
+        $c = $this->newConnection();
 
-        $m->auth()->attempt('username', 0000000);
+        $c->setLdapConnection($ldap);
+
+        $c->auth()->attempt('username', 0000000);
     }
 
     public function test_auth_failure()
     {
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
         // Binding as the user.
-        $connection
+        $ldap
             ->shouldReceive('connect')->once()->andReturn(true)
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
@@ -74,20 +75,22 @@ class ProviderTest extends TestCase
         $error = new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A');
 
         // Binding fails, retrieves last error.
-        $connection->shouldReceive('getLastError')->once()->andReturn('error')
+        $ldap->shouldReceive('getLastError')->once()->andReturn('error')
             ->shouldReceive('getDetailedError')->once()->andReturn($error)
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('errNo')->once()->andReturn(1);
 
         // Rebinds as the administrator.
-        $connection->shouldReceive('bind')->once()->withArgs([null, null])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->withArgs([null, null])->andReturn(true);
 
         // Closes the connection.
-        $connection->shouldReceive('close')->once()->andReturn(true);
+        $ldap->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection);
+        $c = $this->newConnection();
 
-        $this->assertFalse($m->auth()->attempt('username', 'password'));
+        $c->setLdapConnection($ldap);
+
+        $this->assertFalse($c->auth()->attempt('username', 'password'));
     }
 
     public function test_auth_passes_with_rebind()
@@ -97,26 +100,28 @@ class ProviderTest extends TestCase
             'password' => 'test',
         ]);
 
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
-        $connection
+        $ldap
             ->shouldReceive('connect')->once()->andReturn(true)
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('isUsingSSL')->once()->andReturn(false)
             ->shouldReceive('isBound')->once()->andReturn(true);
 
         // Authenticates as the user
-        $connection->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
 
         // Re-binds as the administrator
-        $connection
+        $ldap
             ->shouldReceive('bind')->once()->withArgs(['test', 'test'])->andReturn(true)
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection, $config);
+        $c = $this->newConnection($config);
 
-        $this->assertTrue($m->auth()->attempt('username', 'password'));
+        $c->setLdapConnection($ldap);
+
+        $this->assertTrue($c->auth()->attempt('username', 'password'));
     }
 
     public function test_auth_rebind_failure()
@@ -128,30 +133,32 @@ class ProviderTest extends TestCase
             'password' => 'test',
         ]);
 
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
-        $connection
+        $ldap
             ->shouldReceive('connect')->once()->andReturn(true)
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('isUsingSSL')->once()->andReturn(false)
             ->shouldReceive('isBound')->once()->andReturn(true);
 
         // Authenticates as the user
-        $connection->shouldReceive('bind')->once()->withArgs(['username', 'password']);
+        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password']);
 
         // Re-binds as the administrator (fails)
-        $connection->shouldReceive('bind')->once()->withArgs(['test', 'test'])->andReturn(false)
+        $ldap->shouldReceive('bind')->once()->withArgs(['test', 'test'])->andReturn(false)
             ->shouldReceive('getLastError')->once()->andReturn('')
             ->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(null, null, null))
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('errNo')->once()->andReturn(1)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection, $config);
+        $c = $this->newConnection($config);
 
-        $m->connect();
+        $c->setLdapConnection($ldap);
 
-        $this->assertTrue($m->auth()->attempt('username', 'password'));
+        $c->connect();
+
+        $this->assertTrue($c->auth()->attempt('username', 'password'));
     }
 
     public function test_auth_passes_without_rebind()
@@ -161,9 +168,9 @@ class ProviderTest extends TestCase
             'password' => 'test',
         ]);
 
-        $connection = $this->newConnectionMock();
+        $ldap = $this->newLdapMock();
 
-        $connection->shouldReceive('connect')->once()->andReturn(true)
+        $ldap->shouldReceive('connect')->once()->andReturn(true)
             ->shouldReceive('setOptions')->once()
             ->shouldReceive('isUsingSSL')->once()->andReturn(false)
             ->shouldReceive('isBound')->once()->andReturn(true)
@@ -172,9 +179,11 @@ class ProviderTest extends TestCase
             ->shouldReceive('isBound')->once()->andReturn(true)
             ->shouldReceive('close')->once()->andReturn(true);
 
-        $m = $this->newProvider($connection, $config);
+        $c = $this->newConnection($config);
 
-        $this->assertTrue($m->auth()->attempt('username', 'password', true));
+        $c->setLdapConnection($ldap);
+
+        $this->assertTrue($c->auth()->attempt('username', 'password', true));
     }
 
     public function test_prepare_connection()
@@ -194,9 +203,9 @@ class ProviderTest extends TestCase
             // "version" key over LDAP_OPT_PROTOCOL_VERSION in custom_options.
             ->shouldReceive('get')->withArgs(['custom_options'])->andReturn([LDAP_OPT_PROTOCOL_VERSION => 2]);
 
-        $connection = $this->mock(ConnectionInterface::class);
+        $ldap = $this->mock(LdapInterface::class);
 
-        $connection
+        $ldap
             ->shouldReceive('setOptions')->once()->withArgs([[
                 LDAP_OPT_PROTOCOL_VERSION => 3,
                 LDAP_OPT_NETWORK_TIMEOUT => 5,
@@ -205,94 +214,16 @@ class ProviderTest extends TestCase
             ->shouldReceive('connect')->once()
             ->shouldReceive('isBound')->once()->andReturn(false);
 
-        $provider = new Provider($config, $connection);
+        $c = new Connection($config);
 
-        $this->assertInstanceOf(DomainConfiguration::class, $provider->getConfiguration());
-    }
+        $c->setLdapConnection($ldap);
 
-    public function test_groups()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->groups();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=group)', $query->getUnescapedQuery());
-    }
-
-    public function test_users()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->users();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(&(objectclass=user)(objectcategory=person)(!(objectclass=contact)))', $query->getUnescapedQuery());
-    }
-
-    public function test_containers()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->containers();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=container)', $query->getUnescapedQuery());
-    }
-
-    public function test_contacts()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->contacts();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=contact)', $query->getUnescapedQuery());
-    }
-
-    public function test_computers()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->computers();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=computer)', $query->getUnescapedQuery());
-    }
-
-    public function test_ous()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->ous();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=organizationalunit)', $query->getUnescapedQuery());
-    }
-
-    public function test_printers()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search()->printers();
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $this->assertEquals('(objectclass=printqueue)', $query->getUnescapedQuery());
-    }
-
-    public function test_search()
-    {
-        $m = $this->newProvider(new Ldap());
-
-        $query = $m->search();
-
-        $this->assertInstanceOf(SearchFactory::class, $query);
-        $this->assertEquals('(objectclass=*)', $query->getUnescapedQuery());
+        $this->assertInstanceOf(DomainConfiguration::class, $c->getConfiguration());
     }
 
     public function test_make()
     {
-        $m = $this->newProvider(new Ldap());
+        $m = $this->newConnection();
 
         $this->assertInstanceOf(ModelFactory::class, $m->make());
     }

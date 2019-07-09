@@ -44,7 +44,7 @@ class ModelTest extends TestCase
             'samaccountname' => ['Account Name'],
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$rawAttributes]);
@@ -64,7 +64,7 @@ class ModelTest extends TestCase
             'samaccountname' => ['Account Name'],
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -97,7 +97,7 @@ class ModelTest extends TestCase
             'dn' => 'dc=corp,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -119,7 +119,7 @@ class ModelTest extends TestCase
             'dn' => 'dc=corp,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -142,7 +142,7 @@ class ModelTest extends TestCase
             'dn' => 'dc=corp,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -171,7 +171,7 @@ class ModelTest extends TestCase
             'dn' => 'dc=corp,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -194,7 +194,7 @@ class ModelTest extends TestCase
             'name' => ['Name'],
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('read')->once()->andReturn($connection);
         $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
@@ -248,7 +248,7 @@ class ModelTest extends TestCase
             ],
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('add')->withArgs(['cn=John Doe,ou=Accounting,dc=corp,dc=org', $attributes])->andReturn(true);
         $connection->shouldReceive('read')->withArgs(['cn=John Doe,ou=Accounting,dc=corp,dc=org', '(objectclass=*)', [], false, 0])->andReturn('resource');
@@ -270,7 +270,7 @@ class ModelTest extends TestCase
 
     public function test_update()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
 
@@ -291,7 +291,7 @@ class ModelTest extends TestCase
 
     public function test_save_for_create()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $attributes = [
             'cn' => ['John Doe'],
@@ -332,7 +332,7 @@ class ModelTest extends TestCase
 
     public function test_save_for_create_with_attributes()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $attributes = [
             'cn' => ['John Doe'],
@@ -373,7 +373,7 @@ class ModelTest extends TestCase
 
     public function test_save_for_update()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
 
@@ -394,7 +394,7 @@ class ModelTest extends TestCase
 
     public function test_save_for_update_with_attributes()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
 
@@ -446,7 +446,7 @@ class ModelTest extends TestCase
 
     public function test_delete()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
 
@@ -537,7 +537,7 @@ class ModelTest extends TestCase
             'dn' => 'cn=Doe,dc=corp,dc=acme,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $args = [
             'cn=Doe,dc=corp,dc=acme,dc=org',
@@ -564,7 +564,7 @@ class ModelTest extends TestCase
             'dn' => 'cn=Doe,dc=corp,dc=acme,dc=org',
         ];
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $args = [
             'cn=Doe,dc=corp,dc=acme,dc=org',
@@ -587,7 +587,7 @@ class ModelTest extends TestCase
 
     public function test_dn_is_constructed_when_none_given_and_create_is_called()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $addArgs = [
             'cn=John Doe,dc=corp,dc=local',
@@ -648,7 +648,7 @@ class ModelTest extends TestCase
 
     public function test_sync_raw()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $model = $this->newModel([], $this->newBuilder($connection));
 
@@ -665,7 +665,7 @@ class ModelTest extends TestCase
 
     public function test_modifications_are_cleared_on_save()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $modification = new BatchModification('cn', 3, ['Jane Doe']);
 
@@ -935,7 +935,7 @@ class ModelTest extends TestCase
 
     public function test_creating_model_fires_events()
     {
-        $c = $this->newConnectionMock();
+        $c = $this->newLdapMock();
 
         $m = $this->newModel([], $this->newBuilder($c));
 
@@ -971,7 +971,7 @@ class ModelTest extends TestCase
 
     public function test_updating_model_fires_events()
     {
-        $c = $this->newConnectionMock();
+        $c = $this->newLdapMock();
 
         $m = $this->newModel([], $this->newBuilder($c));
 
@@ -1011,7 +1011,7 @@ class ModelTest extends TestCase
 
     public function test_deleting_model_fires_events()
     {
-        $c = $this->newConnectionMock();
+        $c = $this->newLdapMock();
 
         $m = $this->newModel([], $this->newBuilder($c));
 
@@ -1046,7 +1046,7 @@ class ModelTest extends TestCase
 
     public function test_model_events_can_be_listened_for_with_wildcard()
     {
-        $c = $this->newConnectionMock();
+        $c = $this->newLdapMock();
 
         $m = $this->newModel([], $this->newBuilder($c));
 

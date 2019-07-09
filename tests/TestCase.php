@@ -5,7 +5,7 @@ namespace LdapRecord\Tests;
 use Mockery;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Grammar;
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Connections\LdapInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
@@ -55,7 +55,7 @@ class TestCase extends BaseTestCase
     protected function newBuilder($connection = null)
     {
         if (is_null($connection)) {
-            $connection = $this->newConnectionMock();
+            $connection = $this->newLdapMock();
         }
 
         return new Builder($connection, new Grammar());
@@ -78,8 +78,8 @@ class TestCase extends BaseTestCase
      *
      * @return Mockery\MockInterface
      */
-    protected function newConnectionMock()
+    protected function newLdapMock()
     {
-        return $this->mock(ConnectionInterface::class);
+        return $this->mock(LdapInterface::class);
     }
 }

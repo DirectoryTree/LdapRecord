@@ -23,7 +23,7 @@ class UserTest extends TestCase
 
     public function test_set_password_on_new_user()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(true);
 
@@ -46,7 +46,7 @@ class UserTest extends TestCase
 
     public function test_set_password_on_existing_user()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(true);
 
@@ -74,7 +74,7 @@ class UserTest extends TestCase
     {
         $this->expectException(\LdapRecord\LdapRecordException::class);
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(false);
 
@@ -87,7 +87,7 @@ class UserTest extends TestCase
     {
         $this->expectException(\LdapRecord\Models\UserPasswordPolicyException::class);
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(true);
         $connection->shouldReceive('modifyBatch')->once()->andReturn(false);
@@ -103,7 +103,7 @@ class UserTest extends TestCase
     {
         $this->expectException(\LdapRecord\Models\UserPasswordIncorrectException::class);
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(true);
         $connection->shouldReceive('modifyBatch')->once()->andReturn(false);
@@ -119,7 +119,7 @@ class UserTest extends TestCase
     {
         $this->expectException(\LdapRecord\LdapRecordException::class);
 
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('canChangePasswords')->once()->andReturn(false);
 

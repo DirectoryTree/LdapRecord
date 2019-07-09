@@ -688,7 +688,7 @@ class BuilderTest extends TestCase
 
     public function test_paginate_with_no_results()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $connection->shouldReceive('controlPagedResult')->once()->withArgs([50, true, ''])
             ->shouldReceive('search')->once()->withArgs(['', '(field=\76\61\6c\75\65)', ['*']])->andReturn(null)
@@ -701,7 +701,7 @@ class BuilderTest extends TestCase
 
     public function test_paginate_with_results()
     {
-        $connection = $this->newConnectionMock();
+        $connection = $this->newLdapMock();
 
         $rawEntries = [
             'count' => 1,

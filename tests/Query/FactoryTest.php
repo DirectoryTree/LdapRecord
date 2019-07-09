@@ -12,7 +12,7 @@ class FactoryTest extends TestCase
     protected function newSearchFactory($connection = null, $dn = 'dc=corp,dc=org', $schema = null)
     {
         if (is_null($connection)) {
-            $connection = $this->newConnectionMock();
+            $connection = $this->newLdapMock();
         }
 
         return new Factory($connection, $schema, $dn);
@@ -39,7 +39,7 @@ class FactoryTest extends TestCase
 
     public function test_new_query()
     {
-        $search = $this->newSearchFactory($this->newConnectionMock());
+        $search = $this->newSearchFactory($this->newLdapMock());
 
         $new = $search->newQuery();
         $newWithDn = $search->newQuery()->in('testing');

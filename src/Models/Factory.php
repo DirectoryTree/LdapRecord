@@ -7,11 +7,9 @@ use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Schemas\SchemaInterface;
 
 /**
- * Class Factory
+ * Class Factory.
  *
- * Constructs and scopes LDAP queries.
- *
- * @package LdapRecord\Models
+ * Creates new LDAP models.
  */
 class Factory
 {
@@ -81,7 +79,7 @@ class Factory
     {
         $model = $this->schema->entryModel();
 
-        return (new $model($attributes, $this->query));
+        return new $model($attributes, $this->query);
     }
 
     /**
@@ -147,7 +145,7 @@ class Factory
         $model = $this->schema->containerModel();
 
         return (new $model($attributes, $this->query))
-            ->setAttribute($this->schema->objectClass(), $this->schema->organizationalUnit());
+            ->setAttribute($this->schema->objectClass(), $this->schema->objectClassContainer());
     }
 
     /**

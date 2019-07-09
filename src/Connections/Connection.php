@@ -2,76 +2,72 @@
 
 namespace LdapRecord\Connections;
 
-use LdapRecord\Manager;
-use InvalidArgumentException;
 use LdapRecord\Auth\Guard;
+use LdapRecord\Query\Cache;
+use InvalidArgumentException;
 use LdapRecord\Auth\GuardInterface;
 use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Schemas\SchemaInterface;
-use LdapRecord\Query\Factory as SearchFactory;
+use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Models\Factory as ModelFactory;
+use LdapRecord\Query\Factory as SearchFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
 /**
- * Class Provider
+ * Class Connection.
  *
  * Contains the LPAP connection and domain configuration to
  * instantiate factories for retrieving and creating
  * LDAP records as well as authentication (binding).
- *
- * @package LdapRecord\Connections
  */
-class Provider implements ProviderInterface
+class Connection implements ConnectionInterface
 {
     /**
-     * The providers connection.
-     *
-     * @var ConnectionInterface
+     * @var LdapInterface
      */
-    protected $connection;
+    protected $ldap;
 
     /**
-     * The providers configuration.
-     *
      * @var DomainConfiguration
      */
     protected $configuration;
 
     /**
-     * The providers schema.
-     *
      * @var SchemaInterface
      */
     protected $schema;
 
     /**
-     * The providers auth guard instance.
-     *
      * @var GuardInterface
      */
     protected $guard;
 
     /**
+     * @var Cache|null
+     */
+    protected $cache;
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct($configuration = [], ConnectionInterface $connection = null)
+    public function __construct($configuration = [])
     {
         $this->setConfiguration($configuration)
-            ->setConnection($connection);
+            ->setLdapConnection(new Ldap());
     }
 
     /**
      * Close the LDAP connection (if bound) upon destruction.
-     * 
+     *
      * @return void
      */
     public function __destruct()
     {
         if (
-            $this->connection instanceof ConnectionInterface &&
-            $this->connection->isBound()
+            $this->ldap instanceof LdapInterface &&
+            $this->ldap->isBound()
         ) {
-            $this->connection->close();
+            $this->ldap->close();
         }
     }
 
@@ -89,14 +85,14 @@ class Provider implements ProviderInterface
 
             $schema = $configuration->get('schema');
 
-            // We'll update our schema here when our configuration is set.
-            $this->setSchema(new $schema);
-            
+            // We will update our schema here when our configuration is set.
+            $this->setSchema(new $schema());
+
             return $this;
         }
 
         $class = DomainConfiguration::class;
-        
+
         throw new InvalidArgumentException(
             "Configuration must be array or instance of $class"
         );
@@ -105,16 +101,16 @@ class Provider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function setConnection(ConnectionInterface $connection = null)
+    public function setLdapConnection(LdapInterface $ldap = null)
     {
-        // We'll create a standard connection if one isn't given.
-        $this->connection = $connection ?: new Ldap();
+        // We will create a standard connection if one isn't given.
+        $this->ldap = $ldap ?: new Ldap();
 
         // Prepare the connection.
         $this->prepareConnection();
 
         // Instantiate the LDAP connection.
-        $this->connection->connect(
+        $this->ldap->connect(
             $this->configuration->get('hosts'),
             $this->configuration->get('port')
         );
@@ -143,6 +139,20 @@ class Provider implements ProviderInterface
     }
 
     /**
+     * Sets the cache store.
+     *
+     * @param CacheInterface $store
+     *
+     * @return $this
+     */
+    public function setCache(CacheInterface $store)
+    {
+        $this->cache = new Cache($store);
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConfiguration()
@@ -153,9 +163,9 @@ class Provider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection()
+    public function getLdapConnection()
     {
-        return $this->connection;
+        return $this->ldap;
     }
 
     /**
@@ -171,8 +181,8 @@ class Provider implements ProviderInterface
      */
     public function getGuard()
     {
-        if (! $this->guard instanceof GuardInterface) {
-            $this->setGuard($this->getDefaultGuard($this->connection, $this->configuration));
+        if (!$this->guard instanceof GuardInterface) {
+            $this->setGuard($this->getDefaultGuard($this->ldap, $this->configuration));
         }
 
         return $this->guard;
@@ -181,11 +191,11 @@ class Provider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultGuard(ConnectionInterface $connection, DomainConfiguration $configuration)
+    public function getDefaultGuard(LdapInterface $connection, DomainConfiguration $configuration)
     {
         $guard = new Guard($connection, $configuration);
 
-        $guard->setDispatcher(Manager::getEventDispatcher());
+        $guard->setDispatcher(Container::getEventDispatcher());
 
         return $guard;
     }
@@ -205,11 +215,17 @@ class Provider implements ProviderInterface
      */
     public function search()
     {
-        return new SearchFactory(
-            $this->connection,
+        $factory = new SearchFactory(
+            $this->ldap,
             $this->schema,
             $this->configuration->get('base_dn')
         );
+
+        if ($this->cache) {
+            $factory->setCache($this->cache);
+        }
+
+        return $factory;
     }
 
     /**
@@ -243,27 +259,27 @@ class Provider implements ProviderInterface
     /**
      * Prepares the connection by setting configured parameters.
      *
-     * @return void
-     *
      * @throws \LdapRecord\Configuration\ConfigurationException When configuration options requested do not exist
+     *
+     * @return void
      */
     protected function prepareConnection()
     {
         if ($this->configuration->get('use_ssl')) {
-            $this->connection->ssl();
+            $this->ldap->ssl();
         } elseif ($this->configuration->get('use_tls')) {
-            $this->connection->tls();
+            $this->ldap->tls();
         }
 
         $options = array_replace(
             $this->configuration->get('custom_options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
-                LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
-                LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals')
+                LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),
+                LDAP_OPT_REFERRALS        => $this->configuration->get('follow_referrals'),
             ]
         );
 
-        $this->connection->setOptions($options);
+        $this->ldap->setOptions($options);
     }
 }

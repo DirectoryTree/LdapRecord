@@ -6,11 +6,9 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Connections\DetailedError;
 
 /**
- * Class BindException
+ * Class BindException.
  *
  * Thrown when binding to an LDAP connection fails.
- *
- * @package LdapRecord\Auth
  */
 class BindException extends LdapRecordException
 {

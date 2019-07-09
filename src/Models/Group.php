@@ -3,19 +3,30 @@
 namespace LdapRecord\Models;
 
 use LdapRecord\Utilities;
+use LdapRecord\Query\Builder;
 use InvalidArgumentException;
 
 /**
- * Class Group
+ * Class Group.
  *
  * Represents an LDAP group (security / distribution).
- *
- * @package LdapRecord\Models
  */
 class Group extends Entry
 {
     use Concerns\HasMemberOf,
         Concerns\HasDescription;
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassGroup());
+    }
 
     /**
      * Returns all users apart of the current group.
@@ -28,7 +39,7 @@ class Group extends Entry
     {
         $members = $this->getMembersFromAttribute($this->schema->member());
 
-        if(count($members) === 0) {
+        if (count($members) === 0) {
             $members = $this->getPaginatedMembers();
         }
 
@@ -231,7 +242,7 @@ class Group extends Entry
         // We need to filter out the model attributes so
         // we only retrieve the member range.
         $attributes = array_values(array_filter($keys, function ($key) {
-            return strpos($key,'member;range') !== false;
+            return strpos($key, 'member;range') !== false;
         }));
 
         // We'll grab the member range key so we can run a
@@ -255,7 +266,7 @@ class Group extends Entry
             // If the query already included all member results (indicated
             // by the '*'), then we can return here. Otherwise we need
             // to continue on and retrieve the rest.
-            if($to === '*') {
+            if ($to === '*') {
                 return $members;
             }
 

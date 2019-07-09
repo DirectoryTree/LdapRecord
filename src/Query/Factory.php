@@ -2,24 +2,21 @@
 
 namespace LdapRecord\Query;
 
-use LdapRecord\Models\RootDse;
 use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Schemas\SchemaInterface;
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Connections\LdapInterface;
 
 /**
- * Adldap2 Search Factory.
+ * LdapRecord Search Factory.
  *
  * Constructs new LDAP queries.
- *
- * @package LdapRecord\Search
  *
  * @mixin Builder
  */
 class Factory
 {
     /**
-     * @var ConnectionInterface
+     * @var LdapInterface
      */
     protected $connection;
 
@@ -38,13 +35,20 @@ class Factory
     protected $base;
 
     /**
+     * The query cache.
+     *
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * Constructor.
      *
-     * @param ConnectionInterface  $connection The connection to use when constructing a new query.
-     * @param SchemaInterface|null $schema The schema to use for the query and models located.
-     * @param string               $baseDn The base DN to use for all searches.
+     * @param LdapInterface  $connection The connection to use when constructing a new query.
+     * @param SchemaInterface|null $schema     The schema to use for the query and models located.
+     * @param string               $baseDn     The base DN to use for all searches.
      */
-    public function __construct(ConnectionInterface $connection, SchemaInterface $schema = null, $baseDn = '')
+    public function __construct(LdapInterface $connection, SchemaInterface $schema = null, $baseDn = '')
     {
         $this->setConnection($connection)
             ->setSchema($schema)
@@ -54,11 +58,11 @@ class Factory
     /**
      * Sets the connection property.
      *
-     * @param ConnectionInterface $connection
+     * @param LdapInterface $connection
      *
      * @return $this
      */
-    public function setConnection(ConnectionInterface $connection)
+    public function setConnection(LdapInterface $connection)
     {
         $this->connection = $connection;
 
@@ -94,6 +98,20 @@ class Factory
     }
 
     /**
+     * Sets the cache for storing query results.
+     *
+     * @param Cache $cache
+     *
+     * @return $this
+     */
+    public function setCache(Cache $cache)
+    {
+        $this->cache = $cache;
+
+        return $this;
+    }
+
+    /**
      * Returns a new query builder instance.
      *
      * @return Builder
@@ -113,117 +131,6 @@ class Factory
     public function get()
     {
         return $this->newQuery()->whereHas($this->schema->commonName())->get();
-    }
-
-    /**
-     * Returns a query builder scoped to users.
-     *
-     * @return Builder
-     */
-    public function users()
-    {
-        $wheres = [
-            [$this->schema->objectClass(), Operator::$equals, $this->schema->objectClassUser()],
-            [$this->schema->objectCategory(), Operator::$equals, $this->schema->objectCategoryPerson()]
-        ];
-
-        // OpenLDAP doesn't like specifying the omission of user objectclasses
-        // equal to `contact`. We'll make sure we're working with
-        // ActiveDirectory before adding this filter.
-        if (is_a($this->schema, ActiveDirectory::class)) {
-            $wheres[] = [$this->schema->objectClass(), Operator::$doesNotEqual, $this->schema->objectClassContact()];
-        }
-
-        return $this->where($wheres);
-    }
-
-    /**
-     * Returns a query builder scoped to printers.
-     *
-     * @return Builder
-     */
-    public function printers()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassPrinter(),
-        ]);
-    }
-
-    /**
-     * Returns a query builder scoped to organizational units.
-     *
-     * @return Builder
-     */
-    public function ous()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassOu(),
-        ]);
-    }
-
-    /**
-     * Returns a query builder scoped to groups.
-     *
-     * @return Builder
-     */
-    public function groups()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassGroup(),
-        ]);
-    }
-
-    /**
-     * Returns a query builder scoped to containers.
-     *
-     * @return Builder
-     */
-    public function containers()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassContainer(),
-        ]);
-    }
-
-    /**
-     * Returns a query builder scoped to contacts.
-     *
-     * @return Builder
-     */
-    public function contacts()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassContact(),
-        ]);
-    }
-
-    /**
-     * Returns a query builder scoped to computers.
-     *
-     * @return Builder
-     */
-    public function computers()
-    {
-        return $this->where([
-            $this->schema->objectClass() => $this->schema->objectClassComputer(),
-        ]);
-    }
-
-    /**
-     * Returns the root DSE record.
-     *
-     * @return RootDse|null
-     */
-    public function getRootDse()
-    {
-        $query = $this->newQuery();
-
-        $root = $query->in('')->read()->whereHas($this->schema->objectClass())->first();
-
-        if ($root) {
-            return (new RootDse([], $query))
-                ->setRawAttributes($root->getAttributes());
-        }
     }
 
     /**
@@ -256,6 +163,10 @@ class Factory
      */
     protected function newBuilder()
     {
-        return new Builder($this->connection, $this->newGrammar(), $this->schema);
+        $builder = new Builder($this->connection, $this->newGrammar(), $this->schema);
+
+        $builder->setCache($this->cache);
+
+        return $builder;
     }
 }

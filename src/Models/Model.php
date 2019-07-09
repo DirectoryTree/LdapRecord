@@ -5,26 +5,29 @@ namespace LdapRecord\Models;
 use DateTime;
 use ArrayAccess;
 use JsonSerializable;
-use InvalidArgumentException;
-use UnexpectedValueException;
-use Illuminate\Support\Arr;
 use LdapRecord\Utilities;
 use LdapRecord\Query\Builder;
+use LdapRecord\Query\Factory;
+use Illuminate\Support\Arr;
 use LdapRecord\Query\Collection;
-use LdapRecord\Schemas\SchemaInterface;
+use InvalidArgumentException;
+use UnexpectedValueException;
+use LdapRecord\Connections\Container;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Schemas\SchemaInterface;
 use LdapRecord\Models\Attributes\MbString;
-use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Connections\ConnectionException;
+use LdapRecord\Models\Attributes\DistinguishedName;
 
 /**
- * Class Model
+ * Class Model.
  *
  * Represents an LDAP record and provides the ability
  * to modify / retrieve data from the record.
  *
- * @package LdapRecord\Models
+ * @mixin Builder
  */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
@@ -39,18 +42,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public $exists = false;
 
     /**
-     * The current query builder instance.
+     * The current LDAP connection to utilize.
      *
-     * @var Builder
+     * @var string
      */
-    protected $query;
+    protected $connection = 'default';
 
     /**
      * The current LDAP attribute schema.
      *
      * @var SchemaInterface
      */
-    protected $schema;
+    protected $schema = ActiveDirectory::class;
 
     /**
      * Contains the models modifications.
@@ -62,15 +65,153 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Constructor.
      *
-     * @param array   $attributes
-     * @param Builder $builder
+     * @param array $attributes
      */
-    public function __construct(array $attributes = [], Builder $builder)
+    public function __construct(array $attributes = [])
     {
-        $this->setQuery($builder)
-            ->setSchema($builder->getSchema())
-            ->fill($attributes);
+        $this->fill($attributes)->setSchema(new $this->schema);
     }
+
+    /**
+     * Handle dynamic method calls into the model.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (method_exists($this, $method)) {
+            return $this->$method(...$parameters);
+        }
+
+        return $this->newQuery()->$method(...$parameters);
+    }
+
+    /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public static function __callStatic($method, $parameters)
+    {
+        return (new static)->$method(...$parameters);
+    }
+
+    /**
+     * Get the LDAP connection for the model.
+     *
+     * @return \LdapRecord\Connections\Connection
+     */
+    public function getConnection()
+    {
+        return static::resolveConnection($this->getConnectionName());
+    }
+
+    /**
+     * Get the current connection name for the model.
+     *
+     * @return string
+     */
+    public function getConnectionName()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * Set the connection associated with the model.
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setConnection($name)
+    {
+        $this->connection = $name;
+
+        return $this;
+    }
+
+    /**
+     * Resolve a connection instance.
+     *
+     * @param string|null $connection
+     *
+     * @return \LdapRecord\Connections\Connection
+     */
+    public static function resolveConnection($connection = null)
+    {
+        return Container::getInstance()->get($connection);
+    }
+
+    /**
+     * Returns a Factory with the given connection or the default if none specified.
+     *
+     * @param string|null $connection The connection to use.
+     *
+     * @return Factory
+     */
+    protected static function factory($connection = null)
+    {
+        return static::resolveConnection($connection)->search();
+    }
+
+    /**
+     * Begin querying the LDAP model.
+     *
+     * @return Builder
+     */
+    public static function query()
+    {
+        return (new static)->newQuery();
+    }
+
+    /**
+     * Get a new query builder for the LDAP model.
+     *
+     * @return Builder
+     */
+    public function newQuery()
+    {
+        return $this->registerQueryScopes($this->newQueryWithoutScopes());
+    }
+
+    /**
+     * Get a new query builder that doesn't have any global scopes.
+     *
+     * @return Builder
+     */
+    public function newQueryWithoutScopes()
+    {
+        return static::factory($this->connection)->newQuery();
+    }
+
+    /**
+     * Register the query scopes for this builder instance.
+     *
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function registerQueryScopes($builder)
+    {
+        $this->applyGlobalScopes($builder);
+
+        return $builder;
+    }
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    abstract public function applyGlobalScopes(Builder $query);
 
     /**
      * Returns the models distinguished name when the model is converted to a string.
@@ -80,40 +221,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function __toString()
     {
         return $this->getDn();
-    }
-
-    /**
-     * Sets the current query builder.
-     *
-     * @param Builder $builder
-     *
-     * @return $this
-     */
-    public function setQuery(Builder $builder)
-    {
-        $this->query = $builder;
-
-        return $this;
-    }
-
-    /**
-     * Returns the current query builder.
-     *
-     * @return Builder
-     */
-    public function getQuery()
-    {
-        return $this->query;
-    }
-
-    /**
-     * Returns a new query builder instance.
-     *
-     * @return Builder
-     */
-    public function newQuery()
-    {
-        return $this->query->newInstance();
     }
 
     /**
@@ -224,12 +331,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $attributes = $this->getAttributes();
 
-        array_walk_recursive($attributes, function(&$val) {
+        array_walk_recursive($attributes, function (&$val) {
             if (MbString::isLoaded()) {
                 // If we're able to detect the attribute
                 // encoding, we'll encode only the
                 // attributes that need to be.
-                if (! MbString::isUtf8($val)) {
+                if (!MbString::isUtf8($val)) {
                     $val = utf8_encode($val);
                 }
             } else {
@@ -244,7 +351,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // their string equivalents for convenience.
         return array_replace($attributes, [
             $this->schema->objectGuid() => $this->getConvertedGuid(),
-            $this->schema->objectSid() => $this->getConvertedSid(),
+            $this->schema->objectSid()  => $this->getConvertedSid(),
         ]);
     }
 
@@ -255,9 +362,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function fresh()
     {
-        $model = $this->query->newInstance()->findByDn($this->getDn());
+        $model = $this->newQueryWithoutScopes()->findByDn($this->getDn());
 
-        return $model instanceof Model ? $model : null;
+        return $model instanceof self ? $model : null;
     }
 
     /**
@@ -377,9 +484,43 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         // If we currently don't have a distinguished name, we'll set
         // it to our base, otherwise we'll use our query's base DN.
-        $dn = $this->getDistinguishedName() ?: $this->query->getDn();
+        $dn = $this->getDistinguishedName() ?: $this->newQuery()->getDn();
 
         return $this->getNewDnBuilder($dn);
+    }
+
+    /**
+     * Returns the models distinguished name components.
+     *
+     * @param bool $removeAttributePrefixes
+     *
+     * @return array
+     */
+    public function getDnComponents($removeAttributePrefixes = true)
+    {
+        if ($components = Utilities::explodeDn($this->getDn(), $removeAttributePrefixes)) {
+            unset($components['count']);
+
+            return $components;
+        }
+
+        return [];
+    }
+
+    /**
+     * Returns the distinguished name that the model is a leaf of.
+     *
+     * @return string
+     */
+    public function getDnRoot()
+    {
+        $components = $this->getDnComponents(false);
+
+        // Shift off the beginning of the array;
+        // This contains the models RDN.
+        array_shift($components);
+
+        return implode(',', $components);
     }
 
     /**
@@ -639,7 +780,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getObjectClass()
     {
-        return $this->query->findByDn($this->getObjectCategoryDn());
+        return $this->newQueryWithoutScopes()->findByDn($this->getObjectCategoryDn());
     }
 
     /**
@@ -720,7 +861,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getManagedByUser()
     {
         if ($dn = $this->getManagedBy()) {
-            return $this->query->newInstance()->findByDn($dn);
+            return $this->newQueryWithoutScopes()->findByDn($dn);
         }
 
         return false;
@@ -735,7 +876,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setManagedBy($dn)
     {
-        if ($dn instanceof Model) {
+        if ($dn instanceof self) {
             $dn = $dn->getDn();
         }
 
@@ -776,7 +917,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function inOu($ou, $strict = false)
     {
-        if ($ou instanceof Model) {
+        if ($ou instanceof self) {
             // If we've been given an OU model, we can
             // just check if the OU's DN is inside
             // the current models DN.
@@ -836,7 +977,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $this->fireModelEvent(new Events\Updating($this));
 
             // Push the update.
-            if ($this->query->getConnection()->modifyBatch($this->getDn(), $modifications)) {
+            if ($this->newQuery()->getConnection()->modifyBatch($this->getDn(), $modifications)) {
                 // Re-sync attributes.
                 $this->syncRaw();
 
@@ -963,7 +1104,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Delete specific values in attributes:
      *
      *     ["memberuid" => "username"]
-     * 
+     *
      * Delete an entire attribute:
      *
      *     ["memberuid" => []]
@@ -997,25 +1138,35 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Throws a ModelNotFoundException if the current model does
      * not exist or does not contain a distinguished name.
      *
+     * @param bool $recursive Whether to recursively delete leaf nodes (models that are children).
+     *
      * @throws ModelDoesNotExistException
      *
      * @return bool
      */
-    public function delete()
+    public function delete($recursive = false)
     {
         $dn = $this->getDn();
 
         if ($this->exists === false || empty($dn)) {
             // Make sure the record exists before we can delete it.
-            // Otherwise, we'll throw an exception.
+            // Otherwise, we will throw an exception.
             throw (new ModelDoesNotExistException())->setModel(get_class($this));
         }
 
         $this->fireModelEvent(new Events\Deleting($this));
 
+        if ($recursive) {
+            // If recursive is requested, we'll retrieve all direct leaf nodes
+            // by executing a 'listing' and delete each resulting model.
+            $this->newQuery()->listing()->in($this->getDn())->get()->each(function (self $model) use ($recursive) {
+                $model->delete($recursive);
+            });
+        }
+
         if ($this->query->getConnection()->delete($dn)) {
-            // We'll set the exists property to false on delete
-            // so the dev can run create operations.
+            // If the deletion was successful, we'll mark the model
+            // as non-existing and fire the deleted event.
             $this->exists = false;
 
             $this->fireModelEvent(new Events\Deleted($this));
@@ -1043,7 +1194,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         // If the current model has an empty RDN, we can't move it.
         if ((int) Arr::first($parts) === 0) {
-            throw new UnexpectedValueException("Current model does not contain an RDN to move.");
+            throw new UnexpectedValueException('Current model does not contain an RDN to move.');
         }
 
         // Looks like we have a DN. We'll retrieve the leftmost RDN (the identifier).
@@ -1063,7 +1214,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
-        if ($newParentDn instanceof Model) {
+        if ($newParentDn instanceof self) {
             $newParentDn = $newParentDn->getDn();
         }
 
@@ -1159,13 +1310,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function validateSecureConnection()
     {
-        if (! $this->query->getConnection()->canChangePasswords()) {
+        if (!$this->query->getConnection()->canChangePasswords()) {
             throw new ConnectionException(
-                "You must be connected to your LDAP server with TLS or SSL to perform this operation."
+                'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );
         }
     }
-    
+
     /**
      * Converts the inserted string boolean to a PHP boolean.
      *

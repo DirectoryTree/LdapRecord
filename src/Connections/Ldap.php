@@ -3,17 +3,15 @@
 namespace LdapRecord\Connections;
 
 /**
- * Class Ldap
+ * Class Ldap.
  *
  * A class that abstracts PHP's LDAP functions and stores the bound connection.
- *
- * @package LdapRecord\Connections
  */
-class Ldap implements ConnectionInterface
+class Ldap implements LdapInterface
 {
     /**
      * The connection name.
-     * 
+     *
      * @var string|null
      */
     protected $name;
@@ -52,7 +50,7 @@ class Ldap implements ConnectionInterface
      * @var bool
      */
     protected $useTLS = false;
-    
+
     /**
      * {@inheritdoc}
      */
@@ -205,8 +203,6 @@ class Ldap implements ConnectionInterface
 
             return new DetailedError($number, $this->err2Str($number), $message);
         }
-
-        return;
     }
 
     /**
@@ -248,23 +244,21 @@ class Ldap implements ConnectionInterface
      */
     public function startTLS()
     {
-        return ldap_start_tls($this->getConnection());
+        try {
+            return ldap_start_tls($this->getConnection());
+        } catch (\ErrorException $e) {
+            throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function connect($hosts = [], $port = '389')
+    public function connect($hosts = [], $port = 389)
     {
         $this->host = $this->getConnectionString($hosts, $this->getProtocol(), $port);
-        
-        $this->connection = ldap_connect($this->host);
-        
-        if ($this->isUsingTLS() && $this->startTLS() === false) {
-            throw new ConnectionException("Unable to connect to LDAP server over TLS.");
-        }
 
-        return $this->connection;
+        return $this->connection = ldap_connect($this->host);
     }
 
     /**
@@ -306,6 +300,13 @@ class Ldap implements ConnectionInterface
      */
     public function bind($username, $password, $sasl = false)
     {
+        // Prior to binding, we will upgrade our connectivity to TLS on our current
+        // connection and ensure we are not already bound before upgrading.
+        // This is to prevent subsequent upgrading on several binds.
+        if ($this->isUsingTLS() && !$this->isBound()) {
+            $this->startTLS();
+        }
+
         if ($sasl) {
             return $this->bound = ldap_sasl_bind($this->getConnection(), null, null, 'GSSAPI');
         }
@@ -400,6 +401,14 @@ class Ldap implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function freeResult($result)
+    {
+        return ldap_free_result($result);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function errNo()
     {
         return ldap_errno($this->getConnection());
@@ -472,14 +481,20 @@ class Ldap implements ConnectionInterface
     /**
      * Generates an LDAP connection string for each host given.
      *
-     * @param string|array  $hosts
-     * @param string        $protocol
-     * @param string        $port
+     * @param string|array $hosts
+     * @param string       $protocol
+     * @param string       $port
      *
      * @return string
      */
     protected function getConnectionString($hosts, $protocol, $port)
     {
+        // If we are using SSL and using the default port, we
+        // will override it to use the default SSL port.
+        if ($this->isUsingSSL() && $port == 389) {
+            $port = self::PORT_SSL;
+        }
+
         // Normalize hosts into an array.
         $hosts = is_array($hosts) ? $hosts : [$hosts];
 

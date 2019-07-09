@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Models;
 
+use LdapRecord\Query\Builder;
+
 /**
- * Class Computer
+ * Class Computer.
  *
  * Represents an LDAP computer / server.
- *
- * @package LdapRecord\Models
  */
 class Computer extends Entry
 {
@@ -16,6 +16,16 @@ class Computer extends Entry
         Concerns\HasLastLogonAndLogOff,
         Concerns\HasUserAccountControl,
         Concerns\HasCriticalSystemObject;
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassComputer());
+    }
 
     /**
      * Returns the computers operating system.

@@ -286,7 +286,6 @@ abstract class Schema implements SchemaInterface
         return 'FALSE';
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -341,6 +340,14 @@ abstract class Schema implements SchemaInterface
     public function homeDirectory()
     {
         return 'homedirectory';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function homePhone()
+    {
+        return 'homephone';
     }
 
     /**
@@ -508,7 +515,7 @@ abstract class Schema implements SchemaInterface
      */
     public function memberRange($from, $to)
     {
-        return $this->member() . ";range={$from}-{$to}";
+        return $this->member().";range={$from}-{$to}";
     }
 
     /**
@@ -684,7 +691,7 @@ abstract class Schema implements SchemaInterface
             $this->objectClassContainer()                   => $this->containerModel(),
             $this->objectClassPrinter()                     => $this->printerModel(),
             $this->objectClassOu()                          => $this->organizationalUnitModel(),
-            $this->objectClassForeignSecurityPrincipal()    => $this->foreignSecurityPrincipalModel()
+            $this->objectClassForeignSecurityPrincipal()    => $this->foreignSecurityPrincipalModel(),
         ];
     }
 

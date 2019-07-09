@@ -2,15 +2,27 @@
 
 namespace LdapRecord\Models;
 
+use LdapRecord\Query\Builder;
+
 /**
- * Class Printer
+ * Class Printer.
  *
  * Represents an LDAP printer.
- *
- * @package LdapRecord\Models
  */
 class Printer extends Entry
 {
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassPrinter());
+    }
+
     /**
      * Returns the printers name.
      *
@@ -283,6 +295,6 @@ class Printer extends Entry
      */
     public function getPrintRateUnit()
     {
-        return $this->getFirstAttribute($this->schema->printerPrintRate());
+        return $this->getFirstAttribute($this->schema->printerPrintRateUnit());
     }
 }

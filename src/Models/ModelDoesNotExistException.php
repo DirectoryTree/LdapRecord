@@ -5,11 +5,9 @@ namespace LdapRecord\Models;
 use LdapRecord\LdapRecordException;
 
 /**
- * Class ModelDoesNotExistException
+ * Class ModelDoesNotExistException.
  *
  * Thrown when a model being saved / updated does not actually exist.
- *
- * @package LdapRecord\Models
  */
 class ModelDoesNotExistException extends LdapRecordException
 {

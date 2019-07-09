@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Manager;
 use LdapRecord\Models\Events\Event;
+use LdapRecord\Connections\Container;
 
 trait HasEvents
 {
@@ -16,6 +16,6 @@ trait HasEvents
      */
     protected function fireModelEvent(Event $event)
     {
-        return Manager::getEventDispatcher()->fire($event);
+        return Container::getEventDispatcher()->fire($event);
     }
 }

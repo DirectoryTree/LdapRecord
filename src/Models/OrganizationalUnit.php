@@ -2,16 +2,28 @@
 
 namespace LdapRecord\Models;
 
+use LdapRecord\Query\Builder;
+
 /**
- * Class OrganizationalUnit
+ * Class OrganizationalUnit.
  *
  * Represents an LDAP organizational unit.
- *
- * @package LdapRecord\Models
  */
 class OrganizationalUnit extends Entry
 {
     use Concerns\HasDescription;
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassOu());
+    }
 
     /**
      * Retrieves the organization units OU attribute.

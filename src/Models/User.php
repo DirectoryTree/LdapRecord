@@ -4,6 +4,8 @@ namespace LdapRecord\Models;
 
 use DateTime;
 use LdapRecord\Utilities;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Operator;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Models\Attributes\AccountControl;
@@ -11,11 +13,9 @@ use LdapRecord\Models\Attributes\TSPropertyArray;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
- * Class User
+ * Class User.
  *
  * Represents an LDAP user.
- *
- * @package LdapRecord\Models
  */
 class User extends Entry implements Authenticatable
 {
@@ -24,6 +24,30 @@ class User extends Entry implements Authenticatable
         Concerns\HasMemberOf,
         Concerns\HasLastLogonAndLogOff,
         Concerns\HasUserAccountControl;
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $scopes = [
+            [$this->schema->objectClass(), Operator::$equals, $this->schema->objectClassUser()],
+            [$this->schema->objectCategory(), Operator::$equals, $this->schema->objectCategoryPerson()],
+        ];
+
+        // OpenLDAP doesn't like specifying the omission of user objectclasses
+        // equal to `contact`. We will make sure we're working with
+        // ActiveDirectory before adding this filter.
+        if (is_a($this->schema, ActiveDirectory::class)) {
+            $scopes[] = [$this->schema->objectClass(), Operator::$doesNotEqual, $this->schema->objectClassContact()];
+        }
+
+        $query->where($scopes);
+    }
 
     /**
      * Get the name of the unique identifier for the user.
@@ -52,7 +76,6 @@ class User extends Entry implements Authenticatable
      */
     public function getAuthPassword()
     {
-        return;
     }
 
     /**
@@ -62,7 +85,6 @@ class User extends Entry implements Authenticatable
      */
     public function getRememberToken()
     {
-        return;
     }
 
     /**
@@ -74,7 +96,6 @@ class User extends Entry implements Authenticatable
      */
     public function setRememberToken($value)
     {
-        return;
     }
 
     /**
@@ -84,7 +105,6 @@ class User extends Entry implements Authenticatable
      */
     public function getRememberTokenName()
     {
-        return;
     }
 
     /**
@@ -262,6 +282,18 @@ class User extends Entry implements Authenticatable
     }
 
     /**
+     * The user's main home phone number.
+     *
+     * @link https://docs.microsoft.com/en-us/windows/desktop/ADSchema/a-homephone
+     *
+     * @return string|null
+     */
+    public function getHomePhone()
+    {
+        return $this->getFirstAttribute($this->schema->homePhone());
+    }
+
+    /**
      * Returns the users principal name.
      *
      * This is usually their email address.
@@ -376,9 +408,9 @@ class User extends Entry implements Authenticatable
     /**
      * Returns the formatted timestamp of the bad password date.
      *
-     * @return string|null
-     *
      * @throws \Exception
+     *
+     * @return string|null
      */
     public function getBadPasswordDate()
     {
@@ -412,9 +444,9 @@ class User extends Entry implements Authenticatable
     /**
      * Returns the formatted timestamp of the password last set date.
      *
-     * @return string|null
-     *
      * @throws \Exception
+     *
+     * @return string|null
      */
     public function getPasswordLastSetDate()
     {
@@ -448,9 +480,9 @@ class User extends Entry implements Authenticatable
     /**
      * Returns the formatted timestamp of the lockout date.
      *
-     * @return string|null
-     *
      * @throws \Exception
+     *
+     * @return string|null
      */
     public function getLockoutDate()
     {
@@ -572,13 +604,13 @@ class User extends Entry implements Authenticatable
      * Sets the users thumbnail photo.
      *
      * @param string $data
-     * @param bool $encode
+     * @param bool   $encode
      *
      * @return $this
      */
     public function setThumbnail($data, $encode = true)
     {
-        if ($encode && ! base64_decode($data, $strict = true)) {
+        if ($encode && !base64_decode($data, $strict = true)) {
             // If the string we're given is not base 64 encoded, then
             // we will encode it before setting it on the user.
             $data = base64_encode($data);
@@ -596,7 +628,7 @@ class User extends Entry implements Authenticatable
     {
         $jpeg = $this->getJpegPhoto();
 
-        return is_null($jpeg) ? $jpeg : 'data:image/jpeg;base64,' . base64_encode($jpeg);
+        return is_null($jpeg) ? $jpeg : 'data:image/jpeg;base64,'.base64_encode($jpeg);
     }
 
     /**
@@ -618,7 +650,7 @@ class User extends Entry implements Authenticatable
      */
     public function setJpegPhoto($string)
     {
-        if (! base64_decode($string, $strict = true)) {
+        if (!base64_decode($string, $strict = true)) {
             $string = base64_encode($string);
         }
 
@@ -832,14 +864,14 @@ class User extends Entry implements Authenticatable
      *
      * Throws an exception on failure.
      *
-     * @param string $oldPassword The new password
-     * @param string $newPassword The old password
-     * @param bool $replaceNotRemove Alternative password change method. Set to true if you're receiving 'CONSTRAINT'
+     * @param string $oldPassword      The new password
+     * @param string $newPassword      The old password
+     * @param bool   $replaceNotRemove Alternative password change method. Set to true if you're receiving 'CONSTRAINT'
      *                                 errors.
      *
-     * @throws UserPasswordPolicyException When the new password does not match your password policy.
+     * @throws UserPasswordPolicyException    When the new password does not match your password policy.
      * @throws UserPasswordIncorrectException When the old password is incorrect.
-     * @throws LdapRecordException When an unknown cause of failure occurs.
+     * @throws LdapRecordException            When an unknown cause of failure occurs.
      *
      * @return true
      */
@@ -880,7 +912,7 @@ class User extends Entry implements Authenticatable
 
         $result = @$this->update();
 
-        if (! $result) {
+        if (!$result) {
             // If the user failed to update, we'll see if we can
             // figure out why by retrieving the extended error.
             $error = $this->query->getConnection()->getExtendedError();
@@ -910,7 +942,7 @@ class User extends Entry implements Authenticatable
      */
     public function isActive()
     {
-        return $this->isEnabled() && ! $this->isExpired();
+        return $this->isEnabled() && !$this->isExpired();
     }
 
     /**
@@ -936,9 +968,9 @@ class User extends Entry implements Authenticatable
     /**
      * Return the expiration date of the user account.
      *
-     * @return DateTime|null
-     *
      * @throws \Exception
+     *
+     * @return DateTime|null
      */
     public function expirationDate()
     {

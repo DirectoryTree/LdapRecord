@@ -2,17 +2,29 @@
 
 namespace LdapRecord\Models;
 
+use LdapRecord\Query\Builder;
+
 /**
- * Class Container
+ * Class Container.
  *
  * Represents an LDAP container.
- *
- * @package LdapRecord\Models
  */
 class Container extends Entry
 {
     use Concerns\HasDescription,
         Concerns\HasCriticalSystemObject;
+
+    /**
+     * Apply the global scopes to the given builder instance.
+     *
+     * @param Builder $query
+     *
+     * @return void
+     */
+    public function applyGlobalScopes(Builder $query)
+    {
+        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassContainer());
+    }
 
     /**
      * Returns the containers system flags integer.

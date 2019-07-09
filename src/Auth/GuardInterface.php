@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Auth;
 
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 interface GuardInterface
@@ -10,10 +10,10 @@ interface GuardInterface
     /**
      * Constructor.
      *
-     * @param ConnectionInterface $connection
+     * @param LdapInterface $connection
      * @param DomainConfiguration $configuration
      */
-    public function __construct(ConnectionInterface $connection, DomainConfiguration $configuration);
+    public function __construct(LdapInterface $connection, DomainConfiguration $configuration);
 
     /**
      * Authenticates a user using the specified credentials.
@@ -22,7 +22,7 @@ interface GuardInterface
      * @param string $password   The users LDAP password.
      * @param bool   $bindAsUser Whether or not to bind as the user.
      *
-     * @throws \LdapRecord\Auth\BindException When re-binding to your LDAP server fails.
+     * @throws \LdapRecord\Auth\BindException             When re-binding to your LDAP server fails.
      * @throws \LdapRecord\Auth\UsernameRequiredException When username is empty.
      * @throws \LdapRecord\Auth\PasswordRequiredException When password is empty.
      *
@@ -36,7 +36,8 @@ interface GuardInterface
      * @param string|null $username
      * @param string|null $password
      *
-     * @throws \LdapRecord\Auth\BindException When binding to your LDAP server fails.
+     * @throws \LdapRecord\Auth\BindException              If binding to the LDAP server fails.
+     * @throws \LdapRecord\Connections\ConnectionException If upgrading the connection to TLS fails
      *
      * @return void
      */

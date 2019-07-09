@@ -2,30 +2,28 @@
 
 namespace LdapRecord\Auth;
 
-use Throwable;
 use Exception;
+use Throwable;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
 use LdapRecord\Events\DispatcherInterface;
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 /**
- * Class Guard
+ * Class Guard.
  *
  * Binds users to the current connection.
- *
- * @package LdapRecord\Auth
  */
 class Guard implements GuardInterface
 {
     /**
      * The connection to bind to.
      *
-     * @var ConnectionInterface
+     * @var LdapInterface
      */
     protected $connection;
 
@@ -46,7 +44,7 @@ class Guard implements GuardInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(ConnectionInterface $connection, DomainConfiguration $configuration)
+    public function __construct(LdapInterface $connection, DomainConfiguration $configuration)
     {
         $this->connection = $connection;
         $this->configuration = $configuration;
@@ -149,10 +147,10 @@ class Guard implements GuardInterface
      *
      * @param string $username
      *
-     * @return string
-     *
      * @throws \LdapRecord\Configuration\ConfigurationException If account_suffix or account_prefix do not
      *                                                      exist in the providers domain configuration
+     *
+     * @return string
      */
     protected function applyPrefixAndSuffix($username)
     {

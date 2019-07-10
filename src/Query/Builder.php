@@ -50,27 +50,6 @@ class Builder
     public $paginated = false;
 
     /**
-     * The field to sort search results by.
-     *
-     * @var string
-     */
-    protected $sortByField = '';
-
-    /**
-     * The direction to sort the results by.
-     *
-     * @var string
-     */
-    protected $sortByDirection = '';
-
-    /**
-     * The sort flags for sorting query results.
-     *
-     * @var int
-     */
-    protected $sortByFlags;
-
-    /**
      * The distinguished name to perform searches upon.
      *
      * @var string|null
@@ -1548,33 +1527,6 @@ class Builder
     }
 
     /**
-     * Sorts the LDAP search results by the specified field and direction.
-     *
-     * @param string   $field
-     * @param string   $direction
-     * @param int|null $flags
-     *
-     * @return Builder
-     */
-    public function sortBy($field, $direction = 'asc', $flags = null)
-    {
-        $this->sortByField = $field;
-
-        // Normalize direction.
-        $direction = strtolower($direction);
-
-        if ($direction === 'asc' || $direction === 'desc') {
-            $this->sortByDirection = $direction;
-        }
-
-        if (is_null($flags)) {
-            $this->sortByFlags = SORT_NATURAL + SORT_FLAG_CASE;
-        }
-
-        return $this;
-    }
-
-    /**
      * Set the query to search on the base distinguished name.
      *
      * This will result in one record being returned.
@@ -1674,36 +1626,6 @@ class Builder
     }
 
     /**
-     * Returns the query builders sort by field.
-     *
-     * @return string
-     */
-    public function getSortByField()
-    {
-        return $this->sortByField;
-    }
-
-    /**
-     * Returns the query builders sort by direction.
-     *
-     * @return string
-     */
-    public function getSortByDirection()
-    {
-        return $this->sortByDirection;
-    }
-
-    /**
-     * Returns the query builders sort by flags.
-     *
-     * @return int
-     */
-    public function getSortByFlags()
-    {
-        return $this->sortByFlags;
-    }
-
-    /**
      * Returns true / false if the current query is nested.
      *
      * @return bool
@@ -1733,17 +1655,6 @@ class Builder
     public function isPaginated()
     {
         return $this->paginated;
-    }
-
-    /**
-     * Returns bool that determines whether the current
-     * query builder will return sorted results.
-     *
-     * @return bool
-     */
-    public function isSorted()
-    {
-        return $this->sortByField ? true : false;
     }
 
     /**

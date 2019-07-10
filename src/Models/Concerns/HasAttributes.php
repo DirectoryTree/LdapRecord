@@ -194,19 +194,20 @@ trait HasAttributes
      */
     public function setRawAttributes(array $attributes = [])
     {
-        // We'll filter out those annoying 'count' keys returned with LDAP results,
+        // We will filter out those annoying 'count' keys returned with LDAP results,
         // and lowercase all root array keys to prevent any casing issues.
         $this->attributes = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
 
-        // We'll pull out the distinguished name from our raw attributes
+        // We will pull out the distinguished name from our raw attributes
         // and set it into our attributes array with the full attribute
         // definition. This allows us to normalize distinguished
         // names across different LDAP variants.
-        if ($dn = Arr::get($attributes, 'dn')) {
-            // In some LDAP variants, the distinguished
-            // name is returned as an array.
+        if (array_key_exists('dn', $attributes)) {
+            $dn = $attributes['dn'];
+
+            // The distinguished name may be returned as an array.
             if (is_array($dn)) {
-                $dn = Arr::first($dn);
+                $dn = reset($dn);
             }
 
             $this->setDistinguishedName($dn);
@@ -225,20 +226,22 @@ trait HasAttributes
     /**
      * Filters the count key recursively from raw LDAP attributes.
      *
-     * @param array        $attributes
-     * @param array|string $keys
+     * @param array $attributes
+     * @param array $keys
      *
      * @return array
      */
-    public function filterRawAttributes(array $attributes = [], $keys = ['count', 'dn'])
+    public function filterRawAttributes(array $attributes = [], array $keys = ['count', 'dn'])
     {
-        $attributes = Arr::except($attributes, $keys);
+        foreach ($keys as $key) {
+            unset($attributes[$key]);
+        }
 
-        array_walk($attributes, function (&$value) use ($keys) {
-            $value = is_array($value) ?
+        foreach ($attributes as $key => $value) {
+            $attributes[$key] = is_array($value) ?
                 $this->filterRawAttributes($value, $keys) :
                 $value;
-        });
+        }
 
         return $attributes;
     }
@@ -254,7 +257,6 @@ trait HasAttributes
      */
     public function hasAttribute($key, $subKey = null)
     {
-        // Normalize key.
         $key = $this->normalizeAttributeKey($key);
 
         if (is_null($subKey)) {
@@ -265,8 +267,7 @@ trait HasAttributes
     }
 
     /**
-     * Returns the number of attributes inside
-     * the attributes property.
+     * Returns the number of attributes.
      *
      * @return int
      */
@@ -331,7 +332,6 @@ trait HasAttributes
         }
 
         $current = $this->attributes[$key];
-
         $original = $this->original[$key];
 
         if ($current === $original) {

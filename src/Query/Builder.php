@@ -3,6 +3,7 @@
 namespace LdapRecord\Query;
 
 use Closure;
+use BadMethodCallException;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
 use Illuminate\Support\Arr;
@@ -149,14 +150,14 @@ class Builder
     /**
      * The model being queried.
      *
-     * @var Model|null
+     * @var Model
      */
     protected $model;
 
     /**
      * Constructor.
      *
-     * @param LdapInterface  $connection
+     * @param LdapInterface        $connection
      * @param Grammar|null         $grammar
      * @param SchemaInterface|null $schema
      */
@@ -236,7 +237,7 @@ class Builder
     /**
      * Returns the model being queried for.
      *
-     * @return Model|null
+     * @return Model
      */
     public function getModel()
     {
@@ -428,23 +429,25 @@ class Builder
         // Log the query.
         $this->logQuery($this, $this->type, $this->getElapsedTime($start));
 
-        unset($results['count']);
-
         // Process & return the results.
-        return $this->newProcessor()->process($results);
+        return $this->process($results);
     }
 
     /**
      * Paginates the current LDAP query.
      *
-     * @param int  $perPage
+     * @param int  $pageSize
      * @param bool $isCritical
      *
      * @return \LdapRecord\Query\Collection|array
      */
-    public function paginate($perPage = 50, $isCritical = true)
+    public function paginate($pageSize = 50, $isCritical = true)
     {
         $this->paginated = true;
+
+        // Our limit must match our page size, otherwise we
+        // will receive size limit exceeded errors.
+        $this->limit = $pageSize;
 
         $start = microtime(true);
 
@@ -453,8 +456,8 @@ class Builder
         // Here we will create the pagination callback. This allows us
         // to only execute an LDAP request if caching is disabled
         // or if no cache of the given query exists yet.
-        $callback = function () use ($query, $perPage, $isCritical) {
-            return $this->runPaginate($query, $perPage, $isCritical);
+        $callback = function () use ($query, $pageSize, $isCritical) {
+            return $this->runPaginate($query, $pageSize, $isCritical);
         };
 
         // If caching is enabled and we have a cache instance available,
@@ -468,17 +471,44 @@ class Builder
         // Log the query.
         $this->logQuery($this, 'paginate', $this->getElapsedTime($start));
 
-        $models = [];
+        // Process & return the results.
+        return $this->process($pages);
+    }
+
+    /**
+     * Processes and converts the given LDAP results into models.
+     *
+     * @param array $results
+     *
+     * @return array|Collection
+     */
+    protected function process(array $results)
+    {
+        unset($results['count']);
+
+        $results = $this->paginated ? $this->flattenPages($results) : $results;
+
+        return $this->raw ? $results : $this->model->hydrate($results);
+    }
+
+    /**
+     * Flattens LDAP paged results into a single array.
+     *
+     * @param array $pages
+     *
+     * @return array
+     */
+    protected function flattenPages(array $pages)
+    {
+        $records = [];
 
         foreach ($pages as $page) {
             unset($page['count']);
 
-            foreach ($page as $key => $attributes) {
-                $models[] = array_merge($models, $page[$key]);
-            }
+            $records = array_merge($records, $page);
         }
 
-        return $this->newProcessor()->process($models);
+        return $records;
     }
 
     /**
@@ -686,7 +716,8 @@ class Builder
             return $this->findMany($value, $columns);
         }
 
-        // If we're not using ActiveDirectory, we can't use ANR. We'll make our own query.
+        // If we're not using ActiveDirectory, we can't use ANR.
+        // We will make our own equivalent query.
         if (!is_a($this->schema, ActiveDirectory::class)) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
@@ -728,7 +759,7 @@ class Builder
      */
     protected function prepareAnrEquivalentQuery($value)
     {
-        return $this->orFilter(function (self $query) use ($value) {
+        return $this->orFilter(function (Builder $query) use ($value) {
             $locateBy = [
                 $this->schema->name(),
                 $this->schema->email(),
@@ -822,23 +853,10 @@ class Builder
      */
     public function findByDnOrFail($dn, $columns = [])
     {
-        // Since we're setting our base DN to be able to retrieve a model
-        // by its distinguished name, we need to set it back to
-        // our configured base so it is not overwritten.
-        $base = $this->getDn();
-
-        $model = $this->setDn($dn)
+        return $this->setDn($dn)
             ->read()
             ->whereHas($this->schema->objectClass())
             ->firstOrFail($columns);
-
-        // Reset the models query builder (in case a model is returned).
-        // Otherwise, we must be requesting a raw result.
-        if ($model instanceof Model) {
-            $model->setQuery($this->in($base));
-        }
-
-        return $model;
     }
 
     /**
@@ -916,30 +934,6 @@ class Builder
     }
 
     /**
-     * Finds the Base DN of your domain controller.
-     *
-     * @return string|bool
-     */
-    public function findBaseDn()
-    {
-        $result = $this->setDn(null)
-            ->read()
-            ->raw()
-            ->whereHas($this->schema->objectClass())
-            ->first();
-
-        $key = $this->schema->defaultNamingContext();
-
-        if (is_array($result) && array_key_exists($key, $result)) {
-            if (array_key_exists(0, $result[$key])) {
-                return $result[$key][0];
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Adds the inserted fields to query on the current LDAP connection.
      *
      * @param array|string $columns
@@ -986,9 +980,9 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        $filter = $this->grammar->compileAnd($query->getQuery());
-
-        return $this->rawFilter($filter);
+        return $this->rawFilter(
+            $this->grammar->compileAnd($query->getQuery())
+        );
     }
 
     /**
@@ -1002,9 +996,9 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        $filter = $this->grammar->compileOr($query->getQuery());
-
-        return $this->rawFilter($filter);
+        return $this->rawFilter(
+            $this->grammar->compileOr($query->getQuery())
+        );
     }
 
     /**
@@ -1018,9 +1012,9 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        $filter = $this->grammar->compileNot($query->getQuery());
-
-        return $this->rawFilter($filter);
+        return $this->rawFilter(
+            $this->grammar->compileNot($query->getQuery())
+        );
     }
 
     /**
@@ -1184,7 +1178,7 @@ class Builder
      */
     public function whereIn($field, array $values)
     {
-        return $this->orFilter(function (self $query) use ($field, $values) {
+        return $this->orFilter(function (Builder $query) use ($field, $values) {
             foreach ($values as $value) {
                 $query->whereEquals($field, $value);
             }
@@ -1753,22 +1747,26 @@ class Builder
     }
 
     /**
-     * Handle dynamic method calls on the query builder object to be directed to the query processor.
+     * Handle dynamic method calls on the query builder.
      *
      * @param string $method
      * @param array  $parameters
+     *
+     * @throws BadMethodCallException
      *
      * @return mixed
      */
     public function __call($method, $parameters)
     {
-        // We'll check if the beginning of the method being called contains
+        // We will check if the beginning of the method being called contains
         // 'where'. If so, we'll assume it's a dynamic 'where' clause.
         if (substr($method, 0, 5) === 'where') {
             return $this->dynamicWhere($method, $parameters);
         }
 
-        return call_user_func_array([$this->newProcessor(), $method], $parameters);
+        throw new BadMethodCallException(sprintf(
+            'Call to undefined method %s::%s()', static::class, $method
+        ));
     }
 
     /**
@@ -1857,11 +1855,7 @@ class Builder
      */
     protected function addDynamic($segment, $connector, $parameters, $index)
     {
-        // We'll format the 'where' boolean and field here to avoid casing issues.
-        $bool = strtolower($connector);
-        $field = strtolower($segment);
-
-        $this->where($field, '=', $parameters[$index], $bool);
+        $this->where(strtolower($segment), '=', $parameters[$index], strtolower($connector));
     }
 
     /**
@@ -1913,15 +1907,5 @@ class Builder
     protected function getElapsedTime($start)
     {
         return round((microtime(true) - $start) * 1000, 2);
-    }
-
-    /**
-     * Returns a new query Processor instance.
-     *
-     * @return Processor
-     */
-    protected function newProcessor()
-    {
-        return new Processor($this);
     }
 }

@@ -177,7 +177,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newQuery()
     {
-        return $this->registerQueryScopes($this->newQueryWithoutScopes());
+        return $this->registerQueryScopes(
+            $this->newQueryWithoutScopes()
+        )->setModel($this);
     }
 
     /**
@@ -364,7 +366,21 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $model = $this->newQueryWithoutScopes()->findByDn($this->getDn());
 
-        return $model instanceof self ? $model : null;
+        return $model instanceof static ? $model : null;
+    }
+
+    /**
+     * Hydrates a new collection of models.
+     *
+     * @param array $records
+     *
+     * @return Collection
+     */
+    public function hydrate($records)
+    {
+        return $this->newCollection($records)->transform(function ($attributes) {
+            return (new static)->setRawAttributes($attributes);
+        });
     }
 
     /**
@@ -876,7 +892,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setManagedBy($dn)
     {
-        if ($dn instanceof self) {
+        if ($dn instanceof static) {
             $dn = $dn->getDn();
         }
 
@@ -917,7 +933,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function inOu($ou, $strict = false)
     {
-        if ($ou instanceof self) {
+        if ($ou instanceof static) {
             // If we've been given an OU model, we can
             // just check if the OU's DN is inside
             // the current models DN.

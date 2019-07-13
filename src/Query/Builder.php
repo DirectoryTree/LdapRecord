@@ -1012,7 +1012,7 @@ class Builder
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
         if (is_array($field)) {
-            // If the column is an array, we will assume it is an array of
+            // If the field is an array, we will assume it is an array of
             // key-value pairs and can add them each as a where clause.
             return $this->addArrayOfWheres($field, $boolean, $raw);
         }

@@ -13,7 +13,7 @@ trait HasLastLogonAndLogOff
      */
     public function getLastLogOff()
     {
-        return $this->getFirstAttribute($this->schema->lastLogOff());
+        return $this->getFirstAttribute('lastlogoff');
     }
 
     /**
@@ -25,7 +25,7 @@ trait HasLastLogonAndLogOff
      */
     public function getLastLogon()
     {
-        return $this->getFirstAttribute($this->schema->lastLogOn());
+        return $this->getFirstAttribute('lastlogon');
     }
 
     /**
@@ -37,6 +37,6 @@ trait HasLastLogonAndLogOff
      */
     public function getLastLogonTimestamp()
     {
-        return $this->getFirstAttribute($this->schema->lastLogOnTimestamp());
+        return $this->getFirstAttribute('lastlogontimestamp');
     }
 }

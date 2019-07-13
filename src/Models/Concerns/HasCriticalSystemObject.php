@@ -11,8 +11,8 @@ trait HasCriticalSystemObject
      */
     public function isCriticalSystemObject()
     {
-        $attribute = $this->getFirstAttribute($this->schema->isCriticalSystemObject());
-
-        return $this->convertStringToBool($attribute);
+        return $this->convertStringToBool(
+            $this->getFirstAttribute('iscriticalsystemobject')
+        );
     }
 }

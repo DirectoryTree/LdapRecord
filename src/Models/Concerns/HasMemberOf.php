@@ -10,6 +10,13 @@ use LdapRecord\Query\Collection;
 trait HasMemberOf
 {
     /**
+     * The attribute key to retrieve members from.
+     * 
+     * @var string
+     */
+    protected $memberOfKey = 'memberof';
+
+    /**
      * Returns an array of distinguished names of groups that the current model belongs to.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms677099(v=vs.85).aspx
@@ -18,7 +25,7 @@ trait HasMemberOf
      */
     public function getMemberOf()
     {
-        $dns = $this->getAttribute($this->schema->memberOf());
+        $dns = $this->getAttribute($this->memberOfKey);
 
         // Normalize returned distinguished names if the attribute is null.
         return is_array($dns) ? $dns : [];
@@ -107,10 +114,10 @@ trait HasMemberOf
      */
     public function getGroups(array $fields = ['*'], $recursive = false, array $visited = [])
     {
-        if (!in_array($this->schema->memberOf(), $fields)) {
+        if (!in_array($this->memberOfKey, $fields)) {
             // We want to make sure that we always select the memberof
             // field in case developers want recursive members.
-            $fields = array_merge($fields, [$this->schema->memberOf()]);
+            $fields = array_merge($fields, [$this->memberOfKey]);
         }
 
         $groups = $this->getGroupsByNames($this->getMemberOf(), $fields);
@@ -162,7 +169,7 @@ trait HasMemberOf
      */
     public function getGroupNames($recursive = false)
     {
-        $fields = [$this->schema->commonName(), $this->schema->memberOf()];
+        $fields = ['cn', $this->memberOfKey];
 
         $names = $this->getGroups($fields, $recursive)->map(function (Group $group) {
             return $group->getCommonName();

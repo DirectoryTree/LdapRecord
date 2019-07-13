@@ -11,7 +11,7 @@ trait HasUserProperties
      */
     public function getCountry()
     {
-        return $this->getFirstAttribute($this->schema->country());
+        return $this->getFirstAttribute('c');
     }
 
     /**
@@ -23,7 +23,7 @@ trait HasUserProperties
      */
     public function setCountry($country)
     {
-        return $this->setFirstAttribute($this->schema->country(), $country);
+        return $this->setFirstAttribute('c', $country);
     }
 
     /**
@@ -35,7 +35,7 @@ trait HasUserProperties
      */
     public function getDepartment()
     {
-        return $this->getFirstAttribute($this->schema->department());
+        return $this->getFirstAttribute('department');
     }
 
     /**
@@ -47,7 +47,7 @@ trait HasUserProperties
      */
     public function setDepartment($department)
     {
-        return $this->setFirstAttribute($this->schema->department(), $department);
+        return $this->setFirstAttribute('department', $department);
     }
 
     /**
@@ -59,7 +59,7 @@ trait HasUserProperties
      */
     public function getEmail()
     {
-        return $this->getFirstAttribute($this->schema->email());
+        return $this->getFirstAttribute('mail');
     }
 
     /**
@@ -74,7 +74,7 @@ trait HasUserProperties
      */
     public function setEmail($email)
     {
-        return $this->setFirstAttribute($this->schema->email(), $email);
+        return $this->setFirstAttribute('mail', $email);
     }
 
     /**
@@ -86,7 +86,7 @@ trait HasUserProperties
      */
     public function getFacsimileNumber()
     {
-        return $this->getFirstAttribute($this->schema->facsimile());
+        return $this->getFirstAttribute('facsimiletelephonenumber');
     }
 
     /**
@@ -98,7 +98,7 @@ trait HasUserProperties
      */
     public function setFacsimileNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->facsimile(), $number);
+        return $this->setFirstAttribute('facsimiletelephonenumber', $number);
     }
 
     /**
@@ -110,7 +110,7 @@ trait HasUserProperties
      */
     public function getFirstName()
     {
-        return $this->getFirstAttribute($this->schema->firstName());
+        return $this->getFirstAttribute('givenname');
     }
 
     /**
@@ -122,7 +122,7 @@ trait HasUserProperties
      */
     public function setFirstName($firstName)
     {
-        return $this->setFirstAttribute($this->schema->firstName(), $firstName);
+        return $this->setFirstAttribute('givenname', $firstName);
     }
 
     /**
@@ -132,7 +132,7 @@ trait HasUserProperties
      */
     public function getInitials()
     {
-        return $this->getFirstAttribute($this->schema->initials());
+        return $this->getFirstAttribute('initials');
     }
 
     /**
@@ -144,7 +144,7 @@ trait HasUserProperties
      */
     public function setInitials($initials)
     {
-        return $this->setFirstAttribute($this->schema->initials(), $initials);
+        return $this->setFirstAttribute('initials', $initials);
     }
 
     /**
@@ -154,7 +154,7 @@ trait HasUserProperties
      */
     public function getIpPhone()
     {
-        return $this->getFirstAttribute($this->schema->ipPhone());
+        return $this->getFirstAttribute('ipphone');
     }
 
     /**
@@ -166,7 +166,7 @@ trait HasUserProperties
      */
     public function setIpPhone($ip)
     {
-        return $this->setFirstAttribute($this->schema->ipPhone(), $ip);
+        return $this->setFirstAttribute('ipphone', $ip);
     }
 
     /**
@@ -178,7 +178,7 @@ trait HasUserProperties
      */
     public function getLastName()
     {
-        return $this->getFirstAttribute($this->schema->lastName());
+        return $this->getFirstAttribute('sn');
     }
 
     /**
@@ -190,7 +190,7 @@ trait HasUserProperties
      */
     public function setLastName($lastName)
     {
-        return $this->setFirstAttribute($this->schema->lastName(), $lastName);
+        return $this->setFirstAttribute('sn', $lastName);
     }
 
     /**
@@ -200,7 +200,7 @@ trait HasUserProperties
      */
     public function getPostalCode()
     {
-        return $this->getFirstAttribute($this->schema->postalCode());
+        return $this->getFirstAttribute('postalcode');
     }
 
     /**
@@ -212,7 +212,7 @@ trait HasUserProperties
      */
     public function setPostalCode($postalCode)
     {
-        return $this->setFirstAttribute($this->schema->postalCode(), $postalCode);
+        return $this->setFirstAttribute('postalcode', $postalCode);
     }
 
     /**
@@ -222,7 +222,7 @@ trait HasUserProperties
      */
     public function getPostOfficeBox()
     {
-        return $this->getFirstAttribute($this->schema->postOfficeBox());
+        return $this->getFirstAttribute('postofficebox');
     }
 
     /**
@@ -234,7 +234,7 @@ trait HasUserProperties
      */
     public function setPostOfficeBox($box)
     {
-        return $this->setFirstAttribute($this->schema->postOfficeBox(), $box);
+        return $this->setFirstAttribute('postofficebox', $box);
     }
 
     /**
@@ -250,7 +250,7 @@ trait HasUserProperties
      */
     public function setProxyAddresses(array $addresses = [])
     {
-        return $this->setAttribute($this->schema->proxyAddresses(), $addresses);
+        return $this->setAttribute('proxyaddresses', $addresses);
     }
 
     /**
@@ -266,7 +266,7 @@ trait HasUserProperties
 
         $addresses[] = $address;
 
-        return $this->setAttribute($this->schema->proxyAddresses(), $addresses);
+        return $this->setAttribute('proxyaddresses', $addresses);
     }
 
     /**
@@ -278,7 +278,7 @@ trait HasUserProperties
      */
     public function getProxyAddresses()
     {
-        return $this->getAttribute($this->schema->proxyAddresses()) ?? [];
+        return $this->getAttribute('proxyaddresses') ?? [];
     }
 
     /**
@@ -288,7 +288,7 @@ trait HasUserProperties
      */
     public function getStreetAddress()
     {
-        return $this->getFirstAttribute($this->schema->streetAddress());
+        return $this->getFirstAttribute('streetaddress');
     }
 
     /**
@@ -300,7 +300,7 @@ trait HasUserProperties
      */
     public function setStreetAddress($address)
     {
-        return $this->setFirstAttribute($this->schema->streetAddress(), $address);
+        return $this->setFirstAttribute('streetaddress', $address);
     }
 
     /**
@@ -312,7 +312,7 @@ trait HasUserProperties
      */
     public function getTitle()
     {
-        return $this->getFirstAttribute($this->schema->title());
+        return $this->getFirstAttribute('title');
     }
 
     /**
@@ -324,7 +324,7 @@ trait HasUserProperties
      */
     public function setTitle($title)
     {
-        return $this->setFirstAttribute($this->schema->title(), $title);
+        return $this->setFirstAttribute('title', $title);
     }
 
     /**
@@ -336,7 +336,7 @@ trait HasUserProperties
      */
     public function getTelephoneNumber()
     {
-        return $this->getFirstAttribute($this->schema->telephone());
+        return $this->getFirstAttribute('telephonenumber');
     }
 
     /**
@@ -348,7 +348,7 @@ trait HasUserProperties
      */
     public function setTelephoneNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->telephone(), $number);
+        return $this->setFirstAttribute('telephonenumber', $number);
     }
 
     /**
@@ -358,7 +358,7 @@ trait HasUserProperties
      */
     public function getMobileNumber()
     {
-        return $this->getFirstAttribute($this->schema->mobile());
+        return $this->getFirstAttribute('mobile');
     }
 
     /**
@@ -370,7 +370,7 @@ trait HasUserProperties
      */
     public function setMobileNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->mobile(), $number);
+        return $this->setFirstAttribute('mobile', $number);
     }
 
     /**
@@ -380,7 +380,7 @@ trait HasUserProperties
      */
     public function getOtherMobileNumber()
     {
-        return $this->getFirstAttribute($this->schema->otherMobile());
+        return $this->getFirstAttribute('othermobile');
     }
 
     /**
@@ -392,7 +392,7 @@ trait HasUserProperties
      */
     public function setOtherMobileNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->otherMobile(), $number);
+        return $this->setFirstAttribute('othermobile', $number);
     }
 
     /**
@@ -404,7 +404,7 @@ trait HasUserProperties
      */
     public function getOtherMailbox()
     {
-        return $this->getAttribute($this->schema->otherMailbox());
+        return $this->getAttribute('othermailbox');
     }
 
     /**
@@ -416,7 +416,7 @@ trait HasUserProperties
      */
     public function setOtherMailbox($otherMailbox = [])
     {
-        return $this->setAttribute($this->schema->otherMailbox(), $otherMailbox);
+        return $this->setAttribute('othermailbox', $otherMailbox);
     }
 
     /**
@@ -426,7 +426,7 @@ trait HasUserProperties
      */
     public function getManager()
     {
-        return $this->getFirstAttribute($this->schema->manager());
+        return $this->getFirstAttribute('manager');
     }
 
     /**
@@ -438,7 +438,7 @@ trait HasUserProperties
      */
     public function setManager($managerDn)
     {
-        return $this->setFirstAttribute($this->schema->manager(), $managerDn);
+        return $this->setFirstAttribute('manager', $managerDn);
     }
 
     /**
@@ -448,6 +448,6 @@ trait HasUserProperties
      */
     public function getMailNickname()
     {
-        return $this->getFirstAttribute($this->schema->emailNickname());
+        return $this->getFirstAttribute('mailnickname');
     }
 }

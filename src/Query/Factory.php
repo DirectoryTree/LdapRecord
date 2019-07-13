@@ -147,16 +147,6 @@ class Factory
     }
 
     /**
-     * Returns a new query grammar instance.
-     *
-     * @return Grammar
-     */
-    protected function newGrammar()
-    {
-        return new Grammar();
-    }
-
-    /**
      * Returns a new query builder instance.
      *
      * @return Builder
@@ -168,5 +158,15 @@ class Factory
         $builder->setCache($this->cache);
 
         return $builder;
+    }
+
+    /**
+     * Returns a new query grammar instance.
+     *
+     * @return Grammar
+     */
+    protected function newGrammar()
+    {
+        return new Grammar();
     }
 }

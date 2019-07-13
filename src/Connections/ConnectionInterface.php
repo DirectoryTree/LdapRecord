@@ -90,13 +90,6 @@ interface ConnectionInterface
     public function setGuard(GuardInterface $guard);
 
     /**
-     * Returns a new Model factory instance.
-     *
-     * @return \LdapRecord\Models\Factory
-     */
-    public function make();
-
-    /**
      * Returns a new Search factory instance.
      *
      * @return \LdapRecord\Query\Factory

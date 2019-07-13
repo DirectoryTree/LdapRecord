@@ -9,7 +9,6 @@ use LdapRecord\Auth\GuardInterface;
 use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Schemas\SchemaInterface;
 use Psr\SimpleCache\CacheInterface;
-use LdapRecord\Models\Factory as ModelFactory;
 use LdapRecord\Query\Factory as SearchFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
@@ -199,17 +198,7 @@ class Connection implements ConnectionInterface
 
         return $guard;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function make()
-    {
-        return new ModelFactory(
-            $this->search()->newQuery()
-        );
-    }
-
+    
     /**
      * {@inheritdoc}
      */

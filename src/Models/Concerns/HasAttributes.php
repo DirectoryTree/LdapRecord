@@ -194,8 +194,9 @@ trait HasAttributes
      */
     public function setRawAttributes(array $attributes = [])
     {
-        // We will filter out those annoying 'count' keys returned with LDAP results,
-        // and lowercase all root array keys to prevent any casing issues.
+        // We will filter out those annoying 'count' keys returned
+        // with LDAP results and lowercase all root array
+        // keys to prevent any casing issues.
         $this->attributes = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
 
         // We will pull out the distinguished name from our raw attributes
@@ -205,7 +206,9 @@ trait HasAttributes
         if (array_key_exists('dn', $attributes)) {
             $dn = $attributes['dn'];
 
-            // The distinguished name may be returned as an array.
+            // In some LDAP instances the distinguished name may
+            // be returned as an array. We will pull the
+            // first value in this case.
             if (is_array($dn)) {
                 $dn = reset($dn);
             }
@@ -215,9 +218,9 @@ trait HasAttributes
 
         $this->syncOriginal();
 
-        // Set exists to true since raw attributes are only
-        // set in the case of attributes being loaded by
-        // query results.
+        // Here we will set the exists attribute to true since
+        // raw attributes are only set in the case of
+        // attributes being loaded by query results.
         $this->exists = true;
 
         return $this;

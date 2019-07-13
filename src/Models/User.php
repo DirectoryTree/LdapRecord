@@ -26,28 +26,16 @@ class User extends Entry implements Authenticatable
         Concerns\HasUserAccountControl;
 
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $scopes = [
-            [$this->schema->objectClass(), Operator::$equals, $this->schema->objectClassUser()],
-            [$this->schema->objectCategory(), Operator::$equals, $this->schema->objectCategoryPerson()],
-        ];
-
-        // OpenLDAP doesn't like specifying the omission of user objectclasses
-        // equal to `contact`. We will make sure we're working with
-        // ActiveDirectory before adding this filter.
-        if (is_a($this->schema, ActiveDirectory::class)) {
-            $scopes[] = [$this->schema->objectClass(), Operator::$doesNotEqual, $this->schema->objectClassContact()];
-        }
-
-        $query->where($scopes);
-    }
+    protected $objectClasses = [
+        'top',
+        'person',
+        'organizationalperson',
+        'user',
+    ];
 
     /**
      * Get the name of the unique identifier for the user.

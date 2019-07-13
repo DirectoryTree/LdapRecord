@@ -11,16 +11,5 @@ use LdapRecord\Query\Builder;
  */
 class Entry extends Model
 {
-
-    /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
-     */
-    public function applyGlobalScopes(Builder $query)
-    {
-        //
-    }
+    //
 }

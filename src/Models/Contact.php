@@ -15,14 +15,14 @@ class Contact extends Entry
         Concerns\HasUserProperties;
 
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassContact());
-    }
+    protected $objectClasses = [
+        'top',
+        'person',
+        'organizationalperson',
+        'contact',
+    ];
 }

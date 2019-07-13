@@ -18,14 +18,17 @@ class Computer extends Entry
         Concerns\HasCriticalSystemObject;
 
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassComputer());
-    }
+    protected $objectClasses = [
+        'top',
+        'person',
+        'organizationalperson',
+        'user',
+        'computer',
+    ];
 
     /**
      * Returns the computers operating system.

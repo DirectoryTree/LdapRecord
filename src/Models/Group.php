@@ -17,16 +17,14 @@ class Group extends Entry
         Concerns\HasDescription;
 
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassGroup());
-    }
+    protected $objectClasses = [
+        'top',
+        'group',
+    ];
 
     /**
      * Returns all users apart of the current group.

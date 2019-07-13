@@ -12,17 +12,12 @@ use LdapRecord\Query\Builder;
 class Printer extends Entry
 {
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassPrinter());
-    }
-
+    protected $objectClasses = ['printqueue'];
+    
     /**
      * Returns the printers name.
      *

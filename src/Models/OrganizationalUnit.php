@@ -14,17 +14,15 @@ class OrganizationalUnit extends Entry
     use Concerns\HasDescription;
 
     /**
-     * Apply the global scopes to the given builder instance.
-     *
-     * @param Builder $query
-     *
-     * @return void
+     * The object classes of the LDAP model.
+     * 
+     * @var array
      */
-    public function applyGlobalScopes(Builder $query)
-    {
-        $query->whereEquals($this->schema->objectClass(), $this->schema->objectClassOu());
-    }
-
+    protected $objectClasses = [
+        'top',
+        'organizationalunit',
+    ];
+    
     /**
      * Retrieves the organization units OU attribute.
      *

@@ -56,6 +56,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected $schema = ActiveDirectory::class;
 
     /**
+     * The object classes of the LDAP model.
+     * 
+     * @var array
+     */
+    protected $objectClasses = [];
+
+    /**
      * Contains the models modifications.
      *
      * @var array
@@ -213,7 +220,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return void
      */
-    abstract public function applyGlobalScopes(Builder $query);
+    public function applyGlobalScopes(Builder $query)
+    {
+        foreach ($this->objectClasses as $objectClass) {
+            $query->where('objectclass', '=', $objectClass);
+        }
+    }
 
     /**
      * Returns the models distinguished name when the model is converted to a string.

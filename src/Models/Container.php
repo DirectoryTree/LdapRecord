@@ -2,8 +2,6 @@
 
 namespace LdapRecord\Models;
 
-use LdapRecord\Query\Builder;
-
 /**
  * Class Container.
  *

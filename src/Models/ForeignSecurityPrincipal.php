@@ -2,8 +2,6 @@
 
 namespace LdapRecord\Models;
 
-use LdapRecord\Query\Builder;
-
 /**
  * Class ForeignSecurityPrincipal.
  *
@@ -18,5 +16,5 @@ class ForeignSecurityPrincipal extends Entry
      * 
      * @var array
      */
-    protected $objectClasses = ['foreignsecurityprincipal'];
+    public static $objectClasses = ['foreignsecurityprincipal'];
 }

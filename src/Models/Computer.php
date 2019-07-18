@@ -22,7 +22,7 @@ class Computer extends Entry
      * 
      * @var array
      */
-    protected $objectClasses = [
+    public static $objectClasses = [
         'top',
         'person',
         'organizationalperson',
@@ -39,7 +39,7 @@ class Computer extends Entry
      */
     public function getOperatingSystem()
     {
-        return $this->getFirstAttribute($this->schema->operatingSystem());
+        return $this->getFirstAttribute('operatingsystem');
     }
 
     /**
@@ -51,7 +51,7 @@ class Computer extends Entry
      */
     public function getOperatingSystemVersion()
     {
-        return $this->getFirstAttribute($this->schema->operatingSystemVersion());
+        return $this->getFirstAttribute('operatingsystemversion');
     }
 
     /**
@@ -63,7 +63,7 @@ class Computer extends Entry
      */
     public function getOperatingSystemServicePack()
     {
-        return $this->getFirstAttribute($this->schema->operatingSystemServicePack());
+        return $this->getFirstAttribute('operatingsystemservicepack');
     }
 
     /**
@@ -73,7 +73,7 @@ class Computer extends Entry
      */
     public function getDnsHostName()
     {
-        return $this->getFirstAttribute($this->schema->dnsHostName());
+        return $this->getFirstAttribute('dnshostname');
     }
 
     /**
@@ -85,7 +85,7 @@ class Computer extends Entry
      */
     public function getBadPasswordTime()
     {
-        return $this->getFirstAttribute($this->schema->badPasswordTime());
+        return $this->getFirstAttribute('badpasswordtime');
     }
 
     /**
@@ -97,6 +97,6 @@ class Computer extends Entry
      */
     public function getAccountExpiry()
     {
-        return $this->getFirstAttribute($this->schema->accountExpires());
+        return $this->getFirstAttribute('accountexpires');
     }
 }

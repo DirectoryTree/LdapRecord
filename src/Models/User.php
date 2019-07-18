@@ -30,7 +30,7 @@ class User extends Entry implements Authenticatable
      * 
      * @var array
      */
-    protected $objectClasses = [
+    public static $objectClasses = [
         'top',
         'person',
         'organizationalperson',

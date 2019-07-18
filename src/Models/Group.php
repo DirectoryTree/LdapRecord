@@ -3,7 +3,8 @@
 namespace LdapRecord\Models;
 
 use LdapRecord\Utilities;
-use LdapRecord\Query\Builder;
+use LdapRecord\Models\User;
+use LdapRecord\Models\Contact;
 use InvalidArgumentException;
 
 /**
@@ -14,17 +15,52 @@ use InvalidArgumentException;
 class Group extends Entry
 {
     use Concerns\HasMemberOf,
-        Concerns\HasDescription;
+        Concerns\HasDescription,
+        Concerns\HasRelationships;
 
     /**
      * The object classes of the LDAP model.
      * 
      * @var array
      */
-    protected $objectClasses = [
+    public static $objectClasses = [
         'top',
         'group',
     ];
+
+    /**
+     * The attribute key to retrieve members from.
+     * 
+     * @var array
+     */
+    protected $memberKey = 'member';
+
+    /**
+     * The attribute key to retrieve parent groups from.
+     */
+    protected $memberOfKey = 'memberof';
+
+    /**
+     * The members relationship.
+     * 
+     * @return \LdapRecord\Models\Relation
+     */
+    public function members()
+    {
+        return $this->hasMember([
+            User::class, Contact::class, Group::class
+        ], $this->memberKey);
+    }
+
+    /**
+     * The memberOf relationship.
+     * 
+     * @return \LdapRecord\Models\Relation 
+     */
+    public function memberOf()
+    {
+        return $this->hasMemberOf([Group::class], $this->memberOfKey);
+    }
 
     /**
      * Returns all users apart of the current group.
@@ -198,7 +234,7 @@ class Group extends Entry
 
         $entries = $this->getAttribute($attribute) ?: [];
 
-        $query = $this->query->newInstance();
+        $query = $this->newQueryWithoutScopes();
 
         // Retrieving the member identifier to allow
         // compatibility with LDAP variants.

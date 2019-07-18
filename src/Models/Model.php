@@ -42,6 +42,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public $exists = false;
 
     /**
+     * The object classes of the LDAP model.
+     * 
+     * @var array
+     */
+    public static $objectClasses = [];
+
+    /**
      * The current LDAP connection to utilize.
      *
      * @var string
@@ -54,13 +61,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var SchemaInterface
      */
     protected $schema = ActiveDirectory::class;
-
-    /**
-     * The object classes of the LDAP model.
-     * 
-     * @var array
-     */
-    protected $objectClasses = [];
 
     /**
      * Contains the models modifications.
@@ -222,7 +222,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function applyGlobalScopes(Builder $query)
     {
-        foreach ($this->objectClasses as $objectClass) {
+        foreach (static::$objectClasses as $objectClass) {
             $query->where('objectclass', '=', $objectClass);
         }
     }
@@ -393,6 +393,21 @@ abstract class Model implements ArrayAccess, JsonSerializable
         return $this->newCollection($records)->transform(function ($attributes) {
             return (new static)->setRawAttributes($attributes);
         });
+    }
+
+    /**
+     * Converts the current model into the given model.
+     * 
+     * @param Model $into
+     * 
+     * @return Model
+     */
+    public function convert(Model $into)
+    {
+        $into->setConnection($this->getConnection());
+        $into->setRawAttributes($this->getAttributes());
+
+        return $into;
     }
 
     /**

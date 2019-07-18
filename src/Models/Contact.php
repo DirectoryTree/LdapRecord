@@ -19,7 +19,7 @@ class Contact extends Entry
      * 
      * @var array
      */
-    protected $objectClasses = [
+    public static $objectClasses = [
         'top',
         'person',
         'organizationalperson',

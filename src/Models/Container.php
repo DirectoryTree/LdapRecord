@@ -19,7 +19,7 @@ class Container extends Entry
      * 
      * @var array
      */
-    protected $objectClasses = [
+    public static $objectClasses = [
         'top',
         'container',
     ];
@@ -35,6 +35,6 @@ class Container extends Entry
      */
     public function getSystemFlags()
     {
-        return $this->getFirstAttribute($this->schema->systemFlags());
+        return $this->getFirstAttribute('systemflags');
     }
 }

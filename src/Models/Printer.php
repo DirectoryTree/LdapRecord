@@ -16,7 +16,7 @@ class Printer extends Entry
      * 
      * @var array
      */
-    protected $objectClasses = ['printqueue'];
+    public static $objectClasses = ['printqueue'];
     
     /**
      * Returns the printers name.

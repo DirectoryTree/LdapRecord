@@ -130,6 +130,9 @@ class Relation
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
-        return array_search(array_map('strtolower', $model->objectclass), $related);
+        return array_search(
+            array_map('strtolower', $model->objectclass),
+            array_map('strtolower', $related)
+        );
     }
 }

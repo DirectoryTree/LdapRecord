@@ -7,7 +7,7 @@ use LdapRecord\Models\Entry;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Collection;
 
-class Relation 
+class Relation
 {
     /**
      * @var Builder

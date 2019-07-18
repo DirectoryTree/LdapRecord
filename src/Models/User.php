@@ -4,8 +4,6 @@ namespace LdapRecord\Models;
 
 use DateTime;
 use LdapRecord\Utilities;
-use LdapRecord\Query\Builder;
-use LdapRecord\Query\Operator;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Models\Attributes\AccountControl;
@@ -19,9 +17,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
  */
 class User extends Entry implements Authenticatable
 {
-    use Concerns\HasUserProperties,
+    use Concerns\HasMemberOf,
         Concerns\HasDescription,
-        Concerns\HasMemberOf,
+        Concerns\HasUserProperties,
         Concerns\HasLastLogonAndLogOff,
         Concerns\HasUserAccountControl;
 

@@ -32,7 +32,8 @@ use LdapRecord\Models\Attributes\DistinguishedName;
 abstract class Model implements ArrayAccess, JsonSerializable
 {
     use Concerns\HasEvents,
-        Concerns\HasAttributes;
+        Concerns\HasAttributes,
+        Concerns\HasRelationships;
 
     /**
      * Indicates if the model exists.

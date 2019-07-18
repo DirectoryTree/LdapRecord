@@ -10,11 +10,21 @@ use LdapRecord\Query\Collection;
 trait HasMemberOf
 {
     /**
-     * The attribute key to retrieve members from.
+     * The attribute key to retrieve groups from.
      * 
      * @var string
      */
     protected $memberOfKey = 'memberof';
+
+    /**
+     * The memberOf relationship.
+     * 
+     * @return \LdapRecord\Models\Relation
+     */
+    public function memberOf()
+    {
+        return $this->hasMemberOf([Group::class], $this->memberOfKey);
+    }
 
     /**
      * Returns an array of distinguished names of groups that the current model belongs to.
@@ -26,8 +36,7 @@ trait HasMemberOf
     public function getMemberOf()
     {
         $dns = $this->getAttribute($this->memberOfKey);
-
-        // Normalize returned distinguished names if the attribute is null.
+        
         return is_array($dns) ? $dns : [];
     }
 

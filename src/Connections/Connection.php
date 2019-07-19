@@ -7,7 +7,6 @@ use LdapRecord\Query\Cache;
 use InvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Auth\GuardInterface;
-use LdapRecord\Query\Factory as SearchFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
 /**
@@ -44,8 +43,8 @@ class Connection implements ConnectionInterface
      */
     public function __construct($configuration = [])
     {
-        $this->configuration = $configuration;
-        $this->ldap = new Ldap();
+        $this->setConfiguration($configuration)
+            ->setLdapConnection(new Ldap());
     }
 
     /**
@@ -165,20 +164,6 @@ class Connection implements ConnectionInterface
         $guard->setDispatcher(Container::getEventDispatcher());
 
         return $guard;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function search()
-    {
-        $factory = new SearchFactory($this->ldap, $this->configuration->get('base_dn'));
-
-        if ($this->cache) {
-            $factory->setCache($this->cache);
-        }
-
-        return $factory;
     }
 
     /**

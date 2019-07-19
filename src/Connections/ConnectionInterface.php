@@ -73,14 +73,7 @@ interface ConnectionInterface
     public function setGuard(GuardInterface $guard);
 
     /**
-     * Returns a new Search factory instance.
-     *
-     * @return \LdapRecord\Query\Factory
-     */
-    public function search();
-
-    /**
-     * Returns a new Auth Guard instance.
+     * Returns a new auth guard instance.
      *
      * @return \LdapRecord\Auth\Guard
      */

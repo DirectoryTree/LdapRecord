@@ -129,9 +129,9 @@ class Builder
      * Constructor.
      *
      * @param LdapInterface $connection
-     * @param Grammar|null  $grammar
+     * @param Grammar       $grammar
      */
-    public function __construct(LdapInterface $connection, Grammar $grammar = null)
+    public function __construct(LdapInterface $connection, Grammar $grammar)
     {
         $this->connection = $connection;
         $this->grammar = $grammar;
@@ -142,7 +142,7 @@ class Builder
      *
      * @param LdapInterface $connection
      *
-     * @return Builder
+     * @return $this
      */
     public function setConnection(LdapInterface $connection)
     {
@@ -154,13 +154,13 @@ class Builder
     /**
      * Sets the current filter grammar.
      *
-     * @param Grammar|null $grammar
+     * @param Grammar $grammar
      *
-     * @return Builder
+     * @return $this
      */
-    public function setGrammar(Grammar $grammar = null)
+    public function setGrammar(Grammar $grammar)
     {
-        $this->grammar = $grammar ?: new Grammar();
+        $this->grammar = $grammar;
 
         return $this;
     }
@@ -193,6 +193,8 @@ class Builder
      * Sets the cache to store query results.
      *
      * @param Cache|null $cache
+     *
+     * @return $this
      */
     public function setCache(Cache $cache = null)
     {
@@ -206,7 +208,7 @@ class Builder
      *
      * @param string $baseDn
      *
-     * @return Builder
+     * @return $this
      */
     public function newInstance($baseDn = null)
     {
@@ -308,7 +310,7 @@ class Builder
      *
      * @param string|Model|null $dn
      *
-     * @return Builder
+     * @return $this
      */
     public function setDn($dn = null)
     {
@@ -322,7 +324,7 @@ class Builder
      *
      * @param string|Model|null $dn
      *
-     * @return Builder
+     * @return $this
      */
     public function in($dn = null)
     {
@@ -334,7 +336,7 @@ class Builder
      *
      * @param int $limit
      *
-     * @return Builder
+     * @return $this
      */
     public function limit($limit = 0)
     {
@@ -699,7 +701,7 @@ class Builder
      *
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     protected function prepareAnrEquivalentQuery($value)
     {
@@ -872,7 +874,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Builder
+     * @return $this
      */
     public function select($columns = [])
     {
@@ -890,7 +892,7 @@ class Builder
      *
      * @param array|string $filters
      *
-     * @return Builder
+     * @return $this
      */
     public function rawFilter($filters = [])
     {
@@ -908,7 +910,7 @@ class Builder
      *
      * @param Closure $closure
      *
-     * @return Builder
+     * @return $this
      */
     public function andFilter(Closure $closure)
     {
@@ -924,7 +926,7 @@ class Builder
      *
      * @param Closure $closure
      *
-     * @return Builder
+     * @return $this
      */
     public function orFilter(Closure $closure)
     {
@@ -940,7 +942,7 @@ class Builder
      *
      * @param Closure $closure
      *
-     * @return Builder
+     * @return $this
      */
     public function notFilter(Closure $closure)
     {
@@ -962,7 +964,7 @@ class Builder
      *
      * @throws InvalidArgumentException
      *
-     * @return Builder
+     * @return $this
      */
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
@@ -1006,7 +1008,7 @@ class Builder
      * @param string       $operator
      * @param string       $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereRaw($field, $operator = null, $value = null)
     {
@@ -1019,7 +1021,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereEquals($field, $value)
     {
@@ -1032,7 +1034,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereNotEquals($field, $value)
     {
@@ -1045,7 +1047,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereApproximatelyEquals($field, $value)
     {
@@ -1057,7 +1059,7 @@ class Builder
      *
      * @param string $field
      *
-     * @return Builder
+     * @return $this
      */
     public function whereHas($field)
     {
@@ -1069,7 +1071,7 @@ class Builder
      *
      * @param string $field
      *
-     * @return Builder
+     * @return $this
      */
     public function whereNotHas($field)
     {
@@ -1082,7 +1084,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereContains($field, $value)
     {
@@ -1095,7 +1097,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereNotContains($field, $value)
     {
@@ -1108,7 +1110,7 @@ class Builder
      * @param string $field
      * @param array  $values
      *
-     * @return Builder
+     * @return $this
      */
     public function whereIn($field, array $values)
     {
@@ -1125,7 +1127,7 @@ class Builder
      * @param string $field
      * @param array  $values
      *
-     * @return Builder
+     * @return $this
      */
     public function whereBetween($field, array $values)
     {
@@ -1141,7 +1143,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereStartsWith($field, $value)
     {
@@ -1154,7 +1156,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereNotStartsWith($field, $value)
     {
@@ -1167,7 +1169,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereEndsWith($field, $value)
     {
@@ -1180,7 +1182,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function whereNotEndsWith($field, $value)
     {
@@ -1190,7 +1192,7 @@ class Builder
     /**
      * Adds a enabled filter to the current query.
      *
-     * @return Builder
+     * @return $this
      */
     public function whereEnabled()
     {
@@ -1200,7 +1202,7 @@ class Builder
     /**
      * Adds a disabled filter to the current query.
      *
-     * @return Builder
+     * @return $this
      */
     public function whereDisabled()
     {
@@ -1212,7 +1214,7 @@ class Builder
      *
      * @param string $dn
      *
-     * @return Builder
+     * @return $this
      */
     public function whereMemberOf($dn)
     {
@@ -1226,7 +1228,7 @@ class Builder
      * @param string|null  $operator
      * @param string|null  $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhere($field, $operator = null, $value = null)
     {
@@ -1242,7 +1244,7 @@ class Builder
      * @param string $operator
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereRaw($field, $operator = null, $value = null)
     {
@@ -1254,7 +1256,7 @@ class Builder
      *
      * @param string $field
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereHas($field)
     {
@@ -1266,7 +1268,7 @@ class Builder
      *
      * @param string $field
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereNotHas($field)
     {
@@ -1279,7 +1281,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereEquals($field, $value)
     {
@@ -1292,7 +1294,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereNotEquals($field, $value)
     {
@@ -1305,7 +1307,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereApproximatelyEquals($field, $value)
     {
@@ -1318,7 +1320,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereContains($field, $value)
     {
@@ -1331,7 +1333,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereNotContains($field, $value)
     {
@@ -1344,7 +1346,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereStartsWith($field, $value)
     {
@@ -1357,7 +1359,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereNotStartsWith($field, $value)
     {
@@ -1370,7 +1372,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereEndsWith($field, $value)
     {
@@ -1383,7 +1385,7 @@ class Builder
      * @param string $field
      * @param string $value
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereNotEndsWith($field, $value)
     {
@@ -1395,7 +1397,7 @@ class Builder
      *
      * @param string $dn
      *
-     * @return Builder
+     * @return $this
      */
     public function orWhereMemberOf($dn)
     {
@@ -1486,7 +1488,7 @@ class Builder
      *
      * This will result in one record being returned.
      *
-     * @return Builder
+     * @return $this
      */
     public function read()
     {
@@ -1498,7 +1500,7 @@ class Builder
     /**
      * Set the query to search one level on the base distinguished name.
      *
-     * @return Builder
+     * @return $this
      */
     public function listing()
     {
@@ -1510,7 +1512,7 @@ class Builder
     /**
      * Sets the query to search the entire directory on the base distinguished name.
      *
-     * @return Builder
+     * @return $this
      */
     public function recursive()
     {
@@ -1524,7 +1526,7 @@ class Builder
      *
      * @param bool $raw
      *
-     * @return Builder
+     * @return $this
      */
     public function raw($raw = true)
     {
@@ -1538,7 +1540,7 @@ class Builder
      *
      * @param bool $nested
      *
-     * @return Builder
+     * @return $this
      */
     public function nested($nested = true)
     {
@@ -1641,7 +1643,7 @@ class Builder
      * @param string $method
      * @param array  $parameters
      *
-     * @return Builder
+     * @return $this
      */
     public function dynamicWhere($method, $parameters)
     {
@@ -1684,7 +1686,7 @@ class Builder
      * @param string $boolean
      * @param bool   $raw
      *
-     * @return Builder
+     * @return $this
      */
     protected function addArrayOfWheres($wheres, $boolean, $raw)
     {

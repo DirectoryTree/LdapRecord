@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Configuration;
 
-use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Connections\LdapInterface;
 
 /**

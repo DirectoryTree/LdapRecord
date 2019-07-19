@@ -2,8 +2,6 @@
 
 namespace LdapRecord\Query;
 
-use LdapRecord\Schemas\ActiveDirectory;
-use LdapRecord\Schemas\SchemaInterface;
 use LdapRecord\Connections\LdapInterface;
 
 /**
@@ -19,13 +17,6 @@ class Factory
      * @var LdapInterface
      */
     protected $connection;
-
-    /**
-     * Stores the current schema instance.
-     *
-     * @var SchemaInterface
-     */
-    protected $schema;
 
     /**
      * The base DN to use for the search.
@@ -45,14 +36,12 @@ class Factory
      * Constructor.
      *
      * @param LdapInterface  $connection The connection to use when constructing a new query.
-     * @param SchemaInterface|null $schema     The schema to use for the query and models located.
-     * @param string               $baseDn     The base DN to use for all searches.
+     * @param string         $baseDn     The base DN to use for all searches.
      */
-    public function __construct(LdapInterface $connection, SchemaInterface $schema = null, $baseDn = '')
+    public function __construct(LdapInterface $connection, $baseDn = '')
     {
-        $this->setConnection($connection)
-            ->setSchema($schema)
-            ->setBaseDn($baseDn);
+        $this->connection = $connection;
+        $this->base = $baseDn;
     }
 
     /**
@@ -65,20 +54,6 @@ class Factory
     public function setConnection(LdapInterface $connection)
     {
         $this->connection = $connection;
-
-        return $this;
-    }
-
-    /**
-     * Sets the schema property.
-     *
-     * @param SchemaInterface|null $schema
-     *
-     * @return $this
-     */
-    public function setSchema(SchemaInterface $schema = null)
-    {
-        $this->schema = $schema ?: new ActiveDirectory();
 
         return $this;
     }
@@ -130,7 +105,7 @@ class Factory
      */
     public function get()
     {
-        return $this->newQuery()->whereHas($this->schema->commonName())->get();
+        return $this->newQuery()->whereHas('cn')->get();
     }
 
     /**
@@ -153,7 +128,7 @@ class Factory
      */
     protected function newBuilder()
     {
-        $builder = new Builder($this->connection, $this->newGrammar(), $this->schema);
+        $builder = new Builder($this->connection, $this->newGrammar());
 
         $builder->setCache($this->cache);
 

@@ -3,7 +3,6 @@
 namespace LdapRecord\Connections;
 
 use LdapRecord\Auth\GuardInterface;
-use LdapRecord\Schemas\SchemaInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 interface ConnectionInterface
@@ -63,22 +62,6 @@ interface ConnectionInterface
      * @throws \LdapRecord\Configuration\ConfigurationException
      */
     public function setConfiguration($configuration = []);
-
-    /**
-     * Sets the current LDAP attribute schema.
-     *
-     * @param SchemaInterface|null $schema
-     *
-     * @return $this
-     */
-    public function setSchema(SchemaInterface $schema = null);
-
-    /**
-     * Returns the current LDAP attribute schema.
-     *
-     * @return SchemaInterface
-     */
-    public function getSchema();
 
     /**
      * Sets the current Guard instance.

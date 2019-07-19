@@ -32,9 +32,6 @@ class DomainConfiguration
         // The port to use for connecting to your hosts.
         'port' => LdapInterface::PORT,
 
-        // The schema to use for your LDAP connection.
-        'schema' => ActiveDirectory::class,
-
         // The base distinguished name of your domain.
         'base_dn' => '',
 
@@ -150,8 +147,6 @@ class DomainConfiguration
             $validator = new Validators\IntegerValidator($key, $value);
         } elseif (is_bool($default)) {
             $validator = new Validators\BooleanValidator($key, $value);
-        } elseif (class_exists($default)) {
-            $validator = new Validators\ClassValidator($key, $value);
         } else {
             $validator = new Validators\StringOrNullValidator($key, $value);
         }

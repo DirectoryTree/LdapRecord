@@ -5,10 +5,8 @@ namespace LdapRecord\Connections;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
 use InvalidArgumentException;
-use LdapRecord\Auth\GuardInterface;
-use LdapRecord\Schemas\ActiveDirectory;
-use LdapRecord\Schemas\SchemaInterface;
 use Psr\SimpleCache\CacheInterface;
+use LdapRecord\Auth\GuardInterface;
 use LdapRecord\Query\Factory as SearchFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
@@ -32,11 +30,6 @@ class Connection implements ConnectionInterface
     protected $configuration;
 
     /**
-     * @var SchemaInterface
-     */
-    protected $schema;
-
-    /**
      * @var GuardInterface
      */
     protected $guard;
@@ -51,8 +44,8 @@ class Connection implements ConnectionInterface
      */
     public function __construct($configuration = [])
     {
-        $this->setConfiguration($configuration)
-            ->setLdapConnection(new Ldap());
+        $this->configuration = $configuration;
+        $this->ldap = new Ldap();
     }
 
     /**
@@ -82,18 +75,11 @@ class Connection implements ConnectionInterface
         if ($configuration instanceof DomainConfiguration) {
             $this->configuration = $configuration;
 
-            $schema = $configuration->get('schema');
-
-            // We will update our schema here when our configuration is set.
-            $this->setSchema(new $schema());
-
             return $this;
         }
 
-        $class = DomainConfiguration::class;
-
         throw new InvalidArgumentException(
-            "Configuration must be array or instance of $class"
+            sprintf("Configuration must be array or instance of %s", DomainConfiguration::class)
         );
     }
 
@@ -113,16 +99,6 @@ class Connection implements ConnectionInterface
             $this->configuration->get('hosts'),
             $this->configuration->get('port')
         );
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSchema(SchemaInterface $schema = null)
-    {
-        $this->schema = $schema ?: new ActiveDirectory();
 
         return $this;
     }
@@ -170,14 +146,6 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getSchema()
-    {
-        return $this->schema;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getGuard()
     {
         if (!$this->guard instanceof GuardInterface) {
@@ -204,11 +172,7 @@ class Connection implements ConnectionInterface
      */
     public function search()
     {
-        $factory = new SearchFactory(
-            $this->ldap,
-            $this->schema,
-            $this->configuration->get('base_dn')
-        );
+        $factory = new SearchFactory($this->ldap, $this->configuration->get('base_dn'));
 
         if ($this->cache) {
             $factory->setCache($this->cache);

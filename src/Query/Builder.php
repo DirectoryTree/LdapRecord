@@ -9,9 +9,8 @@ use LdapRecord\Models\Model;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use LdapRecord\Connections\Container;
-use LdapRecord\Schemas\ActiveDirectory;
-use LdapRecord\Schemas\SchemaInterface;
 use LdapRecord\Query\Events\QueryExecuted;
+use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Connections\LdapInterface;
 
@@ -113,13 +112,6 @@ class Builder
     protected $grammar;
 
     /**
-     * The current schema instance.
-     *
-     * @var SchemaInterface
-     */
-    protected $schema;
-
-    /**
      * The current cache instance.
      *
      * @var Cache|null
@@ -136,15 +128,13 @@ class Builder
     /**
      * Constructor.
      *
-     * @param LdapInterface        $connection
-     * @param Grammar|null         $grammar
-     * @param SchemaInterface|null $schema
+     * @param LdapInterface $connection
+     * @param Grammar|null  $grammar
      */
-    public function __construct(LdapInterface $connection, Grammar $grammar = null, SchemaInterface $schema = null)
+    public function __construct(LdapInterface $connection, Grammar $grammar = null)
     {
-        $this->setConnection($connection)
-            ->setGrammar($grammar)
-            ->setSchema($schema);
+        $this->connection = $connection;
+        $this->grammar = $grammar;
     }
 
     /**
@@ -173,30 +163,6 @@ class Builder
         $this->grammar = $grammar ?: new Grammar();
 
         return $this;
-    }
-
-    /**
-     * Sets the current schema.
-     *
-     * @param SchemaInterface|null $schema
-     *
-     * @return Builder
-     */
-    public function setSchema(SchemaInterface $schema = null)
-    {
-        $this->schema = $schema ?: new ActiveDirectory();
-
-        return $this;
-    }
-
-    /**
-     * Returns the current schema.
-     *
-     * @return SchemaInterface
-     */
-    public function getSchema()
-    {
-        return $this->schema;
     }
 
     /**
@@ -248,8 +214,7 @@ class Builder
         // developers don't need to do this manually.
         $dn = is_null($baseDn) ? $this->getDn() : $baseDn;
 
-        return (new static($this->connection, $this->grammar, $this->schema))
-            ->setDn($dn);
+        return (new static($this->connection, $this->grammar))->setDn($dn);
     }
 
     /**
@@ -292,7 +257,7 @@ class Builder
         // We need to ensure we have at least one filter, as
         // no query results will be returned otherwise.
         if (count(array_filter($this->filters)) === 0) {
-            $this->whereHas($this->schema->objectClass());
+            $this->whereHas('objectclass');
         }
 
         return $this->grammar->compile($this);
@@ -697,11 +662,11 @@ class Builder
 
         // If we're not using ActiveDirectory, we can't use ANR.
         // We will make our own equivalent query.
-        if (!is_a($this->schema, ActiveDirectory::class)) {
+        if (! $this->model instanceof ActiveDirectory) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
 
-        return $this->findBy($this->schema->anr(), $value, $columns);
+        return $this->findBy('anr', $value, $columns);
     }
 
     /**
@@ -716,7 +681,7 @@ class Builder
     {
         $this->select($columns);
 
-        if (!is_a($this->schema, ActiveDirectory::class)) {
+        if (! $this->model instanceof ActiveDirectory) {
             $query = $this;
 
             foreach ($values as $value) {
@@ -726,7 +691,7 @@ class Builder
             return $query->get();
         }
 
-        return $this->findManyBy($this->schema->anr(), $values);
+        return $this->findManyBy('anr', $values);
     }
 
     /**
@@ -739,17 +704,7 @@ class Builder
     protected function prepareAnrEquivalentQuery($value)
     {
         return $this->orFilter(function (Builder $query) use ($value) {
-            $locateBy = [
-                $this->schema->name(),
-                $this->schema->email(),
-                $this->schema->userId(),
-                $this->schema->lastName(),
-                $this->schema->firstName(),
-                $this->schema->commonName(),
-                $this->schema->displayName(),
-            ];
-
-            foreach ($locateBy as $attribute) {
+            foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }
         });
@@ -834,7 +789,7 @@ class Builder
     {
         return $this->setDn($dn)
             ->read()
-            ->whereHas($this->schema->objectClass())
+            ->whereHas('objectclass')
             ->firstOrFail($columns);
     }
 
@@ -869,12 +824,12 @@ class Builder
      */
     public function findByGuidOrFail($guid, $columns = [])
     {
-        if ($this->schema->objectGuidRequiresConversion()) {
+        if ($this->model instanceof ActiveDirectory) {
             $guid = Utilities::stringGuidToHex($guid);
         }
 
         return $this->select($columns)->whereRaw([
-            $this->schema->objectGuid() => $guid,
+            $this->model->getGuidKey() => $guid,
         ])->firstOrFail();
     }
 
@@ -909,7 +864,7 @@ class Builder
      */
     public function findBySidOrFail($sid, $columns = [])
     {
-        return $this->findByOrFail($this->schema->objectSid(), $sid, $columns);
+        return $this->findByOrFail('objectsid', $sid, $columns);
     }
 
     /**

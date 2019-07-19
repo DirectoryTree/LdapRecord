@@ -5,6 +5,7 @@ namespace LdapRecord\Models;
 use DateTime;
 use LdapRecord\Utilities;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\TSPropertyArray;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -964,7 +965,7 @@ class User extends Entry implements Authenticatable
         // If the account expiry is zero or the expiry is equal to
         // ActiveDirectory's 'never expire' value,
         // then we'll return null here.
-        if ($accountExpiry == 0 || $accountExpiry == $this->getSchema()->neverExpiresDate()) {
+        if ($accountExpiry == 0 || $accountExpiry == '9223372036854775807') {
             return;
         }
 
@@ -986,6 +987,8 @@ class User extends Entry implements Authenticatable
     /**
      * Returns true / false if the users password is expired.
      *
+     * @throws \LdapRecord\Models\ModelNotFoundException When the RootDSE cannot be found.
+     *
      * @return bool
      */
     public function passwordExpired()
@@ -1004,18 +1007,18 @@ class User extends Entry implements Authenticatable
             return true;
         }
 
-        // We'll check if we're using the ActiveDirectory schema to retrieve
+        // We will check if we're our model is from ActiveDirectory to retrieve
         // the max password age, as this is an AD-only feature.
-        if ($this->schema instanceof ActiveDirectory) {
-            $query = $this->query->newInstance();
+        if ($this instanceof ActiveDirectory) {
+            $query = $this->newQueryWithoutScopes();
 
             // We need to get the root domain object to be able to
             // retrieve the max password age on the domain.
             $rootDomainObject = $query->select('maxpwdage')
                 ->whereHas('objectclass')
-                ->first();
+                ->firstOrFail();
 
-            $maxPasswordAge = $rootDomainObject->getMaxPasswordAge();
+            $maxPasswordAge = $rootDomainObject->getFirstAttribute('maxpwdage');
 
             if (empty($maxPasswordAge)) {
                 // There is not a max password age set on the LDAP server.

@@ -38,7 +38,7 @@ class Group extends Entry
      */
     public function getMembers()
     {
-        $members = $this->getMembersFromAttribute($this->schema->member());
+        $members = $this->getMembersFromAttribute('member');
 
         if (count($members) === 0) {
             $members = $this->getPaginatedMembers();
@@ -56,7 +56,7 @@ class Group extends Entry
     {
         $members = [];
 
-        $dns = $this->getAttribute($this->schema->member()) ?: [];
+        $dns = $this->getAttribute('member') ?: [];
 
         foreach ($dns as $dn) {
             $exploded = Utilities::explodeDn($dn);
@@ -78,7 +78,7 @@ class Group extends Entry
      */
     public function setMembers(array $entries)
     {
-        return $this->setAttribute($this->schema->member(), $entries);
+        return $this->setAttribute('member', $entries);
     }
 
     /**
@@ -97,7 +97,7 @@ class Group extends Entry
         }, $members);
 
         $mod = $this->newBatchModification(
-            $this->schema->member(),
+            'member',
             LDAP_MODIFY_BATCH_ADD,
             $members
         );
@@ -125,7 +125,7 @@ class Group extends Entry
         }
 
         $mod = $this->newBatchModification(
-            $this->schema->member(),
+            'member',
             LDAP_MODIFY_BATCH_ADD,
             [$member]
         );
@@ -153,7 +153,7 @@ class Group extends Entry
         }
 
         $mod = $this->newBatchModification(
-            $this->schema->member(),
+            'member',
             LDAP_MODIFY_BATCH_REMOVE,
             [$member]
         );
@@ -169,7 +169,7 @@ class Group extends Entry
     public function removeMembers()
     {
         $mod = $this->newBatchModification(
-            $this->schema->member(),
+            'member',
             LDAP_MODIFY_BATCH_REMOVE_ALL
         );
 
@@ -185,7 +185,7 @@ class Group extends Entry
      */
     public function getGroupType()
     {
-        return $this->getFirstAttribute($this->schema->groupType());
+        return $this->getFirstAttribute('grouptype');
     }
 
     /**
@@ -205,7 +205,8 @@ class Group extends Entry
 
         // Retrieving the member identifier to allow
         // compatibility with LDAP variants.
-        $identifier = $this->schema->memberIdentifier();
+        // TODO: Retrieve identifier for other LDAP types (compatibility).
+        $identifier = 'distinguishedname';
 
         foreach ($entries as $entry) {
             // If our identifier is a distinguished name, then we need to
@@ -286,7 +287,7 @@ class Group extends Entry
             /** @var Group $group */
             $group = $this->query->newInstance()->findByDn(
                 $this->getDn(),
-                [$this->query->getSchema()->memberRange($from, $to)]
+                ["member;range={$from}-{$to}"]
             );
 
             // Finally, we'll merge our current members

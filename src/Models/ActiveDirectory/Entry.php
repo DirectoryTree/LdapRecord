@@ -1,12 +1,13 @@
 <?php
 
-
 namespace LdapRecord\Models\ActiveDirectory;
 
 use InvalidArgumentException;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
+use LdapRecord\Query\Types\ActiveDirectoryQuery;
 
 class Entry extends BaseEntry implements ActiveDirectory
 {
@@ -43,6 +44,14 @@ class Entry extends BaseEntry implements ActiveDirectory
         } catch (InvalidArgumentException $e) {
             return;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function newQueryBuilder(LdapInterface $connection)
+    {
+        return new ActiveDirectoryQuery($connection);
     }
 
     /**

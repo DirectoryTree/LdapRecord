@@ -1,6 +1,8 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
+
+use LdapRecord\Models\Concerns\HasMemberOf;
 
 /**
  * Class ForeignSecurityPrincipal.
@@ -9,7 +11,7 @@ namespace LdapRecord\Models;
  */
 class ForeignSecurityPrincipal extends Entry
 {
-    use Concerns\HasMemberOf;
+    use HasMemberOf;
 
     /**
      * The object classes of the LDAP model.

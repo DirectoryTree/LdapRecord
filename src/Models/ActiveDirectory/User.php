@@ -5,7 +5,6 @@ namespace LdapRecord\Models;
 use DateTime;
 use LdapRecord\Utilities;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Schemas\ActiveDirectory;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\TSPropertyArray;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -42,7 +41,7 @@ class User extends Entry implements Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return $this->schema->objectGuid();
+        return $this->guidKey;
     }
 
     /**
@@ -100,7 +99,7 @@ class User extends Entry implements Authenticatable
      */
     public function getDepartmentNumber()
     {
-        return $this->getFirstAttribute($this->schema->departmentNumber());
+        return $this->getFirstAttribute('departmentnumber');
     }
 
     /**
@@ -112,7 +111,7 @@ class User extends Entry implements Authenticatable
      */
     public function setDepartmentNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->departmentNumber(), $number);
+        return $this->setFirstAttribute('departmentnumber', $number);
     }
 
     /**
@@ -122,7 +121,7 @@ class User extends Entry implements Authenticatable
      */
     public function getInfo()
     {
-        return $this->getFirstAttribute($this->schema->info());
+        return $this->getFirstAttribute('info');
     }
 
     /**
@@ -134,7 +133,7 @@ class User extends Entry implements Authenticatable
      */
     public function setInfo($info)
     {
-        return $this->setFirstAttribute($this->schema->info(), $info);
+        return $this->setFirstAttribute('info', $info);
     }
 
     /**
@@ -144,7 +143,7 @@ class User extends Entry implements Authenticatable
      */
     public function getPhysicalDeliveryOfficeName()
     {
-        return $this->getFirstAttribute($this->schema->physicalDeliveryOfficeName());
+        return $this->getFirstAttribute('physicaldeliveryofficename');
     }
 
     /**
@@ -156,7 +155,7 @@ class User extends Entry implements Authenticatable
      */
     public function setPhysicalDeliveryOfficeName($deliveryOffice)
     {
-        return $this->setFirstAttribute($this->schema->physicalDeliveryOfficeName(), $deliveryOffice);
+        return $this->setFirstAttribute('physicaldeliveryofficename', $deliveryOffice);
     }
 
     /**
@@ -166,7 +165,7 @@ class User extends Entry implements Authenticatable
      */
     public function getLocale()
     {
-        return $this->getFirstAttribute($this->schema->locale());
+        return $this->getFirstAttribute('l');
     }
 
     /**
@@ -178,7 +177,7 @@ class User extends Entry implements Authenticatable
      */
     public function setLocale($locale)
     {
-        return $this->setFirstAttribute($this->schema->locale(), $locale);
+        return $this->setFirstAttribute('l', $locale);
     }
 
     /**
@@ -190,7 +189,7 @@ class User extends Entry implements Authenticatable
      */
     public function getCompany()
     {
-        return $this->getFirstAttribute($this->schema->company());
+        return $this->getFirstAttribute('company');
     }
 
     /**
@@ -202,7 +201,7 @@ class User extends Entry implements Authenticatable
      */
     public function setCompany($company)
     {
-        return $this->setFirstAttribute($this->schema->company(), $company);
+        return $this->setFirstAttribute('company', $company);
     }
 
     /**
@@ -214,7 +213,7 @@ class User extends Entry implements Authenticatable
      */
     public function getHomeMdb()
     {
-        return $this->getFirstAttribute($this->schema->homeMdb());
+        return $this->getFirstAttribute('homemdb');
     }
 
     /**
@@ -226,7 +225,7 @@ class User extends Entry implements Authenticatable
      */
     public function setHomeDrive($drive)
     {
-        return $this->setAttribute($this->schema->homeDrive(), $drive);
+        return $this->setAttribute('homedrive', $drive);
     }
 
     /**
@@ -238,7 +237,7 @@ class User extends Entry implements Authenticatable
      */
     public function getHomeDrive()
     {
-        return $this->getFirstAttribute($this->schema->homeDrive());
+        return $this->getFirstAttribute('homedrive');
     }
 
     /**
@@ -252,7 +251,7 @@ class User extends Entry implements Authenticatable
      */
     public function setHomeDirectory($directory)
     {
-        return $this->setAttribute($this->schema->homeDirectory(), $directory);
+        return $this->setAttribute('homedirectory', $directory);
     }
 
     /**
@@ -264,7 +263,7 @@ class User extends Entry implements Authenticatable
      */
     public function getHomeDirectory()
     {
-        return $this->getFirstAttribute($this->schema->homeDirectory());
+        return $this->getFirstAttribute('homedirectory');
     }
 
     /**
@@ -276,7 +275,7 @@ class User extends Entry implements Authenticatable
      */
     public function getHomePhone()
     {
-        return $this->getFirstAttribute($this->schema->homePhone());
+        return $this->getFirstAttribute('homephone');
     }
 
     /**
@@ -290,7 +289,7 @@ class User extends Entry implements Authenticatable
      */
     public function getUserPrincipalName()
     {
-        return $this->getFirstAttribute($this->schema->userPrincipalName());
+        return $this->getFirstAttribute('userprincipalname');
     }
 
     /**
@@ -302,7 +301,7 @@ class User extends Entry implements Authenticatable
      */
     public function setUserPrincipalName($userPrincipalName)
     {
-        return $this->setFirstAttribute($this->schema->userPrincipalName(), $userPrincipalName);
+        return $this->setFirstAttribute('userprincipalname', $userPrincipalName);
     }
 
     /**
@@ -312,7 +311,7 @@ class User extends Entry implements Authenticatable
      */
     public function getUserWorkstations()
     {
-        $workstations = $this->getFirstAttribute($this->schema->userWorkstations());
+        $workstations = $this->getFirstAttribute('userworkstations');
 
         return array_filter(explode(',', $workstations));
     }
@@ -332,7 +331,7 @@ class User extends Entry implements Authenticatable
             $workstations = implode(',', $workstations);
         }
 
-        return $this->setFirstAttribute($this->schema->userWorkstations(), $workstations);
+        return $this->setFirstAttribute('userworkstations', $workstations);
     }
 
     /**
@@ -344,7 +343,7 @@ class User extends Entry implements Authenticatable
      */
     public function getScriptPath()
     {
-        return $this->getFirstAttribute($this->schema->scriptPath());
+        return $this->getFirstAttribute('scriptpath');
     }
 
     /**
@@ -356,7 +355,7 @@ class User extends Entry implements Authenticatable
      */
     public function setScriptPath($path)
     {
-        return $this->setFirstAttribute($this->schema->scriptPath(), $path);
+        return $this->setFirstAttribute('scriptpath', $path);
     }
 
     /**
@@ -366,7 +365,7 @@ class User extends Entry implements Authenticatable
      */
     public function getBadPasswordCount()
     {
-        return $this->getFirstAttribute($this->schema->badPasswordCount());
+        return $this->getFirstAttribute('badpwdcount');
     }
 
     /**
@@ -376,7 +375,7 @@ class User extends Entry implements Authenticatable
      */
     public function getBadPasswordTime()
     {
-        return $this->getFirstAttribute($this->schema->badPasswordTime());
+        return $this->getFirstAttribute('badpasswordtime');
     }
 
     /**
@@ -412,7 +411,7 @@ class User extends Entry implements Authenticatable
      */
     public function getPasswordLastSet()
     {
-        return $this->getFirstAttribute($this->schema->passwordLastSet());
+        return $this->getFirstAttribute('pwdlastset');
     }
 
     /**
@@ -448,7 +447,7 @@ class User extends Entry implements Authenticatable
      */
     public function getLockoutTime()
     {
-        return $this->getFirstAttribute($this->schema->lockoutTime());
+        return $this->getFirstAttribute('lockouttime');
     }
 
     /**
@@ -484,7 +483,7 @@ class User extends Entry implements Authenticatable
      */
     public function setClearLockoutTime()
     {
-        return $this->setFirstAttribute($this->schema->lockoutTime(), 0);
+        return $this->setFirstAttribute('lockouttime', 0);
     }
 
     /**
@@ -494,7 +493,7 @@ class User extends Entry implements Authenticatable
      */
     public function getProfilePath()
     {
-        return $this->getFirstAttribute($this->schema->profilePath());
+        return $this->getFirstAttribute('profilepath');
     }
 
     /**
@@ -506,7 +505,7 @@ class User extends Entry implements Authenticatable
      */
     public function setProfilePath($path)
     {
-        return $this->setFirstAttribute($this->schema->profilePath(), $path);
+        return $this->setFirstAttribute('profilepath', $path);
     }
 
     /**
@@ -516,7 +515,7 @@ class User extends Entry implements Authenticatable
      */
     public function getLegacyExchangeDn()
     {
-        return $this->getFirstAttribute($this->schema->legacyExchangeDn());
+        return $this->getFirstAttribute('legacyexchangedn');
     }
 
     /**
@@ -534,7 +533,7 @@ class User extends Entry implements Authenticatable
     {
         $time = is_null($expiryTime) ? '9223372036854775807' : (string) Utilities::convertUnixTimeToWindowsTime($expiryTime);
 
-        return $this->setFirstAttribute($this->schema->accountExpires(), $time);
+        return $this->setFirstAttribute('accountexpires', $time);
     }
 
     /**
@@ -545,7 +544,7 @@ class User extends Entry implements Authenticatable
      */
     public function getShowInAddressBook()
     {
-        return $this->getAttribute($this->schema->showInAddressBook());
+        return $this->getAttribute('showinaddressbook');
     }
 
     /**
@@ -583,7 +582,7 @@ class User extends Entry implements Authenticatable
      */
     public function getThumbnail()
     {
-        return $this->getFirstAttribute($this->schema->thumbnail());
+        return $this->getFirstAttribute('thumbnailphoto');
     }
 
     /**
@@ -602,7 +601,7 @@ class User extends Entry implements Authenticatable
             $data = base64_encode($data);
         }
 
-        return $this->setAttribute($this->schema->thumbnail(), $data);
+        return $this->setAttribute('thumbnailphoto', $data);
     }
 
     /**
@@ -624,7 +623,7 @@ class User extends Entry implements Authenticatable
      */
     public function getJpegPhoto()
     {
-        return $this->getFirstAttribute($this->schema->jpegPhoto());
+        return $this->getFirstAttribute('jpegphoto');
     }
 
     /**
@@ -640,7 +639,7 @@ class User extends Entry implements Authenticatable
             $string = base64_encode($string);
         }
 
-        return $this->setAttribute($this->schema->jpegPhoto(), $string);
+        return $this->setAttribute('jpegphoto', $string);
     }
 
     /**
@@ -650,7 +649,7 @@ class User extends Entry implements Authenticatable
      */
     public function getEmployeeId()
     {
-        return $this->getFirstAttribute($this->schema->employeeId());
+        return $this->getFirstAttribute('employeeid');
     }
 
     /**
@@ -662,7 +661,7 @@ class User extends Entry implements Authenticatable
      */
     public function setEmployeeId($employeeId)
     {
-        return $this->setFirstAttribute($this->schema->employeeId(), $employeeId);
+        return $this->setFirstAttribute('employeeid', $employeeId);
     }
 
     /**
@@ -672,7 +671,7 @@ class User extends Entry implements Authenticatable
      */
     public function getEmployeeType()
     {
-        return $this->getFirstAttribute($this->schema->employeeType());
+        return $this->getFirstAttribute('employeetype');
     }
 
     /**
@@ -684,7 +683,7 @@ class User extends Entry implements Authenticatable
      */
     public function setEmployeeType($type)
     {
-        return $this->setFirstAttribute($this->schema->employeeType(), $type);
+        return $this->setFirstAttribute('employeetype', $type);
     }
 
     /**
@@ -694,7 +693,7 @@ class User extends Entry implements Authenticatable
      */
     public function getEmployeeNumber()
     {
-        return $this->getFirstAttribute($this->schema->employeeNumber());
+        return $this->getFirstAttribute('employeenumber');
     }
 
     /**
@@ -706,7 +705,7 @@ class User extends Entry implements Authenticatable
      */
     public function setEmployeeNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->employeeNumber(), $number);
+        return $this->setFirstAttribute('employeenumber', $number);
     }
 
     /**
@@ -716,7 +715,7 @@ class User extends Entry implements Authenticatable
      */
     public function getRoomNumber()
     {
-        return $this->getFirstAttribute($this->schema->roomNumber());
+        return $this->getFirstAttribute('roomnumber');
     }
 
     /**
@@ -728,7 +727,7 @@ class User extends Entry implements Authenticatable
      */
     public function setRoomNumber($number)
     {
-        return $this->setFirstAttribute($this->schema->roomNumber(), $number);
+        return $this->setFirstAttribute('roomnumber', $number);
     }
 
     /**
@@ -738,7 +737,7 @@ class User extends Entry implements Authenticatable
      */
     public function getPersonalTitle()
     {
-        return $this->getFirstAttribute($this->schema->personalTitle());
+        return $this->getFirstAttribute('personaltitle');
     }
 
     /**
@@ -750,7 +749,7 @@ class User extends Entry implements Authenticatable
      */
     public function setPersonalTitle($personalTitle)
     {
-        return $this->setFirstAttribute($this->schema->personalTitle(), $personalTitle);
+        return $this->setFirstAttribute('personaltitle', $personalTitle);
     }
 
     /**
@@ -808,7 +807,7 @@ class User extends Entry implements Authenticatable
             // value" exists exception from our LDAP server.
             return $this->addModification(
                 $this->newBatchModification(
-                    $this->schema->unicodePassword(),
+                    'unicodepwd',
                     LDAP_MODIFY_BATCH_REPLACE,
                     [$encodedPassword]
                 )
@@ -817,7 +816,7 @@ class User extends Entry implements Authenticatable
             // Otherwise, we are creating a new record
             // and we can set the attribute normally.
             return $this->setFirstAttribute(
-                $this->schema->unicodePassword(),
+                'unicodepwd',
                 $encodedPassword
             );
         }
@@ -832,7 +831,7 @@ class User extends Entry implements Authenticatable
      */
     public function setEnableForcePasswordChange()
     {
-        return $this->setFirstAttribute($this->schema->passwordLastSet(), 0);
+        return $this->setFirstAttribute('pwdlastset', 0);
     }
 
     /**
@@ -842,7 +841,7 @@ class User extends Entry implements Authenticatable
      */
     public function setDisableForcePasswordChange()
     {
-        return $this->setFirstAttribute($this->schema->passwordLastSet(), -1);
+        return $this->setFirstAttribute('pwdlastset', -1);
     }
 
     /**
@@ -865,7 +864,7 @@ class User extends Entry implements Authenticatable
     {
         $this->validateSecureConnection();
 
-        $attribute = $this->schema->unicodePassword();
+        $attribute = 'unicodepwd';
 
         $modifications = [];
 
@@ -981,7 +980,7 @@ class User extends Entry implements Authenticatable
      */
     public function getAccountExpiry()
     {
-        return $this->getFirstAttribute($this->schema->accountExpires());
+        return $this->getFirstAttribute('accountexpires');
     }
 
     /**
@@ -1012,8 +1011,8 @@ class User extends Entry implements Authenticatable
 
             // We need to get the root domain object to be able to
             // retrieve the max password age on the domain.
-            $rootDomainObject = $query->select($this->schema->maxPasswordAge())
-                ->whereHas($this->schema->objectClass())
+            $rootDomainObject = $query->select('maxpwdage')
+                ->whereHas('objectclass')
                 ->first();
 
             $maxPasswordAge = $rootDomainObject->getMaxPasswordAge();

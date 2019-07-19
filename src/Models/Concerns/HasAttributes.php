@@ -157,7 +157,7 @@ trait HasAttributes
 
         // If the key is equal to 'dn', we'll automatically
         // change it to the full attribute name.
-        $key = ($key == 'dn' ? $this->schema->distinguishedName() : $key);
+        $key = ($key == 'dn' ? 'distinguishedname' : $key);
 
         if (is_null($subKey)) {
             // We need to ensure all attributes are set as arrays so all

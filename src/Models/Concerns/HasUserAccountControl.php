@@ -13,7 +13,7 @@ trait HasUserAccountControl
      */
     public function getUserAccountControl()
     {
-        return $this->getFirstAttribute($this->schema->userAccountControl());
+        return $this->getFirstAttribute('useraccountcontrol');
     }
 
     /**
@@ -35,7 +35,7 @@ trait HasUserAccountControl
      */
     public function setUserAccountControl($accountControl)
     {
-        return $this->setAttribute($this->schema->userAccountControl(), (string) $accountControl);
+        return $this->setAttribute('useraccountcontrol', (string) $accountControl);
     }
 
     /**

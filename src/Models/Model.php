@@ -13,10 +13,7 @@ use LdapRecord\Query\Collection;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use LdapRecord\Connections\Container;
-use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Attributes\Guid;
-use LdapRecord\Schemas\ActiveDirectory;
-use LdapRecord\Schemas\SchemaInterface;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Connections\ConnectionException;
 use LdapRecord\Models\Attributes\DistinguishedName;
@@ -55,13 +52,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var string
      */
     protected $connection = 'default';
-
+    
     /**
-     * The current LDAP attribute schema.
-     *
-     * @var SchemaInterface
+     * The attribute key that contains the Object GUID.
+     * 
+     * @var string
      */
-    protected $schema = ActiveDirectory::class;
+    protected $guidKey = 'objectguid';
 
     /**
      * Contains the models modifications.
@@ -77,7 +74,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function __construct(array $attributes = [])
     {
-        $this->fill($attributes)->setSchema(new $this->schema);
+        $this->fill($attributes);
     }
 
     /**
@@ -265,30 +262,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Sets the current model schema.
-     *
-     * @param SchemaInterface $schema
-     *
-     * @return $this
-     */
-    public function setSchema(SchemaInterface $schema)
-    {
-        $this->schema = $schema;
-
-        return $this;
-    }
-
-    /**
-     * Returns the current model schema.
-     *
-     * @return SchemaInterface
-     */
-    public function getSchema()
-    {
-        return $this->schema;
-    }
-
-    /**
      * Determine if the given offset exists.
      *
      * @param string $offset
@@ -362,11 +335,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
             }
         });
 
-        // We'll replace the binary GUID and SID with
-        // their string equivalents for convenience.
+        return $this->convertAttributesForJson($attributes);
+    }
+
+    /**
+     * Converts attributes for JSON serialization.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    protected function convertAttributesForJson(array $attributes = [])
+    {
         return array_replace($attributes, [
-            $this->schema->objectGuid() => $this->getConvertedGuid(),
-            $this->schema->objectSid()  => $this->getConvertedSid(),
+            $this->guidKey => $this->getConvertedGuid(),
         ]);
     }
 
@@ -480,7 +462,27 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the model's distinguished name string.
+     * Returns the models guid key.
+     *
+     * @return string
+     */
+    public function getGuidKey()
+    {
+        return $this->guidKey;
+    }
+
+    /**
+     * Returns the models ANR attributes when incompatible.
+     *
+     * @return array
+     */
+    public function getAnrAttributes()
+    {
+        return ['cn', 'sn', 'uid', 'name', 'mail', 'givenname', 'displayname'];
+    }
+
+    /**
+     * Returns the model's distinguished name.
      *
      * @link https://msdn.microsoft.com/en-us/library/aa366101(v=vs.85).aspx
      *
@@ -488,7 +490,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getDistinguishedName()
     {
-        return $this->getFirstAttribute($this->schema->distinguishedName());
+        return $this->getFirstAttribute('distinguishedname');
     }
 
     /**
@@ -500,7 +502,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setDistinguishedName($dn)
     {
-        $this->setFirstAttribute($this->schema->distinguishedName(), (string) $dn);
+        $this->setFirstAttribute('distinguishedname', (string) $dn);
 
         return $this;
     }
@@ -594,18 +596,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the model's hex object SID.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms679024(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getObjectSid()
-    {
-        return $this->getFirstAttribute($this->schema->objectSid());
-    }
-
-    /**
      * Returns the model's binary object GUID.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
@@ -614,7 +604,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getObjectGuid()
     {
-        return $this->getFirstAttribute($this->schema->objectGuid());
+        return $this->getFirstAttribute($this->guidKey);
     }
 
     /**
@@ -632,20 +622,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the model's SID.
-     *
-     * @return string|null
-     */
-    public function getConvertedSid()
-    {
-        try {
-            return (string) new Sid($this->getObjectSid());
-        } catch (InvalidArgumentException $e) {
-            return;
-        }
-    }
-
-    /**
      * Returns the model's common name.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms675449(v=vs.85).aspx
@@ -654,7 +630,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCommonName()
     {
-        return $this->getFirstAttribute($this->schema->commonName());
+        return $this->getFirstAttribute('cn');
     }
 
     /**
@@ -666,7 +642,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setCommonName($name)
     {
-        return $this->setFirstAttribute($this->schema->commonName(), $name);
+        return $this->setFirstAttribute('cn', $name);
     }
 
     /**
@@ -678,7 +654,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getName()
     {
-        return $this->getFirstAttribute($this->schema->name());
+        return $this->getFirstAttribute('name');
     }
 
     /**
@@ -690,7 +666,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setName($name)
     {
-        return $this->setFirstAttribute($this->schema->name(), $name);
+        return $this->setFirstAttribute('name', $name);
     }
 
     /**
@@ -700,7 +676,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getDisplayName()
     {
-        return $this->getFirstAttribute($this->schema->displayName());
+        return $this->getFirstAttribute('displayname');
     }
 
     /**
@@ -712,7 +688,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setDisplayName($displayName)
     {
-        return $this->setFirstAttribute($this->schema->displayName(), $displayName);
+        return $this->setFirstAttribute('displayname', $displayName);
     }
 
     /**
@@ -724,7 +700,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getAccountName()
     {
-        return $this->getFirstAttribute($this->schema->accountName());
+        return $this->getFirstAttribute('samaccountname');
     }
 
     /**
@@ -736,7 +712,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setAccountName($accountName)
     {
-        return $this->setFirstAttribute($this->schema->accountName(), $accountName);
+        return $this->setFirstAttribute('samaccountname', $accountName);
     }
 
     /**
@@ -748,7 +724,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getAccountType()
     {
-        return $this->getFirstAttribute($this->schema->accountType());
+        return $this->getFirstAttribute('samaccounttype');
     }
 
     /**
@@ -760,7 +736,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCreatedAt()
     {
-        return $this->getFirstAttribute($this->schema->createdAt());
+        return $this->getFirstAttribute('whencreated');
     }
 
     /**
@@ -792,7 +768,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getUpdatedAt()
     {
-        return $this->getFirstAttribute($this->schema->updatedAt());
+        return $this->getFirstAttribute('whenchanged');
     }
 
     /**
@@ -858,7 +834,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getObjectCategoryDn()
     {
-        return $this->getFirstAttribute($this->schema->objectCategory());
+        return $this->getFirstAttribute('objectcategory');
     }
 
     /**
@@ -870,7 +846,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getPrimaryGroupId()
     {
-        return $this->getFirstAttribute($this->schema->primaryGroupId());
+        return $this->getFirstAttribute('primarygroupid');
     }
 
     /**
@@ -882,7 +858,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getInstanceType()
     {
-        return $this->getFirstAttribute($this->schema->instanceType());
+        return $this->getFirstAttribute('instancetype');
     }
 
     /**
@@ -892,7 +868,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getManagedBy()
     {
-        return $this->getFirstAttribute($this->schema->managedBy());
+        return $this->getFirstAttribute('managedby');
     }
 
     /**
@@ -924,7 +900,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $dn = $dn->getDn();
         }
 
-        return $this->setFirstAttribute($this->schema->managedBy(), $dn);
+        return $this->setFirstAttribute('managedby', $dn);
     }
 
     /**
@@ -934,7 +910,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getMaxPasswordAge()
     {
-        return $this->getFirstAttribute($this->schema->maxPasswordAge());
+        return $this->getFirstAttribute('maxpwdage');
     }
 
     /**
@@ -1294,7 +1270,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function getCreatableAttributes()
     {
-        return Arr::except($this->getAttributes(), [$this->schema->distinguishedName()]);
+        return Arr::except($this->getAttributes(), ['distinguishedname']);
     }
 
     /**
@@ -1372,9 +1348,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $bool = strtoupper($bool);
 
-        if ($bool === strtoupper($this->schema->false())) {
+        if ($bool === 'FALSE') {
             return false;
-        } elseif ($bool === strtoupper($this->schema->true())) {
+        } elseif ($bool === 'TRUE') {
             return true;
         } else {
             return;

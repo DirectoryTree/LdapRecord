@@ -1,6 +1,8 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
+
+use LdapRecord\Models\Types\ActiveDirectory;
 
 /**
  * Class Printer.
@@ -25,7 +27,7 @@ class Printer extends Entry
      */
     public function getPrinterName()
     {
-        return $this->getFirstAttribute($this->schema->printerName());
+        return $this->getFirstAttribute('printername');
     }
 
     /**
@@ -37,7 +39,7 @@ class Printer extends Entry
      */
     public function getPrinterShareName()
     {
-        return $this->getFirstAttribute($this->schema->printerShareName());
+        return $this->getFirstAttribute('printsharename');
     }
 
     /**
@@ -49,7 +51,7 @@ class Printer extends Entry
      */
     public function getMemory()
     {
-        return $this->getFirstAttribute($this->schema->printerMemory());
+        return $this->getFirstAttribute('printmemory');
     }
 
     /**
@@ -59,7 +61,7 @@ class Printer extends Entry
      */
     public function getUrl()
     {
-        return $this->getFirstAttribute($this->schema->url());
+        return $this->getFirstAttribute('url');
     }
 
     /**
@@ -71,7 +73,7 @@ class Printer extends Entry
      */
     public function getLocation()
     {
-        return $this->getFirstAttribute($this->schema->location());
+        return $this->getFirstAttribute('location');
     }
 
     /**
@@ -84,7 +86,7 @@ class Printer extends Entry
      */
     public function getServerName()
     {
-        return $this->getFirstAttribute($this->schema->serverName());
+        return $this->getFirstAttribute('servername');
     }
 
     /**
@@ -97,9 +99,7 @@ class Printer extends Entry
     public function getColorSupported()
     {
         return $this->convertStringToBool(
-            $this->getFirstAttribute(
-                $this->schema->printerColorSupported()
-            )
+            $this->getFirstAttribute('printcolor')
         );
     }
 
@@ -113,9 +113,7 @@ class Printer extends Entry
     public function getDuplexSupported()
     {
         return $this->convertStringToBool(
-            $this->getFirstAttribute(
-                $this->schema->printerDuplexSupported()
-            )
+            $this->getFirstAttribute('printduplexsupported')
         );
     }
 
@@ -128,7 +126,7 @@ class Printer extends Entry
      */
     public function getMediaSupported()
     {
-        return $this->getAttribute($this->schema->printerMediaSupported());
+        return $this->getAttribute('printmediasupported');
     }
 
     /**
@@ -141,9 +139,7 @@ class Printer extends Entry
     public function getStaplingSupported()
     {
         return $this->convertStringToBool(
-            $this->getFirstAttribute(
-                $this->schema->printerStaplingSupported()
-            )
+            $this->getFirstAttribute('printstaplingsupported')
         );
     }
 
@@ -156,7 +152,7 @@ class Printer extends Entry
      */
     public function getPrintBinNames()
     {
-        return $this->getAttribute($this->schema->printerBinNames());
+        return $this->getAttribute('printbinnames');
     }
 
     /**
@@ -168,7 +164,7 @@ class Printer extends Entry
      */
     public function getPrintMaxResolution()
     {
-        return $this->getFirstAttribute($this->schema->printerMaxResolutionSupported());
+        return $this->getFirstAttribute('printmaxresolutionsupported');
     }
 
     /**
@@ -180,7 +176,7 @@ class Printer extends Entry
      */
     public function getPrintOrientations()
     {
-        return $this->getFirstAttribute($this->schema->printerOrientationSupported());
+        return $this->getFirstAttribute('printorientationssupported');
     }
 
     /**
@@ -192,7 +188,7 @@ class Printer extends Entry
      */
     public function getDriverName()
     {
-        return $this->getFirstAttribute($this->schema->driverName());
+        return $this->getFirstAttribute('drivername');
     }
 
     /**
@@ -204,7 +200,7 @@ class Printer extends Entry
      */
     public function getDriverVersion()
     {
-        return $this->getFirstAttribute($this->schema->driverVersion());
+        return $this->getFirstAttribute('driverversion');
     }
 
     /**
@@ -216,7 +212,7 @@ class Printer extends Entry
      */
     public function getPriority()
     {
-        return $this->getFirstAttribute($this->schema->priority());
+        return $this->getFirstAttribute('priority');
     }
 
     /**
@@ -228,7 +224,7 @@ class Printer extends Entry
      */
     public function getPrintStartTime()
     {
-        return $this->getFirstAttribute($this->schema->printerStartTime());
+        return $this->getFirstAttribute('printstarttime');
     }
 
     /**
@@ -240,7 +236,7 @@ class Printer extends Entry
      */
     public function getPrintEndTime()
     {
-        return $this->getFirstAttribute($this->schema->printerEndTime());
+        return $this->getFirstAttribute('printendtime');
     }
 
     /**
@@ -252,7 +248,7 @@ class Printer extends Entry
      */
     public function getPortName()
     {
-        return $this->getFirstAttribute($this->schema->portName());
+        return $this->getFirstAttribute('portname');
     }
 
     /**
@@ -264,7 +260,7 @@ class Printer extends Entry
      */
     public function getVersionNumber()
     {
-        return $this->getFirstAttribute($this->schema->versionNumber());
+        return $this->getFirstAttribute('versionnumber');
     }
 
     /**
@@ -276,7 +272,7 @@ class Printer extends Entry
      */
     public function getPrintRate()
     {
-        return $this->getFirstAttribute($this->schema->printerPrintRate());
+        return $this->getFirstAttribute('printrate');
     }
 
     /**
@@ -288,6 +284,6 @@ class Printer extends Entry
      */
     public function getPrintRateUnit()
     {
-        return $this->getFirstAttribute($this->schema->printerPrintRateUnit());
+        return $this->getFirstAttribute('printrateunit');
     }
 }

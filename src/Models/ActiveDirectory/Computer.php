@@ -1,6 +1,12 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
+
+use LdapRecord\Models\Concerns\HasMemberOf;
+use LdapRecord\Models\Concerns\HasDescription;
+use LdapRecord\Models\Concerns\HasLastLogonAndLogOff;
+use LdapRecord\Models\Concerns\HasUserAccountControl;
+use LdapRecord\Models\Concerns\HasCriticalSystemObject;
 
 /**
  * Class Computer.
@@ -9,11 +15,11 @@ namespace LdapRecord\Models;
  */
 class Computer extends Entry
 {
-    use Concerns\HasMemberOf,
-        Concerns\HasDescription,
-        Concerns\HasLastLogonAndLogOff,
-        Concerns\HasUserAccountControl,
-        Concerns\HasCriticalSystemObject;
+    use HasMemberOf,
+        HasDescription,
+        HasLastLogonAndLogOff,
+        HasUserAccountControl,
+        HasCriticalSystemObject;
 
     /**
      * The object classes of the LDAP model.

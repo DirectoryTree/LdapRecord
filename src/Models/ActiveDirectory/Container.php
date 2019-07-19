@@ -1,6 +1,9 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
+
+use LdapRecord\Models\Concerns\HasDescription;
+use LdapRecord\Models\Concerns\HasCriticalSystemObject;
 
 /**
  * Class Container.
@@ -9,8 +12,8 @@ namespace LdapRecord\Models;
  */
 class Container extends Entry
 {
-    use Concerns\HasDescription,
-        Concerns\HasCriticalSystemObject;
+    use HasDescription,
+        HasCriticalSystemObject;
 
     /**
      * The object classes of the LDAP model.

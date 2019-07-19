@@ -1,6 +1,8 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
+
+use LdapRecord\Models\Concerns\HasDescription;
 
 /**
  * Class OrganizationalUnit.
@@ -9,7 +11,7 @@ namespace LdapRecord\Models;
  */
 class OrganizationalUnit extends Entry
 {
-    use Concerns\HasDescription;
+    use HasDescription;
 
     /**
      * The object classes of the LDAP model.
@@ -28,7 +30,7 @@ class OrganizationalUnit extends Entry
      */
     public function getOu()
     {
-        return $this->getFirstAttribute($this->schema->organizationalUnitShort());
+        return $this->getFirstAttribute('ou');
     }
 
     /**

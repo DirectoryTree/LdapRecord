@@ -1,9 +1,12 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
 
 use LdapRecord\Utilities;
 use InvalidArgumentException;
+use LdapRecord\Models\Concerns\HasMembers;
+use LdapRecord\Models\Concerns\HasMemberOf;
+use LdapRecord\Models\Concerns\HasDescription;
 
 /**
  * Class Group.
@@ -12,9 +15,9 @@ use InvalidArgumentException;
  */
 class Group extends Entry
 {
-    use Concerns\HasMembers,
-        Concerns\HasMemberOf,
-        Concerns\HasDescription;
+    use HasMembers,
+        HasMemberOf,
+        HasDescription;
 
     /**
      * The object classes of the LDAP model.

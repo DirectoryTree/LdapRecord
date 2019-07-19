@@ -1,8 +1,9 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Query\Builder;
+use LdapRecord\Models\Concerns\HasMemberOf;
+use LdapRecord\Models\Concerns\HasUserProperties;
 
 /**
  * Class Contact.
@@ -11,8 +12,8 @@ use LdapRecord\Query\Builder;
  */
 class Contact extends Entry
 {
-    use Concerns\HasMemberOf,
-        Concerns\HasUserProperties;
+    use HasMemberOf,
+        HasUserProperties;
 
     /**
      * The object classes of the LDAP model.

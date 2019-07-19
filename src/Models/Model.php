@@ -7,12 +7,12 @@ use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Utilities;
 use LdapRecord\Query\Builder;
-use LdapRecord\Query\Factory;
 use Illuminate\Support\Arr;
 use LdapRecord\Query\Collection;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use LdapRecord\Connections\Container;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Connections\ConnectionException;
@@ -114,7 +114,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getConnection()
     {
-        return static::resolveConnection($this->getConnectionName());
+        return static::resolveConnection($this->connection);
     }
 
     /**
@@ -139,30 +139,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->connection = $name;
 
         return $this;
-    }
-
-    /**
-     * Resolve a connection instance.
-     *
-     * @param string|null $connection
-     *
-     * @return \LdapRecord\Connections\Connection
-     */
-    public static function resolveConnection($connection = null)
-    {
-        return Container::getInstance()->get($connection);
-    }
-
-    /**
-     * Returns a Factory with the given connection or the default if none specified.
-     *
-     * @param string|null $connection The connection to use.
-     *
-     * @return Factory
-     */
-    protected static function factory($connection = null)
-    {
-        return static::resolveConnection($connection)->search();
     }
 
     /**
@@ -194,7 +170,34 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newQueryWithoutScopes()
     {
-        return static::factory($this->connection)->newQuery();
+        $connection = static::resolveConnection($this->connection);
+
+        return $this->newQueryBuilder($connection->getLdapConnection())
+            ->in($connection->getConfiguration()->get('base_dn'));
+    }
+
+    /**
+     * Create a new query builder.
+     *
+     * @param LdapInterface $connection
+     *
+     * @return Builder
+     */
+    public function newQueryBuilder(LdapInterface $connection)
+    {
+        return new Builder($connection);
+    }
+
+    /**
+     * Resolve a connection instance.
+     *
+     * @param string|null $connection
+     *
+     * @return \LdapRecord\Connections\Connection
+     */
+    public static function resolveConnection($connection = null)
+    {
+        return Container::getInstance()->get($connection);
     }
 
     /**
@@ -359,9 +362,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function fresh()
     {
-        $model = $this->newQueryWithoutScopes()->findByDn($this->getDn());
+        if (! $this->exists) {
+            return;
+        }
 
-        return $model instanceof static ? $model : null;
+        return $this->newQueryWithoutScopes()->findByDn($this->getDn());
     }
 
     /**
@@ -387,8 +392,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function convert(Model $into)
     {
-        $into->setConnection($this->getConnection());
         $into->setRawAttributes($this->getAttributes());
+        $into->setConnection($this->getConnectionName());
 
         return $into;
     }
@@ -1032,6 +1037,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->fill($attributes);
 
+        $query = static::query();
+
         if (empty($this->getDn())) {
             // If the model doesn't currently have a distinguished
             // name set, we'll create one automatically using
@@ -1040,7 +1047,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
             // If the dn we receive is the same as our queries base DN, we need
             // to throw an exception. The LDAP object must have a valid RDN.
-            if ($dn->get() == $this->query->getDn()) {
+            if ($dn->get() == $query->getDn()) {
                 throw new UnexpectedValueException("An LDAP object must have a valid RDN to be created. '$dn' given.");
             }
 
@@ -1050,7 +1057,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->fireModelEvent(new Events\Creating($this));
 
         // Create the entry.
-        $created = $this->query->getConnection()->add($this->getDn(), $this->getCreatableAttributes());
+        $created = $query->getConnection()->add($this->getDn(), $this->getCreatableAttributes());
 
         if ($created) {
             // If the entry was created we'll re-sync
@@ -1078,7 +1085,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         if (
             $this->exists &&
-            $this->query->getConnection()->modAdd($this->getDn(), [$attribute => $value])
+            static::query()->getConnection()->modAdd($this->getDn(), [$attribute => $value])
         ) {
             if ($sync) {
                 $this->syncRaw();

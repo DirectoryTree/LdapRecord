@@ -129,12 +129,11 @@ class Builder
      * Constructor.
      *
      * @param LdapInterface $connection
-     * @param Grammar       $grammar
      */
-    public function __construct(LdapInterface $connection, Grammar $grammar)
+    public function __construct(LdapInterface $connection)
     {
         $this->connection = $connection;
-        $this->grammar = $grammar;
+        $this->grammar = new Grammar();
     }
 
     /**
@@ -1190,38 +1189,6 @@ class Builder
     }
 
     /**
-     * Adds a enabled filter to the current query.
-     *
-     * @return $this
-     */
-    public function whereEnabled()
-    {
-        return $this->rawFilter($this->schema->filterEnabled());
-    }
-
-    /**
-     * Adds a disabled filter to the current query.
-     *
-     * @return $this
-     */
-    public function whereDisabled()
-    {
-        return $this->rawFilter($this->schema->filterDisabled());
-    }
-
-    /**
-     * Adds a 'member of' filter to the current query.
-     *
-     * @param string $dn
-     *
-     * @return $this
-     */
-    public function whereMemberOf($dn)
-    {
-        return $this->whereEquals($this->schema->memberOfRecursive(), $dn);
-    }
-
-    /**
      * Adds an 'or where' clause to the current query.
      *
      * @param array|string $field
@@ -1393,18 +1360,6 @@ class Builder
     }
 
     /**
-     * Adds an 'or where member of' filter to the current query.
-     *
-     * @param string $dn
-     *
-     * @return $this
-     */
-    public function orWhereMemberOf($dn)
-    {
-        return $this->orWhereEquals($this->schema->memberOfRecursive(), $dn);
-    }
-
-    /**
      * Adds a filter onto the current query.
      *
      * @param string $type     The type of filter to add.
@@ -1471,13 +1426,12 @@ class Builder
     {
         $selects = $this->columns;
 
-        // If the asterisk is not provided in the selected columns, we need to
-        // ensure we always select the object class and category, as these
-        // are used for constructing models. The asterisk indicates that
-        // we want all attributes returned for LDAP records.
+        // If the asterisk is not provided in the selected columns, we need
+        // to ensure we always select the object class, as this is used
+        // for constructing models. The asterisk indicates that we
+        // want all attributes returned for LDAP records.
         if (!in_array('*', $selects)) {
-            $selects[] = $this->schema->objectCategory();
-            $selects[] = $this->schema->objectClass();
+            $selects[] = 'objectclass';
         }
 
         return $selects;

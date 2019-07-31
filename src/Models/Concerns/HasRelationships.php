@@ -2,37 +2,36 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Models\Relation;
+use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Models\Relations\HasManyIn;
 
 trait HasRelationships
 {
     /**
-     * Returns a hasMember relationship.
-     * 
-     * @return Relation
+     * Returns a new has many relationship.
+     *
+     * @param mixed  $related
+     * @param string $relationKey
+     * @param string $foreignKey
+     *
+     * @return HasMany
      */
-    public function hasMember(array $related, $relationKey = 'member')
+    public function hasMany($related, $relationKey, $foreignKey = 'member')
     {
-        return $this->newRelation($related, $relationKey);
+        return new HasMany($this->query(), $this, $related, $relationKey, $foreignKey);
     }
 
     /**
-     * Returns a hasMemberOf relationship.
-     * 
-     * @return Relation
+     * Returns a new has many in relationship.
+     *
+     * @param mixed  $related
+     * @param string $relationKey
+     * @param string $foreignKey
+     *
+     * @return HasManyIn
      */
-    public function hasMemberOf(array $related, $relationKey = 'memberof')
+    public function hasManyIn($related, $relationKey, $foreignKey = 'dn')
     {
-        return $this->newRelation($related, $relationKey);
-    }
-
-    /**
-     * Creates a new relationship.
-     * 
-     * @return Relation
-     */
-    protected function newRelation(array $related, $relationKey)
-    {
-        return new Relation($this->query()->newInstance(), $this, $related, $relationKey);
+        return new HasManyIn($this->query(), $this, $related, $relationKey, $foreignKey);
     }
 }

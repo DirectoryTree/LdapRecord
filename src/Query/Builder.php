@@ -6,8 +6,8 @@ use Closure;
 use BadMethodCallException;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
-use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Tightenco\Collect\Support\Arr;
 use LdapRecord\Connections\Container;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\Types\ActiveDirectory;
@@ -576,7 +576,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Model|array|null
+     * @return static|array|null
      */
     public function first($columns = [])
     {
@@ -597,7 +597,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function firstOrFail($columns = [])
     {
@@ -618,7 +618,7 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @return Model|array|false
+     * @return static|array|false
      */
     public function findBy($attribute, $value, $columns = [])
     {
@@ -640,11 +640,11 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function findByOrFail($attribute, $value, $columns = [])
     {
-        return $this->whereEquals($attribute, $value)->firstOrFail($columns);
+        return $this->clearFilters()->whereEquals($attribute, $value)->firstOrFail($columns);
     }
 
     /**
@@ -653,7 +653,7 @@ class Builder
      * @param string|array $value
      * @param array|string $columns
      *
-     * @return Model|array|null
+     * @return static|array|null
      */
     public function find($value, $columns = [])
     {
@@ -741,7 +741,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function findOrFail($value, $columns = [])
     {
@@ -784,12 +784,13 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function findByDnOrFail($dn, $columns = [])
     {
         return $this->setDn($dn)
             ->read()
+            ->clearFilters()
             ->whereHas('objectclass')
             ->firstOrFail($columns);
     }
@@ -800,7 +801,7 @@ class Builder
      * @param string       $guid
      * @param array|string $columns
      *
-     * @return Model|array|false
+     * @return static|array|false
      */
     public function findByGuid($guid, $columns = [])
     {
@@ -821,7 +822,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function findByGuidOrFail($guid, $columns = [])
     {
@@ -840,7 +841,7 @@ class Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @return Model|array|false
+     * @return static|array|false
      */
     public function findBySid($sid, $columns = [])
     {
@@ -861,7 +862,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|array
+     * @return static|array
      */
     public function findBySidOrFail($sid, $columns = [])
     {

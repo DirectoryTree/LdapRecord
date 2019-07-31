@@ -9,6 +9,9 @@ use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Types\ActiveDirectoryQuery;
 
+/**
+ * @method ActiveDirectoryQuery query()
+ */
 class Entry extends BaseEntry implements ActiveDirectory
 {
     /**
@@ -47,7 +50,11 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * {@inheritDoc}
+     * Create a new query builder.
+     *
+     * @param LdapInterface $connection
+     *
+     * @return ActiveDirectoryQuery
      */
     public function newQueryBuilder(LdapInterface $connection)
     {

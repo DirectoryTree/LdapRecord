@@ -1,16 +1,18 @@
 <?php
 
-namespace LdapRecord\Models\ActiveDirectory;
+namespace LdapRecord\Models\OpenLDAP;
 
-class Container extends Entry
+class User extends Entry
 {
     /**
      * The object classes of the LDAP model.
-     * 
+     *
      * @var array
      */
     public static $objectClasses = [
         'top',
-        'container',
+        'person',
+        'organizationalperson',
+        'inetorgperson',
     ];
 }

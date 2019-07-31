@@ -2,28 +2,10 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use Illuminate\Support\Arr;
+use Tightenco\Collect\Support\Arr;
 
 trait HasAttributes
 {
-    /**
-     * The default output date format for all time related methods.
-     *
-     * Default format is suited for MySQL timestamps.
-     *
-     * @var string
-     */
-    public $dateFormat = 'Y-m-d H:i:s';
-
-    /**
-     * The format that is used to convert timestamps to unix timestamps.
-     *
-     * Currently set for compatibility with Active Directory.
-     *
-     * @var string
-     */
-    protected $timestampFormat = 'YmdHis.0Z';
-
     /**
      * The models attributes.
      *
@@ -155,10 +137,6 @@ trait HasAttributes
         // Normalize key.
         $key = $this->normalizeAttributeKey($key);
 
-        // If the key is equal to 'dn', we'll automatically
-        // change it to the full attribute name.
-        $key = ($key == 'dn' ? 'distinguishedname' : $key);
-
         if (is_null($subKey)) {
             // We need to ensure all attributes are set as arrays so all
             // of our model methods retrieve attributes correctly.
@@ -204,16 +182,14 @@ trait HasAttributes
         // definition. This allows us to normalize distinguished
         // names across different LDAP variants.
         if (array_key_exists('dn', $attributes)) {
-            $dn = $attributes['dn'];
-
             // In some LDAP instances the distinguished name may
             // be returned as an array. We will pull the
             // first value in this case.
-            if (is_array($dn)) {
-                $dn = reset($dn);
-            }
+            $dn = is_array($attributes['dn']) ?
+                reset($attributes['dn']) :
+                $attributes['dn'];
 
-            $this->setDistinguishedName($dn);
+            $this->setDn($dn);
         }
 
         $this->syncOriginal();

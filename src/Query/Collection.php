@@ -3,7 +3,7 @@
 namespace LdapRecord\Query;
 
 use LdapRecord\Models\Model;
-use Illuminate\Support\Collection as BaseCollection;
+use Tightenco\Collect\Support\Collection as BaseCollection;
 
 class Collection extends BaseCollection
 {

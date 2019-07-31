@@ -1,13 +1,13 @@
 <?php
 
-namespace LdapRecord\Models;
+namespace LdapRecord\Models\Relations;
 
-use LdapRecord\Models\Model;
 use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Collection;
 
-class Relation
+abstract class Relation
 {
     /**
      * @var Builder
@@ -36,19 +36,28 @@ class Relation
     protected $relationKey;
 
     /**
+     * The foreign key.
+     *
+     * @var string
+     */
+    protected $foreignKey;
+
+    /**
      * Constructor.
      * 
      * @var Builder $query
      * @var Model   $parent
-     * @var array   $related
+     * @var mixed   $related
      * @var string  $relationKey
+     * @var string  $foreignKey
      */
-    public function __construct(Builder $query, Model $parent, array $related = [], $relationKey)
+    public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey = 'dn')
     {
         $this->query = $query;
         $this->parent = $parent;
-        $this->related = $related;
+        $this->related = (array) $related;
         $this->relationKey = $relationKey;
+        $this->foreignKey = $foreignKey;
 
         $this->initRelation();
     }
@@ -77,16 +86,7 @@ class Relation
      * 
      * @return Collection
      */
-    public function get()
-    {
-        $results = $this->query->getModel()->newCollection();
-
-        foreach ($this->parent->getAttribute($this->relationKey) as $dn) {
-            $results->push($this->query->findByDn($dn));
-        }
-
-        return $this->transformResults($results);
-    }
+    abstract public function get();
 
     /**
      * Initializes the relation by setting the default model on the query.
@@ -95,15 +95,17 @@ class Relation
      */
     public function initRelation()
     {
-        $this->query->setModel(new Entry());
+        $this->query->clearFilters()->setModel(new Entry());
 
         return $this;
     }
 
     /**
      * Transforms the results by converting the models into their related.
-     * 
-     * @var Collection $results
+     *
+     * @param Collection $results
+     *
+     * @return Collection
      */
     protected function transformResults(Collection $results)
     {
@@ -130,6 +132,6 @@ class Relation
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
-        return array_search(array_map('strtolower', $model->objectclass), $related);
+        return array_search(array_map('strtolower', $model->getAttribute('objectclass')), $related);
     }
 }

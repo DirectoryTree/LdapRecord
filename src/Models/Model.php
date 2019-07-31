@@ -2,12 +2,11 @@
 
 namespace LdapRecord\Models;
 
-use DateTime;
 use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Utilities;
 use LdapRecord\Query\Builder;
-use Illuminate\Support\Arr;
+use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Collection;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -18,14 +17,7 @@ use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Connections\ConnectionException;
 use LdapRecord\Models\Attributes\DistinguishedName;
 
-/**
- * Class Model.
- *
- * Represents an LDAP record and provides the ability
- * to modify / retrieve data from the record.
- *
- * @mixin Builder
- */
+/** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
     use Concerns\HasEvents,
@@ -38,6 +30,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var bool
      */
     public $exists = false;
+
+    /**
+     * The models distinguished name.
+     *
+     * @var string|null
+     */
+    protected $dn;
 
     /**
      * The object classes of the LDAP model.
@@ -105,6 +104,30 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public static function __callStatic($method, $parameters)
     {
         return (new static)->$method(...$parameters);
+    }
+
+    /**
+     * Returns the models distinguished name.
+     *
+     * @return string|null
+     */
+    public function getDn()
+    {
+        return $this->dn;
+    }
+
+    /**
+     * Set the models distinguished name.
+     *
+     * @param string $dn
+     *
+     * @return static
+     */
+    public function setDn($dn)
+    {
+        $this->dn = $dn;
+
+        return $this;
     }
 
     /**
@@ -189,6 +212,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Creates a new relationship.
+     *
+     * @param array  $related
+     * @param string $relationKey
+     * @param string $attribute
+     *
+     * @return Relation
+     */
+    protected function newRelation(array $related, $relationKey, $attribute = 'dn')
+    {
+        return new Relation($this->query(), $this, $related, $relationKey, $attribute);
+    }
+
+    /**
      * Resolve a connection instance.
      *
      * @param string|null $connection
@@ -235,7 +272,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function __toString()
     {
-        return $this->getDn();
+        return $this->getFirstAttribute('dn');
     }
 
     /**
@@ -487,94 +524,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the model's distinguished name.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/aa366101(v=vs.85).aspx
-     *
-     * @return string|null
-     */
-    public function getDistinguishedName()
-    {
-        return $this->getFirstAttribute('distinguishedname');
-    }
-
-    /**
-     * Sets the model's distinguished name attribute.
-     *
-     * @param string|DistinguishedName $dn
-     *
-     * @return $this
-     */
-    public function setDistinguishedName($dn)
-    {
-        $this->setFirstAttribute('distinguishedname', (string) $dn);
-
-        return $this;
-    }
-
-    /**
-     * Returns the model's distinguished name string.
-     *
-     * (Alias for getDistinguishedName())
-     *
-     * @link https://msdn.microsoft.com/en-us/library/aa366101(v=vs.85).aspx
-     *
-     * @return string|null
-     */
-    public function getDn()
-    {
-        return $this->getDistinguishedName();
-    }
-
-    /**
-     * Returns a DistinguishedName object for modifying the current models DN.
-     *
-     * @return DistinguishedName
-     */
-    public function getDnBuilder()
-    {
-        // If we currently don't have a distinguished name, we'll set
-        // it to our base, otherwise we'll use our query's base DN.
-        $dn = $this->getDistinguishedName() ?: $this->newQuery()->getDn();
-
-        return $this->getNewDnBuilder($dn);
-    }
-
-    /**
-     * Returns the models distinguished name components.
-     *
-     * @param bool $removeAttributePrefixes
-     *
-     * @return array
-     */
-    public function getDnComponents($removeAttributePrefixes = true)
-    {
-        if ($components = Utilities::explodeDn($this->getDn(), $removeAttributePrefixes)) {
-            unset($components['count']);
-
-            return $components;
-        }
-
-        return [];
-    }
-
-    /**
-     * Returns the distinguished name that the model is a leaf of.
-     *
-     * @return string
-     */
-    public function getDnRoot()
-    {
-        $components = $this->getDnComponents(false);
-
-        // Shift off the beginning of the array;
-        // This contains the models RDN.
-        array_shift($components);
-
-        return implode(',', $components);
-    }
-
-    /**
      * Returns a new DistinguishedName object for building onto.
      *
      * @param string $baseDn
@@ -584,20 +533,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getNewDnBuilder($baseDn = '')
     {
         return new DistinguishedName($baseDn);
-    }
-
-    /**
-     *  Sets the model's distinguished name attribute.
-     *
-     * (Alias for setDistinguishedName())
-     *
-     * @param string $dn
-     *
-     * @return $this
-     */
-    public function setDn($dn)
-    {
-        return $this->setDistinguishedName($dn);
     }
 
     /**
@@ -627,310 +562,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the model's common name.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms675449(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getCommonName()
-    {
-        return $this->getFirstAttribute('cn');
-    }
-
-    /**
-     * Sets the model's common name.
-     *
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setCommonName($name)
-    {
-        return $this->setFirstAttribute('cn', $name);
-    }
-
-    /**
-     * Returns the model's name. An LDAP alias for the CN attribute.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms675449(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->getFirstAttribute('name');
-    }
-
-    /**
-     * Sets the model's name.
-     *
-     * @param string $name
-     *
-     * @return Model
-     */
-    public function setName($name)
-    {
-        return $this->setFirstAttribute('name', $name);
-    }
-
-    /**
-     * Returns the model's display name.
-     *
-     * @return string
-     */
-    public function getDisplayName()
-    {
-        return $this->getFirstAttribute('displayname');
-    }
-
-    /**
-     * Sets the model's display name.
-     *
-     * @param string $displayName
-     *
-     * @return $this
-     */
-    public function setDisplayName($displayName)
-    {
-        return $this->setFirstAttribute('displayname', $displayName);
-    }
-
-    /**
-     * Returns the model's samaccountname.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms679635(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getAccountName()
-    {
-        return $this->getFirstAttribute('samaccountname');
-    }
-
-    /**
-     * Sets the model's samaccountname.
-     *
-     * @param string $accountName
-     *
-     * @return Model
-     */
-    public function setAccountName($accountName)
-    {
-        return $this->setFirstAttribute('samaccountname', $accountName);
-    }
-
-    /**
-     * Returns the model's samaccounttype.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms679637(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getAccountType()
-    {
-        return $this->getFirstAttribute('samaccounttype');
-    }
-
-    /**
-     * Returns the model's `whenCreated` time.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms680924(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getCreatedAt()
-    {
-        return $this->getFirstAttribute('whencreated');
-    }
-
-    /**
-     * Returns the created at time in a mysql formatted date.
-     *
-     * @return string
-     */
-    public function getCreatedAtDate()
-    {
-        return (new DateTime())->setTimestamp($this->getCreatedAtTimestamp())->format($this->dateFormat);
-    }
-
-    /**
-     * Returns the created at time in a unix timestamp format.
-     *
-     * @return float
-     */
-    public function getCreatedAtTimestamp()
-    {
-        return DateTime::createFromFormat($this->timestampFormat, $this->getCreatedAt())->getTimestamp();
-    }
-
-    /**
-     * Returns the model's `whenChanged` time.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms680921(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getUpdatedAt()
-    {
-        return $this->getFirstAttribute('whenchanged');
-    }
-
-    /**
-     * Returns the updated at time in a mysql formatted date.
-     *
-     * @return string
-     */
-    public function getUpdatedAtDate()
-    {
-        return (new DateTime())->setTimestamp($this->getUpdatedAtTimestamp())->format($this->dateFormat);
-    }
-
-    /**
-     * Returns the updated at time in a unix timestamp format.
-     *
-     * @return float
-     */
-    public function getUpdatedAtTimestamp()
-    {
-        return DateTime::createFromFormat($this->timestampFormat, $this->getUpdatedAt())->getTimestamp();
-    }
-
-    /**
-     * Returns the Container of the current Model.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms679012(v=vs.85).aspx
-     *
-     * @return Container|Entry|bool
-     */
-    public function getObjectClass()
-    {
-        return $this->newQueryWithoutScopes()->findByDn($this->getObjectCategoryDn());
-    }
-
-    /**
-     * Returns the CN of the model's object category.
-     *
-     * @return null|string
-     */
-    public function getObjectCategory()
-    {
-        $category = $this->getObjectCategoryArray();
-
-        if (is_array($category) && array_key_exists(0, $category)) {
-            return $category[0];
-        }
-    }
-
-    /**
-     * Returns the model's object category DN in an exploded array.
-     *
-     * @return array|false
-     */
-    public function getObjectCategoryArray()
-    {
-        return Utilities::explodeDn($this->getObjectCategoryDn());
-    }
-
-    /**
-     * Returns the model's object category DN string.
-     *
-     * @return null|string
-     */
-    public function getObjectCategoryDn()
-    {
-        return $this->getFirstAttribute('objectcategory');
-    }
-
-    /**
-     * Returns the model's primary group ID.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms679375(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getPrimaryGroupId()
-    {
-        return $this->getFirstAttribute('primarygroupid');
-    }
-
-    /**
-     * Returns the model's instance type.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms676204(v=vs.85).aspx
-     *
-     * @return int
-     */
-    public function getInstanceType()
-    {
-        return $this->getFirstAttribute('instancetype');
-    }
-
-    /**
-     * Returns the distinguished name of the user who is assigned to manage this object.
-     *
-     * @return string|null
-     */
-    public function getManagedBy()
-    {
-        return $this->getFirstAttribute('managedby');
-    }
-
-    /**
-     * Returns the user model of the user who is assigned to manage this object.
-     *
-     * Returns false otherwise.
-     *
-     * @return User|bool
-     */
-    public function getManagedByUser()
-    {
-        if ($dn = $this->getManagedBy()) {
-            return $this->newQueryWithoutScopes()->findByDn($dn);
-        }
-
-        return false;
-    }
-
-    /**
-     * Sets the user who is assigned to managed this object.
-     *
-     * @param Model|string $dn
-     *
-     * @return $this
-     */
-    public function setManagedBy($dn)
-    {
-        if ($dn instanceof static) {
-            $dn = $dn->getDn();
-        }
-
-        return $this->setFirstAttribute('managedby', $dn);
-    }
-
-    /**
-     * Returns the model's max password age.
-     *
-     * @return string
-     */
-    public function getMaxPasswordAge()
-    {
-        return $this->getFirstAttribute('maxpwdage');
-    }
-
-    /**
-     * Returns the model's max password age in days.
-     *
-     * @return int
-     */
-    public function getMaxPasswordAgeDays()
-    {
-        $age = $this->getMaxPasswordAge();
-
-        return (int) (abs($age) / 10000000 / 60 / 60 / 24);
-    }
-
-    /**
      * Determine if the current model is located inside the given OU.
      *
      * If a model instance is given, the strict parameter is ignored.
@@ -952,17 +583,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $suffix = $strict ? '' : 'i';
 
         return (bool) preg_grep("/{$ou}/{$suffix}", $this->getDnBuilder()->getComponents('ou'));
-    }
-
-    /**
-     * Returns true / false if the current model is writable
-     * by checking its instance type integer.
-     *
-     * @return bool
-     */
-    public function isWritable()
-    {
-        return (int) $this->getInstanceType() === 4;
     }
 
     /**
@@ -1267,7 +887,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function getCreatableDn()
     {
-        return $this->getDnBuilder()->addCn($this->getCommonName());
+        return $this->getDnBuilder()->addCn($this->getFirstAttribute('cn'));
     }
 
     /**
@@ -1277,7 +897,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function getCreatableAttributes()
     {
-        return Arr::except($this->getAttributes(), ['distinguishedname']);
+        return Arr::except($this->getAttributes(), ['dn']);
     }
 
     /**
@@ -1337,30 +957,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function validateSecureConnection()
     {
-        if (!$this->query->getConnection()->canChangePasswords()) {
+        if (!$this->getConnection()->getLdapConnection()->canChangePasswords()) {
             throw new ConnectionException(
                 'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );
-        }
-    }
-
-    /**
-     * Converts the inserted string boolean to a PHP boolean.
-     *
-     * @param string $bool
-     *
-     * @return null|bool
-     */
-    protected function convertStringToBool($bool)
-    {
-        $bool = strtoupper($bool);
-
-        if ($bool === 'FALSE') {
-            return false;
-        } elseif ($bool === 'TRUE') {
-            return true;
-        } else {
-            return;
         }
     }
 }

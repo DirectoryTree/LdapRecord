@@ -3,19 +3,12 @@
 namespace LdapRecord\Models\Concerns;
 
 use LdapRecord\Utilities;
-use LdapRecord\Models\User;
-use LdapRecord\Models\Group;
 use LdapRecord\Query\Collection;
+use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Models\ActiveDirectory\Group;
 
 trait HasMemberOf
 {
-    /**
-     * The attribute key to retrieve groups from.
-     * 
-     * @var string
-     */
-    protected $memberOfKey = 'memberof';
-
     /**
      * The memberOf relationship.
      * 
@@ -23,21 +16,7 @@ trait HasMemberOf
      */
     public function memberOf()
     {
-        return $this->hasMemberOf([Group::class], $this->memberOfKey);
-    }
-
-    /**
-     * Returns an array of distinguished names of groups that the current model belongs to.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms677099(v=vs.85).aspx
-     *
-     * @return array
-     */
-    public function getMemberOf()
-    {
-        $dns = $this->getAttribute($this->memberOfKey);
-        
-        return is_array($dns) ? $dns : [];
+        return $this->newRelation([Group::class], 'memberof');
     }
 
     /**
@@ -52,7 +31,7 @@ trait HasMemberOf
         if (is_string($group)) {
             // If the group is a string, we'll assume the dev is passing
             // in a DN string of the group. We'll try to locate it.
-            $group = $this->query->newInstance()->findByDn($group);
+            $group = $this->query()->findByDn($group);
         }
 
         if ($group instanceof Group) {
@@ -76,7 +55,7 @@ trait HasMemberOf
         if (is_string($group)) {
             // If the group is a string, we'll assume the dev is passing
             // in a DN string of the group. We'll try to locate it.
-            $group = $this->query->newInstance()->findByDn($group);
+            $group = $this->query()->findByDn($group);
         }
 
         if ($group instanceof Group) {
@@ -97,7 +76,7 @@ trait HasMemberOf
     {
         $removed = [];
 
-        foreach ($this->getMemberOf() as $group) {
+        foreach ($this->memberOf()->get() as $group) {
             if ($this->removeGroup($group)) {
                 $removed[] = $group;
             }

@@ -2,22 +2,13 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Utilities;
 use InvalidArgumentException;
-use LdapRecord\Models\Concerns\HasMembers;
 use LdapRecord\Models\Concerns\HasMemberOf;
-use LdapRecord\Models\Concerns\HasDescription;
+use LdapRecord\Models\Model;
 
-/**
- * Class Group.
- *
- * Represents an LDAP group (security / distribution).
- */
 class Group extends Entry
 {
-    use HasMembers,
-        HasMemberOf,
-        HasDescription;
+    use HasMemberOf;
 
     /**
      * The object classes of the LDAP model.
@@ -28,6 +19,30 @@ class Group extends Entry
         'top',
         'group',
     ];
+
+    /**
+     * The groups relationship.
+     *
+     * Retrieves groups that the current group is apart of.
+     *
+     * @return \LdapRecord\Models\Relations\HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(static::class, 'member');
+    }
+
+    /**
+     * The members relationship.
+     *
+     * Retrieves members that are apart of the current group.
+     *
+     * @return \LdapRecord\Models\Relations\HasMany
+     */
+    public function members()
+    {
+        return $this->hasMany([static::class, User::class, Contact::class], 'memberof');
+    }
 
     /**
      * Returns all users apart of the current group.
@@ -45,40 +60,6 @@ class Group extends Entry
         }
 
         return $this->newCollection($members);
-    }
-
-    /**
-     * Returns the group's member names only.
-     *
-     * @return array
-     */
-    public function getMemberNames()
-    {
-        $members = [];
-
-        $dns = $this->getAttribute('member') ?: [];
-
-        foreach ($dns as $dn) {
-            $exploded = Utilities::explodeDn($dn);
-
-            if (array_key_exists(0, $exploded)) {
-                $members[] = $exploded[0];
-            }
-        }
-
-        return $members;
-    }
-
-    /**
-     * Sets the groups members using an array of user DNs.
-     *
-     * @param array $entries
-     *
-     * @return $this
-     */
-    public function setMembers(array $entries)
-    {
-        return $this->setAttribute('member', $entries);
     }
 
     /**
@@ -168,24 +149,11 @@ class Group extends Entry
      */
     public function removeMembers()
     {
-        $mod = $this->newBatchModification(
-            'member',
-            LDAP_MODIFY_BATCH_REMOVE_ALL
-        );
-
-        return $this->addModification($mod)->save();
-    }
-
-    /**
-     * Returns the group type integer.
-     *
-     * @link https://msdn.microsoft.com/en-us/library/ms675935(v=vs.85).aspx
-     *
-     * @return string
-     */
-    public function getGroupType()
-    {
-        return $this->getFirstAttribute('grouptype');
+        return $this->addModification(
+            $this->newBatchModification(
+                'member',
+                LDAP_MODIFY_BATCH_REMOVE_ALL
+        ))->save();
     }
 
     /**

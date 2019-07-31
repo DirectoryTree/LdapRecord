@@ -27,6 +27,30 @@ class ActiveDirectoryQuery extends Builder
     }
 
     /**
+     * Adds a 'member ' filter to the current query.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function whereMember($dn)
+    {
+        return $this->whereEquals('member:1.2.840.113556.1.4.1941:', $dn);
+    }
+
+    /**
+     * Adds an 'or member' filter to the current query.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function orWhereMember($dn)
+    {
+        return $this->orWhereEquals('member:1.2.840.113556.1.4.1941:', $dn);
+    }
+
+    /**
      * Adds a 'member of' filter to the current query.
      *
      * @param string $dn

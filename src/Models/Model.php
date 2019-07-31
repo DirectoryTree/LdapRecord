@@ -395,12 +395,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Reload a fresh model instance from the directory.
      *
-     * @return static|null
+     * @return static|false
      */
     public function fresh()
     {
         if (! $this->exists) {
-            return;
+            return false;
         }
 
         return $this->newQueryWithoutScopes()->findByDn($this->getDn());

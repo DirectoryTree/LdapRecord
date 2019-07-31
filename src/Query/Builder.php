@@ -215,7 +215,7 @@ class Builder
         // developers don't need to do this manually.
         $dn = is_null($baseDn) ? $this->getDn() : $baseDn;
 
-        return (new static($this->connection, $this->grammar))->setDn($dn);
+        return (new static($this->connection))->setDn($dn);
     }
 
     /**
@@ -576,7 +576,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return static|array|null
+     * @return Model|null
      */
     public function first($columns = [])
     {
@@ -597,7 +597,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function firstOrFail($columns = [])
     {
@@ -618,7 +618,7 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @return static|array|false
+     * @return Model|false
      */
     public function findBy($attribute, $value, $columns = [])
     {
@@ -640,7 +640,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function findByOrFail($attribute, $value, $columns = [])
     {
@@ -653,7 +653,7 @@ class Builder
      * @param string|array $value
      * @param array|string $columns
      *
-     * @return static|array|null
+     * @return mixed
      */
     public function find($value, $columns = [])
     {
@@ -676,7 +676,7 @@ class Builder
      * @param array $values
      * @param array $columns
      *
-     * @return \LdapRecord\Query\Collection|array
+     * @return Collection
      */
     public function findMany(array $values = [], $columns = [])
     {
@@ -718,7 +718,7 @@ class Builder
      * @param array  $values
      * @param array  $columns
      *
-     * @return \LdapRecord\Query\Collection|array
+     * @return Collection
      */
     public function findManyBy($attribute, array $values = [], $columns = [])
     {
@@ -741,7 +741,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function findOrFail($value, $columns = [])
     {
@@ -763,7 +763,7 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @return bool|Model
+     * @return Model|false
      */
     public function findByDn($dn, $columns = [])
     {
@@ -784,7 +784,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function findByDnOrFail($dn, $columns = [])
     {
@@ -801,7 +801,7 @@ class Builder
      * @param string       $guid
      * @param array|string $columns
      *
-     * @return static|array|false
+     * @return Model|false
      */
     public function findByGuid($guid, $columns = [])
     {
@@ -822,7 +822,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function findByGuidOrFail($guid, $columns = [])
     {
@@ -841,7 +841,7 @@ class Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @return static|array|false
+     * @return Model|false
      */
     public function findBySid($sid, $columns = [])
     {
@@ -862,7 +862,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return static|array
+     * @return Model
      */
     public function findBySidOrFail($sid, $columns = [])
     {

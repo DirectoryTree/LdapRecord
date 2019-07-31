@@ -16,7 +16,7 @@ trait HasRelationships
      *
      * @return HasMany
      */
-    public function hasMany($related, $relationKey, $foreignKey = 'member')
+    public function hasMany($related, $relationKey, $foreignKey = 'dn')
     {
         return new HasMany($this->query(), $this, $related, $relationKey, $foreignKey);
     }

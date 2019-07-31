@@ -13,16 +13,24 @@ class HasMany extends Relation
      */
     public function get()
     {
+        return $this->transformResults(
+            $this->query->whereRaw($this->relationKey, '=', $this->getForeignValue())->get()
+        );
+    }
+
+    /**
+     * Get the foreign key value.
+     *
+     * @return string
+     */
+    protected function getForeignValue()
+    {
         // If the foreign key is a distinguished name, we must
         // escape it to be able to properly locate models.
-        if ($this->foreignKey == 'dn' || 'distinguishedname') {
-            $foreign = $this->query->escape($this->parent->getDn(), '', LDAP_ESCAPE_DN);
-        } else {
-            $foreign = $this->parent->getFirstAttribute($this->foreignKey);
+        if ($this->foreignKey == 'dn' || $this->foreignKey == 'distinguishedname') {
+            return $this->query->escape($this->parent->getDn(), '', LDAP_ESCAPE_DN);
         }
 
-        return $this->transformResults(
-            $this->query->whereRaw($this->relationKey, '=', $foreign)->get()
-        );
+        return $this->parent->getFirstAttribute($this->foreignKey);
     }
 }

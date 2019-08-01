@@ -4,12 +4,12 @@ namespace LdapRecord\Models;
 
 use ArrayAccess;
 use JsonSerializable;
-use LdapRecord\Utilities;
-use LdapRecord\Query\Builder;
-use Tightenco\Collect\Support\Arr;
-use LdapRecord\Query\Collection;
 use InvalidArgumentException;
 use UnexpectedValueException;
+use Tightenco\Collect\Support\Arr;
+use LdapRecord\Utilities;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Collection;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Guid;
@@ -165,6 +165,22 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Begin querying the model on a given connection.
+     *
+     * @param string|null $connection
+     *
+     * @return Builder
+     */
+    public static function on($connection = null)
+    {
+        $instance = new static;
+
+        $instance->setConnection($connection);
+
+        return $instance->newQuery();
+    }
+
+    /**
      * Begin querying the LDAP model.
      *
      * @return Builder
@@ -209,20 +225,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function newQueryBuilder(LdapInterface $connection)
     {
         return new Builder($connection);
-    }
-
-    /**
-     * Creates a new relationship.
-     *
-     * @param array  $related
-     * @param string $relationKey
-     * @param string $attribute
-     *
-     * @return Relation
-     */
-    protected function newRelation(array $related, $relationKey, $attribute = 'dn')
-    {
-        return new Relation($this->query(), $this, $related, $relationKey, $attribute);
     }
 
     /**
@@ -272,7 +274,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function __toString()
     {
-        return $this->getFirstAttribute('dn');
+        return $this->getDn();
     }
 
     /**
@@ -403,7 +405,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             return false;
         }
 
-        return $this->newQueryWithoutScopes()->findByDn($this->getDn());
+        return $this->query()->findByDn($this->getDn());
     }
 
     /**
@@ -540,7 +542,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
      *
-     * @return string
+     * @return string|null
      */
     public function getObjectGuid()
     {
@@ -582,7 +584,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $suffix = $strict ? '' : 'i';
 
-        return (bool) preg_grep("/{$ou}/{$suffix}", $this->getDnBuilder()->getComponents('ou'));
+        $dn = $this->getNewDnBuilder($this->getDn());
+
+        return (bool) preg_grep("/{$ou}/{$suffix}", $dn->getComponents('ou'));
     }
 
     /**
@@ -603,45 +607,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         return $saved;
-    }
-
-    /**
-     * Updates the model.
-     *
-     * @param array $attributes The attributes to update for the current entry.
-     *
-     * @return bool
-     */
-    public function update(array $attributes = [])
-    {
-        $this->fill($attributes);
-
-        $modifications = $this->getModifications();
-
-        if (count($modifications) > 0) {
-            $this->fireModelEvent(new Events\Updating($this));
-
-            // Push the update.
-            if ($this->newQuery()->getConnection()->modifyBatch($this->getDn(), $modifications)) {
-                // Re-sync attributes.
-                $this->syncRaw();
-
-                $this->fireModelEvent(new Events\Updated($this));
-
-                // Re-set the models modifications.
-                $this->modifications = [];
-
-                return true;
-            }
-
-            // Modification failed, return false.
-            return false;
-        }
-
-        // We need to return true here because modify batch will
-        // return false if no modifications are made
-        // but this may not always be the case.
-        return true;
     }
 
     /**
@@ -676,10 +641,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Creating($this));
 
-        // Create the entry.
-        $created = $query->getConnection()->add($this->getDn(), $this->getCreatableAttributes());
-
-        if ($created) {
+        if ($query->create()) {
             // If the entry was created we'll re-sync
             // the models attributes from the server.
             $this->syncRaw();
@@ -699,19 +661,54 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param mixed  $value     The value of the new attribute
      * @param bool   $sync      Whether to re-sync all attributes
      *
+     * @throws ModelDoesNotExistException
+     *
      * @return bool
      */
     public function createAttribute($attribute, $value, $sync = true)
     {
-        if (
-            $this->exists &&
-            static::query()->getConnection()->modAdd($this->getDn(), [$attribute => $value])
-        ) {
+        if (! $this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
+        }
+
+        if (static::query()->createAttribute([$attribute => $value])) {
             if ($sync) {
                 $this->syncRaw();
             }
 
             return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Updates the model.
+     *
+     * @param array $attributes The attributes to update for the current entry.
+     *
+     * @throws ModelDoesNotExistException
+     *
+     * @return bool
+     */
+    public function update(array $attributes = [])
+    {
+        if (!$this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
+        }
+
+        $this->fill($attributes);
+
+        $this->fireModelEvent(new Events\Updating($this));
+
+        if (static::query()->update()) {
+            // Re-sync attributes.
+            $this->syncRaw();
+
+            $this->fireModelEvent(new Events\Updated($this));
+
+            // Re-set the models modifications.
+            $this->modifications = [];
         }
 
         return false;
@@ -724,51 +721,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param mixed  $value     The new value for the attribute
      * @param bool   $sync      Whether to re-sync all attributes
      *
+     * @throws ModelDoesNotExistException
+     *
      * @return bool
      */
     public function updateAttribute($attribute, $value, $sync = true)
     {
-        if (
-            $this->exists &&
-            $this->query->getConnection()->modReplace($this->getDn(), [$attribute => $value])
-        ) {
-            if ($sync) {
-                $this->syncRaw();
-            }
-
-            return true;
+        if (!$this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
         }
 
-        return false;
-    }
-
-    /**
-     * Deletes an attribute on the current entry.
-     *
-     * @param string|array $attributes The attribute(s) to delete
-     * @param bool         $sync       Whether to re-sync all attributes
-     *
-     * Delete specific values in attributes:
-     *
-     *     ["memberuid" => "username"]
-     *
-     * Delete an entire attribute:
-     *
-     *     ["memberuid" => []]
-     *
-     * @return bool
-     */
-    public function deleteAttribute($attributes, $sync = true)
-    {
-        // If we've been given a string, we'll assume we're removing a
-        // single attribute. Otherwise, we'll assume it's
-        // an array of attributes to remove.
-        $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
-
-        if (
-            $this->exists &&
-            $this->query->getConnection()->modDelete($this->getDn(), $attributes)
-        ) {
+        if (static::query()->updateAttribute([$attribute => $value])) {
             if ($sync) {
                 $this->syncRaw();
             }
@@ -793,12 +756,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function delete($recursive = false)
     {
-        $dn = $this->getDn();
-
-        if ($this->exists === false || empty($dn)) {
-            // Make sure the record exists before we can delete it.
-            // Otherwise, we will throw an exception.
-            throw (new ModelDoesNotExistException())->setModel(get_class($this));
+        if (! $this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
         }
 
         $this->fireModelEvent(new Events\Deleting($this));
@@ -806,17 +765,57 @@ abstract class Model implements ArrayAccess, JsonSerializable
         if ($recursive) {
             // If recursive is requested, we'll retrieve all direct leaf nodes
             // by executing a 'listing' and delete each resulting model.
-            $this->newQuery()->listing()->in($this->getDn())->get()->each(function (self $model) use ($recursive) {
+            $this->query()->listing()->in($this->getDn())->get()->each(function (Model $model) use ($recursive) {
                 $model->delete($recursive);
             });
         }
 
-        if ($this->query->getConnection()->delete($dn)) {
+        if (static::query()->delete()) {
             // If the deletion was successful, we'll mark the model
             // as non-existing and fire the deleted event.
             $this->exists = false;
 
             $this->fireModelEvent(new Events\Deleted($this));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Deletes an attribute on the current entry.
+     *
+     * @param string|array $attributes The attribute(s) to delete
+     * @param bool         $sync       Whether to re-sync all attributes
+     *
+     * Delete specific values in attributes:
+     *
+     *     ["memberuid" => "username"]
+     *
+     * Delete an entire attribute:
+     *
+     *     ["memberuid" => []]
+     *
+     * @throws ModelDoesNotExistException
+     *
+     * @return bool
+     */
+    public function deleteAttribute($attributes, $sync = true)
+    {
+        if (!$this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
+        }
+
+        // If we've been given a string, we'll assume we're removing a
+        // single attribute. Otherwise, we'll assume it's
+        // an array of attributes to remove.
+        $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
+
+        if (static::query()->deleteAttribute($attributes)) {
+            if ($sync) {
+                $this->syncRaw();
+            }
 
             return true;
         }
@@ -831,6 +830,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param Model|string $newParentDn  The new parent of the current model.
      * @param bool         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
+     *
+     * @throws ModelDoesNotExistException
      *
      * @return bool
      */
@@ -857,17 +858,21 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param Model|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
      * @param bool|true         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
+     * @throws ModelDoesNotExistException
+     *
      * @return bool
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
+        if (!$this->exists) {
+            throw (new ModelDoesNotExistException())->setModel($this);
+        }
+
         if ($newParentDn instanceof self) {
             $newParentDn = $newParentDn->getDn();
         }
 
-        $moved = $this->query->getConnection()->rename($this->getDn(), $rdn, $newParentDn, $deleteOldRdn);
-
-        if ($moved) {
+        if (static::query()->rename($rdn, $newParentDn, $deleteOldRdn)) {
             // If the model was successfully moved, we'll set its
             // new DN so we can sync it's attributes properly.
             $this->setDn("{$rdn},{$newParentDn}");
@@ -881,23 +886,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Constructs a new distinguished name that is creatable in the directory.
+     * Builds a new distinguished name that is creatable.
      *
-     * @return DistinguishedName|string
+     * @return DistinguishedName
      */
     protected function getCreatableDn()
     {
-        return $this->getDnBuilder()->addCn($this->getFirstAttribute('cn'));
-    }
-
-    /**
-     * Returns the models creatable attributes.
-     *
-     * @return mixed
-     */
-    protected function getCreatableAttributes()
-    {
-        return Arr::except($this->getAttributes(), ['dn']);
+        return $this->getNewDnBuilder($this->getDn())->addCn($this->getFirstAttribute('cn'));
     }
 
     /**

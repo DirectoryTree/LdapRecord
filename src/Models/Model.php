@@ -671,6 +671,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->fill($attributes);
 
+        // Here we will populate the models object class if it
+        // does not already have one. An LDAP record
+        // cannot be created without it.
+        if (!$this->hasAttribute('objectclass')) {
+            $this->setAttribute('objectclass', $this::$objectClasses);
+        }
+
         $query = static::query();
 
         if (empty($this->getDn())) {

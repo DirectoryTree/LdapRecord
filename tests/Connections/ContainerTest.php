@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Tests\Connections;
 
-use LdapRecord\Connections\ContainerException;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\Connection;
+use LdapRecord\Connections\ContainerException;
 
 class ContainerTest extends TestCase
 {

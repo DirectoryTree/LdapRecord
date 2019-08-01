@@ -109,9 +109,9 @@ interface LdapInterface
     public function getName();
 
     /**
-     * Get the current connection.
+     * Get the underlying connection resource.
      *
-     * @return mixed
+     * @return resource|null
      */
     public function getConnection();
 
@@ -120,9 +120,9 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
-     * @return mixed
+     * @return array
      */
     public function getEntries($searchResult);
 
@@ -131,7 +131,7 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
      * @return int
      */
@@ -155,9 +155,9 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
-     * @return mixed
+     * @return resource
      */
     public function getFirstEntry($searchResult);
 
@@ -166,9 +166,9 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param $entry
+     * @param resource $entry
      *
-     * @return mixed
+     * @return resource
      */
     public function getNextEntry($entry);
 
@@ -177,9 +177,9 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param $entry
+     * @param resource $entry
      *
-     * @return mixed
+     * @return array|false
      */
     public function getAttributes($entry);
 
@@ -223,7 +223,7 @@ interface LdapInterface
      * @param int   $option
      * @param mixed $value
      *
-     * @return mixed
+     * @return bool
      */
     public function setOption($option, $value);
 
@@ -232,7 +232,7 @@ interface LdapInterface
      *
      * @param array $options
      *
-     * @return mixed
+     * @return void
      */
     public function setOptions(array $options = []);
 
@@ -255,7 +255,7 @@ interface LdapInterface
      * @param string|array $hostname
      * @param int          $port
      *
-     * @return mixed
+     * @return resource|false
      */
     public function connect($hostname = [], $port = 389);
 
@@ -266,7 +266,7 @@ interface LdapInterface
      *
      * @throws ConnectionException If starting TLS fails.
      *
-     * @return mixed
+     * @return bool
      */
     public function startTLS();
 
@@ -309,7 +309,7 @@ interface LdapInterface
      * @param int    $size
      * @param int    $time
      *
-     * @return mixed
+     * @return resource
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0);
 
@@ -325,7 +325,7 @@ interface LdapInterface
      * @param int   $size
      * @param int   $time
      *
-     * @return mixed
+     * @return resource
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0);
 
@@ -341,7 +341,7 @@ interface LdapInterface
      * @param int    $size
      * @param int    $time
      *
-     * @return mixed
+     * @return resource
      */
     public function listing($dn, $filter, array $attributes, $onlyAttributes = false, $size = 0, $time = 0);
 
@@ -402,7 +402,7 @@ interface LdapInterface
      * @param string $dn
      * @param array  $values
      *
-     * @return mixed
+     * @return bool
      */
     public function modifyBatch($dn, array $values);
 
@@ -414,7 +414,7 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return mixed
+     * @return bool
      */
     public function modAdd($dn, array $entry);
 
@@ -426,7 +426,7 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return mixed
+     * @return bool
      */
     public function modReplace($dn, array $entry);
 
@@ -438,7 +438,7 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return mixed
+     * @return bool
      */
     public function modDelete($dn, array $entry);
 
@@ -451,7 +451,7 @@ interface LdapInterface
      * @param bool   $isCritical
      * @param string $cookie
      *
-     * @return mixed
+     * @return bool
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '');
 
@@ -463,7 +463,7 @@ interface LdapInterface
      * @param $result
      * @param string $cookie
      *
-     * @return mixed
+     * @return bool
      */
     public function controlPagedResultResponse($result, &$cookie);
 

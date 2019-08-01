@@ -26,7 +26,7 @@ class Ldap implements LdapInterface
     /**
      * The active LDAP connection.
      *
-     * @var resource
+     * @var resource|null
      */
     protected $connection;
 

@@ -304,6 +304,31 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Dynamically retrieve attributes on the object.
+     *
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    public function __get($key)
+    {
+        return $this->getAttribute($key);
+    }
+
+    /**
+     * Dynamically set attributes on the object.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function __set($key, $value)
+    {
+        return $this->setAttribute($key, $value);
+    }
+
+    /**
      * Determine if the given offset exists.
      *
      * @param string $offset
@@ -312,7 +337,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetExists($offset)
     {
-        return isset($this->{$offset});
+        return ! is_null($this->getAttribute($offset));
     }
 
     /**
@@ -324,7 +349,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetGet($offset)
     {
-        return $this->{$offset};
+        return $this->getAttribute($offset);
     }
 
     /**
@@ -337,7 +362,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetSet($offset, $value)
     {
-        $this->{$offset} = $value;
+        $this->setAttribute($offset, $value);
     }
 
     /**
@@ -349,7 +374,31 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetUnset($offset)
     {
-        unset($this->{$offset});
+        unset($this->attributes[$offset]);
+    }
+
+    /**
+     * Determine if an attribute exists on the model.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return $this->offsetExists($key);
+    }
+
+    /**
+     * Unset an attribute on the model.
+     *
+     * @param string $key
+     *
+     * @return void
+     */
+    public function __unset($key)
+    {
+        $this->offsetUnset($key);
     }
 
     /**

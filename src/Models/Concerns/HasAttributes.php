@@ -21,31 +21,6 @@ trait HasAttributes
     protected $original = [];
 
     /**
-     * Dynamically retrieve attributes on the object.
-     *
-     * @param mixed $key
-     *
-     * @return bool
-     */
-    public function __get($key)
-    {
-        return $this->getAttribute($key);
-    }
-
-    /**
-     * Dynamically set attributes on the object.
-     *
-     * @param mixed $key
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function __set($key, $value)
-    {
-        return $this->setAttribute($key, $value);
-    }
-
-    /**
      * Synchronizes the models original attributes
      * with the model's current attributes.
      *

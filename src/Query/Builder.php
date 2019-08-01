@@ -379,6 +379,88 @@ class Builder
     }
 
     /**
+     * Creates the current model in the directory.
+     *
+     * @return bool
+     */
+    public function create()
+    {
+        return (new Operations\Create($this->getConnection(), $this->getModel()))->execute();
+    }
+
+    /**
+     * Creates the attributes on the current model.
+     *
+     * @param array $attributes
+     *
+     * @return bool
+     */
+    public function createAttribute(array $attributes)
+    {
+        return (new Operations\CreateAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
+    }
+
+    /**
+     * Updates the current model.
+     *
+     * @return bool
+     */
+    public function update()
+    {
+        return (new Operations\Update($this->getConnection(), $this->getModel()))->execute();
+    }
+
+    /**
+     * Updates the attributes on the current model.
+     *
+     * @param array $attributes
+     *
+     * @return bool
+     */
+    public function updateAttribute(array $attributes)
+    {
+        return (new Operations\UpdateAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
+    }
+
+    /**
+     * Deletes the current model.
+     *
+     * @return bool
+     */
+    public function delete()
+    {
+        return (new Operations\Delete($this->getConnection(), $this->getModel()))->execute();
+    }
+
+    /**
+     * Deletes the attributes on the current model.
+     *
+     * @param array $attributes
+     *
+     * @return bool
+     */
+    public function deleteAttribute(array $attributes)
+    {
+        return (new Operations\DeleteAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
+    }
+
+    /**
+     * Renames the current model.
+     *
+     * @param string $rdn
+     * @param string $newParentDn
+     * @param bool   $deleteOldRdn
+     *
+     * @return bool
+     */
+    public function rename($rdn, $newParentDn, $deleteOldRdn = true)
+    {
+        return (new Operations\Rename(
+            $this->getConnection(), $this->getModel(), $rdn, $newParentDn, $deleteOldRdn
+        ))->execute();
+    }
+
+    /**
      * Paginates the current LDAP query.
      *
      * @param int  $pageSize
@@ -597,7 +679,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model
+     * @return Model|static
      */
     public function firstOrFail($columns = [])
     {
@@ -618,14 +700,14 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @return Model|false
+     * @return Model|static|null
      */
     public function findBy($attribute, $value, $columns = [])
     {
         try {
             return $this->findByOrFail($attribute, $value, $columns);
         } catch (ModelNotFoundException $e) {
-            return false;
+            return;
         }
     }
 
@@ -644,7 +726,7 @@ class Builder
      */
     public function findByOrFail($attribute, $value, $columns = [])
     {
-        return $this->clearFilters()->whereEquals($attribute, $value)->firstOrFail($columns);
+        return $this->whereEquals($attribute, $value)->firstOrFail($columns);
     }
 
     /**
@@ -653,7 +735,7 @@ class Builder
      * @param string|array $value
      * @param array|string $columns
      *
-     * @return mixed
+     * @return Model|Collection|static|null
      */
     public function find($value, $columns = [])
     {
@@ -741,7 +823,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model
+     * @return Model|static
      */
     public function findOrFail($value, $columns = [])
     {
@@ -763,14 +845,14 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @return Model|false
+     * @return Model|static|null
      */
     public function findByDn($dn, $columns = [])
     {
         try {
             return $this->findByDnOrFail($dn, $columns);
         } catch (ModelNotFoundException $e) {
-            return false;
+            return;
         }
     }
 
@@ -784,7 +866,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model
+     * @return Model|static
      */
     public function findByDnOrFail($dn, $columns = [])
     {
@@ -801,14 +883,14 @@ class Builder
      * @param string       $guid
      * @param array|string $columns
      *
-     * @return Model|false
+     * @return Model|static|null
      */
     public function findByGuid($guid, $columns = [])
     {
         try {
             return $this->findByGuidOrFail($guid, $columns);
         } catch (ModelNotFoundException $e) {
-            return false;
+            return;
         }
     }
 
@@ -822,7 +904,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model
+     * @return Model|static
      */
     public function findByGuidOrFail($guid, $columns = [])
     {
@@ -841,14 +923,14 @@ class Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @return Model|false
+     * @return Model|static
      */
     public function findBySid($sid, $columns = [])
     {
         try {
             return $this->findBySidOrFail($sid, $columns);
         } catch (ModelNotFoundException $e) {
-            return false;
+            return;
         }
     }
 
@@ -862,7 +944,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model
+     * @return Model|static
      */
     public function findBySidOrFail($sid, $columns = [])
     {
@@ -1394,7 +1476,7 @@ class Builder
     }
 
     /**
-     * Clear the query builders filters.
+     * Clear the query filters.
      *
      * @return $this
      */

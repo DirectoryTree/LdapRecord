@@ -6,7 +6,6 @@ use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Connection;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Connections\DetailedError;
-use LdapRecord\Models\Factory as ModelFactory;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class ConnectionTest extends TestCase
@@ -219,12 +218,5 @@ class ConnectionTest extends TestCase
         $c->setLdapConnection($ldap);
 
         $this->assertInstanceOf(DomainConfiguration::class, $c->getConfiguration());
-    }
-
-    public function test_make()
-    {
-        $m = $this->newConnection();
-
-        $this->assertInstanceOf(ModelFactory::class, $m->make());
     }
 }

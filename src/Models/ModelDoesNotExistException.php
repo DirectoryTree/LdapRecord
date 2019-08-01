@@ -14,22 +14,24 @@ class ModelDoesNotExistException extends LdapRecordException
     /**
      * The class name of the model that does not exist.
      *
-     * @var string
+     * @var Model
      */
     protected $model;
 
     /**
      * Sets the model that does not exist.
      *
-     * @param string $model
+     * @param Model $model
      *
      * @return ModelDoesNotExistException
      */
-    public function setModel($model)
+    public function setModel(Model $model)
     {
         $this->model = $model;
 
-        $this->message = "Model [{$model}] does not exist.";
+        $class = get_class($model);
+
+        $this->message = "Model [{$class}] does not exist.";
 
         return $this;
     }

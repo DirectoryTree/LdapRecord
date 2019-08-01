@@ -182,11 +182,7 @@ class Container
      */
     public function setDefault($name = null)
     {
-        $name = $name ?? $this->default;
-
-        if ($this->get($name) instanceof ConnectionInterface) {
-            $this->default = $name;
-        }
+        $this->default = $name;
 
         return $this;
     }

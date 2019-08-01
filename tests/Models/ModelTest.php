@@ -2,1087 +2,115 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Manager;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\Entry;
-use LdapRecord\Models\Model;
-use LdapRecord\Models\BatchModification;
-use LdapRecord\Models\Events\Created;
-use LdapRecord\Models\Events\Creating;
-use LdapRecord\Models\Events\Deleted;
-use LdapRecord\Models\Events\Deleting;
-use LdapRecord\Models\Events\Updated;
-use LdapRecord\Models\Events\Updating;
-use LdapRecord\Schemas\OpenLDAP;
-use LdapRecord\Schemas\ActiveDirectory;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Connections\ContainerException;
 
 class ModelTest extends TestCase
 {
-    protected function newModel(array $attributes = [], $builder = null, $schema = null)
+    public function test_model_must_have_default_connection()
     {
-        $builder = $builder ?: $this->newBuilder();
-
-        return new Entry($attributes, $builder, $schema);
+        $model = new Entry();
+        $this->assertFalse($model->exists);
+        $this->expectException(ContainerException::class);
+        $model->getConnection();
     }
 
-    public function test_construct()
+    public function test_fill()
     {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-        ];
-
-        $entry = $this->newModel($attributes, $this->newBuilder());
-
-        $this->assertEquals($attributes, $entry->getAttributes());
+        $this->assertEmpty((new Entry())->getDn());
+        $this->assertEmpty((new Entry())->getAttributes());
+        $this->assertNull((new Entry())->getAttribute(null));
+        $this->assertEquals(['foo' => ['bar']], (new Entry(['foo' => 'bar']))->getAttributes());
+        $this->assertEquals(['bar' => ['baz']], (new Entry())->fill(['bar' => 'baz'])->getAttributes());
+        $this->assertEquals(2, ((new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes()));
     }
 
-    public function test_set_raw_attributes()
+    public function test_raw_attribute_filling_sets_dn()
     {
-        $rawAttributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-        ];
+        $model = new Entry();
 
-        $connection = $this->newLdapMock();
+        $model->setRawAttributes(['dn' => 'bar']);
+        $this->assertTrue($model->exists);
+        $this->assertEquals('bar', $model->getDn());
 
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$rawAttributes]);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($rawAttributes);
-
-        $this->assertTrue($entry->exists);
-        $this->assertEquals($rawAttributes, $entry->getAttributes());
+        $model->setRawAttributes(['dn' => ['baz']]);
+        $this->assertEquals('baz', $model->getDn());
+        $this->assertEmpty($model->getAttributes());
     }
 
-    public function test_set_attribute()
+    public function test_raw_attribute_filling_sets_original()
     {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $entry->setCommonName('New Common Name');
-        $entry->samaccountname = ['New Account Name'];
-
-        $this->assertEquals('New Common Name', $entry->getCommonName());
-        $this->assertEquals(['New Account Name'], $entry->samaccountname);
+        $model = new Entry();
+        $model->setRawAttributes(['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $model->getOriginal());
     }
 
-    public function test_set_attribute_forces_lowercase_keys()
+    public function test_raw_attribute_filling_removes_count_keys_recursively()
     {
-        $entry = $this->newModel();
+        $model = new Entry();
 
-        $entry->setAttribute('TEST', 'test');
-
-        $this->assertEquals('test', key($entry->getAttributes()));
-    }
-
-    public function test_update_attribute()
-    {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-            'dn' => 'dc=corp,dc=org',
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $connection->shouldReceive('modReplace')->once()->withArgs(['dc=corp,dc=org', ['cn' => 'John Doe']])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-        $this->assertTrue($entry->updateAttribute('cn', 'John Doe'));
-    }
-
-    public function test_delete_attribute_with_string()
-    {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-            'dn' => 'dc=corp,dc=org',
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $connection->shouldReceive('modDelete')->once()->withArgs(['dc=corp,dc=org', ['cn' => []]])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $this->assertTrue($entry->deleteAttribute('cn'));
-    }
-
-    public function test_delete_attribute_with_array()
-    {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-            'dn' => 'dc=corp,dc=org',
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $connection->shouldReceive('modDelete')->once()->withArgs(['dc=corp,dc=org', [
-            'cn' => [], 'memberof' => []
-        ]])->andReturn(true);
-
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $this->assertTrue($entry->deleteAttribute([
-            'cn' => [],
-            'memberof' => [],
-        ]));
-    }
-
-    public function test_create_attribute()
-    {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-            'dn' => 'dc=corp,dc=org',
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $connection->shouldReceive('modAdd')->once()->withArgs(['dc=corp,dc=org', ['givenName' => 'John Doe']])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $this->assertTrue($entry->createAttribute('givenName', 'John Doe'));
-    }
-
-    public function test_modifications()
-    {
-        $attributes = [
-            'cn' => ['Common Name'],
-            'samaccountname' => ['Account Name'],
-            'name' => ['Name'],
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('read')->once()->andReturn($connection);
-        $connection->shouldReceive('getEntries')->once()->andReturn([$attributes]);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $entry->cn = null;
-        $entry->samaccountname = 'Changed';
-        $entry->test = 'New Attribute';
-        $entry->setName('New Name');
-
-        $modifications = $entry->getModifications();
-
-        // Removed 'cn' attribute
-        $this->assertEquals('cn', $modifications[0]['attrib']);
-        $this->assertFalse(isset($modifications[0]['values']));
-        $this->assertEquals(18, $modifications[0]['modtype']);
-
-        // Modified 'samaccountname' attribute
-        $this->assertEquals('samaccountname', $modifications[1]['attrib']);
-        $this->assertEquals(['Changed'], $modifications[1]['values']);
-        $this->assertEquals(3, $modifications[1]['modtype']);
-
-        // Modified 'name' attribute
-        $this->assertEquals('name', $modifications[2]['attrib']);
-        $this->assertEquals(['New Name'], $modifications[2]['values']);
-        $this->assertEquals(3, $modifications[2]['modtype']);
-
-        // New 'test' attribute
-        $this->assertEquals('test', $modifications[3]['attrib']);
-        $this->assertEquals(['New Attribute'], $modifications[3]['values']);
-        $this->assertEquals(1, $modifications[3]['modtype']);
-    }
-
-    public function test_create()
-    {
-        $attributes = [
-            'cn' => ['John Doe'],
-            'givenname' => ['John'],
-            'sn' => ['Doe'],
-        ];
-
-        $returnedRaw = [
+        $model->setRawAttributes([
             'count' => 1,
-            [
-                'cn' => ['John Doe'],
-                'givenname' => ['John'],
-                'sn' => ['Doe'],
-            ],
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('add')->withArgs(['cn=John Doe,ou=Accounting,dc=corp,dc=org', $attributes])->andReturn(true);
-        $connection->shouldReceive('read')->withArgs(['cn=John Doe,ou=Accounting,dc=corp,dc=org', '(objectclass=*)', [], false, 0])->andReturn('resource');
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('close')->andReturn(true);
-
-        $entry = $this->newModel($attributes, $this->newBuilder($connection));
-
-        $entry->setDn('cn=John Doe,ou=Accounting,dc=corp,dc=org');
-
-        $this->assertTrue($entry->create());
-        $this->assertEquals($attributes['cn'][0], $entry->getCommonName());
-        $this->assertEquals($attributes['sn'][0], $entry->sn[0]);
-    }
-
-    public function test_update()
-    {
-        $connection = $this->newLdapMock();
-
-        $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
-
-        $attributes = ['dn' => $dn];
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($attributes);
-
-        $connection->shouldReceive('modifyBatch')->once()->withArgs([$dn, []])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($attributes);
-
-        $this->assertTrue($entry->update());
-    }
-
-    public function test_save_for_create()
-    {
-        $connection = $this->newLdapMock();
-
-        $attributes = [
-            'cn' => ['John Doe'],
-            'givenname' => ['John'],
-            'sn' => ['Doe'],
-        ];
-
-        $dn = 'cn=John Doe,ou=Accounting,dc=corp,dc=org';
-
-        $returnedRaw = [
-            'count' => 1,
-            [
-                'cn' => ['John Doe'],
-                'givenname' => ['John'],
-                'sn' => ['Doe'],
-                'dn' => $dn,
-            ],
-        ];
-
-        $connection->shouldReceive('add')->withArgs([$dn, $attributes])->andReturn(true);
-        $connection->shouldReceive('read')->withArgs([$dn, '(objectclass=*)', [], false, 0])->andReturn('resource');
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel($attributes, $this->newBuilder($connection));
-
-        $entry->setDn($dn);
-
-        $this->assertTrue($entry->save());
-        $this->assertEquals($attributes['cn'][0], $entry->getCommonName());
-        $this->assertEquals($attributes['sn'][0], $entry->sn[0]);
-        $this->assertEquals($attributes['givenname'][0], $entry->givenname[0]);
-    }
-
-    public function test_save_for_create_with_attributes()
-    {
-        $connection = $this->newLdapMock();
-
-        $attributes = [
-            'cn' => ['John Doe'],
-            'givenname' => ['John'],
-            'sn' => ['Doe'],
-        ];
-
-        $dn = 'cn=John Doe,ou=Accounting,dc=corp,dc=org';
-
-        $returnedRaw = [
-            'count' => 1,
-            [
-                'cn' => ['John Doe'],
-                'givenname' => ['John'],
-                'sn' => ['Doe'],
-                'dn' => $dn,
-            ],
-        ];
-
-        $connection->shouldReceive('add')->withArgs([$dn, $attributes])->andReturn(true);
-        $connection->shouldReceive('read')->withArgs([$dn, '(objectclass=*)', [], false, 0])->andReturn('resource');
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setDn($dn);
-
-        $this->assertTrue($entry->save($attributes));
-        $this->assertEquals($attributes['cn'][0], $entry->getCommonName());
-        $this->assertEquals($attributes['sn'][0], $entry->sn[0]);
-        $this->assertEquals($attributes['givenname'][0], $entry->givenname[0]);
-    }
-
-    public function test_save_for_update()
-    {
-        $connection = $this->newLdapMock();
-
-        $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
-
-        $returnedRaw = [['dn' => $dn]];
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('modifyBatch')->once()->withArgs([$dn, []])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes(['dn' => $dn]);
-
-        $this->assertTrue($entry->save());
-    }
-
-    public function test_save_for_update_with_attributes()
-    {
-        $connection = $this->newLdapMock();
-
-        $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
-
-        $returnedRaw = [['dn' => $dn]];
-
-        $attributes = [
-            'cn' => ['John Doe'],
-            'sn' => ['Doe'],
-        ];
-
-        $modifications = [
-            [
-                'attrib' => 'cn',
-                'modtype' => 1,
-                'values' => [
-                    'John Doe',
-                ]
-            ],
-            [
-                'attrib' => 'sn',
-                'modtype' => 1,
-                'values' => [
-                    'Doe',
-                ]
-            ]
-        ];
-
-        $connection->shouldReceive('read')->andReturn($connection);
-        $connection->shouldReceive('getEntries')->andReturn($returnedRaw);
-
-        $connection->shouldReceive('modifyBatch')->once()->withArgs([$dn, $modifications])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes(['dn' => $dn]);
-
-        $this->assertTrue($entry->save($attributes));
-    }
-
-    public function test_delete_failure()
-    {
-        $this->expectException(\LdapRecord\LdapRecordException::class);
-
-        $entry = $this->newModel();
-
-        $entry->delete();
-    }
-
-    public function test_delete()
-    {
-        $connection = $this->newLdapMock();
-
-        $dn = 'cn=Testing,ou=Accounting,dc=corp,dc=org';
-
-        $connection->shouldReceive('delete')->once()->withArgs([$dn])->andReturn(true);
-        $connection->shouldReceive('close')->once()->andReturn(true);
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes(['dn' => $dn]);
-
-        $this->assertTrue($entry->delete());
-    }
-
-    public function test_created_and_updated_at()
-    {
-        $date = '20150519034950.0Z';
-
-        $model = $this->newModel()->setRawAttributes([
-            'whencreated' => [$date],
-            'whenchanged' => [$date],
-        ]);
-
-        $this->assertEquals($date, $model->getCreatedAt());
-        $this->assertEquals($date, $model->getUpdatedAt());
-        $this->assertEquals('2015-05-19 03:49:50', $model->getCreatedAtDate());
-        $this->assertEquals('2015-05-19 03:49:50', $model->getUpdatedAtDate());
-        $this->assertInternalType('int', $model->getCreatedAtTimestamp());
-        $this->assertInternalType('int', $model->getUpdatedAtTimestamp());
-    }
-
-    public function test_convert_string_to_bool()
-    {
-        $entry = $this->mock('LdapRecord\Models\Entry')->makePartial();
-
-        $entry->setSchema(new ActiveDirectory());
-
-        $entry->shouldAllowMockingProtectedMethods();
-
-        $this->assertNull($entry->convertStringToBool('test'));
-
-        $this->assertTrue($entry->convertStringToBool('true'));
-        $this->assertTrue($entry->convertStringToBool('TRUE'));
-        $this->assertTrue($entry->convertStringToBool('TRue'));
-
-        $this->assertFalse($entry->convertStringToBool('false'));
-        $this->assertFalse($entry->convertStringToBool('FALSE'));
-        $this->assertFalse($entry->convertStringToBool('FAlse'));
-    }
-
-    public function test_recursive_filtering_for_raw_attributes()
-    {
-        $rawAttributes = [
-            'count' => 1,
-            'one' => [
+            'foo' => [
                 'count' => 1,
-                'two' => [
+                'bar' => [
                     'count' => 1,
-                    'three' => [
-                        'count' => 1,
-                        'four' => [
-                            'count' => 1,
-                        ],
+                    'baz' => [
+                        'count' => 1
                     ],
                 ],
             ],
-        ];
+        ]);
 
-        $expected = [
-            'one' => [
-                'two' => [
-                    'three' => [
-                        'four' => [],
-                    ],
+        $this->assertEquals([
+            'foo' => [
+                'bar' => [
+                    'baz' => []
                 ],
             ],
-        ];
-
-        $entry = $this->newModel();
-
-        $entry->setRawAttributes($rawAttributes);
-
-        $this->assertEquals($expected, $entry->getAttributes());
+        ], $model->getAttributes());
     }
 
-    public function test_rename()
+    public function test_attribute_manipulation()
     {
-        $rawAttributes = [
-            'dn' => 'cn=Doe,dc=corp,dc=acme,dc=org',
-        ];
+        $model = new Entry();
+        $model->cn = 'foo';
+        $this->assertEquals(['foo'], $model->cn);
+        $this->assertTrue(isset($model->cn));
+        unset($model->cn);
+        $this->assertFalse(isset($model->cn));
 
-        $connection = $this->newLdapMock();
-
-        $args = [
-            'cn=Doe,dc=corp,dc=acme,dc=org',
-            'cn=John',
-            'ou=Accounts,dc=corp,dc=amce,dc=org',
-            true,
-        ];
-
-        $connection
-            ->shouldReceive('rename')->once()->withArgs($args)->andReturn(true)
-            ->shouldReceive('read')->once()
-            ->shouldReceive('getEntries')->once();
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($rawAttributes);
-
-        $this->assertTrue($entry->rename($args[1], $args[2]));
+        $model->setAttribute('bar', 1);
+        $model->setFirstAttribute('baz', 2);
+        $this->assertEquals([1], $model->getAttribute('bar'));
+        $this->assertEquals([2], $model->getAttribute('baz'));
     }
 
-    public function test_move()
+    public function test_attribute_keys_are_normalized()
     {
-        $rawAttributes = [
-            'dn' => 'cn=Doe,dc=corp,dc=acme,dc=org',
-        ];
-
-        $connection = $this->newLdapMock();
-
-        $args = [
-            'cn=Doe,dc=corp,dc=acme,dc=org',
-            'cn=Doe',
-            'ou=Accounts,dc=corp,dc=amce,dc=org',
-            true,
-        ];
-
-        $connection
-            ->shouldReceive('rename')->once()->withArgs($args)->andReturn(true)
-            ->shouldReceive('read')->once()
-            ->shouldReceive('getEntries')->once();
-
-        $entry = $this->newModel([], $this->newBuilder($connection));
-
-        $entry->setRawAttributes($rawAttributes);
-
-        $this->assertTrue($entry->move($args[2]));
+        $model = new Entry();
+        $model->FOO = 1;
+        $model->BARbAz = 2;
+        $this->assertEquals([1], $model->foo);
+        $this->assertEquals([1], $model->getAttribute('foo'));
+        $this->assertEquals([2], $model->barbaz);
+        $this->assertEquals([2], $model->getAttribute('barbaz'));
     }
 
-    public function test_dn_is_constructed_when_none_given_and_create_is_called()
+    public function test_dirty_attributes()
     {
-        $connection = $this->newLdapMock();
-
-        $addArgs = [
-            'cn=John Doe,dc=corp,dc=local',
-            ['cn' => ['John Doe']],
-        ];
-
-        $readArgs = [
-            'cn=John Doe,dc=corp,dc=local',
-            '(objectclass=*)',
-            ['*'],
-            false,
-            1
-        ];
-
-        $connection->shouldReceive('add')->once()->withArgs($addArgs)->andReturn(true);
-        $connection->shouldReceive('read')->once()->withArgs($readArgs)->andReturn(true);
-        $connection->shouldReceive('getEntries')->once()->andReturn([]);
-
-        $builder = $this->newBuilder($connection);
-
-        $builder->setDn('DC=corp,DC=local');
-
-        $entry = $this->newModel([], $builder);
-
-        $entry->setCommonName('John Doe');
-
-        $this->assertTrue($entry->create());
-    }
-
-    public function test_get_original()
-    {
-        $model = $this->newModel()
-            ->setRawAttributes(['cn' => ['John Doe']]);
-
-        $model->cn = 'New Common Name';
-
-        $this->assertEquals(['New Common Name'], $model->getAttributes()['cn']);
-        $this->assertEquals(['John Doe'], $model->getOriginal()['cn']);
-    }
-
-    public function test_set_first_attribute()
-    {
-        $model = $this->newModel();
-
-        $model->setFirstAttribute('cn', 'John Doe');
-
-        $this->assertEquals(['cn' => ['John Doe']], $model->getAttributes());
-    }
-
-    public function test_get_first_attribute()
-    {
-        $model = $this->newModel([
-            'cn' => 'John Doe',
-        ]);
-
-        $this->assertEquals('John Doe', $model->getFirstAttribute('cn'));
-    }
-
-    public function test_sync_raw()
-    {
-        $connection = $this->newLdapMock();
-
-        $model = $this->newModel([], $this->newBuilder($connection));
-
-        $dn = 'cn=John Doe,dc=corp,dc=acme';
-
-        $model->setRawAttributes(compact('dn'));
-
-        $connection->shouldReceive('read')->once()->withArgs([$dn, "(objectclass=*)", ['*'], false, 1]);
-        $connection->shouldReceive('getEntries')->once()->andReturn(['count' => 1, ['dn' => 'cn=Jane Doe']]);
-
-        $this->assertTrue($model->syncRaw());
-        $this->assertEquals('cn=Jane Doe', $model->getDn());
-    }
-
-    public function test_modifications_are_cleared_on_save()
-    {
-        $connection = $this->newLdapMock();
-
-        $modification = new BatchModification('cn', 3, ['Jane Doe']);
-
-        $connection->shouldReceive('modifyBatch')->once()->withArgs(['cn=John Doe,dc=acme,dc=org', [$modification->get()]])->andReturn(true);
-        $connection->shouldReceive('read')->once()->andReturn(true);
-        $connection->shouldReceive('getEntries')->once();
-
-        $builder = $this->newBuilder($connection);
-
-        $model = $this->newModel([], $builder)
-            ->setRawAttributes([
-                'dn' => 'cn=John Doe,dc=acme,dc=org',
-                'cn' => ['John Doe']
-            ]);
-
-        $model->addModification($modification);
-
-        $this->assertCount(1, $model->getModifications());
-
-        $model->save();
-
-        $this->assertCount(0, $model->getModifications());
-    }
-
-    public function test_adding_modification()
-    {
-        $model = $this->newModel();
-
-        $mod = ['modtype' => 18, 'attrib' => 'mail'];
-
-        $model->addModification($mod);
-
-        $this->assertEquals($mod, $model->getModifications()[0]);
-    }
-
-    public function test_adding_invalid_modification()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $model = $this->newModel();
-
-        $mod = 'test';
-
-        $model->addModification($mod);
-
-        $this->assertEmpty($model->getModifications());
-    }
-
-    public function test_adding_empty_non_existing_attribute()
-    {
-        $model = $this->newModel();
-
-        $model->exists = true;
-
-        $model->description = '';
-
-        // Since the model exists and a non existent property is set to being
-        // empty, no modification will be generated for the attribute.
-        // Since no modifications are generated, the LDAP connection
-        // isn't called, and will return true by default.
-        $this->assertTrue($model->save());
-    }
-
-    public function test_adding_invalid_modification_with_array()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $model = $this->newModel();
-
-        $mod = ['modtype' => 18];
-
-        $model->addModification($mod);
-    }
-
-    public function test_dn_builder_is_set_to_base_when_empty()
-    {
-        $model = $this->newModel();
-
-        $dn = 'dc=base,dc=org';
-
-        $model->getQuery()->setDn($dn);
-
-        $this->assertEquals($dn, $model->getDnBuilder()->get());
-    }
-
-    public function test_max_password_in_days()
-    {
-        $model = $this->newModel(['maxPwdAge' => -8640000000000]);
-
-        $this->assertEquals(10, $model->getMaxPasswordAgeDays());
-    }
-
-    public function test_max_password_in_days_returns_zero_on_null()
-    {
-        $model = $this->newModel(['maxPwdAge' => null]);
-
-        $this->assertEquals(0, $model->getMaxPasswordAgeDays());
-    }
-
-    public function test_get_dirty_single_value()
-    {
-        $model = $this->newModel(['cn' => 'John Doe']);
-
-        $model->setCommonName('New Name');
-
-        $this->assertEquals(['cn' => ['New Name']], $model->getDirty());
-    }
-
-    public function test_get_dirty_same_value()
-    {
-        $model = $this->newModel(['cn' => 'John Doe']);
-
+        $model = new Entry(['foo' => 1, 'bar' => 2, 'baz' => 3]);
         $model->syncOriginal();
-
-        $model->setCommonName('John Doe');
-
-        $this->assertEmpty($model->getDirty());
-
-        $model->setCommonName('John D');
-
-        $this->assertEquals(['cn' => ['John D']], $model->getDirty());
-    }
-
-    public function test_get_dirty_multiple_values()
-    {
-        $attributes = [
-            'proxyaddress' => [
-                'one',
-                'two',
-                'three',
-            ],
-        ];
-
-        $model = $this->newModel($attributes);
-
-        $model->syncOriginal();
-
-        $model->setAttribute('proxyaddresses', [
-            'one',
-        ]);
+        $model->foo = 1;
+        $model->bar = 20;
+        $model->baz = 30;
+        $model->other = 40;
 
         $this->assertEquals([
-            'proxyaddresses' => [0 => 'one']
+            'bar' => [20],
+            'baz' => [30],
+            'other' => [40]
         ], $model->getDirty());
-    }
-
-    public function test_get_dirty_multiple_values_with_indices_reset_keeps_order()
-    {
-        $attributes = [
-            'proxyaddress' => [
-                'one',
-                'two',
-                'three',
-            ],
-        ];
-
-        $model = $this->newModel($attributes);
-
-        $model->syncOriginal();
-
-        $model->setAttribute('proxyaddresses', [
-            3 => 'three',
-            2 => 'two',
-        ]);
-
-        $this->assertEquals([
-            'proxyaddresses' => [
-                0 => 'three',
-                1 => 'two',
-            ]
-        ], $model->getDirty());
-    }
-
-    public function test_get_dirty_from_null_value()
-    {
-        $model = $this->newModel();
-
-        $this->assertNull($model->getCommonName());
-
-        $model->setCommonName('New Name');
-
-        $this->assertEquals(['cn' => ['New Name']], $model->getDirty());
-    }
-
-    public function test_get_dirty_to_null_value()
-    {
-        $model = $this->newModel(['cn' => 'John Doe']);
-
-        $model->syncOriginal();
-
-        $model->setCommonName(null);
-
-        $this->assertEquals(['cn' => [null]], $model->getDirty());
-
-        $this->assertEquals([0 => [
-            'attrib' => 'cn',
-            'modtype' => 18,
-        ]], $model->getModifications());
-    }
-
-    public function test_models_constructed_with_an_array_dn_is_set_properly()
-    {
-        $model = $this->newModel();
-
-        $dn = 'cn=Jdoe,dc=acme,dc=org';
-
-        $model->setRawAttributes(['dn' => [$dn]]);
-
-        $this->assertEquals($model->getDistinguishedName(), $dn);
-    }
-
-    public function test_get_managed_by_user_queries_for_user()
-    {
-        $dn = 'cn=Jdoe,dc=acme,dc=org';
-
-        $managedByUser = $this->newModel(compact('dn'));
-
-        $b = $this->newBuilderMock();
-
-        $b->shouldReceive('newInstance')->once()->andReturnSelf()
-            ->shouldReceive('findByDn')->once()->with($dn)->andReturn($managedByUser);
-
-        $model = $this->newModel(['managedby' => $dn], $b);
-
-        $this->assertEquals($managedByUser, $model->getManagedByUser());
-    }
-
-    public function test_set_managed_by_accepts_model_instance()
-    {
-        $model = $this->newModel();
-
-        $dn = 'cn=Jdoe,dc=acme,dc=org';
-
-        $managedByUser = $this->newModel(compact('dn'));
-
-        $model->setManagedBy($managedByUser);
-
-        $this->assertEquals($dn, $model->getManagedBy());
-    }
-
-    public function test_case_sensitivity_for_setting_and_retrieving_attributes()
-    {
-        $m = $this->newModel([
-            'CN' => 'John Doe',
-            'givenName' => 'Doe, John',
-            'memberOf' => [],
-        ]);
-
-        $this->assertEquals('John Doe', $m->getFirstAttribute('cn'));
-        $this->assertEquals('John Doe', $m->getFirstAttribute('cN'));
-        $this->assertEquals('Doe, John', $m->getFirstAttribute('givenname'));
-        $this->assertEquals('Doe, John', $m->getFirstAttribute('GiVENnAme'));
-        $this->assertEquals([], $m->getAttribute('memberof'));
-        $this->assertEquals([], $m->getAttribute('mEMBEROF'));
-    }
-    
-    public function test_creating_entry_without_valid_dn_throws_exception()
-    {
-        $this->expectException(\UnexpectedValueException::class);
-
-        $b = $this->newBuilder()->in('dc=acme,dc=org');
-
-        $m = $this->newModel([], $b);
-
-        $m->save();
-    }
-
-    public function test_creating_model_fires_events()
-    {
-        $c = $this->newLdapMock();
-
-        $m = $this->newModel([], $this->newBuilder($c));
-
-        $d = Manager::getEventDispatcher();
-
-        $firedCreating = false;
-        $firedCreated = false;
-
-        $d->listen(Creating::class, function (Creating $e) use (&$firedCreating) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-             $firedCreating = true;
-        });
-
-        $d->listen(Created::class, function (Created $e) use (&$firedCreated) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedCreated = true;
-        });
-
-        $c
-            ->shouldReceive('add')->once()->andReturn(true)
-            ->shouldReceive('read')->once()
-            ->shouldReceive('getEntries')->once();
-
-        $m->save([
-            'dn' => 'cn=jdoe,dc=acme,dc=org',
-        ]);
-
-        $this->assertTrue($firedCreating);
-        $this->assertTrue($firedCreated);
-    }
-
-    public function test_updating_model_fires_events()
-    {
-        $c = $this->newLdapMock();
-
-        $m = $this->newModel([], $this->newBuilder($c));
-
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
-
-        $d = Manager::getEventDispatcher();
-
-        $firedUpdating = false;
-        $firedUpdated = false;
-
-        $d->listen(Updating::class, function (Updating $e) use (&$firedUpdating) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedUpdating = true;
-        });
-
-        $d->listen(Updated::class, function (Updated $e) use (&$firedUpdated) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedUpdated = true;
-        });
-
-        $c
-            ->shouldReceive('modifyBatch')->once()->andReturn(true)
-            ->shouldReceive('read')->once()
-            ->shouldReceive('getEntries')->once();
-
-        $m->save([
-            'cn' => 'new'
-        ]);
-
-        $this->assertTrue($firedUpdating);
-        $this->assertTrue($firedUpdated);
-    }
-
-    public function test_deleting_model_fires_events()
-    {
-        $c = $this->newLdapMock();
-
-        $m = $this->newModel([], $this->newBuilder($c));
-
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
-
-        $d = Manager::getEventDispatcher();
-
-        $firedDeleting = false;
-        $firedDeleted = false;
-
-        $d->listen(Deleting::class, function (Deleting $e) use (&$firedDeleting) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedDeleting = true;
-        });
-
-        $d->listen(Deleted::class, function (Deleted $e) use (&$firedDeleted) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedDeleted = true;
-        });
-
-        $c->shouldReceive('delete')->once()->andReturn(true);
-
-        $m->delete();
-
-        $this->assertTrue($firedDeleting);
-        $this->assertTrue($firedDeleted);
-    }
-
-    public function test_model_events_can_be_listened_for_with_wildcard()
-    {
-        $c = $this->newLdapMock();
-
-        $m = $this->newModel([], $this->newBuilder($c));
-
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
-
-        $d = Manager::getEventDispatcher();
-
-        $firedDeleting = false;
-        $firedDeleted = false;
-
-        $d->listen('LdapRecord\Models\Events\*', function ($event, $payload) use (&$firedDeleting, &$firedDeleted) {
-            if ($event == 'LdapRecord\Models\Events\Deleting') {
-                $firedDeleting = true;
-            } else if ($event == 'LdapRecord\Models\Events\Deleted') {
-                $firedDeleted = true;
-            }
-        });
-
-        $c->shouldReceive('delete')->once()->andReturn(true);
-
-        $m->delete();
-
-        $this->assertTrue($firedDeleting);
-        $this->assertTrue($firedDeleted);
-    }
-
-    public function test_retrieving_guid_with_other_schema_returns_proper_value()
-    {
-        $m = $this->newModel([
-            'entryuuid' => 'cdc718a0-8c3c-1034-8646-e30b83a2e38d',
-        ]);
-
-        $m->setSchema(new OpenLDAP());
-
-        $this->assertEquals($m->entryuuid[0], $m->getConvertedGuid());
     }
 }

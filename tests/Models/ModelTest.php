@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Models;
 
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\BatchModification;
 use LdapRecord\Connections\ContainerException;
 
 class ModelTest extends TestCase
@@ -24,6 +25,25 @@ class ModelTest extends TestCase
         $this->assertEquals(['foo' => ['bar']], (new Entry(['foo' => 'bar']))->getAttributes());
         $this->assertEquals(['bar' => ['baz']], (new Entry())->fill(['bar' => 'baz'])->getAttributes());
         $this->assertEquals(2, ((new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes()));
+    }
+
+    public function test_getting_and_setting_dn()
+    {
+        $model = new Entry();
+        $model->setDn('foo');
+        $this->assertEquals('foo', $model->getDn());
+        $this->assertEquals('foo', (string) $model);
+    }
+
+    public function test_creatable_dn()
+    {
+        $model = new Entry();
+        $model->setDn('foo');
+        $this->assertEmpty((string) $model->getCreatableDn());
+
+        $model->setDn('dc=acme,dc=org');
+        $model->cn = 'foo';
+        $this->assertEquals('cn=foo,dc=acme,dc=org', (string) $model->getCreatableDn());
     }
 
     public function test_raw_attribute_filling_sets_dn()
@@ -107,10 +127,151 @@ class ModelTest extends TestCase
         $model->baz = 30;
         $model->other = 40;
 
+        $this->assertFalse($model->isDirty('foo'));
+        $this->assertTrue($model->isDirty('bar'));
+        $this->assertTrue($model->isDirty('baz'));
+        $this->assertTrue($model->isDirty('other'));
         $this->assertEquals([
             'bar' => [20],
             'baz' => [30],
             'other' => [40]
         ], $model->getDirty());
+    }
+
+    public function test_serialization()
+    {
+        $model = new Entry(['foo' => 'bar']);
+        $this->assertEquals(['foo' => ['bar']], $model->jsonSerialize());
+
+        $model->objectguid = 'bf9679e7-0de6-11d0-a285-00aa003049e2';
+        $this->assertEquals([
+            'foo' => ['bar'],
+            'objectguid' => ['bf9679e7-0de6-11d0-a285-00aa003049e2'],
+        ], $model->jsonSerialize());
+        $this->assertEquals('{"foo":["bar"],"objectguid":["bf9679e7-0de6-11d0-a285-00aa003049e2"]}', json_encode($model->jsonSerialize()));
+    }
+
+    public function test_convert()
+    {
+        $model = new Entry(['foo' => 'bar']);
+        $model->setDn('baz');
+        $model->setConnection('other');
+
+        $converted = $model->convert(new Entry());
+        $this->assertEquals($model, $converted);
+        $this->assertEquals('baz', $converted->getDn());
+        $this->assertEquals('other', $converted->getConnectionName());
+
+        $model = new Entry(['foo' => 'bar']);
+        $model->setDn('foo');
+        $model->setRawAttributes(['bar' => 'baz']);
+
+        $converted = $model->convert(new Entry());
+        $this->assertTrue($converted->exists);
+        $this->assertEquals($model, $converted);
+    }
+
+    public function test_hydrate()
+    {
+        $records = [
+            [
+                'dn' => 'baz',
+                'foo' => 'bar',
+            ],
+            [
+                'dn' => 'foo',
+                'bar' => 'baz',
+            ]
+        ];
+
+        $model = new Entry();
+        $model->setConnection('other');
+
+        $collection = $model->hydrate($records);
+
+        $this->assertTrue($collection->first()->exists);
+        $this->assertEquals('baz', $collection->first()->getDn());
+        $this->assertEquals($collection->first()->getConnectionName(), 'other');
+
+        $this->assertTrue($collection->last()->exists);
+        $this->assertEquals('foo', $collection->last()->getDn());
+        $this->assertEquals($collection->last()->getConnectionName(), 'other');
+    }
+
+    public function test_add_modification()
+    {
+        $model = new Entry();
+        $model->addModification(['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]);
+        $this->assertEquals([['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]], $model->getModifications());
+
+        $model = new Entry();
+        $model->addModification(new BatchModification('foo', 3, ['bar']));
+        $this->assertEquals([['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]], $model->getModifications());
+    }
+
+    public function test_add_modification_without_attrib()
+    {
+        $model = new Entry();
+        $this->expectException(\InvalidArgumentException::class);
+        $model->addModification(['values' => ['Changed'], 'modtype' => 3]);
+    }
+
+    public function test_add_modification_without_modtype()
+    {
+        $model = new Entry();
+        $this->expectException(\InvalidArgumentException::class);
+        $model->addModification(['attrib' => 'foo', 'values' => ['bar']]);
+    }
+
+    public function test_add_modification_without_values()
+    {
+        $model = new Entry();
+        $model->addModification(['attrib' => 'foo', 'modtype' => 3]);
+        $this->assertEquals([['attrib' => 'foo', 'modtype' => 3]], $model->getModifications());
+    }
+
+    public function test_set_modifications()
+    {
+        $model = new Entry();
+        $model->setModifications([
+            ['attrib' => 'foo', 'modtype' => 3, 'values' => ['bar']],
+            new BatchModification('bar', 3, ['baz']),
+        ]);
+
+        $this->assertEquals([
+            ['attrib' => 'foo', 'modtype' => 3, 'values' => ['bar']],
+            ['attrib' => 'bar', 'modtype' => 3, 'values' => ['baz']]
+        ], $model->getModifications());
+    }
+
+    public function test_modifications_are_created_from_dirty()
+    {
+        $model = new Entry();
+        $model->setRawAttributes([
+            'cn' => ['Common Name'],
+            'samaccountname' => ['Account Name'],
+            'name' => ['Name'],
+        ]);
+
+        $model->cn = null;
+        $model->samaccountname = 'Changed';
+        $model->test = 'New Attribute';
+
+        $modifications = $model->getModifications();
+
+        // Removed 'cn' attribute
+        $this->assertEquals('cn', $modifications[0]['attrib']);
+        $this->assertFalse(isset($modifications[0]['values']));
+        $this->assertEquals(18, $modifications[0]['modtype']);
+
+        // Modified 'samaccountname' attribute
+        $this->assertEquals('samaccountname', $modifications[1]['attrib']);
+        $this->assertEquals(['Changed'], $modifications[1]['values']);
+        $this->assertEquals(3, $modifications[1]['modtype']);
+
+        // New 'test' attribute
+        $this->assertEquals('test', $modifications[2]['attrib']);
+        $this->assertEquals(['New Attribute'], $modifications[2]['values']);
+        $this->assertEquals(1, $modifications[2]['modtype']);
     }
 }

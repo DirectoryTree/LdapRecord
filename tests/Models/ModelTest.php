@@ -274,4 +274,26 @@ class ModelTest extends TestCase
         $this->assertEquals(['New Attribute'], $modifications[2]['values']);
         $this->assertEquals(1, $modifications[2]['modtype']);
     }
+
+    public function test_in_ou()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->inOu(null));
+        $this->assertFalse($model->inOu(''));
+
+        $model->setDn('cn=foo,ou=bar,dc=acme,dc=org');
+        $this->assertFalse($model->inOu('foo'));
+        $this->assertTrue($model->inOu('bar'));
+        $this->assertTrue($model->inOu('BAR'));
+        $this->assertTrue($model->inOu('BaR'));
+        $this->assertFalse($model->inOu('bar,'));
+        $this->assertFalse($model->inOu('ou=bar'));
+
+        $ou = new Entry();
+        $ou->setDn('ou=bar,dc=acme,dc=org');
+        $this->assertTrue($model->inOu($ou));
+
+        $ou->setDn('Ou=BaR,dc=acme,dc=org');
+        $this->assertTrue($model->inOu($ou));
+    }
 }

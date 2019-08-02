@@ -438,9 +438,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
-        return array_replace($attributes, [
-            $this->guidKey => $this->getConvertedGuid(),
-        ]);
+        if ($this->hasAttribute($this->guidKey)) {
+            // If the model has a GUID set, we need to convert it due to it being in
+            // binary. Otherwise we will receive a JSON serialization exception.
+            return array_replace($attributes, [
+                $this->guidKey => [$this->getConvertedGuid()],
+            ]);
+        }
+
+        return $attributes;
     }
 
     /**
@@ -458,7 +464,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Hydrates a new collection of models.
+     * Hydrate a new collection of models from LDAP search results.
      *
      * @param array $records
      *
@@ -467,7 +473,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function hydrate($records)
     {
         return $this->newCollection($records)->transform(function ($attributes) {
-            return (new static)->setRawAttributes($attributes);
+            return (new static)->setRawAttributes($attributes)->setConnection($this->getConnectionName());
         });
     }
 
@@ -480,8 +486,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function convert(Model $into)
     {
-        $into->setRawAttributes($this->getAttributes());
+        $into->setDn($this->getDn());
         $into->setConnection($this->getConnectionName());
+
+        $this->exists ?
+            $into->setRawAttributes($this->getAttributes()) :
+            $into->fill($this->getAttributes());
 
         return $into;
     }
@@ -523,7 +533,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setModifications(array $modifications = [])
     {
-        $this->modifications = $modifications;
+        foreach ($modifications as $modification) {
+            $this->addModification($modification);
+        }
 
         return $this;
     }
@@ -946,7 +958,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return DistinguishedName
      */
-    protected function getCreatableDn()
+    public function getCreatableDn()
     {
         return $this->getNewDnBuilder($this->getDn())->addCn($this->getFirstAttribute('cn'));
     }

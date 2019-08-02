@@ -250,14 +250,26 @@ trait HasAttributes
         $dirty = [];
 
         foreach ($this->attributes as $key => $value) {
-            if (!$this->originalIsEquivalent($key)) {
-                // We need to reset the array's indices using array_values due to
-                // LDAP requiring consecutive indices (0, 1, 2 etc.)
+            if ($this->isDirty($key)) {
+                // We need to reset the array using array_values due to
+                // LDAP requiring consecutive indices (0, 1, 2 etc.).
                 $dirty[$key] = array_values($value);
             }
         }
 
         return $dirty;
+    }
+
+    /**
+     * Determine if the given attribute is dirty.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function isDirty($key)
+    {
+        return !$this->originalIsEquivalent($key);
     }
 
     /**

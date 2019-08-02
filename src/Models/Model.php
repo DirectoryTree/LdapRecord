@@ -577,7 +577,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns the models ANR attributes when incompatible.
+     * Returns the models ANR attributes for querying when incompatible.
      *
      * @return array
      */
@@ -637,10 +637,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function inOu($ou, $strict = false)
     {
         if ($ou instanceof static) {
-            // If we've been given an OU model, we can
-            // just check if the OU's DN is inside
-            // the current models DN.
-            return (bool) strpos($this->getDn(), $ou->getDn());
+            // Since we have been given a model, we can simply
+            // check if the OU's distinguished name is
+            // contained in the current model.
+            return (bool) strpos(strtolower($this->getDn()), strtolower($ou->getDn()));
         }
 
         $suffix = $strict ? '' : 'i';

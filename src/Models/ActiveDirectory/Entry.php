@@ -70,9 +70,16 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
-        return array_replace($attributes, [
-            $this->guidKey => $this->getConvertedGuid(),
-            $this->sidKey  => $this->getConvertedSid(),
-        ]);
+        $attributes = parent::convertAttributesForJson($attributes);
+
+        if ($this->hasAttribute($this->sidKey)) {
+            // If the model has a SID set, we need to convert it due to it being in
+            // binary. Otherwise we will receive a JSON serialization exception.
+            return array_replace($attributes, [
+                $this->sidKey => [$this->getConvertedSid()],
+            ]);
+        }
+
+        return $attributes;
     }
 }

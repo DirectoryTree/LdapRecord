@@ -54,7 +54,7 @@ class BatchModification
      * @param string|int|null $type
      * @param array           $values
      */
-    public function __construct($attribute = null, $type = null, $values = [])
+    public function __construct($attribute = null, $type = null, array $values = [])
     {
         $this->setAttribute($attribute)
             ->setType($type)

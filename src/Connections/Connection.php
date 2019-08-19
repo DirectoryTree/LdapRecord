@@ -9,13 +9,6 @@ use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Auth\GuardInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
-/**
- * Class Connection.
- *
- * Contains the LPAP connection and domain configuration to
- * instantiate factories for retrieving and creating
- * LDAP records as well as authentication (binding).
- */
 class Connection implements ConnectionInterface
 {
     /**

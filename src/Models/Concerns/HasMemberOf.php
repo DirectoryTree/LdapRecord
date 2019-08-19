@@ -12,11 +12,11 @@ trait HasMemberOf
     /**
      * The memberOf relationship.
      * 
-     * @return \LdapRecord\Models\Relation
+     * @return \LdapRecord\Models\Relations\HasMany
      */
     public function memberOf()
     {
-        return $this->newRelation([Group::class], 'memberof');
+        return $this->hasMany([Group::class], 'memberof');
     }
 
     /**

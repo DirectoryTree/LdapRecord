@@ -3,6 +3,7 @@
 namespace LdapRecord\Query;
 
 use Closure;
+use Exception;
 use BadMethodCallException;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
@@ -10,7 +11,6 @@ use InvalidArgumentException;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Connections\Container;
 use LdapRecord\Query\Events\QueryExecuted;
-use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Connections\LdapInterface;
 
@@ -63,13 +63,6 @@ class Builder
     protected $type = 'search';
 
     /**
-     * Determines whether or not to return LDAP results in their raw array format.
-     *
-     * @var bool
-     */
-    protected $raw = false;
-
-    /**
      * Determines whether the query is nested.
      *
      * @var bool
@@ -119,13 +112,6 @@ class Builder
     protected $cache;
 
     /**
-     * The model being queried.
-     *
-     * @var Model
-     */
-    protected $model;
-
-    /**
      * Constructor.
      *
      * @param LdapInterface $connection
@@ -162,30 +148,6 @@ class Builder
         $this->grammar = $grammar;
 
         return $this;
-    }
-
-    /**
-     * Sets the model instance for the model being queried.
-     *
-     * @param Model $model
-     *
-     * @return $this
-     */
-    public function setModel(Model $model)
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
-    /**
-     * Returns the model being queried for.
-     *
-     * @return Model
-     */
-    public function getModel()
-    {
-        return $this->model;
     }
 
     /**
@@ -379,88 +341,6 @@ class Builder
     }
 
     /**
-     * Creates the current model in the directory.
-     *
-     * @return bool
-     */
-    public function create()
-    {
-        return (new Operations\Create($this->getConnection(), $this->getModel()))->execute();
-    }
-
-    /**
-     * Creates the attributes on the current model.
-     *
-     * @param array $attributes
-     *
-     * @return bool
-     */
-    public function createAttribute(array $attributes)
-    {
-        return (new Operations\CreateAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
-    }
-
-    /**
-     * Updates the current model.
-     *
-     * @return bool
-     */
-    public function update()
-    {
-        return (new Operations\Update($this->getConnection(), $this->getModel()))->execute();
-    }
-
-    /**
-     * Updates the attributes on the current model.
-     *
-     * @param array $attributes
-     *
-     * @return bool
-     */
-    public function updateAttribute(array $attributes)
-    {
-        return (new Operations\UpdateAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
-    }
-
-    /**
-     * Deletes the current model.
-     *
-     * @return bool
-     */
-    public function delete()
-    {
-        return (new Operations\Delete($this->getConnection(), $this->getModel()))->execute();
-    }
-
-    /**
-     * Deletes the attributes on the current model.
-     *
-     * @param array $attributes
-     *
-     * @return bool
-     */
-    public function deleteAttribute(array $attributes)
-    {
-        return (new Operations\DeleteAttribute($this->getConnection(), $this->getModel(), $attributes))->execute();
-    }
-
-    /**
-     * Renames the current model.
-     *
-     * @param string $rdn
-     * @param string $newParentDn
-     * @param bool   $deleteOldRdn
-     *
-     * @return bool
-     */
-    public function rename($rdn, $newParentDn, $deleteOldRdn = true)
-    {
-        return (new Operations\Rename(
-            $this->getConnection(), $this->getModel(), $rdn, $newParentDn, $deleteOldRdn
-        ))->execute();
-    }
-
-    /**
      * Paginates the current LDAP query.
      *
      * @param int  $pageSize
@@ -507,15 +387,13 @@ class Builder
      *
      * @param array $results
      *
-     * @return array|Collection
+     * @return array
      */
     protected function process(array $results)
     {
         unset($results['count']);
 
-        $results = $this->paginated ? $this->flattenPages($results) : $results;
-
-        return $this->raw ? $results : $this->model->hydrate($results);
+        return $this->paginated ? $this->flattenPages($results) : $results;
     }
 
     /**
@@ -664,9 +542,6 @@ class Builder
     {
         $results = $this->select($columns)->limit(1)->get();
 
-        // Since results may be returned inside an array if `raw()`
-        // is specified, then we'll use our array helper
-        // to retrieve the first result.
         return Arr::get($results, 0);
     }
 
@@ -727,70 +602,6 @@ class Builder
     public function findByOrFail($attribute, $value, $columns = [])
     {
         return $this->whereEquals($attribute, $value)->firstOrFail($columns);
-    }
-
-    /**
-     * Finds a record using ambiguous name resolution.
-     *
-     * @param string|array $value
-     * @param array|string $columns
-     *
-     * @return Model|Collection|static|null
-     */
-    public function find($value, $columns = [])
-    {
-        if (is_array($value)) {
-            return $this->findMany($value, $columns);
-        }
-
-        // If we're not using ActiveDirectory, we can't use ANR.
-        // We will make our own equivalent query.
-        if (! $this->model instanceof ActiveDirectory) {
-            return $this->prepareAnrEquivalentQuery($value)->first($columns);
-        }
-
-        return $this->findBy('anr', $value, $columns);
-    }
-
-    /**
-     * Finds multiple records using ambiguous name resolution.
-     *
-     * @param array $values
-     * @param array $columns
-     *
-     * @return Collection
-     */
-    public function findMany(array $values = [], $columns = [])
-    {
-        $this->select($columns);
-
-        if (! $this->model instanceof ActiveDirectory) {
-            $query = $this;
-
-            foreach ($values as $value) {
-                $query->prepareAnrEquivalentQuery($value);
-            }
-
-            return $query->get();
-        }
-
-        return $this->findManyBy('anr', $values);
-    }
-
-    /**
-     * Creates an ANR equivalent query for LDAP distributions that do not support ANR.
-     *
-     * @param string $value
-     *
-     * @return $this
-     */
-    protected function prepareAnrEquivalentQuery($value)
-    {
-        return $this->orFilter(function (Builder $query) use ($value) {
-            foreach ($this->model->getAnrAttributes() as $attribute) {
-                $query->whereEquals($attribute, $value);
-            }
-        });
     }
 
     /**
@@ -875,46 +686,6 @@ class Builder
             ->clearFilters()
             ->whereHas('objectclass')
             ->firstOrFail($columns);
-    }
-
-    /**
-     * Finds a record by its string GUID.
-     *
-     * @param string       $guid
-     * @param array|string $columns
-     *
-     * @return Model|static|null
-     */
-    public function findByGuid($guid, $columns = [])
-    {
-        try {
-            return $this->findByGuidOrFail($guid, $columns);
-        } catch (ModelNotFoundException $e) {
-            return;
-        }
-    }
-
-    /**
-     * Finds a record by its string GUID.
-     *
-     * Fails upon no records returned.
-     *
-     * @param string       $guid
-     * @param array|string $columns
-     *
-     * @throws ModelNotFoundException
-     *
-     * @return Model|static
-     */
-    public function findByGuidOrFail($guid, $columns = [])
-    {
-        if ($this->model instanceof ActiveDirectory) {
-            $guid = Utilities::stringGuidToHex($guid);
-        }
-
-        return $this->select($columns)->whereRaw([
-            $this->model->getGuidKey() => $guid,
-        ])->firstOrFail();
     }
 
     /**
@@ -1559,20 +1330,6 @@ class Builder
     }
 
     /**
-     * Whether to return the LDAP results in their raw format.
-     *
-     * @param bool $raw
-     *
-     * @return $this
-     */
-    public function raw($raw = true)
-    {
-        $this->raw = (bool) $raw;
-
-        return $this;
-    }
-
-    /**
      * Whether the current query is nested.
      *
      * @param bool $nested
@@ -1631,17 +1388,6 @@ class Builder
 
     /**
      * Returns bool that determines whether the current
-     * query builder will return raw results.
-     *
-     * @return bool
-     */
-    public function isRaw()
-    {
-        return $this->raw;
-    }
-
-    /**
-     * Returns bool that determines whether the current
      * query builder will return paginated results.
      *
      * @return bool
@@ -1649,6 +1395,110 @@ class Builder
     public function isPaginated()
     {
         return $this->paginated;
+    }
+
+    /**
+     * Insert the entry in the directory.
+     *
+     * @param string $dn
+     * @param array  $attributes
+     *
+     * @throws Exception
+     *
+     * @return bool
+     */
+    public function insert($dn, array $attributes)
+    {
+        if (empty($dn)) {
+            throw new Exception('A new LDAP entry must have a distinguished name name (dn).');
+        }
+
+        if (!array_key_exists('objectclass', $attributes) || !array_key_exists('cn', $attributes)) {
+            throw new Exception(
+                'A new LDAP entry must contain an object class (objectclass) and common name (cn).'
+            );
+        }
+
+        return $this->connection->add($dn, $attributes);
+    }
+
+    /**
+     * Create attributes on the entry in the directory.
+     *
+     * @param string $dn
+     * @param array  $attributes
+     *
+     * @return bool
+     */
+    public function insertAttributes($dn, array $attributes)
+    {
+        return $this->connection->modAdd($dn, $attributes);
+    }
+
+    /**
+     * Update the entry with the given modifications.
+     *
+     * @param string $dn
+     * @param array  $modifications
+     *
+     * @return bool
+     */
+    public function update($dn, array $modifications)
+    {
+        return $this->connection->modifyBatch($dn, $modifications);
+    }
+
+    /**
+     * Update an entries attribute in the directory.
+     *
+     * @param string $dn
+     * @param array  $attributes
+     *
+     * @return bool
+     */
+    public function updateAttributes($dn, array $attributes)
+    {
+        return $this->connection->modReplace($dn, $attributes);
+    }
+
+    /**
+     * Delete an entry from the directory.
+     *
+     * @param string $dn
+     *
+     * @return bool
+     */
+    public function delete($dn)
+    {
+        return $this->connection->delete($dn);
+    }
+
+    /**
+     * Delete attributes on the entry in the directory.
+     *
+     * @param string $dn
+     * @param array  $attributes
+     *
+     * @return bool
+     */
+    public function deleteAttributes($dn, array $attributes)
+    {
+        return $this->connection->modDelete($dn, $attributes);
+    }
+
+    /**
+     * Rename an entry in the directory.
+     *
+     * @param string $dn
+     * @param string $rdn
+     * @param string $newParentDn
+     * @param bool   $deleteOldRdn
+     *
+     * @return bool
+     */
+    public function rename($dn, $rdn, $newParentDn, $deleteOldRdn = true)
+    {
+        return $this->connection->rename($dn, $rdn, $newParentDn, $deleteOldRdn);
     }
 
     /**

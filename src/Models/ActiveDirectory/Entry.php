@@ -7,11 +7,9 @@ use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
-use LdapRecord\Query\Types\ActiveDirectoryQuery;
+use LdapRecord\Query\Expressive\ActiveDirectoryBuilder;
 
-/**
- * @method ActiveDirectoryQuery query()
- */
+/** @mixin ActiveDirectoryBuilder */
 class Entry extends BaseEntry implements ActiveDirectory
 {
     /**
@@ -54,11 +52,11 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param LdapInterface $connection
      *
-     * @return ActiveDirectoryQuery
+     * @return ActiveDirectoryBuilder
      */
     public function newQueryBuilder(LdapInterface $connection)
     {
-        return new ActiveDirectoryQuery($connection);
+        return new ActiveDirectoryBuilder($connection, $this);
     }
 
     /**

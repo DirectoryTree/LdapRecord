@@ -5,11 +5,9 @@ namespace LdapRecord\Models\OpenLDAP;
 use LdapRecord\Models\Types\OpenLDAP;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Entry as BaseEntry;
-use LdapRecord\Query\Types\OpenLdapQuery;
+use LdapRecord\Query\Expressive\OpenLdapBuilder;
 
-/**
- * @method OpenLdapQuery query()
- */
+/** @mixin OpenLdapBuilder */
 class Entry extends BaseEntry implements OpenLDAP
 {
     /**
@@ -17,10 +15,10 @@ class Entry extends BaseEntry implements OpenLDAP
      *
      * @param LdapInterface $connection
      *
-     * @return OpenLdapQuery
+     * @return OpenLdapBuilder
      */
     public function newQueryBuilder(LdapInterface $connection)
     {
-        return new OpenLdapQuery($connection);
+        return new OpenLdapBuilder($connection, $this);
     }
 }

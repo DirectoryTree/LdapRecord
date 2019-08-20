@@ -19,6 +19,6 @@ class Entry extends BaseEntry implements OpenLDAP
      */
     public function newQueryBuilder(LdapInterface $connection)
     {
-        return new OpenLdapBuilder($connection, $this);
+        return new OpenLdapBuilder($connection);
     }
 }

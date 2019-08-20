@@ -694,7 +694,7 @@ class Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @return Model|static
+     * @return Model|static|null
      */
     public function findBySid($sid, $columns = [])
     {
@@ -1610,7 +1610,11 @@ class Builder
      */
     protected function addDynamic($segment, $connector, $parameters, $index)
     {
-        $this->where(strtolower($segment), '=', $parameters[$index], strtolower($connector));
+        if (count($parameters) === 0) {
+            $this->where(strtolower($segment), '*', null, strtolower($connector));
+        } else {
+            $this->where(strtolower($segment), '=', $parameters[$index], strtolower($connector));
+        }
     }
 
     /**

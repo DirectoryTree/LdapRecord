@@ -486,7 +486,7 @@ class Ldap implements LdapInterface
         // If we are using SSL and using the default port, we
         // will override it to use the default SSL port.
         if ($this->isUsingSSL() && $port == 389) {
-            $port = self::PORT_SSL;
+            $port = static::PORT_SSL;
         }
 
         // Normalize hosts into an array.

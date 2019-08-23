@@ -4,18 +4,26 @@ namespace LdapRecord\Models\Relations;
 
 use LdapRecord\Query\Collection;
 
-class HasMany extends Relation
+class HasMany extends OneToMany
 {
     /**
-     * Get the results of the relationship.
+     * Get the relationships results.
      *
      * @return Collection
      */
-    public function get()
+    public function getRelationResults(): Collection
     {
-        return $this->transformResults(
-            $this->query->whereRaw($this->relationKey, '=', $this->getForeignValue())->get()
-        );
+        return $this->transformResults($this->getRelationQuery()->paginate());
+    }
+
+    /**
+     * Get the prepared relationship query.
+     *
+     * @return \LdapRecord\Query\Model\Builder
+     */
+    protected function getRelationQuery()
+    {
+        return $this->query->whereRaw($this->relationKey, '=', $this->getForeignValue());
     }
 
     /**
@@ -27,7 +35,7 @@ class HasMany extends Relation
     {
         // If the foreign key is a distinguished name, we must
         // escape it to be able to properly locate models.
-        // Otherwise, we won't receive any results.
+        // Otherwise, we will not receive any results.
         if ($this->foreignKey == 'dn' || $this->foreignKey == 'distinguishedname') {
             return $this->query->escape($this->parent->getDn(), '', LDAP_ESCAPE_DN);
         }

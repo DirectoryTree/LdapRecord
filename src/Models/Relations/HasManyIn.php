@@ -4,7 +4,7 @@ namespace LdapRecord\Models\Relations;
 
 use LdapRecord\Query\Collection;
 
-class HasManyIn extends Relation
+class HasManyIn extends OneToMany
 {
     /**
      * Get the results of the relationship.
@@ -13,7 +13,7 @@ class HasManyIn extends Relation
      */
     public function get()
     {
-        $results = $this->query->getModel()->newCollection();
+        $results = $this->parent->newCollection();
 
         foreach ((array) $this->parent->getAttribute($this->relationKey) as $value) {
             if ($foreign = $this->getForeignModelByValue($value)) {

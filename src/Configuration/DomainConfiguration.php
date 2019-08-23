@@ -4,11 +4,6 @@ namespace LdapRecord\Configuration;
 
 use LdapRecord\Connections\LdapInterface;
 
-/**
- * Class DomainConfiguration.
- *
- * Contains an array of configuration options for a single LDAP connection.
- */
 class DomainConfiguration
 {
     /**

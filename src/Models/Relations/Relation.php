@@ -4,8 +4,8 @@ namespace LdapRecord\Models\Relations;
 
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Query\Builder;
 use LdapRecord\Query\Collection;
+use LdapRecord\Query\Model\Builder;
 
 abstract class Relation
 {
@@ -51,7 +51,7 @@ abstract class Relation
      * @var string  $relationKey
      * @var string  $foreignKey
      */
-    public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey = 'dn')
+    public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {
         $this->query = $query;
         $this->parent = $parent;
@@ -101,6 +101,46 @@ abstract class Relation
     }
 
     /**
+     * Get the parent model of the relation.
+     *
+     * @return Model
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Get the relation attribute key.
+     *
+     * @return string
+     */
+    public function getRelationKey()
+    {
+        return $this->relationKey;
+    }
+
+    /**
+     * Get the related models for the relation.
+     *
+     * @return array
+     */
+    public function getRelated()
+    {
+        return $this->related;
+    }
+
+    /**
+     * Get the relation foreign attribute key.
+     *
+     * @return string
+     */
+    public function getForeignKey()
+    {
+        return $this->foreignKey;
+    }
+
+    /**
      * Transforms the results by converting the models into their related.
      *
      * @param Collection $results
@@ -116,9 +156,9 @@ abstract class Relation
         }
 
         return $results->transform(function (Model $entry) use ($related) {
-            $relatedModel = $this->determineModelFromRelated($entry, $related);
+            $model = $this->determineModelFromRelated($entry, $related);
 
-            return $relatedModel ? $entry->convert(new $relatedModel()) : $entry;
+            return $model ? $entry->convert(new $model()) : $entry;
         });
     }
 

@@ -4,14 +4,15 @@ namespace LdapRecord\Models\ActiveDirectory;
 
 use LdapRecord\Utilities;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Models\Concerns\HasMemberOf;
+use LdapRecord\Models\Concerns\HasGroups;
+use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\UserPasswordPolicyException;
 use LdapRecord\Models\UserPasswordIncorrectException;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class User extends Entry implements Authenticatable
 {
-    use HasMemberOf;
+    use HasGroups, CanAuthenticate;
 
     /**
      * The object classes of the LDAP model.
@@ -24,64 +25,6 @@ class User extends Entry implements Authenticatable
         'organizationalperson',
         'user',
     ];
-
-    /**
-     * Get the name of the unique identifier for the user.
-     *
-     * @return string
-     */
-    public function getAuthIdentifierName()
-    {
-        return $this->guidKey;
-    }
-
-    /**
-     * Get the unique identifier for the user.
-     *
-     * @return mixed
-     */
-    public function getAuthIdentifier()
-    {
-        return $this->getConvertedGuid();
-    }
-
-    /**
-     * Get the password for the user.
-     *
-     * @return string
-     */
-    public function getAuthPassword()
-    {
-    }
-
-    /**
-     * Get the token value for the "remember me" session.
-     *
-     * @return string
-     */
-    public function getRememberToken()
-    {
-    }
-
-    /**
-     * Set the token value for the "remember me" session.
-     *
-     * @param string $value
-     *
-     * @return void
-     */
-    public function setRememberToken($value)
-    {
-    }
-
-    /**
-     * Get the column name for the "remember me" token.
-     *
-     * @return string
-     */
-    public function getRememberTokenName()
-    {
-    }
 
     /**
      * The groups relationship.
@@ -98,13 +41,15 @@ class User extends Entry implements Authenticatable
     /**
      * Retrieves the primary group of the current user.
      *
-     * @return Group|bool
+     * @return Group|null
      */
     public function getPrimaryGroup()
     {
         $groupSid = preg_replace('/\d+$/', $this->getFirstAttribute('primarygroupid'), $this->getConvertedSid());
 
-        return $this->newQueryWithoutScopes()->setModel(new Group())->findBySid($groupSid);
+        $model = reset($this->groups()->getRelated());
+
+        return $this->newQueryWithoutScopes()->setModel(new $model)->findBySid($groupSid);
     }
 
     /**
@@ -112,7 +57,7 @@ class User extends Entry implements Authenticatable
      *
      * @param string $password
      *
-     * @throws LdapRecordException When no SSL or TLS secured connection is present.
+     * @throws \Exception When no SSL or TLS secured connection is present.
      *
      * @return \LdapRecord\Models\ActiveDirectory\User
      */
@@ -122,10 +67,10 @@ class User extends Entry implements Authenticatable
 
         $encodedPassword = Utilities::encodePassword($password);
 
+        // If the record exists, we need to add a batch replace
+        // modification, otherwise we'll receive a "type or
+        // value" exists exception from our LDAP server.
         if ($this->exists) {
-            // If the record exists, we need to add a batch replace
-            // modification, otherwise we'll receive a "type or
-            // value" exists exception from our LDAP server.
             return $this->addModification(
                 $this->newBatchModification(
                     'unicodepwd',
@@ -133,13 +78,11 @@ class User extends Entry implements Authenticatable
                     [$encodedPassword]
                 )
             );
-        } else {
-            // Otherwise, we are creating a new record
-            // and we can set the attribute normally.
-            return $this->setFirstAttribute(
-                'unicodepwd',
-                $encodedPassword
-            );
+        }
+        // Otherwise, we are creating a new record
+        // and we can set the attribute normally.
+        else {
+            return $this->setFirstAttribute('unicodepwd', $encodedPassword);
         }
     }
 
@@ -161,8 +104,6 @@ class User extends Entry implements Authenticatable
      */
     public function changePassword($oldPassword, $newPassword, $replaceNotRemove = false)
     {
-        $this->validateSecureConnection();
-
         $attribute = 'unicodepwd';
 
         $modifications = [];
@@ -189,18 +130,16 @@ class User extends Entry implements Authenticatable
             );
         }
 
-        // Add the modifications.
         foreach ($modifications as $modification) {
             $this->addModification($modification);
         }
 
-        $result = @$this->update();
+        try {
+            return $this->update();
+        } catch (\Exception $ex) {
+            $connection = $this->newQuery()->getConnection();
 
-        if (!$result) {
-            // If the user failed to update, we'll see if we can
-            // figure out why by retrieving the extended error.
-            $error = $this->query->getConnection()->getExtendedError();
-            $code = $this->query->getConnection()->getExtendedErrorCode();
+            $code = $connection->getExtendedErrorCode();
 
             switch ($code) {
                 case '0000052D':
@@ -212,10 +151,8 @@ class User extends Entry implements Authenticatable
                         "Error: $code. Your old password is incorrect."
                     );
                 default:
-                    throw new LdapRecordException($error);
+                    throw new LdapRecordException($connection->getExtendedError());
             }
         }
-
-        return $result;
     }
 }

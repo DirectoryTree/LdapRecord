@@ -2,8 +2,13 @@
 
 namespace LdapRecord\Models\OpenLDAP;
 
-class User extends Entry
+use Illuminate\Contracts\Auth\Authenticatable;
+use LdapRecord\Models\Concerns\CanAuthenticate;
+
+class User extends Entry implements Authenticatable
 {
+    use CanAuthenticate;
+
     /**
      * The object classes of the LDAP model.
      *

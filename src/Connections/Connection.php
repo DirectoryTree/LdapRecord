@@ -203,7 +203,7 @@ class Connection implements ConnectionInterface
         }
 
         $options = array_replace(
-            $this->configuration->get('custom_options'),
+            $this->configuration->get('options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
                 LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),

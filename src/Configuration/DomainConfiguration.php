@@ -34,29 +34,23 @@ class DomainConfiguration
         // The base distinguished name of your domain.
         'base_dn' => '',
 
-        // The username to connect to your hosts with.
+        // The username to use for binding.
         'username' => '',
 
-        // The password that is utilized with the above user.
+        // The password to use for binding.
         'password' => '',
 
-        // The account prefix to use when authenticating users.
-        'account_prefix' => null,
-
-        // The account suffix to use when authenticating users.
-        'account_suffix' => null,
-
-        // Whether or not to use SSL when connecting to your hosts.
+        // Whether or not to use SSL when connecting.
         'use_ssl' => false,
 
-        // Whether or not to use TLS when connecting to your hosts.
+        // Whether or not to use TLS when connecting.
         'use_tls' => false,
 
         // Whether or not follow referrals is enabled when performing LDAP operations.
         'follow_referrals' => false,
 
-        // Custom LDAP options that you'd like to utilize.
-        'custom_options' => [],
+        // Custom LDAP options.
+        'options' => [],
     ];
 
     /**

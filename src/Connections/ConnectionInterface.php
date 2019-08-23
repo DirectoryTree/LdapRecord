@@ -88,10 +88,11 @@ interface ConnectionInterface
      * @param string|null $username
      * @param string|null $password
      *
-     * @return ConnectionInterface
-     *@throws ConnectionException        If upgrading the connection to TLS fails
      *
+     * @throws ConnectionException            If upgrading the connection to TLS fails
      * @throws \LdapRecord\Auth\BindException If binding to the LDAP server fails.
+     *
+     * @return ConnectionInterface
      */
     public function connect($username = null, $password = null);
 }

@@ -55,33 +55,32 @@ class Guard implements GuardInterface
      */
     public function attempt($username, $password, $bindAsUser = false)
     {
-        $this->validateCredentials($username, $password);
+        if (empty($username)) {
+            throw new UsernameRequiredException('A username must be specified.');
+        }
+
+        if (empty($password)) {
+            throw new PasswordRequiredException('A password must be specified.');
+        }
 
         $this->fireAttemptingEvent($username, $password);
 
         try {
-            $this->bind(
-                $this->applyPrefixAndSuffix($username),
-                $password
-            );
+            $this->bind($username, $password);
 
             $result = true;
 
             $this->firePassedEvent($username, $password);
-        } catch (BindException $e) {
-            // We'll catch the BindException here to allow
-            // developers to use a simple if / else
-            // using the attempt method.
+        }
+        // Catch the bind exception so developers can use a
+        // simple if / else statement for binding users.
+        catch (BindException $e) {
             $result = false;
         }
 
-        // If we're not allowed to bind as the user,
-        // we'll rebind as administrator.
+        // If we are not binding as the user, we will rebind the configured
+        // account so LDAP operations can be ran during the same request.
         if ($bindAsUser === false) {
-            // We won't catch any BindException here so we can
-            // catch rebind failures. However this shouldn't
-            // occur if our credentials are correct
-            // in the first place.
             $this->bindAsAdministrator();
         }
 
@@ -140,46 +139,6 @@ class Guard implements GuardInterface
     public function setDispatcher(DispatcherInterface $dispatcher)
     {
         $this->events = $dispatcher;
-    }
-
-    /**
-     * Applies the prefix and suffix to the given username.
-     *
-     * @param string $username
-     *
-     * @throws \LdapRecord\Configuration\ConfigurationException If account_suffix or account_prefix do not
-     *                                                      exist in the providers domain configuration
-     *
-     * @return string
-     */
-    protected function applyPrefixAndSuffix($username)
-    {
-        $prefix = $this->configuration->get('account_prefix');
-        $suffix = $this->configuration->get('account_suffix');
-
-        return $prefix.$username.$suffix;
-    }
-
-    /**
-     * Validates the specified username and password from being empty.
-     *
-     * @param string $username
-     * @param string $password
-     *
-     * @throws PasswordRequiredException When the given password is empty.
-     * @throws UsernameRequiredException When the given username is empty.
-     */
-    protected function validateCredentials($username, $password)
-    {
-        if (empty($username)) {
-            // Check for an empty username.
-            throw new UsernameRequiredException('A username must be specified.');
-        }
-
-        if (empty($password)) {
-            // Check for an empty password.
-            throw new PasswordRequiredException('A password must be specified.');
-        }
     }
 
     /**

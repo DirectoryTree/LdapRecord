@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use Tightenco\Collect\Support\Arr;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\HasManyIn;
 
@@ -18,7 +19,7 @@ trait HasRelationships
      */
     public function hasMany($related, $relationKey, $foreignKey = 'dn')
     {
-        return new HasMany($this->query(), $this, $related, $relationKey, $foreignKey);
+        return new HasMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
 
     /**
@@ -32,6 +33,16 @@ trait HasRelationships
      */
     public function hasManyIn($related, $relationKey, $foreignKey = 'dn')
     {
-        return new HasManyIn($this->query(), $this, $related, $relationKey, $foreignKey);
+        return new HasManyIn($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
+    }
+
+    /**
+     * Get the relationships name.
+     *
+     * @return string|null
+     */
+    protected function guessRelationshipName()
+    {
+        return Arr::last(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3))['function'];
     }
 }

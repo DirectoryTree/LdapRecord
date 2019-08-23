@@ -1410,7 +1410,7 @@ class Builder
     public function insert($dn, array $attributes)
     {
         if (empty($dn)) {
-            throw new Exception('A new LDAP entry must have a distinguished name name (dn).');
+            throw new Exception('A new LDAP entry must have a distinguished name (dn).');
         }
 
         if (!array_key_exists('objectclass', $attributes) || !array_key_exists('cn', $attributes)) {
@@ -1610,6 +1610,8 @@ class Builder
      */
     protected function addDynamic($segment, $connector, $parameters, $index)
     {
+        // If no parameters were given to the dynamic where clause,
+        // we can assume a "has" attribute filter is being added.
         if (count($parameters) === 0) {
             $this->where(strtolower($segment), '*', null, strtolower($connector));
         } else {
@@ -1650,6 +1652,8 @@ class Builder
      * Fires the given query event.
      *
      * @param QueryExecuted $event
+     *
+     * @return void
      */
     protected function fireQueryEvent(QueryExecuted $event)
     {

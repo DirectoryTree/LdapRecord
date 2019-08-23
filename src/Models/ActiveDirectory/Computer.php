@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\Concerns\HasMemberOf;
+use LdapRecord\Models\Concerns\HasGroups;
 
 class Computer extends Entry
 {
-    use HasMemberOf;
+    use HasGroups;
 
     /**
      * The object classes of the LDAP model.
@@ -20,4 +20,16 @@ class Computer extends Entry
         'user',
         'computer',
     ];
+
+    /**
+     * The groups relationship.
+     *
+     * Retrieves groups that the current computer is apart of.
+     *
+     * @return \LdapRecord\Models\Relations\HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(Group::class, 'member');
+    }
 }

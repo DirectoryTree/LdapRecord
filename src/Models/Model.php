@@ -9,7 +9,7 @@ use UnexpectedValueException;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Utilities;
 use LdapRecord\Query\Collection;
-use LdapRecord\Query\Expressive\Builder;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Guid;

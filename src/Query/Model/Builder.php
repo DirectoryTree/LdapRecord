@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Query\Expressive;
+namespace LdapRecord\Query\Model;
 
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;

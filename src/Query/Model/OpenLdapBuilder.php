@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Query\Expressive;
+namespace LdapRecord\Query\Model;
 
 class OpenLdapBuilder extends Builder
 {

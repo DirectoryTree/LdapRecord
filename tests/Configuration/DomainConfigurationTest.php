@@ -4,10 +4,24 @@ namespace LdapRecord\tests\Configuration;
 
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Configuration\ConfigurationException;
 
 class DomainConfigurationTest extends TestCase
 {
-    public function test_default()
+    public function test_getting_options()
+    {
+        $config = new DomainConfiguration();
+        $this->assertEmpty($config->get('username'));
+    }
+
+    public function test_setting_options()
+    {
+        $config = new DomainConfiguration();
+        $config->set('username', 'foo');
+        $this->assertEquals('foo', $config->get('username'));
+    }
+
+    public function test_default_options()
     {
         $config = new DomainConfiguration();
 
@@ -19,23 +33,21 @@ class DomainConfigurationTest extends TestCase
         $this->assertEmpty($config->get('base_dn'));
         $this->assertFalse($config->get('use_ssl'));
         $this->assertFalse($config->get('use_tls'));
-        $this->assertEquals([], $config->get('custom_options'));
+        $this->assertEquals([], $config->get('options'));
     }
 
-    public function test_mock_configuration()
+    public function test_all_options()
     {
         $config = new DomainConfiguration([
-            'port'               => 500,
-            'base_dn'            => 'dc=corp,dc=org',
+            'port' => 500,
+            'base_dn' => 'dc=corp,dc=org',
             'hosts' => ['dc1', 'dc2'],
-            'follow_referrals'   => false,
-            'username'     => 'username',
-            'password'     => 'password',
-            'account_prefix' => 'prefix',
-            'account_suffix' => 'suffix',
-            'use_ssl'            => true,
-            'use_tls'            => false,
-            'custom_options'     => [
+            'follow_referrals' => false,
+            'username' => 'username',
+            'password' => 'password',
+            'use_ssl' => true,
+            'use_tls' => false,
+            'options' => [
                 LDAP_OPT_SIZELIMIT => 1000
             ]
         ]);
@@ -45,99 +57,76 @@ class DomainConfigurationTest extends TestCase
         $this->assertEquals(['dc1', 'dc2'], $config->get('hosts'));
         $this->assertEquals('username', $config->get('username'));
         $this->assertEquals('password', $config->get('password'));
-        $this->assertEquals('suffix', $config->get('account_suffix'));
-        $this->assertEquals('prefix', $config->get('account_prefix'));
         $this->assertTrue($config->get('use_ssl'));
         $this->assertFalse($config->get('use_tls'));
         $this->assertEquals(
             [
                 LDAP_OPT_SIZELIMIT => 1000
             ],
-            $config->get('custom_options')
+            $config->get('options')
         );
     }
 
     public function test_invalid_port()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['port' => 'invalid']);
     }
 
     public function test_invalid_base_dn()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['base_dn' => ['invalid']]);
     }
 
     public function test_invalid_domain_controllers()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['hosts' => 'invalid']);
     }
 
     public function test_invalid_admin_username()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
-        new DomainConfiguration(['admin_username' => ['invalid']]);
+        new DomainConfiguration(['username' => ['invalid']]);
     }
 
-    public function test_invalid_admin_password()
+    public function test_invalid_password()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
-        new DomainConfiguration(['admin_password' => ['invalid']]);
-    }
-
-    public function test_invalid_admin_account_suffix()
-    {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
-
-        new DomainConfiguration(['admin_account_suffix' => ['invalid']]);
-    }
-
-    public function test_invalid_account_suffix()
-    {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
-
-        new DomainConfiguration(['account_suffix' => ['invalid']]);
-    }
-
-    public function test_invalid_account_prefix()
-    {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
-
-        new DomainConfiguration(['account_prefix' => ['invalid']]);
+        new DomainConfiguration(['password' => ['invalid']]);
     }
 
     public function test_invalid_follow_referrals()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['follow_referrals' => 'invalid']);
     }
 
     public function test_invalid_use_ssl()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['use_ssl' => 'invalid']);
     }
 
     public function test_invalid_use_tls()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['use_tls' => 'invalid']);
     }
 
-    public function test_invalid_custom_options()
+    public function test_invalid_options()
     {
-        $this->expectException(\LdapRecord\Configuration\ConfigurationException::class);
+        $this->expectException(ConfigurationException::class);
 
-        new DomainConfiguration(['custom_options' => 'invalid']);
+        new DomainConfiguration(['options' => 'invalid']);
     }
 }

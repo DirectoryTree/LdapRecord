@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Auth;
 
 use LdapRecord\Auth\Guard;
+use LdapRecord\Auth\BindException;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Ldap;
 use LdapRecord\Connections\DetailedError;
@@ -37,14 +38,10 @@ class GuardTest extends TestCase
     {
         $config = $this->mock(DomainConfiguration::class);
 
-        $config
-            ->shouldReceive('get')->withArgs(['account_prefix'])->once()
-            ->shouldReceive('get')->withArgs(['account_suffix'])->once()
-            ->shouldReceive('get')->withArgs(['username'])->once()
-            ->shouldReceive('get')->withArgs(['password'])->once();
+        $config->shouldReceive('get')->withArgs(['username'])->once();
+        $config->shouldReceive('get')->withArgs(['password'])->once();
 
         $ldap = $this->mock(Ldap::class);
-
         $ldap->shouldReceive('bind')->twice()->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -67,59 +64,32 @@ class GuardTest extends TestCase
     
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $this->expectException(\LdapRecord\Auth\BindException::class);
-
         $config = $this->mock(DomainConfiguration::class);
 
         $ldap = $this->mock(Ldap::class);
-
-        $ldap
-            ->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false)
-            ->shouldReceive('getLastError')->once()->andReturn('error')
-            ->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'))
-            ->shouldReceive('isUsingSSL')->once()->andReturn(false)
-            ->shouldReceive('isUsingTLS')->once()->andReturn(false)
-            ->shouldReceive('errNo')->once()->andReturn(1);
+        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
+        $ldap->shouldReceive('getLastError')->once()->andReturn('error');
+        $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'));
+        $ldap->shouldReceive('errNo')->once()->andReturn(1);
 
         $guard = new Guard($ldap, $config);
 
+        $this->expectException(BindException::class);
         $guard->bind('username', 'password');
     }
 
     public function test_bind_as_administrator()
     {
         $config = $this->mock(DomainConfiguration::class);
-
-        $config
-            ->shouldReceive('get')->withArgs(['username'])->once()->andReturn('admin')
-            ->shouldReceive('get')->withArgs(['password'])->once()->andReturn('password');
+        $config->shouldReceive('get')->withArgs(['username'])->once()->andReturn('admin');
+        $config->shouldReceive('get')->withArgs(['password'])->once()->andReturn('password');
 
         $ldap = $this->mock(Ldap::class);
-
         $ldap->shouldReceive('bind')->once()->withArgs(['admin', 'password'])->andReturn(true);
 
         $guard = new Guard($ldap, $config);
 
         $this->assertNull($guard->bindAsAdministrator());
-    }
-
-    public function test_prefix_and_suffix_are_being_used_in_attempt()
-    {
-        $config = $this->mock(DomainConfiguration::class);
-
-        $config
-            ->shouldReceive('get')->withArgs(['account_prefix'])->once()->andReturn('prefix.')
-            ->shouldReceive('get')->withArgs(['account_suffix'])->once()->andReturn('.suffix')
-            ->shouldReceive('get')->withArgs(['username'])->once()
-            ->shouldReceive('get')->withArgs(['password'])->once();
-
-        $ldap = $this->mock(Ldap::class);
-
-        $ldap->shouldReceive('bind')->once()->withArgs(['prefix.username.suffix', 'password'])->andReturn(true);
-
-        $guard = new Guard($ldap, $config);
-
-        $this->assertTrue($guard->attempt('username', 'password', $bindAsUser = true));
     }
 
     public function test_binding_events_are_fired_during_bind()
@@ -159,15 +129,8 @@ class GuardTest extends TestCase
 
     public function test_auth_events_are_fired_during_attempt()
     {
-        $config = $this->mock(DomainConfiguration::class);
-
-        $config
-            ->shouldReceive('get')->withArgs(['account_prefix'])->once()->andReturn('prefix.')
-            ->shouldReceive('get')->withArgs(['account_suffix'])->once()->andReturn('.suffix');
-
         $ldap = $this->mock(Ldap::class);
-
-        $ldap->shouldReceive('bind')->once()->withArgs(['prefix.johndoe.suffix', 'secret'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();
 
@@ -177,14 +140,14 @@ class GuardTest extends TestCase
         $firedPassed = false;
 
         $events->listen(Binding::class, function (Binding $event) use (&$firedBinding) {
-            $this->assertEquals($event->getUsername(), 'prefix.johndoe.suffix');
+            $this->assertEquals($event->getUsername(), 'johndoe');
             $this->assertEquals($event->getPassword(), 'secret');
 
             $firedBinding = true;
         });
 
         $events->listen(Bound::class, function (Bound $event) use (&$firedBound) {
-            $this->assertEquals($event->getUsername(), 'prefix.johndoe.suffix');
+            $this->assertEquals($event->getUsername(), 'johndoe');
             $this->assertEquals($event->getPassword(), 'secret');
 
             $firedBound = true;
@@ -204,7 +167,7 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $guard = new Guard($ldap, $config);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $guard->setDispatcher($events);
 
@@ -218,15 +181,8 @@ class GuardTest extends TestCase
 
     public function test_all_auth_events_can_be_listened_to_with_wildcard()
     {
-        $config = $this->mock(DomainConfiguration::class);
-
-        $config
-            ->shouldReceive('get')->withArgs(['account_prefix'])->once()->andReturn('prefix.')
-            ->shouldReceive('get')->withArgs(['account_suffix'])->once()->andReturn('.suffix');
-
         $ldap = $this->mock(Ldap::class);
-
-        $ldap->shouldReceive('bind')->once()->withArgs(['prefix.johndoe.suffix', 'secret'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();
 
@@ -236,12 +192,10 @@ class GuardTest extends TestCase
             $totalFired++;
         });
 
-        $guard = new Guard($ldap, $config);
-
+        $guard = new Guard($ldap, new DomainConfiguration());
         $guard->setDispatcher($events);
 
         $this->assertTrue($guard->attempt('johndoe', 'secret', $bindAsUser = true));
-
         $this->assertEquals($totalFired, 4);
     }
 }

@@ -18,13 +18,6 @@ class Builder extends BaseBuilder
     protected $model;
 
     /**
-     * The relationships that should be eager loaded.
-     *
-     * @var array
-     */
-    protected $eagerLoad = [];
-
-    /**
      * Sets the model instance for the model being queried.
      *
      * @param Model $model

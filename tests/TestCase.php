@@ -3,18 +3,14 @@
 namespace LdapRecord\Tests;
 
 use Mockery;
-use LdapRecord\Query\Builder;
-use LdapRecord\Query\Grammar;
-use LdapRecord\Connections\LdapInterface;
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 
-class TestCase extends BaseTestCase
+class TestCase extends MockeryTestCase
 {
-    /*
-     * Set up the test environment.
-     */
     public function setUp()
     {
+        parent::setUp();
+
         // Set constants for testing without LDAP support
         if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
             define('LDAP_OPT_PROTOCOL_VERSION', 3);
@@ -33,53 +29,8 @@ class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * Mocks a the specified class.
-     *
-     * @param mixed $class
-     *
-     * @return Mockery\MockInterface
-     */
     protected function mock($class)
     {
         return Mockery::mock($class);
-    }
-
-    /**
-     * Returns a new Builder instance.
-     *
-     * @param null $connection
-     *
-     * @return Builder
-     */
-    protected function newBuilder($connection = null)
-    {
-        if (is_null($connection)) {
-            $connection = $this->newLdapMock();
-        }
-
-        return new Builder($connection, new Grammar());
-    }
-
-    /**
-     * Returns a mocked builder instance.
-     *
-     * @param null $connection
-     *
-     * @return Mockery\MockInterface
-     */
-    protected function newBuilderMock($connection = null)
-    {
-        return $this->mock($this->newBuilder($connection));
-    }
-
-    /**
-     * Returns a mocked connection instance.
-     *
-     * @return Mockery\MockInterface
-     */
-    protected function newLdapMock()
-    {
-        return $this->mock(LdapInterface::class);
     }
 }

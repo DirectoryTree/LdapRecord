@@ -21,7 +21,7 @@ class Utilities
 
         if (is_array($dn) && array_key_exists('count', $dn)) {
             foreach ($dn as $rdn => $value) {
-                $dn[$rdn] = self::unescape($value);
+                $dn[$rdn] = static::unescape($value);
             }
         }
 

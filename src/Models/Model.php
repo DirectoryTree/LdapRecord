@@ -709,6 +709,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Created($this));
 
+        $this->exists = true;
+
         return $this->synchronize();
     }
 
@@ -885,18 +887,16 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        // First we'll explode the current models distinguished name and keep their attributes prefixes.
-        $parts = Utilities::explodeDn($this->dn, $removeAttrPrefixes = false);
+        $rdns = Arr::except(
+            Utilities::explodeDn($this->dn, $removeAttrPrefixes = false),
+            ['count']
+        );
 
-        // If the current model has an empty RDN, we can't move it.
-        if ((int) Arr::first($parts) === 0) {
-            throw new UnexpectedValueException('Current model does not contain an RDN to move.');
+        if ($rdn = Arr::first($rdns)) {
+            return $this->rename($rdn, $newParentDn, $deleteOldRdn);
         }
 
-        // Looks like we have a DN. We'll retrieve the leftmost RDN (the identifier).
-        $rdn = Arr::get($parts, 0);
-
-        return $this->rename($rdn, $newParentDn, $deleteOldRdn);
+        throw new UnexpectedValueException('Current model does not contain an RDN to move.');
     }
 
     /**
@@ -918,13 +918,29 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $newParentDn = $newParentDn->getDn();
         }
 
-        $this->newQuery()->rename($rdn, $newParentDn, $deleteOldRdn);
+        // If no new parent has been given, we need to generate one.
+        // We will explode the models current distinguished name
+        // and remove the initial RDN and count keys. Then we
+        // glue it back together for a seamless rename.
+        if (is_null($newParentDn)) {
+            $base = Arr::except(
+                Utilities::explodeDn($this->dn, $removeAttrPrefixes = false),
+                [0, 'count']
+            );
 
-        // If the model was successfully moved, we'll set its
-        // new DN so we can sync it's attributes properly.
-        $this->setDn("{$rdn},{$newParentDn}");
+            $newParentDn = implode(',', $base);
+        }
 
-        return true;
+        if ($this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn)) {
+            // If the model was successfully renamed, we will set
+            // its new DN so any further updates to the model
+            // can be performed without any issues.
+            $this->setDn(implode(',', [$rdn, $newParentDn]));
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

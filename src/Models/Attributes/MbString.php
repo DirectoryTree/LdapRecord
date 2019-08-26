@@ -13,7 +13,7 @@ class MbString
      */
     public static function ord($string)
     {
-        if (self::isLoaded()) {
+        if (static::isLoaded()) {
             $result = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
 
             if (is_array($result) === true) {
@@ -33,7 +33,7 @@ class MbString
      */
     public static function chr($int)
     {
-        if (self::isLoaded()) {
+        if (static::isLoaded()) {
             return mb_convert_encoding(pack('n', $int), 'UTF-8', 'UTF-16BE');
         }
 
@@ -61,7 +61,7 @@ class MbString
      */
     public static function isUtf8($string)
     {
-        if (self::isLoaded()) {
+        if (static::isLoaded()) {
             return mb_detect_encoding($string, 'UTF-8', $strict = true);
         }
 

@@ -697,7 +697,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // name set, we'll create one automatically using
         // the current query builders base DN.
         if (empty($this->dn)) {
-            $this->setDn($this->getCreatableDn());
+            $this->dn = $this->getCreatableDn();
         }
 
         $this->fireModelEvent(new Events\Creating($this));
@@ -935,7 +935,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             // If the model was successfully renamed, we will set
             // its new DN so any further updates to the model
             // can be performed without any issues.
-            $this->setDn(implode(',', [$rdn, $newParentDn]));
+            $this->dn = implode(',', [$rdn, $newParentDn]);
 
             return true;
         }

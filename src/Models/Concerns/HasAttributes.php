@@ -160,11 +160,9 @@ trait HasAttributes
             // In some LDAP instances the distinguished name may
             // be returned as an array. We will pull the
             // first value in this case.
-            $dn = is_array($attributes['dn']) ?
+            $this->dn = is_array($attributes['dn']) ?
                 reset($attributes['dn']) :
                 $attributes['dn'];
-
-            $this->setDn($dn);
         }
 
         $this->syncOriginal();

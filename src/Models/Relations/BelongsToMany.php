@@ -19,8 +19,8 @@ class BelongsToMany extends HasMany
         $current = $this->getRelatedValue($model);
 
         // We need to determine if the parent is already apart
-        // of the given related model. If we don't, we will
-        // receive 'type or value exists' errors.
+        // of the given related model. If we don't, we'll
+        // receive a 'type or value exists' error.
         if (! in_array($this->parent->getDn(), $current)) {
             $current[] = $this->parent->getDn();
 

@@ -465,6 +465,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Determine if two models have the same distinguished name and belong to the same connection.
+     *
+     * @param Model $model
+     *
+     * @return bool
+     */
+    public function is(Model $model)
+    {
+        return $this->dn == $model->getDn() && $this->connection == $model->getConnectionName();
+    }
+
+    /**
      * Hydrate a new collection of models from LDAP search results.
      *
      * @param array $records

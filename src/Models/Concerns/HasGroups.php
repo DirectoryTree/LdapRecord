@@ -4,7 +4,7 @@ namespace LdapRecord\Models\Concerns;
 
 use LdapRecord\Utilities;
 use LdapRecord\Query\Collection;
-use LdapRecord\Models\Relations\Relation;
+use LdapRecord\Models\Relations\BelongsToMany;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\ActiveDirectory\Group;
 
@@ -13,9 +13,9 @@ trait HasGroups
     /**
      * The groups relationship.
      *
-     * @return Relation
+     * @return BelongsToMany
      */
-    abstract public function groups() : Relation;
+    abstract public function groups() : BelongsToMany;
 
     /**
      * Adds the current model to the specified group.

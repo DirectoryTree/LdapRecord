@@ -3,11 +3,41 @@
 namespace LdapRecord\Models\Concerns;
 
 use Tightenco\Collect\Support\Arr;
+use LdapRecord\Models\Relations\HasOne;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\HasManyIn;
+use LdapRecord\Models\Relations\BelongsToMany;
 
 trait HasRelationships
 {
+    /**
+     * Returns a new has one relationship.
+     *
+     * @param string $related
+     * @param string $relationKey
+     * @param string $foreignKey
+     *
+     * @return HasOne
+     */
+    public function hasOne($related, $relationKey, $foreignKey = 'dn')
+    {
+        return new HasOne($this->newQuery(), $this, $related, $relationKey, $foreignKey);
+    }
+
+    /**
+     * Returns a new belongs to many relationship.
+     *
+     * @param string $related
+     * @param string $relationKey
+     * @param string $foreignKey
+     *
+     * @return BelongsToMany
+     */
+    public function belongsToMany($related, $relationKey, $foreignKey = 'dn')
+    {
+        return new BelongsToMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
+    }
+
     /**
      * Returns a new has many relationship.
      *

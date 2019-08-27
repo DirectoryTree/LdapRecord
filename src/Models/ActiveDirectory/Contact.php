@@ -13,11 +13,11 @@ class Contact extends Entry
      *
      * Retrieves groups that the current contact is apart of.
      *
-     * @return \LdapRecord\Models\Relations\HasMany
+     * @return \LdapRecord\Models\Relations\BelongsToMany
      */
     public function groups()
     {
-        return $this->hasMany(Group::class, 'member');
+        return $this->belongsToMany(Group::class, 'member');
     }
 
     /**

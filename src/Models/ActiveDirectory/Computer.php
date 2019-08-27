@@ -32,4 +32,14 @@ class Computer extends Entry
     {
         return $this->hasMany(Group::class, 'member');
     }
+
+    /**
+     * The managed by relationship.
+     *
+     * @return \LdapRecord\Models\Relations\HasOne
+     */
+    public function managedBy()
+    {
+        return $this->hasOne([Contact::class, Group::class, User::class], 'managedby');
+    }
 }

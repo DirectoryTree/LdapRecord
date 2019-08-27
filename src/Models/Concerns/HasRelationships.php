@@ -13,7 +13,7 @@ trait HasRelationships
     /**
      * Returns a new has one relationship.
      *
-     * @param string $related
+     * @param mixed  $related
      * @param string $relationKey
      * @param string $foreignKey
      *

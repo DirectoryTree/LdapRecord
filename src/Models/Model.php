@@ -729,7 +729,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        if ($this->newQuery()->insertAttributes($this->dn, [$attribute => $value])) {
+        if ($this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value])) {
             return $sync ? $this->synchronize() : true;
         }
 
@@ -785,7 +785,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        if ($this->newQuery()->updateAttributes($this->dn, [$attribute => $value])) {
+        if ($this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value])) {
             return $sync ? $this->synchronize() : true;
         }
 

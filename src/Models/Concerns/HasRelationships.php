@@ -25,20 +25,6 @@ trait HasRelationships
     }
 
     /**
-     * Returns a new belongs to many relationship.
-     *
-     * @param string $related
-     * @param string $relationKey
-     * @param string $foreignKey
-     *
-     * @return BelongsToMany
-     */
-    public function belongsToMany($related, $relationKey, $foreignKey = 'dn')
-    {
-        return new BelongsToMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
-    }
-
-    /**
      * Returns a new has many relationship.
      *
      * @param mixed  $related
@@ -64,6 +50,20 @@ trait HasRelationships
     public function hasManyIn($related, $relationKey, $foreignKey = 'dn')
     {
         return new HasManyIn($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
+    }
+
+    /**
+     * Returns a new belongs to many relationship.
+     *
+     * @param string $related
+     * @param string $relationKey
+     * @param string $foreignKey
+     *
+     * @return BelongsToMany
+     */
+    public function belongsToMany($related, $relationKey, $foreignKey = 'dn')
+    {
+        return new BelongsToMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
 
     /**

@@ -11,7 +11,7 @@ class HasOne extends Relation
      *
      * @return \LdapRecord\Query\Collection
      */
-    public function get()
+    public function getResults()
     {
         $model = $this->getForeignModelByValue(
             $this->parent->getFirstAttribute($this->relationKey)

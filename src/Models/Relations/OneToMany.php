@@ -40,33 +40,37 @@ abstract class OneToMany extends Relation
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function get()
-    {
-        return $this->recursive ?
-            $this->getRecursiveResults($this->getRelationResults()) :
-            $this->getRelationResults();
-    }
-
-    /**
      * Whether to include recursive results.
+     *
+     * @param bool $enable
      *
      * @return $this
      */
-    public function recursive()
+    public function recursive($enable = true)
     {
-        $this->recursive = true;
+        $this->recursive = $enable;
 
         return $this;
     }
 
     /**
-     * Get the relationships results.
+     * Get the immediate relationships results.
      *
      * @return Collection
      */
     abstract public function getRelationResults();
+
+    /**
+     * Get the results of the relationship.
+     *
+     * @return Collection
+     */
+    public function getResults()
+    {
+        return $this->recursive ?
+            $this->getRecursiveResults($this->getRelationResults()) :
+            $this->getRelationResults();
+    }
 
     /**
      * Get the results for the models relation recursively.

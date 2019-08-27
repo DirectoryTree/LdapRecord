@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Relations;
 
-use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Entry;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 
@@ -83,10 +83,24 @@ abstract class Relation
 
     /**
      * Get the results of the relationship.
+     *
+     * @return Collection
+     */
+    abstract public function getResults();
+
+    /**
+     * Execute the relationship query.
+     *
+     * @param array $attributes
      * 
      * @return Collection
      */
-    abstract public function get();
+    public function get($attributes = ['*'])
+    {
+        $this->query->select($attributes);
+
+        return $this->getResults();
+    }
 
     /**
      * Get the first result of the relationship.
@@ -99,6 +113,24 @@ abstract class Relation
     }
 
     /**
+     * Determine if the relationship contains the model or exists.
+     *
+     * @param Model|null $related
+     *
+     * @return bool
+     */
+    public function exists(Model $related = null)
+    {
+        if ($related) {
+            return $this->get()->filter(function (Model $model) use ($related) {
+                return $model->is($related);
+            })->isNotEmpty();
+        }
+
+        return $this->get('objectclass')->isNotEmpty();
+    }
+
+    /**
      * Initializes the relation by setting the default model on the query.
      * 
      * @return static
@@ -108,6 +140,16 @@ abstract class Relation
         $this->query->clearFilters()->setModel(new Entry());
 
         return $this;
+    }
+
+    /**
+     * Get the underlying query for the relation.
+     *
+     * @return Builder
+     */
+    public function getQuery()
+    {
+        return $this->query;
     }
 
     /**

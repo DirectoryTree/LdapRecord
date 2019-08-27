@@ -36,6 +36,18 @@ class User extends Entry implements Authenticatable
     }
 
     /**
+     * The manager relationship.
+     *
+     * Retrieves the manager of the current user.
+     *
+     * @return \LdapRecord\Models\Relations\HasOne
+     */
+    public function manager()
+    {
+        return $this->hasOne(static::class, 'manager');
+    }
+
+    /**
      * Retrieves the primary group of the current user.
      *
      * @return Group|null

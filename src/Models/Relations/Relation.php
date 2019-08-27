@@ -91,7 +91,7 @@ abstract class Relation
     /**
      * Execute the relationship query.
      *
-     * @param array $attributes
+     * @param array|string $attributes
      * 
      * @return Collection
      */

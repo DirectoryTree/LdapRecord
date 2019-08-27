@@ -2,12 +2,16 @@
 
 namespace LdapRecord\Tests\Models;
 
+use Exception;
 use LdapRecord\Models\Entry;
-use LdapRecord\Query\Builder;
+use LdapRecord\Query\Collection;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\Connection;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Connections\ContainerException;
+use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase
 {
@@ -44,7 +48,9 @@ class ModelQueryTest extends TestCase
     {
         Container::getNewInstance()->add(new Connection());
         $model = new Entry();
-        $this->assertNull($model->newQueryWithoutScopes()->getModel());
+        $query = $model->newQueryWithoutScopes();
+        $this->assertEquals($model, $query->getModel());
+        $this->assertEquals(['and' => [], 'or' => [], 'raw' => []], $query->filters);
     }
 
     public function test_new_query_has_connection_base_dn()
@@ -83,5 +89,173 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ContainerException::class);
         Entry::on('other');
+    }
+
+    public function test_create()
+    {
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('add')->once()->withArgs(['cn=foo,dc=bar,dc=baz', ['cn' => ['foo'], 'objectclass' => ['bar']]])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
+
+        $model->setDn('cn=foo,dc=bar,dc=baz');
+        $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
+        $this->assertTrue($model->create());
+    }
+
+    public function test_create_without_connection()
+    {
+        $this->expectException(ContainerException::class);
+        (new Entry())->create();
+    }
+
+    public function test_create_without_dn()
+    {
+        $this->expectException(\Exception::class);
+        Container::getNewInstance()->add(new Connection());
+        (new Entry())->create();
+    }
+
+    public function test_create_attribute()
+    {
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('modAdd')->once()->withArgs(['foo', ['bar' => 'baz']])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
+
+        $model->setRawAttributes(['dn' => 'foo']);
+        $this->assertTrue($model->createAttribute('bar', 'baz'));
+    }
+
+    public function test_create_attribute_without_existing_model()
+    {
+        $this->expectException(ModelDoesNotExistException::class);
+        $model = new Entry();
+        $model->createAttribute('foo', 'bar');
+    }
+
+    public function test_update()
+    {
+        $mod = ['attrib' => 'cn', 'modtype' => 3, 'values' => [0 => 'baz']];
+
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('modifyBatch')->once()->withArgs(['foo', [$mod]])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
+
+        $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
+        $model->cn = 'baz';
+
+        $this->assertTrue($model->update());
+    }
+
+    public function test_update_without_existing_model()
+    {
+        $this->expectException(ModelDoesNotExistException::class);
+        $model = new Entry();
+        $model->update();
+    }
+
+    public function test_update_without_changes()
+    {
+        $model = (new Entry)->setRawAttributes(['dn' => 'foo']);
+        $this->assertTrue($model->update());
+    }
+
+    public function test_update_attribute()
+    {
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('modReplace')->once()->withArgs(['foo', ['bar' => 'baz']])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
+
+        $model->setRawAttributes(['dn' => 'foo']);
+        $this->assertTrue($model->updateAttribute('bar', 'baz'));
+    }
+
+    public function test_update_attribute_without_existing_model()
+    {
+        $this->expectException(ModelDoesNotExistException::class);
+        $model = new Entry();
+        $model->updateAttribute('foo', 'bar');
+    }
+
+    public function test_delete()
+    {
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('delete')->once()->withArgs(['foo'])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+
+        $model->setRawAttributes(['dn' => 'foo']);
+        $this->assertTrue($model->delete());
+    }
+
+    public function test_delete_without_existing_model()
+    {
+        $this->expectException(ModelDoesNotExistException::class);
+        $model = new Entry();
+        $model->delete();
+    }
+
+    public function test_delete_attribute()
+    {
+        $conn = $this->mock(LdapInterface::class);
+        $conn->shouldReceive('modDelete')->once()->withArgs(['foo', ['bar' => []]])->andReturnTrue();
+
+        $query = new Builder($conn);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
+
+        $model->setRawAttributes(['dn' => 'foo']);
+        $this->assertTrue($model->deleteAttribute('bar'));
+    }
+
+    public function test_delete_attribute_without_existing_model()
+    {
+        $this->expectException(ModelDoesNotExistException::class);
+        $model = new Entry();
+        $model->delete();
+    }
+
+    public function test_delete_leaf_nodes()
+    {
+        $leaf = $this->mock(Entry::class);
+        $leaf->shouldReceive('delete')->once()->andReturnTrue();
+
+        $shouldBeDeleted = new Collection([$leaf]);
+
+        $query = $this->mock(Builder::class);
+        $query->shouldReceive('listing')->once()->andReturnSelf();
+        $query->shouldReceive('in')->once()->withArgs(['foo'])->andReturnSelf();
+        $query->shouldReceive('get')->once()->andReturn($shouldBeDeleted);
+
+        $model = $this->mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+
+        $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
+        $this->assertEquals($shouldBeDeleted, $model->deleteLeafNodes());
+        $this->assertFalse($shouldBeDeleted->first()->exists);
     }
 }

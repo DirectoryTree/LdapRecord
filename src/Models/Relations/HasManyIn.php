@@ -7,11 +7,11 @@ use LdapRecord\Query\Collection;
 class HasManyIn extends OneToMany
 {
     /**
-     * Get the results of the relationship.
+     * Get the relationships results.
      *
      * @return Collection
      */
-    public function get()
+    public function getRelationResults()
     {
         $results = $this->parent->newCollection();
 
@@ -22,19 +22,5 @@ class HasManyIn extends OneToMany
         }
 
         return $this->transformResults($results);
-    }
-
-    /**
-     * Get the foreign model by the given value.
-     *
-     * @param string $value
-     *
-     * @return \LdapRecord\Models\Model|false
-     */
-    protected function getForeignModelByValue($value)
-    {
-        return $this->foreignKey == 'dn' || 'distinguishedname' ?
-            $this->query->findByDn($value) :
-            $this->query->findBy($this->foreignKey, $value);
     }
 }

@@ -89,6 +89,16 @@ abstract class Relation
     abstract public function get();
 
     /**
+     * Get the first result of the relationship.
+     *
+     * @return Model|null
+     */
+    public function first()
+    {
+        return $this->get()->first();
+    }
+
+    /**
      * Initializes the relation by setting the default model on the query.
      * 
      * @return static
@@ -141,6 +151,20 @@ abstract class Relation
     }
 
     /**
+     * Get the foreign model by the given value.
+     *
+     * @param string $value
+     *
+     * @return \LdapRecord\Models\Model|null
+     */
+    protected function getForeignModelByValue($value)
+    {
+        return $this->foreignKey == 'dn' || 'distinguishedname' ?
+            $this->query->findByDn($value) :
+            $this->query->findBy($this->foreignKey, $value);
+    }
+
+    /**
      * Transforms the results by converting the models into their related.
      *
      * @param Collection $results
@@ -172,6 +196,8 @@ abstract class Relation
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
-        return array_search(array_map('strtolower', $model->getAttribute('objectclass')), $related);
+        $classes = $model->getAttribute('objectclass') ?? [];
+
+        return array_search(array_map('strtolower', $classes), $related);
     }
 }

@@ -11,7 +11,7 @@ class HasMany extends OneToMany
      *
      * @return Collection
      */
-    public function getRelationResults(): Collection
+    public function getRelationResults() : Collection
     {
         return $this->transformResults($this->getRelationQuery()->paginate());
     }

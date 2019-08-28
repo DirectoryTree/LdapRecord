@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Models;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\Connection;
@@ -73,6 +74,24 @@ class ModelRelationTest extends TestCase
             'bar',
             (new ModelRelationTestStub())->relation()->getForeignKey()
         );
+    }
+
+    public function test_get()
+    {
+        $collection = (new ModelRelationTestStub())->relation()->get('foo');
+
+        $this->assertEmpty($collection);
+        $this->assertInstanceOf(Collection::class, $collection);
+    }
+
+    public function test_get_results()
+    {
+        $relation = (new ModelRelationTestStub())->relation();
+        $collection = $relation->get('foo');
+
+        $this->assertEmpty($collection);
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertEquals(['foo', 'objectclass'], $relation->getQuery()->getSelects());
     }
 }
 

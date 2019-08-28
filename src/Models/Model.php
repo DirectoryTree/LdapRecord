@@ -14,7 +14,6 @@ use LdapRecord\Connections\Container;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Attributes\MbString;
-use LdapRecord\Connections\ConnectionException;
 use LdapRecord\Models\Attributes\DistinguishedName;
 
 /** @mixin Builder */

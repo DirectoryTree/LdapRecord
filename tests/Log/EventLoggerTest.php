@@ -2,22 +2,22 @@
 
 namespace LdapRecord\Tests\Log;
 
-use LdapRecord\Models\User;
+use Mockery as m;
+use Psr\Log\LoggerInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Event as AuthEvent;
 use LdapRecord\Models\Events\Event as ModelEvent;
 use LdapRecord\Connections\ConnectionInterface;
-use Psr\Log\LoggerInterface;
 
 class EventLoggerTest extends TestCase
 {
     public function test_auth_events_are_logged()
     {
-        $e = $this->mock(AuthEvent::class);
-        $l = $this->mock(LoggerInterface::class);
-        $c = $this->mock(ConnectionInterface::class);
+        $e = m::mock(AuthEvent::class);
+        $l = m::mock(LoggerInterface::class);
+        $c = m::mock(ConnectionInterface::class);
 
         $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_4_LdapRecord_Auth_Events_Event - Username: jdoe@acme.org';
 
@@ -38,8 +38,8 @@ class EventLoggerTest extends TestCase
 
     public function test_failed_auth_event_reports_result()
     {
-        $l = $this->mock(LoggerInterface::class);
-        $c = $this->mock(ConnectionInterface::class);
+        $l = m::mock(LoggerInterface::class);
+        $c = m::mock(ConnectionInterface::class);
 
         $e = new Failed($c, 'jdoe@acme.org', 'super-secret');
 
@@ -59,7 +59,7 @@ class EventLoggerTest extends TestCase
 
     public function test_model_events_are_logged()
     {
-        $c = $this->mock(ConnectionInterface::class);
+        $c = m::mock(ConnectionInterface::class);
 
         $b = $this->newBuilder($c);
 
@@ -67,11 +67,11 @@ class EventLoggerTest extends TestCase
 
         $u = new User(['dn' => $dn], $b);
 
-        $l = $this->mock(LoggerInterface::class);
+        $l = m::mock(LoggerInterface::class);
 
         $eLogger = new EventLogger($l);
 
-        $me = $this->mock(ModelEvent::class);
+        $me = m::mock(ModelEvent::class);
 
         $me->shouldReceive('getModel')->once()->andReturn($u);
 

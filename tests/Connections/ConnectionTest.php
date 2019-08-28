@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Connections;
 
+use Mockery as m;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Connections\Connection;
@@ -23,7 +24,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_username_failure()
     {
-        $ldap = $this->mock(LdapInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('connect')->once();
@@ -58,7 +59,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_failure()
     {
-        $ldap = $this->mock(LdapInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
         // Binding as the user.
         $ldap->shouldReceive('connect')->once()->andReturn(true);
@@ -92,7 +93,7 @@ class ConnectionTest extends TestCase
             'password' => 'bar',
         ]);
 
-        $ldap = $this->mock(LdapInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
@@ -118,7 +119,7 @@ class ConnectionTest extends TestCase
             'password' => 'test',
         ]);
 
-        $ldap = $this->mock(LdapInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
@@ -172,7 +173,7 @@ class ConnectionTest extends TestCase
 
     public function test_prepare_connection()
     {
-        $config = $this->mock(DomainConfiguration::class);
+        $config = m::mock(DomainConfiguration::class);
 
         $config
             ->shouldReceive('get')->withArgs(['hosts'])->once()->andReturn('')
@@ -187,7 +188,7 @@ class ConnectionTest extends TestCase
             // "version" key over LDAP_OPT_PROTOCOL_VERSION in custom_options.
             ->shouldReceive('get')->withArgs(['custom_options'])->andReturn([LDAP_OPT_PROTOCOL_VERSION => 2]);
 
-        $ldap = $this->mock(LdapInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
         $ldap
             ->shouldReceive('setOptions')->once()->withArgs([[

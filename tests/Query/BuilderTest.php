@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Query;
 
 use DateTime;
+use Mockery as m;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Paginator;
@@ -974,8 +975,8 @@ class BuilderTest extends TestCase
 
     public function test_find_by_dn_returns_array_when_raw_result_is_requested()
     {
-        $c = $this->mock(ConnectionInterface::class);
-        $s = $this->mock(SchemaInterface::class);
+        $c = m::mock(ConnectionInterface::class);
+        $s = m::mock(SchemaInterface::class);
 
         $b = $this->newBuilder($c);
 
@@ -1002,8 +1003,8 @@ class BuilderTest extends TestCase
 
     public function test_find_does_not_use_anr_when_using_other_ldap_distro()
     {
-        $c = $this->mock(ConnectionInterface::class);
-        $s = $this->mock(SchemaInterface::class);
+        $c = m::mock(ConnectionInterface::class);
+        $s = m::mock(SchemaInterface::class);
 
         $b = $this->newBuilder($c);
 
@@ -1039,8 +1040,8 @@ class BuilderTest extends TestCase
 
     public function test_find_many_does_not_use_anr_when_using_other_ldap_distro()
     {
-        $c = $this->mock(ConnectionInterface::class);
-        $s = $this->mock(SchemaInterface::class);
+        $c = m::mock(ConnectionInterface::class);
+        $s = m::mock(SchemaInterface::class);
 
         $b = $this->newBuilder($c);
 

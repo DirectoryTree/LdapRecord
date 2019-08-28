@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Tests\Models;
 
-use Exception;
+use Mockery as m;
 use LdapRecord\Models\Entry;
 use LdapRecord\Query\Collection;
 use LdapRecord\Tests\TestCase;
@@ -93,12 +93,12 @@ class ModelQueryTest extends TestCase
 
     public function test_create()
     {
-        $conn = $this->mock(LdapInterface::class);
+        $conn = m::mock(LdapInterface::class);
         $conn->shouldReceive('add')->once()->withArgs(['cn=foo,dc=bar,dc=baz', ['cn' => ['foo'], 'objectclass' => ['bar']]])->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
@@ -122,12 +122,12 @@ class ModelQueryTest extends TestCase
 
     public function test_create_attribute()
     {
-        $conn = $this->mock(LdapInterface::class);
-        $conn->shouldReceive('modAdd')->once()->withArgs(['foo', ['bar' => 'baz']])->andReturnTrue();
+        $ldap = m::mock(LdapInterface::class);
+        $ldap->shouldReceive('modAdd')->once()->withArgs(['foo', ['bar' => ['baz']]])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder($ldap);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
@@ -146,12 +146,12 @@ class ModelQueryTest extends TestCase
     {
         $mod = ['attrib' => 'cn', 'modtype' => 3, 'values' => [0 => 'baz']];
 
-        $conn = $this->mock(LdapInterface::class);
+        $conn = m::mock(LdapInterface::class);
         $conn->shouldReceive('modifyBatch')->once()->withArgs(['foo', [$mod]])->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
@@ -176,12 +176,12 @@ class ModelQueryTest extends TestCase
 
     public function test_update_attribute()
     {
-        $conn = $this->mock(LdapInterface::class);
-        $conn->shouldReceive('modReplace')->once()->withArgs(['foo', ['bar' => 'baz']])->andReturnTrue();
+        $conn = m::mock(LdapInterface::class);
+        $conn->shouldReceive('modReplace')->once()->withArgs(['foo', ['bar' => ['baz']]])->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
@@ -198,12 +198,12 @@ class ModelQueryTest extends TestCase
 
     public function test_delete()
     {
-        $conn = $this->mock(LdapInterface::class);
+        $conn = m::mock(LdapInterface::class);
         $conn->shouldReceive('delete')->once()->withArgs(['foo'])->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo']);
@@ -219,12 +219,12 @@ class ModelQueryTest extends TestCase
 
     public function test_delete_attribute()
     {
-        $conn = $this->mock(LdapInterface::class);
+        $conn = m::mock(LdapInterface::class);
         $conn->shouldReceive('modDelete')->once()->withArgs(['foo', ['bar' => []]])->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
@@ -241,17 +241,17 @@ class ModelQueryTest extends TestCase
 
     public function test_delete_leaf_nodes()
     {
-        $leaf = $this->mock(Entry::class);
+        $leaf = m::mock(Entry::class);
         $leaf->shouldReceive('delete')->once()->andReturnTrue();
 
         $shouldBeDeleted = new Collection([$leaf]);
 
-        $query = $this->mock(Builder::class);
+        $query = m::mock(Builder::class);
         $query->shouldReceive('listing')->once()->andReturnSelf();
         $query->shouldReceive('in')->once()->withArgs(['foo'])->andReturnSelf();
         $query->shouldReceive('get')->once()->andReturn($shouldBeDeleted);
 
-        $model = $this->mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);

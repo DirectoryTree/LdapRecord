@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
 use Exception;
+use Mockery as m;
 use LdapRecord\Utilities;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Ldap;
@@ -94,10 +95,10 @@ class UserTest extends TestCase
 
     public function test_change_password_policy_failure()
     {
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('0000052D');
 
-        $conn = $this->mock(Connection::class);
+        $conn = m::mock(Connection::class);
         $conn->shouldReceive('getConfiguration')->once()->andReturn(new DomainConfiguration());
         $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
 
@@ -111,10 +112,10 @@ class UserTest extends TestCase
 
     public function test_change_password_old_password_incorrect_failure()
     {
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('00000056');
 
-        $conn = $this->mock(Connection::class);
+        $conn = m::mock(Connection::class);
         $conn->shouldReceive('getConfiguration')->once()->andReturn(new DomainConfiguration());
         $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
 

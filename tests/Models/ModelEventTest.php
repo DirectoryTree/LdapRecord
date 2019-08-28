@@ -2,8 +2,10 @@
 
 namespace LdapRecord\Tests\Models;
 
+use Mockery as m;
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
 use LdapRecord\Models\Events\Created;
 use LdapRecord\Models\Events\Creating;
@@ -11,7 +13,6 @@ use LdapRecord\Models\Events\Deleted;
 use LdapRecord\Models\Events\Deleting;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Events\Updating;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Events\DispatcherInterface;
 
@@ -19,17 +20,17 @@ class ModelEventTest extends TestCase
 {
     public function test_create_fires_events()
     {
-        $dispatcher = \Mockery::mock(DispatcherInterface::class);
+        $dispatcher = m::mock(DispatcherInterface::class);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Creating::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Created::class]);
         Container::setEventDispatcher($dispatcher);
 
-        $conn = \Mockery::mock(LdapInterface::class);
+        $conn = m::mock(LdapInterface::class);
         $conn->shouldReceive('add')->once()->andReturnTrue();
 
         $query = new Builder($conn);
 
-        $model = \Mockery::mock(Entry::class)->makePartial();
+        $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 

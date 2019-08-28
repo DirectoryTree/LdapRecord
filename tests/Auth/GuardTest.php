@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Auth;
 
+use Mockery as m;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Tests\TestCase;
@@ -12,13 +13,14 @@ use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class GuardTest extends TestCase
 {
     public function test_validate_username()
     {
-        $this->expectException(\LdapRecord\Auth\UsernameRequiredException::class);
+        $this->expectException(UsernameRequiredException::class);
 
         $guard = new Guard(new Ldap(), new DomainConfiguration());
 
@@ -36,12 +38,11 @@ class GuardTest extends TestCase
 
     public function test_attempt()
     {
-        $config = $this->mock(DomainConfiguration::class);
-
+        $config = m::mock(DomainConfiguration::class);
         $config->shouldReceive('get')->withArgs(['username'])->once();
         $config->shouldReceive('get')->withArgs(['password'])->once();
 
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->twice()->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -51,10 +52,9 @@ class GuardTest extends TestCase
 
     public function test_bind_using_credentials()
     {
-        $config = $this->mock(DomainConfiguration::class);
+        $config = m::mock(DomainConfiguration::class);
 
-        $ldap = $this->mock(Ldap::class);
-
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -64,9 +64,9 @@ class GuardTest extends TestCase
     
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $config = $this->mock(DomainConfiguration::class);
+        $config = m::mock(DomainConfiguration::class);
 
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
         $ldap->shouldReceive('getLastError')->once()->andReturn('error');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'));
@@ -80,11 +80,11 @@ class GuardTest extends TestCase
 
     public function test_bind_as_administrator()
     {
-        $config = $this->mock(DomainConfiguration::class);
+        $config = m::mock(DomainConfiguration::class);
         $config->shouldReceive('get')->withArgs(['username'])->once()->andReturn('admin');
         $config->shouldReceive('get')->withArgs(['password'])->once()->andReturn('password');
 
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->once()->withArgs(['admin', 'password'])->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -94,7 +94,7 @@ class GuardTest extends TestCase
 
     public function test_binding_events_are_fired_during_bind()
     {
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
 
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
@@ -129,7 +129,7 @@ class GuardTest extends TestCase
 
     public function test_auth_events_are_fired_during_attempt()
     {
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();
@@ -181,7 +181,7 @@ class GuardTest extends TestCase
 
     public function test_all_auth_events_can_be_listened_to_with_wildcard()
     {
-        $ldap = $this->mock(Ldap::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();

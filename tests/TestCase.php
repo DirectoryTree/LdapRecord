@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Tests;
 
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class TestCase extends MockeryTestCase
@@ -27,10 +26,5 @@ class TestCase extends MockeryTestCase
         if (!array_key_exists('KRB5CCNAME', $_SERVER)) {
             $_SERVER['KRB5CCNAME'] = 'true';
         }
-    }
-
-    protected function mock($class)
-    {
-        return Mockery::mock($class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Connections;
 
+use Mockery as m;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Ldap;
 
@@ -19,7 +20,7 @@ class LdapTest extends TestCase
 
     public function test_connections_string_with_array()
     {
-        $ldap = $this->mock(Ldap::class)
+        $ldap = m::mock(Ldap::class)
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
 
@@ -33,7 +34,7 @@ class LdapTest extends TestCase
 
     public function test_connections_string_with_string()
     {
-        $ldap = $this->mock(Ldap::class)
+        $ldap = m::mock(Ldap::class)
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
 
@@ -109,7 +110,7 @@ class LdapTest extends TestCase
 
     public function test_get_detailed_error_returns_null_when_error_number_is_zero()
     {
-        $ldap = $this->mock(Ldap::class)->makePartial();
+        $ldap = m::mock(Ldap::class)->makePartial();
 
         $ldap->shouldReceive('errNo')->once()->andReturn(0);
 

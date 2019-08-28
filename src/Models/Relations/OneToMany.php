@@ -73,6 +73,16 @@ abstract class OneToMany extends Relation
     }
 
     /**
+     * Get the relation name.
+     *
+     * @return string
+     */
+    public function getRelationName()
+    {
+        return $this->relationName;
+    }
+
+    /**
      * Get the results for the models relation recursively.
      *
      * @param Collection $models

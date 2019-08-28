@@ -2,27 +2,10 @@
 
 namespace LdapRecord\Models\Relations;
 
-use Exception;
 use LdapRecord\Models\Model;
 
 class BelongsToMany extends HasMany
 {
-    /**
-     * Save and attach the model.
-     *
-     * @param Model $model
-     *
-     * @return Model|false
-     */
-    public function save(Model $model)
-    {
-        if (! $model->exists) {
-            $model->save();
-        }
-
-        return $this->attach($model);
-    }
-
     /**
      * Attach a model instance to the parent model.
      *
@@ -34,11 +17,13 @@ class BelongsToMany extends HasMany
     {
         $current = $this->getRelatedValue($model);
 
+        $foreign = $this->getForeignValueFromModel($this->parent);
+
         // We need to determine if the parent is already apart
         // of the given related model. If we don't, we'll
         // receive a 'type or value exists' error.
-        if (! in_array($this->parent->getDn(), $current)) {
-            $current[] = $this->parent->getDn();
+        if (! in_array($foreign, $current)) {
+            $current[] = $foreign;
 
             return $this->setRelatedValue($model, $current)->save() ? $model : false;
         }
@@ -67,14 +52,15 @@ class BelongsToMany extends HasMany
      *
      * @param Model|null $model
      *
-     * @throws Exception
-     *
      * @return \LdapRecord\Query\Collection|Model|false
      */
     public function detach(Model $model = null)
     {
         if ($model) {
-            $updated = array_diff($this->getRelatedValue($model), [$this->parent->getDn()]);
+            $updated = array_diff(
+                $this->getRelatedValue($model),
+                [$this->getForeignValueFromModel($this->parent)]
+            );
 
             return $this->setRelatedValue($model, $updated)->save() ? $model : false;
         }
@@ -102,18 +88,10 @@ class BelongsToMany extends HasMany
      * @param Model $model
      * @param mixed $value
      *
-     * @throws Exception
-     *
      * @return Model
      */
     protected function setRelatedValue(Model $model, $value)
     {
-        if (! $model->hasAttribute($this->relationKey)) {
-            $class = get_class($model);
-
-            throw new Exception("Invalid model given. Attribute '{$this->relationKey}' does not exist on {$class}");
-        }
-
         return $model->setAttribute($this->relationKey, $value);
     }
 }

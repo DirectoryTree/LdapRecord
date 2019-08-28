@@ -216,6 +216,32 @@ abstract class Relation
     }
 
     /**
+     * Returns the escaped foreign key value for use in an LDAP filter from the model.
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    protected function getEscapedForeignValueFromModel(Model $model)
+    {
+        return $this->query->escape($this->getForeignValueFromModel($model), '', LDAP_ESCAPE_DN);
+    }
+
+    /**
+     * Get the foreign key value from the model.
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    protected function getForeignValueFromModel(Model $model)
+    {
+        return $this->foreignKey == 'dn' || $this->foreignKey == 'distinguishedname' ?
+            $model->getDn() :
+            $model->getFirstAttribute($this->foreignKey);
+    }
+
+    /**
      * Transforms the results by converting the models into their related.
      *
      * @param Collection $results

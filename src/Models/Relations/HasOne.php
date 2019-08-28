@@ -23,22 +23,6 @@ class HasOne extends Relation
     }
 
     /**
-     * Save and attach the model.
-     *
-     * @param Model $model
-     *
-     * @return Model|false
-     */
-    public function save(Model $model)
-    {
-        if (! $model->exists) {
-            $model->save();
-        }
-
-        return $this->attach($model);
-    }
-
-    /**
      * Attach a model instance to the parent model.
      *
      * @param Model $model
@@ -48,7 +32,19 @@ class HasOne extends Relation
     public function attach(Model $model)
     {
         return $this->parent->setFirstAttribute(
-            $this->relationKey, $model->getDn()
+            $this->relationKey, $this->getForeignValueFromModel($model)
         )->save() ? $model : false;
+    }
+
+    /**
+     * Detach the related model from the parent.
+     *
+     * @return bool
+     */
+    public function detach()
+    {
+        return $this->parent->setFirstAttribute(
+            $this->relationKey, null
+        )->save();
     }
 }

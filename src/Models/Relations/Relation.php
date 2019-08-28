@@ -10,6 +10,8 @@ use LdapRecord\Query\Model\Builder;
 abstract class Relation
 {
     /**
+     * The underlying LDAP query.
+     *
      * @var Builder
      */
     protected $query;
@@ -41,6 +43,13 @@ abstract class Relation
      * @var string
      */
     protected $foreignKey;
+
+    /**
+     * The default relation model.
+     *
+     * @var string
+     */
+    protected $default = Entry::class;
 
     /**
      * Constructor.
@@ -137,7 +146,7 @@ abstract class Relation
      */
     public function initRelation()
     {
-        $this->query->clearFilters()->setModel(new Entry());
+        $this->query->clearFilters()->setModel(new $this->default);
 
         return $this;
     }

@@ -8,13 +8,29 @@ use LdapRecord\Models\Model;
 class BelongsToMany extends HasMany
 {
     /**
-     * Attach a model instance to the parent model.
+     * Save and attach the model.
      *
      * @param Model $model
      *
      * @return Model|false
      */
     public function save(Model $model)
+    {
+        if (! $model->exists) {
+            $model->save();
+        }
+
+        return $this->attach($model);
+    }
+
+    /**
+     * Attach a model instance to the parent model.
+     *
+     * @param Model $model
+     *
+     * @return Model|false
+     */
+    public function attach(Model $model)
     {
         $current = $this->getRelatedValue($model);
 
@@ -37,10 +53,10 @@ class BelongsToMany extends HasMany
      *
      * @return iterable
      */
-    public function saveMany($models)
+    public function attachMany($models)
     {
         foreach ($models as $model) {
-            $this->save($model);
+            $this->attach($model);
         }
 
         return $models;

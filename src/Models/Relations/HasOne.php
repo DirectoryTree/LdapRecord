@@ -43,7 +43,7 @@ class HasOne extends Relation
      */
     public function detach()
     {
-        return $this->parent->setFirstAttribute(
+        return $this->parent->setAttribute(
             $this->relationKey, null
         )->save();
     }

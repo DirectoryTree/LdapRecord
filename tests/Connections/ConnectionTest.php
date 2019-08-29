@@ -14,7 +14,7 @@ use LdapRecord\Configuration\DomainConfiguration;
 
 class ConnectionTest extends TestCase
 {
-    public function test_construct()
+    public function test_connection_creates_ldap_connection()
     {
         $conn = new Connection(new DomainConfiguration());
 
@@ -35,26 +35,24 @@ class ConnectionTest extends TestCase
         $conn->setLdapConnection($ldap);
 
         $this->expectException(UsernameRequiredException::class);
-        $conn->auth()->attempt(0000000, 'password');
+        $conn->auth()->attempt('', 'password');
     }
 
     public function test_auth_password_failure()
     {
         $this->expectException(PasswordRequiredException::class);
 
-        $ldap = $this->newLdapMock();
+        $ldap = m::mock(LdapInterface::class);
 
-        $ldap
-            ->shouldReceive('setOptions')->once()
-            ->shouldReceive('connect')->once()
-            ->shouldReceive('isBound')->once()->andReturn(true)
-            ->shouldReceive('close')->once()->andReturn(true);
+        $ldap->shouldReceive('setOptions')->once();
+        $ldap->shouldReceive('connect')->once();
+        $ldap->shouldReceive('isBound')->once()->andReturn(true);
+        $ldap->shouldReceive('close')->once()->andReturn(true);
 
-        $c = $this->newConnection();
+        $conn = new Connection();
+        $conn->setLdapConnection($ldap);
 
-        $c->setLdapConnection($ldap);
-
-        $c->auth()->attempt('username', 0000000);
+        $conn->auth()->attempt('username', '');
     }
 
     public function test_auth_failure()
@@ -123,14 +121,9 @@ class ConnectionTest extends TestCase
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
-        $ldap->shouldReceive('isUsingSSL')->once()->andReturn(false);
-        $ldap->shouldReceive('isBound')->once()->andReturn(true);
-
-        // Authenticates as the user
-        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password']);
 
         // Re-binds as the administrator (fails)
-        $ldap->shouldReceive('bind')->once()->withArgs(['test', 'test'])->andReturn(false);
+        $ldap->shouldReceive('bind')->withArgs(['test', 'test'])->andReturn(false);
         $ldap->shouldReceive('getLastError')->once()->andReturn('');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(null, null, null));
         $ldap->shouldReceive('isBound')->once()->andReturn(true);
@@ -153,56 +146,48 @@ class ConnectionTest extends TestCase
             'password' => 'test',
         ]);
 
-        $ldap = $this->newLdapMock();
+        $ldap = m::mock(LdapInterface::class);
 
-        $ldap->shouldReceive('connect')->once()->andReturn(true)
-            ->shouldReceive('setOptions')->once()
-            ->shouldReceive('isUsingSSL')->once()->andReturn(false)
-            ->shouldReceive('isBound')->once()->andReturn(true)
-            ->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true)
-            ->shouldReceive('getLastError')->once()->andReturn('')
-            ->shouldReceive('isBound')->once()->andReturn(true)
-            ->shouldReceive('close')->once()->andReturn(true);
+        $ldap->shouldReceive('connect')->once()->andReturn(true);
+        $ldap->shouldReceive('setOptions')->once();
+        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
+        $ldap->shouldReceive('isBound')->once()->andReturn(true);
+        $ldap->shouldReceive('close')->once()->andReturn(true);
 
-        $c = $this->newConnection($config);
+        $conn = new Connection($config);
+        $conn->setLdapConnection($ldap);
 
-        $c->setLdapConnection($ldap);
-
-        $this->assertTrue($c->auth()->attempt('username', 'password', true));
+        $this->assertTrue($conn->auth()->attempt('username', 'password', true));
     }
 
     public function test_prepare_connection()
     {
         $config = m::mock(DomainConfiguration::class);
 
-        $config
-            ->shouldReceive('get')->withArgs(['hosts'])->once()->andReturn('')
-            ->shouldReceive('get')->withArgs(['port'])->once()->andReturn('389')
-            ->shouldReceive('get')->withArgs(['schema'])->once()->andReturn('LdapRecord\Schemas\ActiveDirectory')
-            ->shouldReceive('get')->withArgs(['use_ssl'])->once()->andReturn(false)
-            ->shouldReceive('get')->withArgs(['use_tls'])->once()->andReturn(false)
-            ->shouldReceive('get')->withArgs(['version'])->once()->andReturn(3)
-            ->shouldReceive('get')->withArgs(['timeout'])->once()->andReturn(5)
-            ->shouldReceive('get')->withArgs(['follow_referrals'])->andReturn(false)
-            // Setting LDAP_OPT_PROTOCOL_VERSION to "2" here enforces the documented behavior of honoring the
-            // "version" key over LDAP_OPT_PROTOCOL_VERSION in custom_options.
-            ->shouldReceive('get')->withArgs(['custom_options'])->andReturn([LDAP_OPT_PROTOCOL_VERSION => 2]);
+        $config->shouldReceive('get')->withArgs(['hosts'])->once()->andReturn('host');
+        $config->shouldReceive('get')->withArgs(['port'])->once()->andReturn('389');
+        $config->shouldReceive('get')->withArgs(['use_ssl'])->once()->andReturn(false);
+        $config->shouldReceive('get')->withArgs(['use_tls'])->once()->andReturn(false);
+        $config->shouldReceive('get')->withArgs(['version'])->once()->andReturn(3);
+        $config->shouldReceive('get')->withArgs(['timeout'])->once()->andReturn(5);
+        $config->shouldReceive('get')->withArgs(['follow_referrals'])->andReturn(false);
+
+        // Setting LDAP_OPT_PROTOCOL_VERSION to "2" here enforces the documented behavior of honoring the
+        // "version" key over LDAP_OPT_PROTOCOL_VERSION in custom_options.
+        $config->shouldReceive('get')->withArgs(['options'])->andReturn([LDAP_OPT_PROTOCOL_VERSION => 2]);
 
         $ldap = m::mock(LdapInterface::class);
 
-        $ldap
-            ->shouldReceive('setOptions')->once()->withArgs([[
-                LDAP_OPT_PROTOCOL_VERSION => 3,
-                LDAP_OPT_NETWORK_TIMEOUT => 5,
-                LDAP_OPT_REFERRALS => false,
-            ]])
-            ->shouldReceive('connect')->once()
-            ->shouldReceive('isBound')->once()->andReturn(false);
+        $ldap->shouldReceive('setOptions')->once()->withArgs([[
+            LDAP_OPT_PROTOCOL_VERSION => 3,
+            LDAP_OPT_NETWORK_TIMEOUT => 5,
+            LDAP_OPT_REFERRALS => false,
+        ]]);
+        $ldap->shouldReceive('connect')->once()->withArgs(['host', '389']);
+        $ldap->shouldReceive('isBound')->once()->andReturn(false);
 
-        $c = new Connection($config);
+        $conn = new Connection($config, $ldap);
 
-        $c->setLdapConnection($ldap);
-
-        $this->assertInstanceOf(DomainConfiguration::class, $c->getConfiguration());
+        $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
     }
 }

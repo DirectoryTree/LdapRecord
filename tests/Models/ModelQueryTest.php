@@ -19,6 +19,9 @@ class ModelQueryTest extends TestCase
     {
         parent::setUp();
 
+        // Flush container instance.
+        Container::unsetEventDispatcher();
+
         // Flush static instance.
         Container::getNewInstance();
     }

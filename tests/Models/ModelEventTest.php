@@ -3,10 +3,13 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
+use LdapRecord\Models\Model;
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
+use LdapRecord\Models\Events\Saved;
+use LdapRecord\Models\Events\Saving;
 use LdapRecord\Models\Events\Created;
 use LdapRecord\Models\Events\Creating;
 use LdapRecord\Models\Events\Deleted;
@@ -18,6 +21,23 @@ use LdapRecord\Events\DispatcherInterface;
 
 class ModelEventTest extends TestCase
 {
+    protected function setUp()
+    {
+        // Flush event dispatcher instance.
+        Container::unsetEventDispatcher();
+    }
+
+    public function test_save_fires_events()
+    {
+        $dispatcher = m::mock(DispatcherInterface::class)->makePartial();
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
+        Container::setEventDispatcher($dispatcher);
+
+        $model = new ModelEventSaveStub();
+        $this->assertTrue($model->save());
+    }
+
     public function test_create_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
@@ -35,113 +55,58 @@ class ModelEventTest extends TestCase
         $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setDn('cn=foo,dc=bar,dc=baz');
-        $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
+        $model->cn = 'foo';
+        $model->objectclass = 'bar';
         $this->assertTrue($model->create());
     }
 
     public function test_updating_model_fires_events()
     {
-        $c = $this->newLdapMock();
+        $dispatcher = m::mock(DispatcherInterface::class);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Updating::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Updated::class]);
+        Container::setEventDispatcher($dispatcher);
 
-        $m = $this->newModel([], $this->newBuilder($c));
+        $conn = m::mock(LdapInterface::class);
+        $conn->shouldReceive('modifyBatch')->once()->andReturnTrue();
 
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
+        $query = new Builder($conn);
 
-        $d = Manager::getEventDispatcher();
+        $model = m::mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
-        $firedUpdating = false;
-        $firedUpdated = false;
-
-        $d->listen(Updating::class, function (Updating $e) use (&$firedUpdating) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedUpdating = true;
-        });
-
-        $d->listen(Updated::class, function (Updated $e) use (&$firedUpdated) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedUpdated = true;
-        });
-
-        $c
-            ->shouldReceive('modifyBatch')->once()->andReturn(true)
-            ->shouldReceive('read')->once()
-            ->shouldReceive('getEntries')->once();
-
-        $m->save([
-            'cn' => 'new'
-        ]);
-
-        $this->assertTrue($firedUpdating);
-        $this->assertTrue($firedUpdated);
+        $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
+        $model->cn = 'foo';
+        $this->assertTrue($model->update());
     }
 
     public function test_deleting_model_fires_events()
     {
-        $c = $this->newLdapMock();
+        $dispatcher = m::mock(DispatcherInterface::class);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Deleting::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Deleted::class]);
+        Container::setEventDispatcher($dispatcher);
 
-        $m = $this->newModel([], $this->newBuilder($c));
+        $conn = m::mock(LdapInterface::class);
+        $conn->shouldReceive('delete')->once()->andReturnTrue();
 
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
+        $query = new Builder($conn);
 
-        $d = Manager::getEventDispatcher();
+        $model = m::mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldNotReceive('synchronize');
 
-        $firedDeleting = false;
-        $firedDeleted = false;
-
-        $d->listen(Deleting::class, function (Deleting $e) use (&$firedDeleting) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedDeleting = true;
-        });
-
-        $d->listen(Deleted::class, function (Deleted $e) use (&$firedDeleted) {
-            $this->assertInstanceOf(Model::class, $e->getModel());
-
-            $firedDeleted = true;
-        });
-
-        $c->shouldReceive('delete')->once()->andReturn(true);
-
-        $m->delete();
-
-        $this->assertTrue($firedDeleting);
-        $this->assertTrue($firedDeleted);
+        $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
+        $model->cn = 'foo';
+        $this->assertTrue($model->delete());
     }
+}
 
-    public function test_model_events_can_be_listened_for_with_wildcard()
+class ModelEventSaveStub extends Model
+{
+    public function create(array $attributes = [])
     {
-        $c = $this->newLdapMock();
-
-        $m = $this->newModel([], $this->newBuilder($c));
-
-        $m->setRawAttributes([
-            'dn' => 'cn=jdoe,dc=acme,dc=org'
-        ]);
-
-        $d = Manager::getEventDispatcher();
-
-        $firedDeleting = false;
-        $firedDeleted = false;
-
-        $d->listen('LdapRecord\Models\Events\*', function ($event, $payload) use (&$firedDeleting, &$firedDeleted) {
-            if ($event == 'LdapRecord\Models\Events\Deleting') {
-                $firedDeleting = true;
-            } else if ($event == 'LdapRecord\Models\Events\Deleted') {
-                $firedDeleted = true;
-            }
-        });
-
-        $c->shouldReceive('delete')->once()->andReturn(true);
-
-        $m->delete();
-
-        $this->assertTrue($firedDeleting);
-        $this->assertTrue($firedDeleted);
+        return true;
     }
 }

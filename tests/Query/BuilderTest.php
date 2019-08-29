@@ -3,16 +3,17 @@
 namespace LdapRecord\Tests\Query;
 
 use DateTime;
-use Mockery as m;
-use LdapRecord\Models\Model;
+use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Query\Paginator;
-use LdapRecord\Schemas\SchemaInterface;
-use LdapRecord\Connections\ConnectionInterface;
-use Illuminate\Support\Collection;
+use LdapRecord\Connections\Ldap;
 
 class BuilderTest extends TestCase
 {
+    protected function newBuilder()
+    {
+        return new Builder(new Ldap());
+    }
+
     public function test_builder_always_has_default_filter()
     {
         $b = $this->newBuilder();
@@ -28,7 +29,6 @@ class BuilderTest extends TestCase
 
         $this->assertEquals([
             'testing',
-            'objectcategory',
             'objectclass',
         ], $b->getSelects());
     }
@@ -41,7 +41,6 @@ class BuilderTest extends TestCase
 
         $this->assertEquals([
             'testing',
-            'objectcategory',
             'objectclass',
         ], $b->getSelects());
     }
@@ -54,7 +53,6 @@ class BuilderTest extends TestCase
 
         $this->assertEquals([
             '',
-            'objectcategory',
             'objectclass',
         ], $b->getSelects());
     }
@@ -259,20 +257,6 @@ class BuilderTest extends TestCase
         $this->assertEquals('(&(whencreated>=20161001000000.0Z)(whencreated<=20170101000000.0Z))', $b->getUnescapedQuery());
     }
 
-    public function test_where_member_of()
-    {
-        $b = $this->newBuilder();
-
-        $b->whereMemberOf('cn=Accounting,dc=org,dc=acme');
-
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
-        $this->assertEquals('(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
-    }
-
     public function test_or_where()
     {
         $b = $this->newBuilder();
@@ -371,24 +355,6 @@ class BuilderTest extends TestCase
         $this->assertEquals('ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(&(name=*test)(|(cn=*test)))', $b->getUnescapedQuery());
-    }
-
-    public function test_or_where_member_of()
-    {
-        $b = $this->newBuilder();
-
-        $b->orWhereEquals('cn', 'John Doe');
-        $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme');
-
-        $where = $b->filters['or'][1];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
-        $this->assertEquals(
-            '(|(cn=John Doe)(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme))',
-            $b->getUnescapedQuery()
-        );
     }
 
     public function test_where_invalid_operator()
@@ -669,69 +635,6 @@ class BuilderTest extends TestCase
         $this->assertEquals('(&(field=value)(|(field=value))(field=value))', $b->getQuery());
     }
 
-    public function test_built_where_enabled()
-    {
-        $b = $this->newBuilder();
-
-        $b->whereEnabled();
-
-        $this->assertEquals('(!(UserAccountControl:1.2.840.113556.1.4.803:=2))', $b->getQuery());
-    }
-
-    public function test_built_where_disabled()
-    {
-        $b = $this->newBuilder();
-
-        $b->whereDisabled();
-
-        $this->assertEquals('(UserAccountControl:1.2.840.113556.1.4.803:=2)', $b->getQuery());
-    }
-
-    public function test_paginate_with_no_results()
-    {
-        $connection = $this->newLdapMock();
-
-        $connection->shouldReceive('controlPagedResult')->once()->withArgs([50, true, ''])
-            ->shouldReceive('search')->once()->withArgs(['', '(field=\76\61\6c\75\65)', ['*']])->andReturn(null)
-            ->shouldReceive('controlPagedResult')->once();
-
-        $b = $this->newBuilder($connection);
-
-        $this->assertInstanceOf(Paginator::class, $b->where('field', '=', 'value')->paginate(50));
-    }
-
-    public function test_paginate_with_results()
-    {
-        $connection = $this->newLdapMock();
-
-        $rawEntries = [
-            'count' => 1,
-            [
-                'dn' => 'cn=Test,dc=corp,dc=acme,dc=org',
-                'cn' => ['Test'],
-            ],
-        ];
-
-        $connection->shouldReceive('controlPagedResult')->twice()
-            ->shouldReceive('search')->once()->withArgs(['', '(field=\76\61\6c\75\65)', ['*']])->andReturn('resource')
-            ->shouldReceive('controlPagedResultResponse')->withArgs(['resource', ''])
-            ->shouldReceive('getEntries')->andReturn($rawEntries);
-
-        $b = $this->newBuilder($connection);
-
-        $paginator = $b->where('field', '=', 'value')->paginate(50);
-
-        $this->assertInstanceOf(Paginator::class, $paginator);
-        $this->assertEquals(1, $paginator->getPages());
-        $this->assertEquals(1, $paginator->count());
-
-        foreach ($paginator as $model) {
-            $this->assertInstanceOf(Model::class, $model);
-            $this->assertEquals($rawEntries[0]['dn'], $model->getDn());
-            $this->assertEquals($rawEntries[0]['cn'][0], $model->getCommonName());
-        }
-    }
-
     public function test_field_is_escaped()
     {
         $b = $this->newBuilder();
@@ -766,7 +669,7 @@ class BuilderTest extends TestCase
 
         $selects = $b->select('attr1', 'attr2', 'attr3')->getSelects();
 
-        $this->assertCount(5, $selects);
+        $this->assertCount(4, $selects);
         $this->assertEquals('attr1', $selects[0]);
         $this->assertEquals('attr2', $selects[1]);
         $this->assertEquals('attr3', $selects[2]);
@@ -839,7 +742,7 @@ class BuilderTest extends TestCase
 
         $b->select([]);
 
-        $this->assertEquals(['one', 'two', 'objectcategory', 'objectclass'], $b->getSelects());
+        $this->assertEquals(['one', 'two', 'objectclass'], $b->getSelects());
     }
 
     public function test_nested_or_filter()
@@ -971,116 +874,5 @@ class BuilderTest extends TestCase
             ->where('other', '!', 'value');
 
         $this->assertEquals('(&(!(field=value))(!(other=value)))', $b->getUnescapedQuery());
-    }
-
-    public function test_find_by_dn_returns_array_when_raw_result_is_requested()
-    {
-        $c = m::mock(ConnectionInterface::class);
-        $s = m::mock(SchemaInterface::class);
-
-        $b = $this->newBuilder($c);
-
-        $b->setSchema($s);
-
-        $dn = 'cn=John Doe,dc=acme,dc=org';
-
-        $rawEntries = [
-            'count' => 1,
-            [
-                'dn' => $dn,
-                'cn' => ['John Doe'],
-            ],
-        ];
-
-        $s->shouldReceive('objectClass')->andReturn('objectclass');
-
-        $c
-            ->shouldReceive('read')->once()->with('cn=John Doe,dc=acme,dc=org', '(objectclass=*)',  [0 => '*'], false, 1)
-            ->shouldReceive('getEntries')->once()->andReturn($rawEntries);
-
-        $this->assertEquals($rawEntries[0], $b->raw()->findByDn($dn));
-    }
-
-    public function test_find_does_not_use_anr_when_using_other_ldap_distro()
-    {
-        $c = m::mock(ConnectionInterface::class);
-        $s = m::mock(SchemaInterface::class);
-
-        $b = $this->newBuilder($c);
-
-        $b->setSchema($s);
-
-        $s
-            ->shouldReceive('name')->once()->andReturn('name')
-            ->shouldReceive('email')->once()->andReturn('mail')
-            ->shouldReceive('userId')->times(3)->andReturn('uid')
-            ->shouldReceive('lastName')->once()->andReturn('sn')
-            ->shouldReceive('firstName')->once()->andReturn('givenname')
-            ->shouldReceive('commonName')->once()->andReturn('cn')
-            ->shouldReceive('displayName')->once()->andReturn('displayname')
-            ->shouldReceive('objectCategory')->once()->andReturn('objectcategory')
-            ->shouldReceive('objectClass')->once()->andReturn('objectclass');
-
-        $expectedFilter = '(|(name=\6a\64\6f\65)(mail=\6a\64\6f\65)(uid=\6a\64\6f\65)(sn=\6a\64\6f\65)(givenname=\6a\64\6f\65)(cn=\6a\64\6f\65)(displayname=\6a\64\6f\65))';
-
-        $select = ['cn', 'sn'];
-
-        $expectedSelect = array_merge($select, [
-            'objectcategory',
-            'objectclass',
-        ]);
-
-        $c
-            ->shouldReceive('search')->once()->with(null, $expectedFilter, $expectedSelect, $attrsOnly = false, $total = 1)->andReturnSelf()
-            ->shouldReceive('getEntries')->once()->andReturn(null);
-
-        $this->assertNull($b->find('jdoe', $select));
-    }
-
-
-    public function test_find_many_does_not_use_anr_when_using_other_ldap_distro()
-    {
-        $c = m::mock(ConnectionInterface::class);
-        $s = m::mock(SchemaInterface::class);
-
-        $b = $this->newBuilder($c);
-
-        $b->setSchema($s);
-
-        $s
-            ->shouldReceive('name')->times(3)->andReturn('name')
-            ->shouldReceive('email')->times(3)->andReturn('mail')
-            ->shouldReceive('userId')->times(3)->andReturn('uid')
-            ->shouldReceive('lastName')->times(3)->andReturn('sn')
-            ->shouldReceive('firstName')->times(3)->andReturn('givenname')
-            ->shouldReceive('commonName')->times(3)->andReturn('cn')
-            ->shouldReceive('displayName')->times(3)->andReturn('displayname')
-            ->shouldReceive('objectCategory')->once()->andReturn('objectcategory')
-            ->shouldReceive('objectClass')->once()->andReturn('objectclass');
-
-        $expectedOrFilters = [
-            '(|(name=\6a\6f\68\6e)(mail=\6a\6f\68\6e)(uid=\6a\6f\68\6e)(sn=\6a\6f\68\6e)(givenname=\6a\6f\68\6e)(cn=\6a\6f\68\6e)(displayname=\6a\6f\68\6e))',
-            '(|(name=\6a\61\6e\65)(mail=\6a\61\6e\65)(uid=\6a\61\6e\65)(sn=\6a\61\6e\65)(givenname=\6a\61\6e\65)(cn=\6a\61\6e\65)(displayname=\6a\61\6e\65))',
-            '(|(name=\73\75\65)(mail=\73\75\65)(uid=\73\75\65)(sn=\73\75\65)(givenname=\73\75\65)(cn=\73\75\65)(displayname=\73\75\65))'
-        ];
-
-        $expectedFilter = sprintf('(&%s)', implode($expectedOrFilters));
-
-        $select = ['cn', 'sn'];
-
-        $expectedSelect = array_merge($select, [
-            'objectcategory',
-            'objectclass',
-        ]);
-
-        $c
-            ->shouldReceive('search')->once()->with(null, $expectedFilter, $expectedSelect, $attrsOnly = false, $total = 0)->andReturnSelf()
-            ->shouldReceive('getEntries')->once()->andReturn(null);
-
-        $this->assertInstanceOf(Collection::class, $b->findMany([
-            'john',
-            'jane',
-            'sue',
-        ], $select));
     }
 }

@@ -7,82 +7,54 @@ use Psr\Log\LoggerInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Auth\Events\Failed;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Auth\Events\Event as AuthEvent;
-use LdapRecord\Models\Events\Event as ModelEvent;
 use LdapRecord\Connections\ConnectionInterface;
 
 class EventLoggerTest extends TestCase
 {
     public function test_auth_events_are_logged()
     {
-        $e = m::mock(AuthEvent::class);
-        $l = m::mock(LoggerInterface::class);
-        $c = m::mock(ConnectionInterface::class);
+        $event = m::mock(AuthEvent::class);
+        $logger = m::mock(LoggerInterface::class);
+        $connection = m::mock(ConnectionInterface::class);
 
-        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_4_LdapRecord_Auth_Events_Event - Username: jdoe@acme.org';
+        $logger->shouldReceive('info')->once()->withArgs(function ($logged) {
+            return strpos($logged, 'LDAP (ldap://192.168.1.1) - Connection: domain-a') !== false &&
+                strpos($logged, 'Username: jdoe@acme.org') !== false;
+        });
 
-        $l->shouldReceive('info')->once()->with($log);
-
-        $c
+        $connection
             ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
             ->shouldReceive('getName')->once()->andReturn('domain-a');
 
-        $e
-            ->shouldReceive('getConnection')->once()->andReturn($c)
+        $event
+            ->shouldReceive('getConnection')->once()->andReturn($connection)
             ->shouldReceive('getUsername')->once()->andReturn('jdoe@acme.org');
 
-        $eLogger = new EventLogger($l);
+        $eLogger = new EventLogger($logger);
 
-        $this->assertNull($eLogger->auth($e));
+        $eLogger->auth($event);
     }
 
     public function test_failed_auth_event_reports_result()
     {
-        $l = m::mock(LoggerInterface::class);
-        $c = m::mock(ConnectionInterface::class);
+        $logger = m::mock(LoggerInterface::class);
+        $ldap = m::mock(LdapInterface::class);
 
-        $e = new Failed($c, 'jdoe@acme.org', 'super-secret');
+        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret');
 
-        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: LdapRecord\Auth\Events\Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
+        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
 
-        $l->shouldReceive('warning')->once()->with($log);
+        $logger->shouldReceive('warning')->once()->with($log);
 
-        $c
+        $ldap
             ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
             ->shouldReceive('getName')->once()->andReturn('domain-a')
             ->shouldReceive('getLastError')->once()->andReturn('Invalid Credentials');
 
-        $eLogger = new EventLogger($l);
+        $eLogger = new EventLogger($logger);
 
-        $this->assertNull($eLogger->auth($e));
-    }
-
-    public function test_model_events_are_logged()
-    {
-        $c = m::mock(ConnectionInterface::class);
-
-        $b = $this->newBuilder($c);
-
-        $dn = 'cn=John Doe,dc=corp,dc=acme,dc=org';
-
-        $u = new User(['dn' => $dn], $b);
-
-        $l = m::mock(LoggerInterface::class);
-
-        $eLogger = new EventLogger($l);
-
-        $me = m::mock(ModelEvent::class);
-
-        $me->shouldReceive('getModel')->once()->andReturn($u);
-
-        $log = "LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Mockery_6_LdapRecord_Models_Events_Event - On: LdapRecord\Models\User - Distinguished Name: $dn";
-
-        $l->shouldReceive('info')->once()->with($log);
-
-        $c
-            ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
-            ->shouldReceive('getName')->once()->andReturn('domain-a');
-
-        $this->assertNull($eLogger->model($me));
+        $eLogger->auth($event);
     }
 }

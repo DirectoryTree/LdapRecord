@@ -4,11 +4,18 @@ namespace LdapRecord\Tests\Models;
 
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Connections\Container;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Connections\ContainerException;
 
 class ModelTest extends TestCase
 {
+    public function setUp()
+    {
+        // Flush container instance.
+        Container::getNewInstance();
+    }
+
     public function test_model_must_have_default_connection()
     {
         $model = new Entry();

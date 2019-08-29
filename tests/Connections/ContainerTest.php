@@ -16,13 +16,13 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Container::class, $container);
         $this->assertNull($container::getLogger());
 
-        $dispatcher =  Container::getEventDispatcher();
+        $dispatcher = Container::getEventDispatcher();
 
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
-        $this->assertCount(1, $dispatcher->getListeners( 'LdapRecord\Auth\Events\*'));
-        $this->assertCount(1, $dispatcher->getListeners( 'LdapRecord\Query\Events\*'));
-        $this->assertCount(1, $dispatcher->getListeners( 'LdapRecord\Models\Events\*'));
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
     }
 
     public function test_adding_connections()
@@ -102,7 +102,7 @@ class ContainerTest extends TestCase
         $container = Container::getNewInstance();
         $connections = [
             'default' => new Connection(),
-            'other' => new Connection()
+            'other'   => new Connection(),
         ];
 
         $container->add($connections['default']);

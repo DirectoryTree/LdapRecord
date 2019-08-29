@@ -5,8 +5,8 @@ namespace LdapRecord\Connections;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
 use InvalidArgumentException;
-use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Auth\GuardInterface;
+use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class Connection implements ConnectionInterface
@@ -71,7 +71,7 @@ class Connection implements ConnectionInterface
         }
 
         throw new InvalidArgumentException(
-            sprintf("Configuration must be array or instance of %s", DomainConfiguration::class)
+            sprintf('Configuration must be array or instance of %s', DomainConfiguration::class)
         );
     }
 

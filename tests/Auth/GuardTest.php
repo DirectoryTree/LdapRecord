@@ -4,15 +4,15 @@ namespace LdapRecord\Tests\Auth;
 
 use Mockery as m;
 use LdapRecord\Auth\Guard;
-use LdapRecord\Auth\BindException;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Ldap;
-use LdapRecord\Connections\DetailedError;
-use LdapRecord\Events\Dispatcher;
 use LdapRecord\Auth\Events\Bound;
-use LdapRecord\Auth\Events\Binding;
+use LdapRecord\Events\Dispatcher;
+use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Passed;
+use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Connections\DetailedError;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
 
@@ -61,7 +61,7 @@ class GuardTest extends TestCase
 
         $this->assertNull($guard->bind('username', 'password'));
     }
-    
+
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
         $config = m::mock(DomainConfiguration::class);

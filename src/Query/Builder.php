@@ -4,15 +4,15 @@ namespace LdapRecord\Query;
 
 use Closure;
 use Exception;
-use BadMethodCallException;
 use LdapRecord\Utilities;
+use BadMethodCallException;
 use LdapRecord\Models\Model;
 use InvalidArgumentException;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Connections\Container;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\ModelNotFoundException;
-use LdapRecord\Connections\LdapInterface;
 
 class Builder
 {
@@ -967,7 +967,7 @@ class Builder
      */
     public function whereIn($field, array $values)
     {
-        return $this->orFilter(function (Builder $query) use ($field, $values) {
+        return $this->orFilter(function (self $query) use ($field, $values) {
             foreach ($values as $value) {
                 $query->whereEquals($field, $value);
             }

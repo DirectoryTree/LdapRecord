@@ -59,7 +59,7 @@ trait HasPassword
      * @param string $oldPassword The new password
      * @param string $newPassword The old password
      * @param bool   $replace     Alternative password change method. Set to true if you're receiving 'CONSTRAINT'
-     *                                 errors.
+     *                            errors.
      *
      * @throws UserPasswordPolicyException    When the new password does not match your password policy.
      * @throws UserPasswordIncorrectException When the old password is incorrect.

@@ -3,8 +3,8 @@
 namespace LdapRecord\Models\ActiveDirectory;
 
 use InvalidArgumentException;
-use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Sid;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
@@ -20,7 +20,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     protected $sidKey = 'objectsid';
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getObjectSidKey()
     {
@@ -28,7 +28,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getObjectSid()
     {
@@ -36,7 +36,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getConvertedSid()
     {

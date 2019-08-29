@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Models\OpenLDAP;
 
+use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
-use LdapRecord\Models\Concerns\HasPassword;
 
 class User extends Entry implements Authenticatable
 {

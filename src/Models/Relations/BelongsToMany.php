@@ -22,7 +22,7 @@ class BelongsToMany extends HasMany
         // We need to determine if the parent is already apart
         // of the given related model. If we don't, we'll
         // receive a 'type or value exists' error.
-        if (! in_array($foreign, $current)) {
+        if (!in_array($foreign, $current)) {
             $current[] = $foreign;
 
             return $this->setRelatedValue($model, $current)->save() ? $model : false;
@@ -66,7 +66,7 @@ class BelongsToMany extends HasMany
         }
 
         return $this->get()->each(function (Model $model) {
-             $this->detach($model);
+            $this->detach($model);
         });
     }
 

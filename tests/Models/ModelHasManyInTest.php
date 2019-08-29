@@ -3,8 +3,8 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
-use LdapRecord\Models\Model;
 use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;

@@ -4,8 +4,8 @@ namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
 use LdapRecord\Models\Entry;
-use LdapRecord\Query\Collection;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
 use LdapRecord\Connections\Connection;
@@ -31,7 +31,7 @@ class ModelQueryTest extends TestCase
         Container::getNewInstance()->add(new Connection());
         $this->assertInstanceOf(Connection::class, Entry::resolveConnection());
 
-        Container::getNewInstance()->add(new Connection(),'other');
+        Container::getNewInstance()->add(new Connection(), 'other');
         $model = new Entry();
         $model->setConnection('other');
         $this->assertInstanceOf(Connection::class, $model::resolveConnection('other'));
@@ -173,7 +173,7 @@ class ModelQueryTest extends TestCase
 
     public function test_update_without_changes()
     {
-        $model = (new Entry)->setRawAttributes(['dn' => 'foo']);
+        $model = (new Entry())->setRawAttributes(['dn' => 'foo']);
         $this->assertTrue($model->update());
     }
 

@@ -6,10 +6,10 @@ use Mockery as m;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Connections\Connection;
-use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Connections\DetailedError;
-use LdapRecord\Auth\UsernameRequiredException;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Auth\PasswordRequiredException;
+use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class ConnectionTest extends TestCase
@@ -180,8 +180,8 @@ class ConnectionTest extends TestCase
 
         $ldap->shouldReceive('setOptions')->once()->withArgs([[
             LDAP_OPT_PROTOCOL_VERSION => 3,
-            LDAP_OPT_NETWORK_TIMEOUT => 5,
-            LDAP_OPT_REFERRALS => false,
+            LDAP_OPT_NETWORK_TIMEOUT  => 5,
+            LDAP_OPT_REFERRALS        => false,
         ]]);
         $ldap->shouldReceive('connect')->once()->withArgs(['host', '389']);
         $ldap->shouldReceive('isBound')->once()->andReturn(false);

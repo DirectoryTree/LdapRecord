@@ -2,11 +2,6 @@
 
 namespace LdapRecord\Connections;
 
-/**
- * Class Ldap.
- *
- * A class that abstracts PHP's LDAP functions and stores the bound connection.
- */
 class Ldap implements LdapInterface
 {
     /**

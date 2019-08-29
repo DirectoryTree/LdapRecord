@@ -210,7 +210,7 @@ abstract class Relation
      */
     protected function getForeignModelByValue($value)
     {
-        return $this->foreignKey == 'dn' || 'distinguishedname' ?
+        return $this->foreignKeyIsDistinguishedName() ?
             $this->query->findByDn($value) :
             $this->query->findBy($this->foreignKey, $value);
     }
@@ -236,7 +236,7 @@ abstract class Relation
      */
     protected function getForeignValueFromModel(Model $model)
     {
-        return $this->foreignKey == 'dn' || $this->foreignKey == 'distinguishedname' ?
+        return $this->foreignKeyIsDistinguishedName() ?
             $model->getDn() :
             $model->getFirstAttribute($this->foreignKey);
     }
@@ -261,6 +261,16 @@ abstract class Relation
 
             return $model ? $entry->convert(new $model()) : $entry;
         });
+    }
+
+    /**
+     * Determines if the foreign key is a distinguished name.
+     *
+     * @return bool
+     */
+    protected function foreignKeyIsDistinguishedName()
+    {
+        return in_array($this->foreignKey, ['dn', 'distinguishedname']);
     }
 
     /**

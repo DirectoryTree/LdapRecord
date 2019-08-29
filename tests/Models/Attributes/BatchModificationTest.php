@@ -74,7 +74,7 @@ class BatchModificationTest extends TestCase
 
         $this->assertEquals($expected, $modification->get());
     }
-    
+
     public function test_set_type_invalid()
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -135,7 +135,7 @@ class BatchModificationTest extends TestCase
         $modification = new BatchModification('attribute', 1, [
             500,
             10.5,
-            (new DistinguishedName('test'))
+            (new DistinguishedName('test')),
         ]);
 
         $this->assertInternalType('string', $modification->getValues()[0]);

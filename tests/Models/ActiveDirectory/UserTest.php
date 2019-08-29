@@ -7,13 +7,13 @@ use Mockery as m;
 use LdapRecord\Utilities;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Ldap;
-use LdapRecord\Connections\Connection;
 use LdapRecord\Connections\Container;
-use LdapRecord\Connections\ConnectionException;
+use LdapRecord\Connections\Connection;
 use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Connections\ConnectionException;
+use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Models\UserPasswordPolicyException;
 use LdapRecord\Models\UserPasswordIncorrectException;
-use LdapRecord\Configuration\DomainConfiguration;
 
 class UserTest extends TestCase
 {
@@ -33,7 +33,7 @@ class UserTest extends TestCase
 
         $this->expectException(ConnectionException::class);
 
-        $user = (new User)->setRawAttributes(['dn' => 'foo']);
+        $user = (new User())->setRawAttributes(['dn' => 'foo']);
         $user->changePassword('foo', 'bar');
     }
 
@@ -51,9 +51,9 @@ class UserTest extends TestCase
 
         $expected = [
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 3,
-                'values' => [Utilities::encodePassword('bar')],
+                'values'  => [Utilities::encodePassword('bar')],
             ],
         ];
 
@@ -67,14 +67,14 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 2,
-                'values' => [Utilities::encodePassword('bar')],
+                'values'  => [Utilities::encodePassword('bar')],
             ],
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 1,
-                'values' => [Utilities::encodePassword('baz')],
+                'values'  => [Utilities::encodePassword('baz')],
             ],
         ], $user->getModifications());
     }
@@ -86,9 +86,9 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 3,
-                'values' => [Utilities::encodePassword('baz')],
+                'values'  => [Utilities::encodePassword('baz')],
             ],
         ], $user->getModifications());
     }

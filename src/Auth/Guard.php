@@ -9,8 +9,8 @@ use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Connections\LdapInterface;
+use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 /**

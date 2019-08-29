@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Relations;
 
-use LdapRecord\Models\Model;
 use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 
@@ -17,22 +17,22 @@ abstract class Relation
     protected $query;
 
     /**
-     * The parent model instance. 
-     * 
+     * The parent model instance.
+     *
      * @var Model
      */
     protected $parent;
 
     /**
      * The related models.
-     * 
+     *
      * @var array
      */
     protected $related;
 
     /**
      * The relation key.
-     * 
+     *
      * @var string
      */
     protected $relationKey;
@@ -53,8 +53,8 @@ abstract class Relation
 
     /**
      * Constructor.
-     * 
-     * @var Builder $query
+     *
+     * @var Builder
      * @var Model   $parent
      * @var mixed   $related
      * @var string  $relationKey
@@ -101,7 +101,7 @@ abstract class Relation
      * Execute the relationship query.
      *
      * @param array|string $attributes
-     * 
+     *
      * @return Collection
      */
     public function get($attributes = ['*'])
@@ -141,12 +141,12 @@ abstract class Relation
 
     /**
      * Initializes the relation by setting the default model on the query.
-     * 
+     *
      * @return static
      */
     public function initRelation()
     {
-        $this->query->clearFilters()->setModel(new $this->default);
+        $this->query->clearFilters()->setModel(new $this->default());
 
         return $this;
     }
@@ -275,10 +275,10 @@ abstract class Relation
 
     /**
      * Determines the model from the given relations.
-     * 
-     * @var Model $model
+     *
+     * @var Model
      * @var array $related
-     * 
+     *
      * @return string|bool
      */
     protected function determineModelFromRelated(Model $model, array $related)

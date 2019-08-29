@@ -79,12 +79,12 @@ class ModelTest extends TestCase
 
         $model->setRawAttributes([
             'count' => 1,
-            'foo' => [
+            'foo'   => [
                 'count' => 1,
-                'bar' => [
+                'bar'   => [
                     'count' => 1,
-                    'baz' => [
-                        'count' => 1
+                    'baz'   => [
+                        'count' => 1,
                     ],
                 ],
             ],
@@ -93,7 +93,7 @@ class ModelTest extends TestCase
         $this->assertEquals([
             'foo' => [
                 'bar' => [
-                    'baz' => []
+                    'baz' => [],
                 ],
             ],
         ], $model->getAttributes());
@@ -139,9 +139,9 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isDirty('baz'));
         $this->assertTrue($model->isDirty('other'));
         $this->assertEquals([
-            'bar' => [20],
-            'baz' => [30],
-            'other' => [40]
+            'bar'   => [20],
+            'baz'   => [30],
+            'other' => [40],
         ], $model->getDirty());
     }
 
@@ -152,7 +152,7 @@ class ModelTest extends TestCase
 
         $model->objectguid = 'bf9679e7-0de6-11d0-a285-00aa003049e2';
         $this->assertEquals([
-            'foo' => ['bar'],
+            'foo'        => ['bar'],
             'objectguid' => ['bf9679e7-0de6-11d0-a285-00aa003049e2'],
         ], $model->jsonSerialize());
         $this->assertEquals('{"foo":["bar"],"objectguid":["bf9679e7-0de6-11d0-a285-00aa003049e2"]}', json_encode($model->jsonSerialize()));
@@ -182,13 +182,13 @@ class ModelTest extends TestCase
     {
         $records = [
             [
-                'dn' => 'baz',
+                'dn'  => 'baz',
                 'foo' => 'bar',
             ],
             [
-                'dn' => 'foo',
+                'dn'  => 'foo',
                 'bar' => 'baz',
-            ]
+            ],
         ];
 
         $model = new Entry();
@@ -247,7 +247,7 @@ class ModelTest extends TestCase
 
         $this->assertEquals([
             ['attrib' => 'foo', 'modtype' => 3, 'values' => ['bar']],
-            ['attrib' => 'bar', 'modtype' => 3, 'values' => ['baz']]
+            ['attrib' => 'bar', 'modtype' => 3, 'values' => ['baz']],
         ], $model->getModifications());
     }
 
@@ -255,9 +255,9 @@ class ModelTest extends TestCase
     {
         $model = new Entry();
         $model->setRawAttributes([
-            'cn' => ['Common Name'],
+            'cn'             => ['Common Name'],
             'samaccountname' => ['Account Name'],
-            'name' => ['Name'],
+            'name'           => ['Name'],
         ]);
 
         $model->cn = null;

@@ -246,7 +246,7 @@ trait HasAttributes
     public function getDirty()
     {
         $dirty = [];
-        
+
         foreach ($this->attributes as $key => $value) {
             if ($this->isDirty($key)) {
                 // We need to reset the array using array_values due to

@@ -39,7 +39,7 @@ interface ConnectionInterface
     /**
      * Returns a new default Guard instance.
      *
-     * @param LdapInterface $connection
+     * @param LdapInterface       $connection
      * @param DomainConfiguration $configuration
      *
      * @return \LdapRecord\Auth\Guard
@@ -88,7 +88,6 @@ interface ConnectionInterface
      *
      * @param string|null $username
      * @param string|null $password
-     *
      *
      * @throws ConnectionException            If upgrading the connection to TLS fails
      * @throws \LdapRecord\Auth\BindException If binding to the LDAP server fails.

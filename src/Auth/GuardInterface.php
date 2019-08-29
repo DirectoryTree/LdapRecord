@@ -10,7 +10,7 @@ interface GuardInterface
     /**
      * Constructor.
      *
-     * @param LdapInterface $connection
+     * @param LdapInterface       $connection
      * @param DomainConfiguration $configuration
      */
     public function __construct(LdapInterface $connection, DomainConfiguration $configuration);

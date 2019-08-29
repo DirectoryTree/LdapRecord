@@ -57,7 +57,7 @@ class Builder extends BaseBuilder
 
         // If we're not using ActiveDirectory, we can't use ANR.
         // We will make our own equivalent query.
-        if (! $this->model instanceof ActiveDirectory) {
+        if (!$this->model instanceof ActiveDirectory) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
 
@@ -76,7 +76,7 @@ class Builder extends BaseBuilder
     {
         $this->select($columns);
 
-        if (! $this->model instanceof ActiveDirectory) {
+        if (!$this->model instanceof ActiveDirectory) {
             $query = $this;
 
             foreach ($values as $value) {
@@ -98,7 +98,7 @@ class Builder extends BaseBuilder
      */
     protected function prepareAnrEquivalentQuery($value)
     {
-        return $this->orFilter(function (Builder $query) use ($value) {
+        return $this->orFilter(function (self $query) use ($value) {
             foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }
@@ -201,7 +201,8 @@ class Builder extends BaseBuilder
         $results = [];
 
         foreach ($relations as $name) {
-            $results[$name] = function () {};
+            $results[$name] = function () {
+            };
         }
 
         return $results;

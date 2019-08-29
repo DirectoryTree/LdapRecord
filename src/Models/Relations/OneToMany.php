@@ -96,12 +96,12 @@ abstract class OneToMany extends Relation
             // Here we will exclude the models that we have already
             // gathered the recursive results for so we don't run
             // into issues with circular relations in LDAP.
-            return ! in_array($model->getDn(), $except);
+            return !in_array($model->getDn(), $except);
         })->each(function (Model $model) use ($except, $models) {
             $except[] = $model->getDn();
 
             $model->{$this->relationName}()->get()->each(function (Model $related) use ($models) {
-                 $models->add($related);
+                $models->add($related);
             });
         });
 

@@ -4,8 +4,8 @@ namespace LdapRecord\Models\ActiveDirectory;
 
 use LdapRecord\Models\Concerns\HasGroups;
 use LdapRecord\Models\Concerns\HasPassword;
-use LdapRecord\Models\Concerns\CanAuthenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
+use LdapRecord\Models\Concerns\CanAuthenticate;
 
 class User extends Entry implements Authenticatable
 {
@@ -13,7 +13,7 @@ class User extends Entry implements Authenticatable
 
     /**
      * The object classes of the LDAP model.
-     * 
+     *
      * @var array
      */
     public static $objectClasses = [
@@ -58,6 +58,6 @@ class User extends Entry implements Authenticatable
 
         $model = reset($this->groups()->getRelated());
 
-        return $this->newQueryWithoutScopes()->setModel(new $model)->findBySid($groupSid);
+        return $this->newQueryWithoutScopes()->setModel(new $model())->findBySid($groupSid);
     }
 }

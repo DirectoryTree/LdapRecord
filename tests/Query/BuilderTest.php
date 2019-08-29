@@ -71,9 +71,9 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $b->addFilter('and', [
-            'field' => 'cn',
+            'field'    => 'cn',
             'operator' => '=',
-            'value' => 'John Doe',
+            'value'    => 'John Doe',
         ]);
 
         $this->assertEquals('(cn=John Doe)', $b->getQuery());
@@ -86,7 +86,7 @@ class BuilderTest extends TestCase
 
         // Missing 'value' key.
         $this->newBuilder()->addFilter('and', [
-            'field' => 'cn',
+            'field'    => 'cn',
             'operator' => '=',
         ]);
     }
@@ -96,9 +96,9 @@ class BuilderTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $this->newBuilder()->addFilter('non-existent', [
-            'field' => 'cn',
+            'field'    => 'cn',
             'operator' => '=',
-            'value' => 'John Doe',
+            'value'    => 'John Doe',
         ]);
     }
 
@@ -107,9 +107,9 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $b->addFilter('and', [
-            'field' => 'cn',
+            'field'    => 'cn',
             'operator' => '=',
-            'value' => 'John Doe',
+            'value'    => 'John Doe',
         ]);
 
         $this->assertEquals('(cn=John Doe)', $b->getQuery());
@@ -157,7 +157,7 @@ class BuilderTest extends TestCase
 
         $b->where([
             ['cn', '=', 'test'],
-            ['whencreated', '>=', 'test']
+            ['whencreated', '>=', 'test'],
         ]);
 
         $whereOne = $b->filters['and'][0];
@@ -320,7 +320,6 @@ class BuilderTest extends TestCase
         $this->assertEquals('cn', $where['field']);
         $this->assertEquals('contains', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
-
 
         $this->assertEquals('(&(name=*test*)(|(cn=*test*)))', $b->getUnescapedQuery());
     }
@@ -778,7 +777,7 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $query = $b->notFilter(function ($query) {
-             $query->where([
+            $query->where([
                  'one' => 'one',
                  'two' => 'two',
              ]);
@@ -818,11 +817,11 @@ class BuilderTest extends TestCase
         })->andFilter(function ($query) {
             $query->where([
                 'three' => 'three',
-                'four' => 'four',
+                'four'  => 'four',
             ]);
         })->where([
             'five' => 'five',
-            'six' => 'six',
+            'six'  => 'six',
         ])->getUnescapedQuery();
 
         $this->assertEquals('(&(|(one=one)(two=two))(&(three=three)(four=four))(five=five)(six=six))', $query);

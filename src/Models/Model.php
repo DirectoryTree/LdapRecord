@@ -4,15 +4,15 @@ namespace LdapRecord\Models;
 
 use ArrayAccess;
 use JsonSerializable;
+use LdapRecord\Utilities;
 use InvalidArgumentException;
 use UnexpectedValueException;
-use Tightenco\Collect\Support\Arr;
-use LdapRecord\Utilities;
 use LdapRecord\Query\Collection;
+use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Connections\Container;
-use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\DistinguishedName;
 
@@ -39,10 +39,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
     /**
      * The object classes of the LDAP model.
-     * 
+     *
      * @var array
      */
-     public static $objectClasses = [];
+    public static $objectClasses = [];
 
     /**
      * The current LDAP connection to utilize.
@@ -50,10 +50,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var string
      */
     protected $connection = 'default';
-    
+
     /**
      * The attribute key that contains the Object GUID.
-     * 
+     *
      * @var string
      */
     protected $guidKey = 'objectguid';
@@ -102,7 +102,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function __callStatic($method, $parameters)
     {
-        return (new static)->$method(...$parameters);
+        return (new static())->$method(...$parameters);
     }
 
     /**
@@ -172,7 +172,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function on($connection = null)
     {
-        $instance = new static;
+        $instance = new static();
 
         $instance->setConnection($connection);
 
@@ -186,7 +186,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function query()
     {
-        return (new static)->newQuery();
+        return (new static())->newQuery();
     }
 
     /**
@@ -337,7 +337,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetExists($offset)
     {
-        return ! is_null($this->getAttribute($offset));
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
@@ -456,7 +456,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function fresh()
     {
-        if (! $this->exists) {
+        if (!$this->exists) {
             return false;
         }
 
@@ -470,7 +470,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return bool
      */
-    public function is(Model $model)
+    public function is(self $model)
     {
         return $this->dn == $model->getDn() && $this->connection == $model->getConnectionName();
     }
@@ -485,18 +485,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function hydrate($records)
     {
         return $this->newCollection($records)->transform(function ($attributes) {
-            return (new static)->setRawAttributes($attributes)->setConnection($this->getConnectionName());
+            return (new static())->setRawAttributes($attributes)->setConnection($this->getConnectionName());
         });
     }
 
     /**
      * Converts the current model into the given model.
-     * 
+     *
      * @param Model $into
-     * 
+     *
      * @return Model
      */
-    public function convert(Model $into)
+    public function convert(self $into)
     {
         $into->setDn($this->getDn());
         $into->setConnection($this->getConnectionName());
@@ -532,7 +532,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getModifications()
     {
         $this->buildModificationsFromDirty();
-        
+
         return $this->modifications;
     }
 
@@ -843,7 +843,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function deleteLeafNodes()
     {
-        return $this->newQuery()->listing()->in($this->dn)->get()->each(function (Model $model) {
+        return $this->newQuery()->listing()->in($this->dn)->get()->each(function (self $model) {
             $model->delete(true);
         });
     }

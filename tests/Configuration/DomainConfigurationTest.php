@@ -39,17 +39,17 @@ class DomainConfigurationTest extends TestCase
     public function test_all_options()
     {
         $config = new DomainConfiguration([
-            'port' => 500,
-            'base_dn' => 'dc=corp,dc=org',
-            'hosts' => ['dc1', 'dc2'],
+            'port'             => 500,
+            'base_dn'          => 'dc=corp,dc=org',
+            'hosts'            => ['dc1', 'dc2'],
             'follow_referrals' => false,
-            'username' => 'username',
-            'password' => 'password',
-            'use_ssl' => true,
-            'use_tls' => false,
-            'options' => [
-                LDAP_OPT_SIZELIMIT => 1000
-            ]
+            'username'         => 'username',
+            'password'         => 'password',
+            'use_ssl'          => true,
+            'use_tls'          => false,
+            'options'          => [
+                LDAP_OPT_SIZELIMIT => 1000,
+            ],
         ]);
 
         $this->assertEquals(500, $config->get('port'));
@@ -61,7 +61,7 @@ class DomainConfigurationTest extends TestCase
         $this->assertFalse($config->get('use_tls'));
         $this->assertEquals(
             [
-                LDAP_OPT_SIZELIMIT => 1000
+                LDAP_OPT_SIZELIMIT => 1000,
             ],
             $config->get('options')
         );

@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use InvalidArgumentException;
 use LdapRecord\Models\Model;
+use InvalidArgumentException;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\Relations\Relation;
 

@@ -11,8 +11,9 @@ interface ConnectionInterface
      * Constructor.
      *
      * @param array|DomainConfiguration $configuration
+     * @param LdapInterface|null        $ldap
      */
-    public function __construct($configuration);
+    public function __construct($configuration, LdapInterface $ldap = null);
 
     /**
      * Returns the current connection instance.

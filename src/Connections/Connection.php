@@ -34,10 +34,10 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], LdapInterface $ldap = null)
     {
         $this->setConfiguration($configuration)
-            ->setLdapConnection(new Ldap());
+            ->setLdapConnection($ldap ?? new Ldap());
     }
 
     /**

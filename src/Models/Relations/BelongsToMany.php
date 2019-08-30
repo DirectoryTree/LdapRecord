@@ -48,7 +48,7 @@ class BelongsToMany extends HasMany
     }
 
     /**
-     * Detatch the parent model from the given.
+     * Detach the parent model from the given.
      *
      * @param Model|null $model
      *

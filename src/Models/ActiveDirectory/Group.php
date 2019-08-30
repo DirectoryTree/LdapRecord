@@ -40,7 +40,7 @@ class Group extends Entry
     public function members()
     {
         return $this->hasManyUsing([
-            static::class, User::class, Contact::class
+            static::class, User::class, Contact::class,
         ], 'memberof')->using($this->groups());
     }
 }

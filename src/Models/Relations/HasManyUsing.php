@@ -42,7 +42,7 @@ class HasManyUsing extends HasMany
 
         $foreign = $this->getForeignValueFromModel($model);
 
-        if (! in_array($this->getForeignValueFromModel($model), $current)) {
+        if (!in_array($this->getForeignValueFromModel($model), $current)) {
             $current[] = $foreign;
 
             return $this->parent->setAttribute($key, $current)->save() ? $model : false;

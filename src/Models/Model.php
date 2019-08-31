@@ -460,7 +460,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             return false;
         }
 
-        return $this->newQuery()->findByDn($this->getDn());
+        return $this->newQuery()->findByDn($this->dn);
     }
 
     /**
@@ -961,7 +961,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCreatableDn()
     {
-        return $this->getNewDnBuilder($this->dn)->addCn($this->getFirstAttribute('cn'));
+        return $this->getNewDnBuilder($this->newQuery()->getDn())->addCn($this->getFirstAttribute('cn'));
     }
 
     /**

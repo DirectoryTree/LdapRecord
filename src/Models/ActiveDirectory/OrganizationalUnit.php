@@ -2,8 +2,6 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\Attributes\DistinguishedName;
-
 class OrganizationalUnit extends Entry
 {
     /**
@@ -19,8 +17,8 @@ class OrganizationalUnit extends Entry
     /**
      * {@inheritdoc}
      */
-    protected function getCreatableDn()
+    public function getCreatableDn()
     {
-        return (new DistinguishedName($this->getDn()))->addOu($this->getFirstAttribute('ou'));
+        return $this->getNewDnBuilder($this->newQuery()->getDn())->addOu($this->getFirstAttribute('ou'));
     }
 }

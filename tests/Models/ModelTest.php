@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Models;
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Connections\Container;
+use LdapRecord\Connections\Connection;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Connections\ContainerException;
 
@@ -44,13 +45,16 @@ class ModelTest extends TestCase
 
     public function test_creatable_dn()
     {
-        $model = new Entry();
-        $model->setDn('foo');
-        $this->assertEmpty((string) $model->getCreatableDn());
+        Container::getNewInstance()->add(new Connection([
+            'base_dn' => 'dc=acme,dc=org',
+        ]));
 
-        $model->setDn('dc=acme,dc=org');
+        $model = new Entry();
         $model->cn = 'foo';
         $this->assertEquals('cn=foo,dc=acme,dc=org', (string) $model->getCreatableDn());
+
+        $model = new Entry();
+        $this->assertEquals('dc=acme,dc=org', (string) $model->getCreatableDn());
     }
 
     public function test_raw_attribute_filling_sets_dn()

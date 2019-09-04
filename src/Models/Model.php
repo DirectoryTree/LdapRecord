@@ -4,15 +4,15 @@ namespace LdapRecord\Models;
 
 use ArrayAccess;
 use JsonSerializable;
+use LdapRecord\Container;
 use LdapRecord\Utilities;
 use InvalidArgumentException;
+use LdapRecord\LdapInterface;
 use UnexpectedValueException;
 use LdapRecord\Query\Collection;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Container;
 use LdapRecord\Models\Attributes\Guid;
-use LdapRecord\LdapInterface;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\DistinguishedName;
 

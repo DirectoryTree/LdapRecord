@@ -3,20 +3,20 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
+use LdapRecord\Container;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\LdapInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\Events\Saved;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Events\Saving;
-use LdapRecord\Container;
 use LdapRecord\Models\Events\Created;
 use LdapRecord\Models\Events\Deleted;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Events\Creating;
 use LdapRecord\Models\Events\Deleting;
 use LdapRecord\Models\Events\Updating;
-use LdapRecord\LdapInterface;
 use LdapRecord\Events\DispatcherInterface;
 
 class ModelEventTest extends TestCase

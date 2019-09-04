@@ -36,7 +36,7 @@ interface GuardInterface
      * @param string|null $username
      * @param string|null $password
      *
-     * @throws \LdapRecord\Auth\BindException              If binding to the LDAP server fails.
+     * @throws \LdapRecord\Auth\BindException  If binding to the LDAP server fails.
      * @throws \LdapRecord\ConnectionException If upgrading the connection to TLS fails
      *
      * @return void

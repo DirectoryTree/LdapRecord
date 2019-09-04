@@ -4,12 +4,12 @@ namespace LdapRecord\Tests\Log;
 
 use Mockery as m;
 use Psr\Log\LoggerInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Auth\Events\Failed;
-use LdapRecord\LdapInterface;
-use LdapRecord\Auth\Events\Event as AuthEvent;
 use LdapRecord\ConnectionInterface;
+use LdapRecord\Auth\Events\Event as AuthEvent;
 
 class EventLoggerTest extends TestCase
 {

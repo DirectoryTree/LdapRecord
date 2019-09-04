@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Models\Entry;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\Entry;
+use LdapRecord\Tests\TestCase;
 use LdapRecord\ContainerException;
+use LdapRecord\Models\BatchModification;
 
 class ModelTest extends TestCase
 {

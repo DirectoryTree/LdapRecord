@@ -4,13 +4,13 @@ namespace LdapRecord\Query;
 
 use Closure;
 use Exception;
+use LdapRecord\Container;
 use LdapRecord\Utilities;
 use BadMethodCallException;
 use LdapRecord\Models\Model;
 use InvalidArgumentException;
-use Tightenco\Collect\Support\Arr;
-use LdapRecord\Container;
 use LdapRecord\LdapInterface;
+use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\ModelNotFoundException;
 

@@ -3,7 +3,6 @@
 namespace LdapRecord\Tests;
 
 use Mockery as m;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Ldap;
 
 class LdapTest extends TestCase

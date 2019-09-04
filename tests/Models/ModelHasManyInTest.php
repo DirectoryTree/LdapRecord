@@ -3,13 +3,13 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
+use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Container;
-use LdapRecord\Connection;
 use LdapRecord\Models\Relations\HasManyIn;
 
 class ModelHasManyInTest extends TestCase

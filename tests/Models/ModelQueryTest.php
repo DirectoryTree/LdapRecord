@@ -3,14 +3,14 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
-use LdapRecord\Models\Entry;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Query\Collection;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Models\Entry;
 use LdapRecord\LdapInterface;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Collection;
 use LdapRecord\ContainerException;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase

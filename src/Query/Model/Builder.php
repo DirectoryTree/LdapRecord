@@ -65,6 +65,28 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * Finds a record using ambiguous name resolution.
+     *
+     * If a record is not found, an exception is thrown.
+     *
+     * @param string       $value
+     * @param array|string $columns
+     *
+     * @throws ModelNotFoundException
+     *
+     * @return Model
+     */
+    public function findOrFail($value, $columns = [])
+    {
+        if ($entry = $this->find($value, $columns)) {
+            return $entry;
+        }
+
+        throw (new ModelNotFoundException())
+            ->setQuery($this->getUnescapedQuery(), $this->dn);
+    }
+
+    /**
      * Finds multiple records using ambiguous name resolution.
      *
      * @param array $values
@@ -77,13 +99,11 @@ class Builder extends BaseBuilder
         $this->select($columns);
 
         if (!$this->model instanceof ActiveDirectory) {
-            $query = $this;
-
             foreach ($values as $value) {
-                $query->prepareAnrEquivalentQuery($value);
+                $this->prepareAnrEquivalentQuery($value);
             }
 
-            return $query->get();
+            return $this->get();
         }
 
         return $this->findManyBy('anr', $values);

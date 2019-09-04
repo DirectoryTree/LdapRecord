@@ -640,32 +640,6 @@ class Builder
     }
 
     /**
-     * Finds a record using ambiguous name resolution.
-     *
-     * If a record is not found, an exception is thrown.
-     *
-     * @param string       $value
-     * @param array|string $columns
-     *
-     * @throws ModelNotFoundException
-     *
-     * @return Model|static
-     */
-    public function findOrFail($value, $columns = [])
-    {
-        $entry = $this->find($value, $columns);
-
-        // Make sure we check if the result is an entry or an array before
-        // we throw an exception in case the user wants raw results.
-        if (!$entry instanceof Model && !is_array($entry)) {
-            throw (new ModelNotFoundException())
-                ->setQuery($this->getUnescapedQuery(), $this->getDn());
-        }
-
-        return $entry;
-    }
-
-    /**
      * Finds a record by its distinguished name.
      *
      * @param string       $dn

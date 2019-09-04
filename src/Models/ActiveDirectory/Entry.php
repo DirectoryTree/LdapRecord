@@ -3,8 +3,8 @@
 namespace LdapRecord\Models\ActiveDirectory;
 
 use InvalidArgumentException;
-use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\LdapInterface;
+use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;

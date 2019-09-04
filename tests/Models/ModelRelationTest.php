@@ -2,13 +2,13 @@
 
 namespace LdapRecord\Tests\Models;
 
+use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Container;
-use LdapRecord\Connection;
 use LdapRecord\Models\Relations\Relation;
 
 class ModelRelationTest extends TestCase

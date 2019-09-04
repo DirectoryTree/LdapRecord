@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Models\Events\Event;
 use LdapRecord\Container;
+use LdapRecord\Models\Events\Event;
 
 trait HasEvents
 {

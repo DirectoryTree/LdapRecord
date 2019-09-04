@@ -3,16 +3,16 @@
 namespace LdapRecord\Tests\Auth;
 
 use Mockery as m;
-use LdapRecord\Auth\Guard;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Ldap;
+use LdapRecord\Auth\Guard;
+use LdapRecord\DetailedError;
+use LdapRecord\Tests\TestCase;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\DetailedError;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
 

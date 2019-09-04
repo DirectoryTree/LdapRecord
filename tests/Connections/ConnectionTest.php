@@ -3,11 +3,10 @@
 namespace LdapRecord\Tests;
 
 use Mockery as m;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Auth\BindException;
 use LdapRecord\Connection;
 use LdapRecord\DetailedError;
 use LdapRecord\LdapInterface;
+use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;

@@ -4,13 +4,13 @@ namespace LdapRecord\Tests\Models\ActiveDirectory;
 
 use Exception;
 use Mockery as m;
-use LdapRecord\Utilities;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Ldap;
 use LdapRecord\Container;
+use LdapRecord\Utilities;
 use LdapRecord\Connection;
-use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
+use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Models\UserPasswordPolicyException;
 use LdapRecord\Models\UserPasswordIncorrectException;

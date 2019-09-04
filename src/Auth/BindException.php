@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Auth;
 
-use LdapRecord\LdapRecordException;
 use LdapRecord\DetailedError;
+use LdapRecord\LdapRecordException;
 
 /**
  * Class BindException.

@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 class DetailedError
 {

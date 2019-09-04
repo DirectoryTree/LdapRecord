@@ -1,10 +1,10 @@
 <?php
 
-namespace LdapRecord\Tests\Connections;
+namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Connections\Ldap;
+use LdapRecord\Ldap;
 
 class LdapTest extends TestCase
 {

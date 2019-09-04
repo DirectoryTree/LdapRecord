@@ -7,9 +7,9 @@ use Psr\Log\LoggerInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Auth\Events\Failed;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Event as AuthEvent;
-use LdapRecord\Connections\ConnectionInterface;
+use LdapRecord\ConnectionInterface;
 
 class EventLoggerTest extends TestCase
 {

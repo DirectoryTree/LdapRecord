@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Configuration;
 
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 
 class DomainConfiguration
 {

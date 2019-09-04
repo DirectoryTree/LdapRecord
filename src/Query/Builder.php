@@ -9,8 +9,8 @@ use BadMethodCallException;
 use LdapRecord\Models\Model;
 use InvalidArgumentException;
 use Tightenco\Collect\Support\Arr;
-use LdapRecord\Connections\Container;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\Container;
+use LdapRecord\LdapInterface;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\ModelNotFoundException;
 

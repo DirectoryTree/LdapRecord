@@ -34,9 +34,7 @@ class Grammar
         $raws = $builder->filters['raw'];
 
         $query = $this->concatenate($raws);
-
         $query = $this->compileWheres($ands, $query);
-
         $query = $this->compileOrWheres($ors, $query);
 
         // We need to check if the query is already nested, otherwise

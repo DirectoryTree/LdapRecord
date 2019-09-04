@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;

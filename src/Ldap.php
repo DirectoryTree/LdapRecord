@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 class Ldap implements LdapInterface
 {
@@ -192,7 +192,7 @@ class Ldap implements LdapInterface
     public function getDetailedError()
     {
         // If the returned error number is zero, the last LDAP operation
-        // succeeded. We won't return a detailed error.
+        // succeeded. In such case we won't return a detailed error.
         if ($number = $this->errNo()) {
             ldap_get_option($this->connection, LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
 

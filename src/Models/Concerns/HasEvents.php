@@ -3,7 +3,7 @@
 namespace LdapRecord\Models\Concerns;
 
 use LdapRecord\Models\Events\Event;
-use LdapRecord\Connections\Container;
+use LdapRecord\Container;
 
 trait HasEvents
 {

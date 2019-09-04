@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Auth;
 
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 interface GuardInterface
@@ -37,7 +37,7 @@ interface GuardInterface
      * @param string|null $password
      *
      * @throws \LdapRecord\Auth\BindException              If binding to the LDAP server fails.
-     * @throws \LdapRecord\Connections\ConnectionException If upgrading the connection to TLS fails
+     * @throws \LdapRecord\ConnectionException If upgrading the connection to TLS fails
      *
      * @return void
      */

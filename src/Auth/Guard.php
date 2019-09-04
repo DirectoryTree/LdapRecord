@@ -4,12 +4,12 @@ namespace LdapRecord\Auth;
 
 use Exception;
 use Throwable;
+use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\Connections\LdapInterface;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 

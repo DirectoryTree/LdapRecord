@@ -9,14 +9,14 @@ use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\Events\Saved;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Events\Saving;
-use LdapRecord\Connections\Container;
+use LdapRecord\Container;
 use LdapRecord\Models\Events\Created;
 use LdapRecord\Models\Events\Deleted;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Events\Creating;
 use LdapRecord\Models\Events\Deleting;
 use LdapRecord\Models\Events\Updating;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Events\DispatcherInterface;
 
 class ModelEventTest extends TestCase

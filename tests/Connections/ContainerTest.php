@@ -1,12 +1,12 @@
 <?php
 
-namespace LdapRecord\Tests\Connections;
+namespace LdapRecord\Tests;
 
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Events\Dispatcher;
-use LdapRecord\Connections\Container;
-use LdapRecord\Connections\Connection;
-use LdapRecord\Connections\ContainerException;
+use LdapRecord\Container;
+use LdapRecord\Connection;
+use LdapRecord\ContainerException;
 
 class ContainerTest extends TestCase
 {

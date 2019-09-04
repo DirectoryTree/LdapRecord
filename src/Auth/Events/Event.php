@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Auth\Events;
 
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 
 abstract class Event
 {

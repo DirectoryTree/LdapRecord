@@ -10,9 +10,9 @@ use UnexpectedValueException;
 use LdapRecord\Query\Collection;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Connections\Container;
+use LdapRecord\Container;
 use LdapRecord\Models\Attributes\Guid;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\DistinguishedName;
 
@@ -132,7 +132,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get the LDAP connection for the model.
      *
-     * @return \LdapRecord\Connections\Connection
+     * @return \LdapRecord\Connection
      */
     public function getConnection()
     {
@@ -232,7 +232,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param string|null $connection
      *
-     * @return \LdapRecord\Connections\Connection
+     * @return \LdapRecord\Connection
      */
     public static function resolveConnection($connection = null)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 /**
  * The Connection interface used for making connections. Implementing

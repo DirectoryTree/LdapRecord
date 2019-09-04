@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Log\LogsInformation;

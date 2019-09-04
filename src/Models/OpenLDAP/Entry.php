@@ -3,7 +3,7 @@
 namespace LdapRecord\Models\OpenLDAP;
 
 use LdapRecord\Models\Types\OpenLDAP;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\LdapInterface;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Query\Model\OpenLdapBuilder;
 

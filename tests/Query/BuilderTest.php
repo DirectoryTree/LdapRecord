@@ -5,7 +5,7 @@ namespace LdapRecord\Tests\Query;
 use DateTime;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Connections\Ldap;
+use LdapRecord\Ldap;
 
 class BuilderTest extends TestCase
 {

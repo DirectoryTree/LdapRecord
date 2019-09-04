@@ -7,10 +7,10 @@ use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Connections\Container;
-use LdapRecord\Connections\Connection;
-use LdapRecord\Connections\LdapInterface;
-use LdapRecord\Connections\ContainerException;
+use LdapRecord\Container;
+use LdapRecord\Connection;
+use LdapRecord\LdapInterface;
+use LdapRecord\ContainerException;
 use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase

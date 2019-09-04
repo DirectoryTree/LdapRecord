@@ -1,13 +1,13 @@
 <?php
 
-namespace LdapRecord\Tests\Connections;
+namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Auth\BindException;
-use LdapRecord\Connections\Connection;
-use LdapRecord\Connections\DetailedError;
-use LdapRecord\Connections\LdapInterface;
+use LdapRecord\Connection;
+use LdapRecord\DetailedError;
+use LdapRecord\LdapInterface;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;

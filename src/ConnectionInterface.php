@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Connections;
+namespace LdapRecord;
 
 use LdapRecord\Auth\GuardInterface;
 use LdapRecord\Configuration\DomainConfiguration;

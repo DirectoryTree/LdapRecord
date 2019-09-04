@@ -4,7 +4,7 @@ namespace LdapRecord\Models\Concerns;
 
 use LdapRecord\Utilities;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Connections\ConnectionException;
+use LdapRecord\ConnectionException;
 use LdapRecord\Models\UserPasswordPolicyException;
 use LdapRecord\Models\UserPasswordIncorrectException;
 

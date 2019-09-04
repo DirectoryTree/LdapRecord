@@ -4,10 +4,10 @@ namespace LdapRecord\Tests\Models;
 
 use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Connections\Container;
-use LdapRecord\Connections\Connection;
+use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\BatchModification;
-use LdapRecord\Connections\ContainerException;
+use LdapRecord\ContainerException;
 
 class ModelTest extends TestCase
 {

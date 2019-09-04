@@ -8,8 +8,8 @@ use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Connections\Container;
-use LdapRecord\Connections\Connection;
+use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\Relations\HasOne;
 
 class ModelHasOneTest extends TestCase

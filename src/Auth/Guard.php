@@ -13,12 +13,7 @@ use LdapRecord\Auth\Events\Attempting;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
-/**
- * Class Guard.
- *
- * Binds users to the current connection.
- */
-class Guard implements GuardInterface
+class Guard
 {
     /**
      * The connection to bind to.

@@ -3,9 +3,9 @@
 namespace LdapRecord;
 
 use LdapRecord\Auth\Guard;
-use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;
 use InvalidArgumentException;
+use LdapRecord\Query\Builder;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
@@ -129,7 +129,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function query()
     {

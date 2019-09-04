@@ -36,18 +36,12 @@ class Guard
      */
     protected $events;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(LdapInterface $connection, DomainConfiguration $configuration)
     {
         $this->connection = $connection;
         $this->configuration = $configuration;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attempt($username, $password, $bindAsUser = false)
     {
         if (empty($username)) {
@@ -82,9 +76,6 @@ class Guard
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function bind($username = null, $password = null)
     {
         $this->fireBindingEvent($username, $password);
@@ -103,9 +94,6 @@ class Guard
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function bindAsAdministrator()
     {
         $this->bind(

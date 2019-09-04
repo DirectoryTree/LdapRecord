@@ -2,7 +2,7 @@
 
 namespace LdapRecord;
 
-use LdapRecord\Auth\GuardInterface;
+use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 interface ConnectionInterface
@@ -30,21 +30,13 @@ interface ConnectionInterface
     public function getConfiguration();
 
     /**
-     * Returns the current Guard instance.
+     * Sets the cache store.
      *
-     * @return \LdapRecord\Auth\Guard
+     * @param CacheInterface $store
+     *
+     * @return $this
      */
-    public function getGuard();
-
-    /**
-     * Returns a new default Guard instance.
-     *
-     * @param LdapInterface       $connection
-     * @param DomainConfiguration $configuration
-     *
-     * @return \LdapRecord\Auth\Guard
-     */
-    public function getDefaultGuard(LdapInterface $connection, DomainConfiguration $configuration);
+    public function setCache(CacheInterface $store);
 
     /**
      * Sets the current connection.
@@ -65,20 +57,18 @@ interface ConnectionInterface
     public function setConfiguration($configuration = []);
 
     /**
-     * Sets the current Guard instance.
-     *
-     * @param GuardInterface $guard
-     *
-     * @return $this
-     */
-    public function setGuard(GuardInterface $guard);
-
-    /**
      * Returns a new auth guard instance.
      *
      * @return \LdapRecord\Auth\Guard
      */
     public function auth();
+
+    /**
+     * Returns a new query builder for the current connection.
+     *
+     * @return \LdapRecord\Query\Builder
+     */
+    public function query();
 
     /**
      * Connects and Binds to the Domain Controller.

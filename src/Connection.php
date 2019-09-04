@@ -3,9 +3,9 @@
 namespace LdapRecord;
 
 use LdapRecord\Auth\Guard;
+use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;
 use InvalidArgumentException;
-use LdapRecord\Auth\GuardInterface;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
@@ -20,11 +20,6 @@ class Connection implements ConnectionInterface
      * @var DomainConfiguration
      */
     protected $configuration;
-
-    /**
-     * @var GuardInterface
-     */
-    protected $guard;
 
     /**
      * @var Cache|null
@@ -98,20 +93,6 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setGuard(GuardInterface $guard)
-    {
-        $this->guard = $guard;
-
-        return $this;
-    }
-
-    /**
-     * Sets the cache store.
-     *
-     * @param CacheInterface $store
-     *
-     * @return $this
-     */
     public function setCache(CacheInterface $store)
     {
         $this->cache = new Cache($store);
@@ -138,21 +119,9 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getGuard()
+    public function auth()
     {
-        if (!$this->guard instanceof GuardInterface) {
-            $this->setGuard($this->getDefaultGuard($this->ldap, $this->configuration));
-        }
-
-        return $this->guard;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultGuard(LdapInterface $connection, DomainConfiguration $configuration)
-    {
-        $guard = new Guard($connection, $configuration);
+        $guard = new Guard($this->ldap, $this->configuration);
 
         $guard->setDispatcher(Container::getEventDispatcher());
 
@@ -160,11 +129,11 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function auth()
+    public function query()
     {
-        return $this->getGuard();
+        return (new Builder($this->ldap))->in($this->configuration->get('base_dn'));
     }
 
     /**
@@ -172,8 +141,7 @@ class Connection implements ConnectionInterface
      */
     public function connect($username = null, $password = null)
     {
-        // Get the default guard instance.
-        $guard = $this->getGuard();
+        $guard = $this->auth();
 
         if (is_null($username) && is_null($password)) {
             // If both the username and password are null, we'll connect to the server

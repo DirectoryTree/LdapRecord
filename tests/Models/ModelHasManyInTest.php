@@ -25,7 +25,7 @@ class ModelHasManyInTest extends TestCase
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('findByDn')->once()->withArgs(['baz'])->andReturn(new Entry());
+        $query->shouldReceive('find')->once()->withArgs(['baz'])->andReturn(new Entry());
 
         $model = new ModelHasManyInStub();
         $model->bar = ['baz'];

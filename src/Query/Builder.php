@@ -647,10 +647,10 @@ class Builder
      *
      * @return Model|static|null
      */
-    public function findByDn($dn, $columns = [])
+    public function find($dn, $columns = [])
     {
         try {
-            return $this->findByDnOrFail($dn, $columns);
+            return $this->findOrFail($dn, $columns);
         } catch (ModelNotFoundException $e) {
             return;
         }
@@ -668,47 +668,13 @@ class Builder
      *
      * @return Model|static
      */
-    public function findByDnOrFail($dn, $columns = [])
+    public function findOrFail($dn, $columns = [])
     {
         return $this->setDn($dn)
             ->read()
             ->clearFilters()
             ->whereHas('objectclass')
             ->firstOrFail($columns);
-    }
-
-    /**
-     * Finds a record by its Object SID.
-     *
-     * @param string       $sid
-     * @param array|string $columns
-     *
-     * @return Model|static|null
-     */
-    public function findBySid($sid, $columns = [])
-    {
-        try {
-            return $this->findBySidOrFail($sid, $columns);
-        } catch (ModelNotFoundException $e) {
-            return;
-        }
-    }
-
-    /**
-     * Finds a record by its Object SID.
-     *
-     * Fails upon no records returned.
-     *
-     * @param string       $sid
-     * @param array|string $columns
-     *
-     * @throws ModelNotFoundException
-     *
-     * @return Model|static
-     */
-    public function findBySidOrFail($sid, $columns = [])
-    {
-        return $this->findByOrFail('objectsid', $sid, $columns);
     }
 
     /**

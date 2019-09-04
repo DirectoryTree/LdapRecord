@@ -49,10 +49,10 @@ class Builder extends BaseBuilder
      *
      * @return Model|\LdapRecord\Query\Collection|static|null
      */
-    public function find($value, $columns = [])
+    public function findByAnr($value, $columns = [])
     {
         if (is_array($value)) {
-            return $this->findMany($value, $columns);
+            return $this->findManyByAnr($value, $columns);
         }
 
         // If we're not using ActiveDirectory, we can't use ANR.
@@ -76,9 +76,9 @@ class Builder extends BaseBuilder
      *
      * @return Model
      */
-    public function findOrFail($value, $columns = [])
+    public function findByAnrOrFail($value, $columns = [])
     {
-        if ($entry = $this->find($value, $columns)) {
+        if ($entry = $this->findByAnr($value, $columns)) {
             return $entry;
         }
 
@@ -94,7 +94,7 @@ class Builder extends BaseBuilder
      *
      * @return \LdapRecord\Query\Collection
      */
-    public function findMany(array $values = [], $columns = [])
+    public function findManyByAnr(array $values = [], $columns = [])
     {
         $this->select($columns);
 

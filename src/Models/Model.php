@@ -458,7 +458,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             return false;
         }
 
-        return $this->newQuery()->findByDn($this->dn);
+        return $this->newQuery()->find($this->dn);
     }
 
     /**

@@ -204,15 +204,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get a new query builder that doesn't have any global scopes.
      *
-     * @return Builder
+     * @return \LdapRecord\Query\Model\Builder
      */
     public function newQueryWithoutScopes()
     {
         $connection = static::resolveConnection($this->connection);
 
-        return $this->newQueryBuilder($connection->getLdapConnection())
-            ->in($connection->getConfiguration()->get('base_dn'))
-            ->setModel($this);
+        return $connection->query()->model($this);
     }
 
     /**

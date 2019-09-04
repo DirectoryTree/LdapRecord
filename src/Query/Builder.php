@@ -13,6 +13,7 @@ use LdapRecord\LdapInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Query\Model\Builder as ModelBuilder;
 
 class Builder
 {
@@ -304,6 +305,20 @@ class Builder
         $this->limit = $limit;
 
         return $this;
+    }
+
+    /**
+     * Returns a new query for the given model.
+     *
+     * @param Model $model
+     *
+     * @return ModelBuilder
+     */
+    public function model(Model $model)
+    {
+        return $model->newQueryBuilder($this->connection)
+            ->setModel($model)
+            ->in($this->dn);
     }
 
     /**

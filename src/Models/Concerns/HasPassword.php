@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use Exception;
 use LdapRecord\Utilities;
 use LdapRecord\ConnectionException;
 use LdapRecord\LdapRecordException;
@@ -101,8 +102,8 @@ trait HasPassword
 
         try {
             return $this->update();
-        } catch (\Exception $ex) {
-            $connection = $this->newQuery()->getConnection();
+        } catch (Exception $ex) {
+            $connection = $this->getConnection()->getLdapConnection();
 
             $code = $connection->getExtendedErrorCode();
 

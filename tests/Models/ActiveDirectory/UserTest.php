@@ -11,7 +11,6 @@ use LdapRecord\Connection;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
 use LdapRecord\Models\ActiveDirectory\User;
-use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Models\UserPasswordPolicyException;
 use LdapRecord\Models\UserPasswordIncorrectException;
 
@@ -99,7 +98,6 @@ class UserTest extends TestCase
         $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('0000052D');
 
         $conn = m::mock(Connection::class);
-        $conn->shouldReceive('getConfiguration')->once()->andReturn(new DomainConfiguration());
         $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
 
         Container::getInstance()->add($conn);
@@ -116,7 +114,6 @@ class UserTest extends TestCase
         $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('00000056');
 
         $conn = m::mock(Connection::class);
-        $conn->shouldReceive('getConfiguration')->once()->andReturn(new DomainConfiguration());
         $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
 
         Container::getInstance()->add($conn);

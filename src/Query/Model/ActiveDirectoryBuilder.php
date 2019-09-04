@@ -2,8 +2,45 @@
 
 namespace LdapRecord\Query\Model;
 
+use LdapRecord\Models\Model;
+use LdapRecord\Models\ModelNotFoundException;
+
 class ActiveDirectoryBuilder extends Builder
 {
+    /**
+     * Finds a record by its Object SID.
+     *
+     * @param string       $sid
+     * @param array|string $columns
+     *
+     * @return Model|static|null
+     */
+    public function findBySid($sid, $columns = [])
+    {
+        try {
+            return $this->findBySidOrFail($sid, $columns);
+        } catch (ModelNotFoundException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Finds a record by its Object SID.
+     *
+     * Fails upon no records returned.
+     *
+     * @param string       $sid
+     * @param array|string $columns
+     *
+     * @throws ModelNotFoundException
+     *
+     * @return Model|static
+     */
+    public function findBySidOrFail($sid, $columns = [])
+    {
+        return $this->findByOrFail('objectsid', $sid, $columns);
+    }
+
     /**
      * Adds a enabled filter to the current query.
      *

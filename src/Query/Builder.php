@@ -577,7 +577,7 @@ class Builder
 
         if (!$record) {
             throw (new ModelNotFoundException())
-                ->setQuery($this->getUnescapedQuery(), $this->getDn());
+                ->setQuery($this->getUnescapedQuery(), $this->dn);
         }
 
         return $record;

@@ -672,7 +672,6 @@ class Builder
     {
         return $this->setDn($dn)
             ->read()
-            ->clearFilters()
             ->whereHas('objectclass')
             ->firstOrFail($columns);
     }

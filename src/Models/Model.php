@@ -802,6 +802,36 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Destroy the models for the given distinguished names.
+     *
+     * @param Collection|array|string $dns
+     *
+     * @return int
+     */
+    public static function destroy($dns)
+    {
+        $count = 0;
+
+        if ($dns instanceof Collection) {
+            $dns = $dns->all();
+        }
+
+        $dns = is_array($dns) ? $dns : func_get_args();
+
+        $instance = new static();
+
+        foreach ($dns as $dn) {
+            if ($model = $instance->find($dn)) {
+                $model->delete();
+
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * Delete the model from the directory.
      *
      * Throws a ModelNotFoundException if the current model does

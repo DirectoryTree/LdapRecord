@@ -6,6 +6,7 @@ use Mockery as m;
 use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
 use LdapRecord\LdapInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
@@ -260,5 +261,27 @@ class ModelQueryTest extends TestCase
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
         $this->assertEquals($shouldBeDeleted, $model->deleteLeafNodes());
         $this->assertFalse($shouldBeDeleted->first()->exists);
+    }
+
+    public function test_destroy()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $this->assertEquals(1, ModelDestroyStub::destroy('foo'));
+        $this->assertEquals(2, ModelDestroyStub::destroy('foo', 'bar'));
+        $this->assertEquals(2, ModelDestroyStub::destroy(['foo', 'bar']));
+        $this->assertEquals(2, ModelDestroyStub::destroy(new Collection(['foo', 'bar'])));
+    }
+}
+
+class ModelDestroyStub extends Model
+{
+    public function find($dn, $columns = [])
+    {
+        $stub = m::mock(Entry::class);
+
+        $stub->shouldReceive('delete')->once()->withNoArgs()->andReturnTrue();
+
+        return $stub;
     }
 }

@@ -166,38 +166,6 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Set the relationships that should be eager loaded.
-     *
-     * @param mixed $relations
-     *
-     * @return $this
-     */
-    public function with($relations)
-    {
-        $eagerLoad = $this->parseWithRelations(is_string($relations) ? func_get_args() : $relations);
-
-        $this->eagerLoad = array_merge($this->eagerLoad, $eagerLoad);
-
-        return $this;
-    }
-
-    /**
-     * Prevent the specified relations from being eager loaded.
-     *
-     * @param mixed $relations
-     *
-     * @return $this
-     */
-    public function without($relations)
-    {
-        $this->eagerLoad = array_diff_key($this->eagerLoad, array_flip(
-            is_string($relations) ? func_get_args() : $relations
-        ));
-
-        return $this;
-    }
-
-    /**
      * Processes and converts the given LDAP results into models.
      *
      * @param array $results

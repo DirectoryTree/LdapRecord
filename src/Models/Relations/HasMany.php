@@ -8,6 +8,20 @@ use LdapRecord\Query\Collection;
 class HasMany extends OneToMany
 {
     /**
+     * The model to use for attaching / detaching.
+     *
+     * @var Model
+     */
+    protected $using;
+
+    /**
+     * The attribute key to use for attaching / detaching.
+     *
+     * @var string
+     */
+    protected $usingKey;
+
+    /**
      * Get the relationships results.
      *
      * @return Collection
@@ -32,6 +46,22 @@ class HasMany extends OneToMany
     }
 
     /**
+     * Set the model and attribute to use for attaching / detaching.
+     *
+     * @param Model  $using
+     * @param string $usingKey
+     *
+     * @return $this
+     */
+    public function using(Model $using, $usingKey)
+    {
+        $this->using = $using;
+        $this->usingKey = $usingKey;
+
+        return $this;
+    }
+
+    /**
      * Attach a model instance to the parent model.
      *
      * @param Model $model
@@ -40,17 +70,28 @@ class HasMany extends OneToMany
      */
     public function attach(Model $model)
     {
-        $current = $this->getRelatedValue($model);
+        // Here we will retrieve the current relationships value to be add
+        // the given model into it. If a 'using' model is defined, we
+        // will retrieve the value from it, otherwise we will
+        // retrieve it from the model being attached.
+        $current = $this->getCurrentRelationValue($model);
 
-        $foreign = $this->getForeignValueFromModel($this->parent);
+        // Now we will retrieve the foreign key value from the model being
+        // attached. This is usually the models distinguished name.
+        $foreign = $this->getCurrentForeignValue($model);
 
-        // We need to determine if the parent is already apart
-        // of the given related model. If we don't, we'll
-        // receive a 'type or value exists' error.
+        // We need to determine if the foreign key value is already inside
+        // the relationships value. If we don't, we will receive a
+        // 'type or value exists' error upon saving.
         if (!in_array($foreign, $current)) {
             $current[] = $foreign;
 
-            return $this->setRelatedValue($model, $current)->save() ? $model : false;
+            // If we have a model that is being used, we will set its attribute
+            // being used to the new current value. Otherwise we will use the
+            // model being attached along with its relation attribute.
+            $related = $this->setCurrentRelationValue($current, $model);
+
+            return $related->save() ? $model : false;
         }
 
         return $model;
@@ -82,17 +123,98 @@ class HasMany extends OneToMany
     public function detach(Model $model = null)
     {
         if ($model) {
-            $updated = array_diff(
-                $this->getRelatedValue($model),
-                [$this->getForeignValueFromModel($this->parent)]
-            );
+            // Here we will retrieve the current relationships value to be remove
+            // the given model from it. If a 'using' model is defined, we
+            // will retrieve the value from it, otherwise we will
+            // retrieve it from the model being attached.
+            $current = $this->getCurrentRelationValue($model);
 
-            return $this->setRelatedValue($model, $updated)->save() ? $model : false;
+            // Now we will retrieve the foreign key value from the model being
+            // attached. This is usually the models distinguished name.
+            $foreign = $this->getCurrentForeignValue($model);
+
+            // Remove the foreign key value from the current attribute value.
+            $current = array_diff($current, [$foreign]);
+
+            // If we have a model that is being used, we will set its attribute
+            // being used to the new current value. Otherwise we will use the
+            // model being attached along with its relation attribute.
+            $related = $this->setCurrentRelationValue($current, $model);
+
+            return $related->save() ? $model : false;
         }
 
+        // If no model was given, we will detach all of relations.
         return $this->get()->each(function (Model $model) {
             $this->detach($model);
         });
+    }
+
+    /**
+     * Get the current relation value. If the relation is set to
+     * use another model, its value will be returned instead.
+     *
+     * @param Model $model
+     *
+     * @return array
+     */
+    protected function getCurrentRelationValue(Model $model)
+    {
+        return $this->using ? $this->getUsingValue() : $this->getRelatedValue($model);
+    }
+
+    /**
+     * Set the current relation value. If the relation is set to
+     * use another model, its attribute will be set instead.
+     *
+     * @param mixed $value
+     * @param Model $model
+     *
+     * @return Model
+     */
+    protected function setCurrentRelationValue($value, Model $model)
+    {
+        return $this->using ?
+            $this->setUsingValue($value) :
+            $this->setRelatedValue($model, $value);
+    }
+
+    /**
+     * Get the current foreign value. If the relation is set to
+     * use another model, the given models foreign value will
+     * be used. Otherwise, the parents will be used.
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    protected function getCurrentForeignValue(Model $model)
+    {
+        return $this->using ?
+            $this->getForeignValueFromModel($model) :
+            $this->getForeignValueFromModel($this->parent);
+    }
+
+    /**
+     * Get the attribute value from the model being used.
+     *
+     * @return array
+     */
+    protected function getUsingValue()
+    {
+        return $this->using->getAttribute($this->usingKey) ?? [];
+    }
+
+    /**
+     * Set the attribute for the model being used.
+     *
+     * @param mixed $value
+     *
+     * @return Model
+     */
+    protected function setUsingValue($value)
+    {
+        return $this->using->setAttribute($this->usingKey, $value);
     }
 
     /**

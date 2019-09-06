@@ -6,7 +6,6 @@ use Tightenco\Collect\Support\Arr;
 use LdapRecord\Models\Relations\HasOne;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\HasManyIn;
-use LdapRecord\Models\Relations\HasManyUsing;
 
 trait HasRelationships
 {
@@ -27,7 +26,7 @@ trait HasRelationships
     /**
      * Returns a new has many relationship.
      *
-     * @param string $related
+     * @param mixed  $related
      * @param string $relationKey
      * @param string $foreignKey
      *
@@ -36,20 +35,6 @@ trait HasRelationships
     public function hasMany($related, $relationKey, $foreignKey = 'dn')
     {
         return new HasMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
-    }
-
-    /**
-     * Returns a new has many using relationship.
-     *
-     * @param mixed  $related
-     * @param mixed  $relationKey
-     * @param string $foreignKey
-     *
-     * @return HasManyUsing
-     */
-    public function hasManyUsing($related, $relationKey, $foreignKey = 'dn')
-    {
-        return new HasManyUsing($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
 
     /**

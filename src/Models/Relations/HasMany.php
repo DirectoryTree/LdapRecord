@@ -76,8 +76,9 @@ class HasMany extends OneToMany
         // retrieve it from the model being attached.
         $current = $this->getCurrentRelationValue($model);
 
-        // Now we will retrieve the foreign key value from the model being
-        // attached. This is usually the models distinguished name.
+        // Now we will retrieve the foreign key value. If a 'using' model
+        // is defined, it is retrieved from the given model. Otherwise,
+        // it will be retrieved from the relationships parent model.
         $foreign = $this->getCurrentForeignValue($model);
 
         // We need to determine if the foreign key value is already inside
@@ -129,8 +130,9 @@ class HasMany extends OneToMany
             // retrieve it from the model being attached.
             $current = $this->getCurrentRelationValue($model);
 
-            // Now we will retrieve the foreign key value from the model being
-            // attached. This is usually the models distinguished name.
+            // Now we will retrieve the foreign key value. If a 'using' model
+            // is defined, it is retrieved from the given model. Otherwise,
+            // it will be retrieved from the relationships parent model.
             $foreign = $this->getCurrentForeignValue($model);
 
             // Remove the foreign key value from the current attribute value.

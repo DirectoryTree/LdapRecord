@@ -22,6 +22,22 @@ class HasMany extends OneToMany
     protected $usingKey;
 
     /**
+     * Set the model and attribute to use for attaching / detaching.
+     *
+     * @param Model  $using
+     * @param string $usingKey
+     *
+     * @return $this
+     */
+    public function using(Model $using, $usingKey)
+    {
+        $this->using = $using;
+        $this->usingKey = $usingKey;
+
+        return $this;
+    }
+
+    /**
      * Get the relationships results.
      *
      * @return Collection
@@ -43,22 +59,6 @@ class HasMany extends OneToMany
             '=',
             $this->getEscapedForeignValueFromModel($this->parent)
         );
-    }
-
-    /**
-     * Set the model and attribute to use for attaching / detaching.
-     *
-     * @param Model  $using
-     * @param string $usingKey
-     *
-     * @return $this
-     */
-    public function using(Model $using, $usingKey)
-    {
-        $this->using = $using;
-        $this->usingKey = $usingKey;
-
-        return $this;
     }
 
     /**

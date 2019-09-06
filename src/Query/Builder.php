@@ -339,14 +339,7 @@ class Builder
             return $this->parse($this->run($query));
         };
 
-        // If caching is enabled and we have a cache instance available,
-        // we will try to retrieve the cached results instead.
-        // Otherwise, we will simply execute the callback.
-        if ($this->caching && $this->cache) {
-            $results = $this->getCachedResponse($this->getCacheKey($query), $callback);
-        } else {
-            $results = $callback();
-        }
+        $results = $this->getCachedResponse($query, $callback);
 
         // Log the query.
         $this->logQuery($this, $this->type, $this->getElapsedTime($start));
@@ -382,13 +375,7 @@ class Builder
             return $this->runPaginate($query, $pageSize, $isCritical);
         };
 
-        // If caching is enabled and we have a cache instance available,
-        // we will try to retrieve the cached results instead.
-        if ($this->caching && $this->cache) {
-            $pages = $this->getCachedResponse($this->getCacheKey($query), $callback);
-        } else {
-            $pages = $callback();
-        }
+        $pages = $this->getCachedResponse($query, $callback);
 
         // Log the query.
         $this->logQuery($this, 'paginate', $this->getElapsedTime($start));
@@ -434,18 +421,27 @@ class Builder
     /**
      * Get the cached response or execute and cache the callback value.
      *
-     * @param string  $key
+     * @param string  $query
      * @param Closure $callback
      *
      * @return mixed
      */
-    protected function getCachedResponse($key, Closure $callback)
+    protected function getCachedResponse($query, Closure $callback)
     {
-        if ($this->flushCache) {
-            $this->cache->delete($key);
+        // If caching is enabled and we have a cache instance available,
+        // we will try to retrieve the cached results instead.
+        if ($this->caching && $this->cache) {
+            $key = $this->getCacheKey($query);
+
+            if ($this->flushCache) {
+                $this->cache->delete($key);
+            }
+
+            return $this->cache->remember($key, $this->cacheUntil, $callback);
         }
 
-        return $this->cache->remember($key, $this->cacheUntil, $callback);
+        // Otherwise, we will simply execute the callback.
+        return $callback();
     }
 
     /**

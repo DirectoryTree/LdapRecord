@@ -35,12 +35,12 @@ class Group extends Entry
      *
      * Retrieves members that are apart of the current group.
      *
-     * @return \LdapRecord\Models\Relations\HasManyUsing
+     * @return \LdapRecord\Models\Relations\HasMany
      */
     public function members()
     {
-        return $this->hasManyUsing([
+        return $this->hasMany([
             static::class, User::class, Contact::class,
-        ], 'memberof')->using($this->groups());
+        ], 'memberof')->using($this, 'member');
     }
 }

@@ -22,7 +22,7 @@ class Builder
      *
      * @var array
      */
-    public $columns = ['*'];
+    public $columns;
 
     /**
      * The query filters.
@@ -206,6 +206,13 @@ class Builder
      */
     public function get()
     {
+        // If the query does not have any selected attributes, we'll
+        // set it to the * character. This indicates that we
+        // want all attributes returned for LDAP records.
+        if (is_null($this->columns)) {
+            $this->addSelect('*');
+        }
+
         // We'll mute any warnings / errors here. We just need to
         // know if any query results were returned.
         return @$this->query($this->getQuery());
@@ -549,7 +556,7 @@ class Builder
      *
      * @return Model|null
      */
-    public function first($columns = [])
+    public function first($columns = ['*'])
     {
         $results = $this->select($columns)->limit(1)->get();
 
@@ -567,7 +574,7 @@ class Builder
      *
      * @return Model|static
      */
-    public function firstOrFail($columns = [])
+    public function firstOrFail($columns = ['*'])
     {
         $record = $this->first($columns);
 
@@ -588,7 +595,7 @@ class Builder
      *
      * @return Model|static|null
      */
-    public function findBy($attribute, $value, $columns = [])
+    public function findBy($attribute, $value, $columns = ['*'])
     {
         try {
             return $this->findByOrFail($attribute, $value, $columns);
@@ -610,7 +617,7 @@ class Builder
      *
      * @return Model
      */
-    public function findByOrFail($attribute, $value, $columns = [])
+    public function findByOrFail($attribute, $value, $columns = ['*'])
     {
         return $this->whereEquals($attribute, $value)->firstOrFail($columns);
     }
@@ -624,7 +631,7 @@ class Builder
      *
      * @return Collection
      */
-    public function findManyBy($attribute, array $values = [], $columns = [])
+    public function findManyBy($attribute, array $values = [], $columns = ['*'])
     {
         $query = $this->select($columns);
 
@@ -643,7 +650,7 @@ class Builder
      *
      * @return Model|static|null
      */
-    public function find($dn, $columns = [])
+    public function find($dn, $columns = ['*'])
     {
         try {
             return $this->findOrFail($dn, $columns);
@@ -664,7 +671,7 @@ class Builder
      *
      * @return Model|static
      */
-    public function findOrFail($dn, $columns = [])
+    public function findOrFail($dn, $columns = ['*'])
     {
         return $this->setDn($dn)
             ->read()
@@ -679,13 +686,29 @@ class Builder
      *
      * @return $this
      */
-    public function select($columns = [])
+    public function select($columns = ['*'])
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
         if (!empty($columns)) {
             $this->columns = $columns;
         }
+
+        return $this;
+    }
+
+    /**
+     * Add a new select column to the query.
+     *
+     * @param array|mixed $column
+     *
+     * @return $this
+     */
+    public function addSelect($column)
+    {
+        $column = is_array($column) ? $column : func_get_args();
+
+        $this->columns = array_merge((array) $this->columns, $column);
 
         return $this;
     }
@@ -1211,18 +1234,17 @@ class Builder
     }
 
     /**
-     * Returns true / false depending if the current object
-     * contains selects.
+     * Determine if the query has attributes selected.
      *
      * @return bool
      */
     public function hasSelects()
     {
-        return count($this->getSelects()) > 0;
+        return count($this->columns) > 0;
     }
 
     /**
-     * Returns the current selected fields to retrieve.
+     * Get the attributes to select on the search.
      *
      * @return array
      */
@@ -1230,11 +1252,13 @@ class Builder
     {
         $selects = $this->columns;
 
-        // If the asterisk is not provided in the selected columns, we need
-        // to ensure we always select the object class, as this is used
-        // for constructing models. The asterisk indicates that we
-        // want all attributes returned for LDAP records.
-        if (!in_array('*', $selects)) {
+        // If the * character is not provided in the selected columns,
+        // we need to ensure we always select the object class, as
+        // this is used for constructing models properly.
+        if (
+            !in_array('*', $selects) &&
+            !in_array('objectclass', $selects)
+        ) {
             $selects[] = 'objectclass';
         }
 

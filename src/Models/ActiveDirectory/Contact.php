@@ -2,11 +2,19 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\Concerns\HasGroups;
-
 class Contact extends Entry
 {
-    use HasGroups;
+    /**
+     * The object classes of the LDAP model.
+     *
+     * @var array
+     */
+    public static $objectClasses = [
+        'top',
+        'person',
+        'organizationalperson',
+        'contact',
+    ];
 
     /**
      * The groups relationship.
@@ -19,16 +27,4 @@ class Contact extends Entry
     {
         return $this->hasMany(Group::class, 'member');
     }
-
-    /**
-     * The object classes of the LDAP model.
-     *
-     * @var array
-     */
-    public static $objectClasses = [
-        'top',
-        'person',
-        'organizationalperson',
-        'contact',
-    ];
 }

@@ -2,14 +2,13 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\Concerns\HasGroups;
 use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 
 class User extends Entry implements Authenticatable
 {
-    use HasGroups, HasPassword, CanAuthenticate;
+    use HasPassword, CanAuthenticate;
 
     /**
      * The object classes of the LDAP model.

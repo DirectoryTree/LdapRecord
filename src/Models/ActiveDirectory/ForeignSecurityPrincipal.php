@@ -2,12 +2,8 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\Concerns\HasGroups;
-
 class ForeignSecurityPrincipal extends Entry
 {
-    use HasGroups;
-
     /**
      * The object classes of the LDAP model.
      *

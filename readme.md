@@ -17,7 +17,8 @@
 </p>
 
 <p align="center">
-    LdapRecord is a PHP package that provides LDAP authentication and directory management tools using the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>.
+    LdapRecord leverages the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>
+    to provide you with LDAP authentication and directory management tools.
 </p>
 
 <h4 align="center">

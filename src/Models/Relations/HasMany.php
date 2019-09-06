@@ -54,6 +54,22 @@ class HasMany extends OneToMany
      */
     protected function getRelationQuery()
     {
+        $columns = $this->query->getSelects();
+
+        // We need to select the proper key to be able to retrieve its
+        // value from LDAP results. If we don't, we won't be able
+        // to properly attach / detach models from relation
+        // query results as the attribute will not exist.
+        $key = $this->using ? $this->usingKey : $this->relationKey;
+
+        // If the * character is missing from the attributes to select,
+        // we will add the key to the attributes to select and also
+        // validate that the key isn't already being selected
+        // to prevent stacking on multiple relation calls.
+        if (! in_array('*', $columns) && ! in_array($key, $columns)) {
+            $this->query->addSelect($key);
+        }
+
         return $this->query->whereRaw(
             $this->relationKey,
             '=',

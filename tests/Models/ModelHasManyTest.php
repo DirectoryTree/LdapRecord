@@ -33,6 +33,7 @@ class ModelHasManyTest extends TestCase
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('escape')->once()->withArgs(['bar', '', 2])->andReturn('bar');
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([new Entry()]));
 
@@ -56,6 +57,7 @@ class ModelHasManyTest extends TestCase
 
         $query = m::mock(Builder::class);
         $query->shouldReceive('escape')->once()->withArgs(['bar', '', 2])->andReturn('bar');
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
@@ -132,6 +134,7 @@ class ModelHasManyTest extends TestCase
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
         $query->shouldReceive('escape')->once()->withArgs(['baz', '', 2])->andReturn('baz');
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'baz'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 

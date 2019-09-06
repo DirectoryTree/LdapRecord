@@ -100,13 +100,29 @@ abstract class Relation
     /**
      * Execute the relationship query.
      *
-     * @param array|string $attributes
+     * @param array|string $columns
      *
      * @return Collection
      */
-    public function get($attributes = ['*'])
+    public function get($columns = ['*'])
     {
-        $this->query->select($attributes);
+        return $this->getResultsWithColumns($columns);
+    }
+
+    /**
+     * Get the results if the relationship while selecting the given columns.
+     *
+     * If the query columns are empty, the given columns are applied.
+     *
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    protected function getResultsWithColumns($columns)
+    {
+        if (is_null($this->query->columns)) {
+            $this->query->select($columns);
+        }
 
         return $this->getResults();
     }
@@ -114,11 +130,13 @@ abstract class Relation
     /**
      * Get the first result of the relationship.
      *
+     * @param array|string $columns
+     *
      * @return Model|null
      */
-    public function first()
+    public function first($columns = ['*'])
     {
-        return $this->get()->first();
+        return $this->get($columns)->first();
     }
 
     /**

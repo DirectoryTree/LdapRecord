@@ -62,7 +62,7 @@ class HasMany extends OneToMany
     }
 
     /**
-     * Attach a model instance to the parent model.
+     * Attach a model to the relation.
      *
      * @param Model $model
      *
@@ -92,6 +92,7 @@ class HasMany extends OneToMany
             // model being attached along with its relation attribute.
             $related = $this->setCurrentRelationValue($current, $model);
 
+            // Finally, we will save the returned related model if successful.
             return $related->save() ? $model : false;
         }
 
@@ -115,38 +116,44 @@ class HasMany extends OneToMany
     }
 
     /**
-     * Detach the parent model from the given.
+     * Detach the model from the relation.
      *
-     * @param Model|null $model
+     * @param Model $model
      *
-     * @return \LdapRecord\Query\Collection|Model|false
+     * @return Model|false
      */
-    public function detach(Model $model = null)
+    public function detach(Model $model)
     {
-        if ($model) {
-            // Here we will retrieve the current relationships value to be remove
-            // the given model from it. If a 'using' model is defined, we
-            // will retrieve the value from it, otherwise we will
-            // retrieve it from the model being attached.
-            $current = $this->getCurrentRelationValue($model);
+        // Here we will retrieve the current relationships value to be remove
+        // the given model from it. If a 'using' model is defined, we
+        // will retrieve the value from it, otherwise we will
+        // retrieve it from the model being attached.
+        $current = $this->getCurrentRelationValue($model);
 
-            // Now we will retrieve the foreign key value. If a 'using' model
-            // is defined, it is retrieved from the given model. Otherwise,
-            // it will be retrieved from the relationships parent model.
-            $foreign = $this->getCurrentForeignValue($model);
+        // Now we will retrieve the foreign key value. If a 'using' model
+        // is defined, it is retrieved from the given model. Otherwise,
+        // it will be retrieved from the relationships parent model.
+        $foreign = $this->getCurrentForeignValue($model);
 
-            // Remove the foreign key value from the current attribute value.
-            $current = array_diff($current, [$foreign]);
+        // Remove the foreign key value from the current attribute value.
+        $current = array_diff($current, [$foreign]);
 
-            // If we have a model that is being used, we will set its attribute
-            // being used to the new current value. Otherwise we will use the
-            // model being attached along with its relation attribute.
-            $related = $this->setCurrentRelationValue($current, $model);
+        // If we have a model that is being used, we will set its attribute
+        // being used to the new current value. Otherwise we will use the
+        // model being attached along with its relation attribute.
+        $related = $this->setCurrentRelationValue($current, $model);
 
-            return $related->save() ? $model : false;
-        }
+        // Finally, we will save the returned related model if successful.
+        return $related->save() ? $model : false;
+    }
 
-        // If no model was given, we will detach all of relations.
+    /**
+     * Detach all relation models.
+     *
+     * @return Collection
+     */
+    public function detachAll()
+    {
         return $this->get()->each(function (Model $model) {
             $this->detach($model);
         });

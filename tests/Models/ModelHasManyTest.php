@@ -136,7 +136,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
         $this->assertEquals(
-            $model->relation($query)->detach(),
+            $model->relation($query)->detachAll(),
             new Collection([$related])
         );
     }

@@ -23,11 +23,11 @@ class Group extends Entry
      *
      * Retrieves groups that the current group is apart of.
      *
-     * @return \LdapRecord\Models\Relations\BelongsToMany
+     * @return \LdapRecord\Models\Relations\HasMany
      */
     public function groups()
     {
-        return $this->belongsToMany(static::class, 'member');
+        return $this->hasMany(static::class, 'member');
     }
 
     /**

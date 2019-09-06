@@ -7,22 +7,22 @@ use LdapRecord\Models\Model;
 class HasManyUsing extends HasMany
 {
     /**
-     * The relationship to use for attaching / detaching models.
+     * The attribute to use for attaching / detaching models.
      *
-     * @var Relation
+     * @var string
      */
     protected $using;
 
     /**
-     * Set the relationship to use for attaching / detaching models.
+     * Set the attribute to use for attaching / detaching models.
      *
-     * @param Relation $relation
+     * @param string $attribute
      *
      * @return $this
      */
-    public function using(Relation $relation)
+    public function using($attribute)
     {
-        $this->using = $relation;
+        $this->using = $attribute;
 
         return $this;
     }
@@ -36,35 +36,17 @@ class HasManyUsing extends HasMany
      */
     public function attach(Model $model)
     {
-        $key = $this->using->getRelationKey();
-
-        $current = $this->parent->getAttribute($key) ?? [];
+        $current = $this->parent->getAttribute($this->using) ?? [];
 
         $foreign = $this->getForeignValueFromModel($model);
 
         if (!in_array($this->getForeignValueFromModel($model), $current)) {
             $current[] = $foreign;
 
-            return $this->parent->setAttribute($key, $current)->save() ? $model : false;
+            return $this->parent->setAttribute($this->using, $current)->save() ? $model : false;
         }
 
         return $model;
-    }
-
-    /**
-     * Attach a collection of models to the used relation.
-     *
-     * @param iterable $models
-     *
-     * @return iterable
-     */
-    public function attachMany($models)
-    {
-        foreach ($models as $model) {
-            $this->attach($model);
-        }
-
-        return $models;
     }
 
     /**
@@ -77,14 +59,12 @@ class HasManyUsing extends HasMany
     public function detach(Model $model = null)
     {
         if ($model) {
-            $key = $this->using->getRelationKey();
-
             $updated = array_diff(
-                $this->parent->getAttribute($key) ?? [],
+                $this->parent->getAttribute($this->using) ?? [],
                 [$this->getForeignValueFromModel($model)]
             );
 
-            return $this->parent->setAttribute($key, $updated)->save() ? $model : false;
+            return $this->parent->setAttribute($this->using, $updated)->save() ? $model : false;
         }
 
         return $this->get()->each(function (Model $model) {

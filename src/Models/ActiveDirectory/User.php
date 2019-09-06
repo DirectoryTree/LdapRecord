@@ -28,11 +28,11 @@ class User extends Entry implements Authenticatable
      *
      * Retrieves groups that the current user is apart of.
      *
-     * @return \LdapRecord\Models\Relations\BelongsToMany
+     * @return \LdapRecord\Models\Relations\HasMany
      */
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'member');
+        return $this->hasMany(Group::class, 'member');
     }
 
     /**

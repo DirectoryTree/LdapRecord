@@ -10,9 +10,9 @@ use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Relations\BelongsToMany;
+use LdapRecord\Models\Relations\HasMany;
 
-class ModelBelongsToManyTest extends TestCase
+class ModelHasManyTest extends TestCase
 {
     public function setUp()
     {
@@ -25,7 +25,7 @@ class ModelBelongsToManyTest extends TestCase
     {
         $this->assertEquals(
             'relation',
-            (new ModelBelongsToManyStub())->relation(m::mock(Builder::class))->getRelationName()
+            (new ModelHasManyStub())->relation(m::mock(Builder::class))->getRelationName()
         );
     }
 
@@ -36,7 +36,7 @@ class ModelBelongsToManyTest extends TestCase
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([new Entry()]));
 
-        $model = (new ModelBelongsToManyStub())->setRawAttributes(['dn' => 'bar']);
+        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
 
         $collection = $relation->getResults();
@@ -59,7 +59,7 @@ class ModelBelongsToManyTest extends TestCase
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
-        $model = (new ModelBelongsToManyStub())->setRawAttributes(['dn' => 'bar']);
+        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
 
         $collection = $relation->recursive()->getResults();
@@ -70,7 +70,7 @@ class ModelBelongsToManyTest extends TestCase
 
     public function test_attach()
     {
-        $model = new ModelBelongsToManyStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -86,7 +86,7 @@ class ModelBelongsToManyTest extends TestCase
 
     public function test_attach_with_already_attached_model()
     {
-        $model = new ModelBelongsToManyStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -101,7 +101,7 @@ class ModelBelongsToManyTest extends TestCase
 
     public function test_detach()
     {
-        $model = new ModelBelongsToManyStub();
+        $model = new ModelHasManyStub();
         // This DN will be missing from the below setAttribute call
         // since we are detaching it from the related model.
         $model->setDn('baz');
@@ -119,7 +119,7 @@ class ModelBelongsToManyTest extends TestCase
 
     public function test_detaching_all_related_models()
     {
-        $model = new ModelBelongsToManyStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -142,7 +142,7 @@ class ModelBelongsToManyTest extends TestCase
     }
 }
 
-class ModelBelongsToManyStub extends Model
+class ModelHasManyStub extends Model
 {
     public function relation($mockBuilder = null)
     {
@@ -150,6 +150,6 @@ class ModelBelongsToManyStub extends Model
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
 
-        return new BelongsToMany($mockBuilder, $this, Entry::class, 'foo', 'dn', 'relation');
+        return new HasMany($mockBuilder, $this, Entry::class, 'foo', 'dn', 'relation');
     }
 }

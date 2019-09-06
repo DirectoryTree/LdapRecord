@@ -2,14 +2,14 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Models\Relations\BelongsToMany;
+use LdapRecord\Models\Relations\HasMany;
 
 trait HasGroups
 {
     /**
      * The groups relationship.
      *
-     * @return BelongsToMany
+     * @return HasMany
      */
-    abstract public function groups() : BelongsToMany;
+    abstract public function groups() : HasMany;
 }

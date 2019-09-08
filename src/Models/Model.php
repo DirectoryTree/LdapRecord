@@ -805,10 +805,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Destroy the models for the given distinguished names.
      *
      * @param Collection|array|string $dns
+     * @param bool                    $recursive
      *
      * @return int
      */
-    public static function destroy($dns)
+    public static function destroy($dns, $recursive = false)
     {
         $count = 0;
 
@@ -822,7 +823,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         foreach ($dns as $dn) {
             if ($model = $instance->find($dn)) {
-                $model->delete();
+                $model->delete($recursive);
 
                 $count++;
             }

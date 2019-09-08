@@ -280,7 +280,7 @@ class ModelDestroyStub extends Model
     {
         $stub = m::mock(Entry::class);
 
-        $stub->shouldReceive('delete')->once()->withNoArgs()->andReturnTrue();
+        $stub->shouldReceive('delete')->once()->andReturnTrue();
 
         return $stub;
     }

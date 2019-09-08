@@ -5,10 +5,13 @@ namespace LdapRecord\Models\ActiveDirectory;
 use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
+use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 
 class User extends Entry implements Authenticatable
 {
-    use HasPassword, CanAuthenticate;
+    use HasPassword,
+        HasPrimaryGroup,
+        CanAuthenticate;
 
     /**
      * The object classes of the LDAP model.
@@ -47,16 +50,14 @@ class User extends Entry implements Authenticatable
     }
 
     /**
-     * Retrieves the primary group of the current user.
+     * The the primary group relationship of the current user.
      *
-     * @return Group|null
+     * Retrieves the primary group the user is apart of.
+     *
+     * @return \LdapRecord\Models\Relations\HasOne
      */
-    public function getPrimaryGroup()
+    public function primaryGroup()
     {
-        $groupSid = preg_replace('/\d+$/', $this->getFirstAttribute('primarygroupid'), $this->getConvertedSid());
-
-        $model = reset($this->groups()->getRelated());
-
-        return $this->newQueryWithoutScopes()->setModel(new $model())->findBySid($groupSid);
+        return $this->hasOnePrimaryGroup(Group::class, 'primarygroupid');
     }
 }

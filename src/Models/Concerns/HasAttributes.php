@@ -101,11 +101,23 @@ trait HasAttributes
             return $this->getMutatedAttributeValue($key, $value);
         }
 
-        if (array_key_exists($key, $this->dates) && !is_null($value)) {
+        if ($this->isDateAttribute($key) && !is_null($value)) {
             return $this->asDateTime($this->dates[$key], Arr::first($value));
         }
 
         return $value;
+    }
+
+    /**
+     * Determine if the given attribute is a date.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    protected function isDateAttribute($key)
+    {
+        return array_key_exists($key, $this->dates);
     }
 
     /**
@@ -157,6 +169,8 @@ trait HasAttributes
 
         if ($this->hasSetMutator($key)) {
             return $this->setMutatedAttributeValue($key, $value);
+        } elseif ($value && $this->isDateAttribute($key)) {
+            $value = $this->fromDateTime($this->dates[$key], $value);
         }
 
         // Due to LDAP's multi-valued nature, we must always wrap given values
@@ -358,10 +372,50 @@ trait HasAttributes
     }
 
     /**
-     * Return a timestamp as DateTime object.
+     * Convert the given date value to an LDAP compatible value.
      *
      * @param string $type
      * @param mixed  $value
+     *
+     * @throws LdapRecordException
+     *
+     * @return float|string
+     */
+    protected function fromDateTime($type, $value)
+    {
+        // If the value is numeric, we will assume it's a UNIX timestamp.
+        if (is_numeric($value)) {
+            $value = Carbon::createFromTimestamp($value);
+        }
+        // If a string is given, we will pass it into a new carbon instance.
+        elseif (is_string($value)) {
+            $value = new Carbon($value);
+        }
+
+        switch ($type) {
+            case 'ldap':
+                $value = $this->convertDateTimeToLdapTime($value);
+                break;
+            case 'windows':
+                $value = $this->convertDateTimeToWindows($value);
+                break;
+            case 'windows-int':
+                $value = $this->convertDateTimeToWindowsInteger($value);
+                break;
+            default:
+                throw new LdapRecordException("Unrecognized date type '{$type}'");
+        }
+
+        return $value;
+    }
+
+    /**
+     * Convert the given LDAP date value to a Carbon instance.
+     *
+     * @param string $type
+     * @param mixed  $value
+     *
+     * @throws LdapRecordException
      *
      * @return Carbon
      */
@@ -403,6 +457,18 @@ trait HasAttributes
     }
 
     /**
+     * Converts date objects to a standard LDAP timestamp.
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return string
+     */
+    protected function convertDateTimeToLdapTime(DateTimeInterface $date)
+    {
+        return $date->format('YmdHisZ');
+    }
+
+    /**
      * Converts standard windows timestamps to a date time object.
      *
      * @param string $value
@@ -412,6 +478,18 @@ trait HasAttributes
     protected function convertWindowsTimeToDateTime($value)
     {
         return DateTime::createFromFormat('YmdHis.0Z', $value);
+    }
+
+    /**
+     * Converts date objects to a windows timestamp.
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return string
+     */
+    protected function convertDateTimeToWindows(DateTimeInterface $date)
+    {
+        return $date->format('YmdHis.0Z');
     }
 
     /**
@@ -430,6 +508,18 @@ trait HasAttributes
         return $value ? (new DateTime())->setTimestamp(
             Utilities::convertWindowsTimeToUnixTime($value)
         ) : null;
+    }
+
+    /**
+     * Converts date objects to a windows integer timestamp.
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return float
+     */
+    protected function convertDateTimeToWindowsInteger(DateTimeInterface $date)
+    {
+        return Utilities::convertUnixTimeToWindowsTime($date->getTimestamp());
     }
 
     /**

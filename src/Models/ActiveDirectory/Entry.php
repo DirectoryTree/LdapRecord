@@ -13,6 +13,16 @@ use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 class Entry extends BaseEntry implements ActiveDirectory
 {
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'whenchanged' => 'windows',
+        'whencreated' => 'windows',
+    ];
+
+    /**
      * The attribute key that contains the Object SID.
      *
      * @var string

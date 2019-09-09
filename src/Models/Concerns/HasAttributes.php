@@ -6,12 +6,6 @@ use Tightenco\Collect\Support\Arr;
 
 trait HasAttributes
 {
-    /**
-     * The models attributes.
-     *
-     * @var array
-     */
-    protected $attributes = [];
 
     /**
      * The models original attributes.
@@ -21,8 +15,14 @@ trait HasAttributes
     protected $original = [];
 
     /**
-     * Synchronizes the models original attributes
-     * with the model's current attributes.
+     * The models attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [];
+
+    /**
+     * Set the model's original attributes with the model's current attributes.
      *
      * @return $this
      */
@@ -31,55 +31,6 @@ trait HasAttributes
         $this->original = $this->attributes;
 
         return $this;
-    }
-
-    /**
-     * Returns the models attribute with the specified key.
-     *
-     * If a sub-key is specified, it will try and
-     * retrieve it from the parent keys array.
-     *
-     * @param int|string $key
-     * @param int|string $subKey
-     *
-     * @return mixed
-     */
-    public function getAttribute($key, $subKey = null)
-    {
-        if (!$key) {
-            return;
-        }
-
-        // We'll normalize the given key to prevent case sensitivity issues.
-        $key = $this->normalizeAttributeKey($key);
-
-        if (is_null($subKey) && $this->hasAttribute($key)) {
-            return $this->attributes[$key];
-        } elseif ($this->hasAttribute($key, $subKey)) {
-            return $this->attributes[$key][$subKey];
-        }
-    }
-
-    /**
-     * Returns the first attribute by the specified key.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function getFirstAttribute($key)
-    {
-        return $this->getAttribute($key, 0);
-    }
-
-    /**
-     * Returns all of the models attributes.
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
     }
 
     /**
@@ -99,41 +50,162 @@ trait HasAttributes
     }
 
     /**
-     * Sets an attributes value by the specified key and sub-key.
+     * Returns the models attribute by its key.
      *
      * @param int|string $key
-     * @param mixed      $value
-     * @param int|string $subKey
+     *
+     * @return mixed
+     */
+    public function getAttribute($key)
+    {
+        if (!$key) {
+            return;
+        }
+
+        return $this->getAttributeValue(
+            $this->normalizeAttributeKey($key)
+        );
+    }
+
+    /**
+     * Get an attribute value.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getAttributeValue($key)
+    {
+        $value = $this->getAttributeFromArray($key);
+
+        if ($this->hasGetMutator($key)) {
+            return $this->getMutatedAttributeValue($key, $value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get an attribute from the $attributes array.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    protected function getAttributeFromArray($key)
+    {
+        return $this->attributes[$key] ?? null;
+    }
+
+    /**
+     * Returns the first attribute by the specified key.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getFirstAttribute($key)
+    {
+        return Arr::first($this->getAttribute($key));
+    }
+
+    /**
+     * Returns all of the models attributes.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Sets an attributes value by the specified key and sub-key.
+     *
+     * @param mixed  $key
+     * @param mixed  $value
      *
      * @return $this
      */
-    public function setAttribute($key, $value, $subKey = null)
+    public function setAttribute($key, $value)
     {
         // Normalize key.
         $key = $this->normalizeAttributeKey($key);
 
-        if (is_null($subKey)) {
-            // We need to ensure all attributes are set as arrays so all
-            // of our model methods retrieve attributes correctly.
-            $this->attributes[$key] = is_array($value) ? $value : [$value];
-        } else {
-            $this->attributes[$key][$subKey] = $value;
+        if ($this->hasSetMutator($key)) {
+            return $this->setMutatedAttributeValue($key, $value);
         }
+
+        // Due to LDAP's multi-valued nature, we must always wrap given values
+        // inside of arrays, otherwise we will receive exceptions saving.
+        $this->attributes[$key] = is_array($value) ? $value : [$value];
 
         return $this;
     }
 
     /**
-     * Sets the first attributes value by the specified key.
+     * Set the models first attribute value.
      *
-     * @param int|string $key
-     * @param mixed      $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return $this
      */
     public function setFirstAttribute($key, $value)
     {
-        return $this->setAttribute($key, $value, 0);
+        return $this->setAttribute($key, array_merge(
+            $this->getAttribute($key) ?? [], [$value]
+        ));
+    }
+
+    /**
+     * Determine if a get mutator exists for an attribute.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasGetMutator($key)
+    {
+        return method_exists($this, 'get'.$key.'Attribute');
+    }
+
+    /**
+     * Determine if a set mutator exists for an attribute.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasSetMutator($key)
+    {
+        return method_exists($this, 'set'.$key.'Attribute');
+    }
+
+    /**
+     * Set the value of an attribute using its mutator.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return mixed
+     */
+    protected function setMutatedAttributeValue($key, $value)
+    {
+        return $this->{'set'.$key.'Attribute'}($value);
+    }
+
+    /**
+     * Get the value of an attribute using its mutator.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return mixed
+     */
+    protected function getMutatedAttributeValue($key, $value)
+    {
+        return $this->{'get'.$key.'Attribute'}($value);
     }
 
     /**
@@ -199,23 +271,15 @@ trait HasAttributes
     }
 
     /**
-     * Returns true / false if the specified attribute
-     * exists in the attributes array.
+     * Determine if the model has the given attribute.
      *
      * @param int|string $key
-     * @param int|string $subKey
      *
      * @return bool
      */
-    public function hasAttribute($key, $subKey = null)
+    public function hasAttribute($key)
     {
-        $key = $this->normalizeAttributeKey($key);
-
-        if (is_null($subKey)) {
-            return Arr::has($this->attributes, $key);
-        }
-
-        return Arr::has($this->attributes, "$key.$subKey");
+        return array_key_exists($this->normalizeAttributeKey($key), $this->attributes);
     }
 
     /**

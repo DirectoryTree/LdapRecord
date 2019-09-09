@@ -372,6 +372,9 @@ trait HasAttributes
         }
 
         switch ($type) {
+            case 'ldap':
+                $value = $this->convertLdapTimeToDateTime($value);
+                break;
             case 'windows':
                 $value = $this->convertWindowsTimeToDateTime($value);
                 break;
@@ -385,6 +388,18 @@ trait HasAttributes
         if ($value instanceof DateTimeInterface) {
             return (new Carbon())->setDateTimeFrom($value);
         }
+    }
+
+    /**
+     * Converts standard LDAP timestamps to a date time object.
+     *
+     * @param string $value
+     *
+     * @return DateTime|bool
+     */
+    protected function convertLdapTimeToDateTime($value)
+    {
+        return DateTime::createFromFormat('YmdHisZ', $value);
     }
 
     /**

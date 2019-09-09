@@ -3,12 +3,12 @@
 namespace LdapRecord\Models\Concerns;
 
 use DateTime;
-use DateTimeInterface;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
+use DateTimeInterface;
 use LdapRecord\Utilities;
-use LdapRecord\LdapRecordException;
+use Carbon\CarbonInterface;
 use Tightenco\Collect\Support\Arr;
+use LdapRecord\LdapRecordException;
 
 trait HasAttributes
 {
@@ -101,7 +101,7 @@ trait HasAttributes
             return $this->getMutatedAttributeValue($key, $value);
         }
 
-        if (array_key_exists($key, $this->dates) && ! is_null($value)) {
+        if (array_key_exists($key, $this->dates) && !is_null($value)) {
             return $this->asDateTime($this->dates[$key], Arr::first($value));
         }
 
@@ -402,7 +402,7 @@ trait HasAttributes
     /**
      * Converts standard windows integer dates to a date time object.
      *
-     * @param integer $value
+     * @param int $value
      *
      * @throws \Exception
      *

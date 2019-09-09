@@ -2,11 +2,16 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use DateTime;
+use DateTimeInterface;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use LdapRecord\Utilities;
+use LdapRecord\LdapRecordException;
 use Tightenco\Collect\Support\Arr;
 
 trait HasAttributes
 {
-
     /**
      * The models original attributes.
      *
@@ -20,6 +25,20 @@ trait HasAttributes
      * @var array
      */
     protected $attributes = [];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [];
+
+    /**
+     * The format to use when converting dates to strings.
+     *
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     /**
      * Set the model's original attributes with the model's current attributes.
@@ -80,6 +99,10 @@ trait HasAttributes
 
         if ($this->hasGetMutator($key)) {
             return $this->getMutatedAttributeValue($key, $value);
+        }
+
+        if (array_key_exists($key, $this->dates) && ! is_null($value)) {
+            return $this->asDateTime($this->dates[$key], Arr::first($value));
         }
 
         return $value;
@@ -332,6 +355,66 @@ trait HasAttributes
     public function isDirty($key)
     {
         return !$this->originalIsEquivalent($key);
+    }
+
+    /**
+     * Return a timestamp as DateTime object.
+     *
+     * @param string $type
+     * @param mixed  $value
+     *
+     * @return Carbon
+     */
+    protected function asDateTime($type, $value)
+    {
+        if ($value instanceof CarbonInterface) {
+            return $value;
+        }
+
+        switch ($type) {
+            case 'windows':
+                $value = $this->convertWindowsTimeToDateTime($value);
+                break;
+            case 'windows-int':
+                $value = $this->convertWindowsIntegerTimeToDateTime($value);
+                break;
+            default:
+                throw new LdapRecordException("Unrecognized date type '{$type}'");
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return (new Carbon())->setDateTimeFrom($value);
+        }
+    }
+
+    /**
+     * Converts standard windows timestamps to a date time object.
+     *
+     * @param string $value
+     *
+     * @return DateTime|bool
+     */
+    protected function convertWindowsTimeToDateTime($value)
+    {
+        return DateTime::createFromFormat('YmdHis.0Z', $value);
+    }
+
+    /**
+     * Converts standard windows integer dates to a date time object.
+     *
+     * @param integer $value
+     *
+     * @throws \Exception
+     *
+     * @return DateTime|null
+     */
+    protected function convertWindowsIntegerTimeToDateTime($value)
+    {
+        // ActiveDirectory dates that contain integers may return
+        // "0" when they are not set. We will validate that here.
+        return $value ? (new DateTime())->setTimestamp(
+            Utilities::convertWindowsTimeToUnixTime($value)
+        ) : null;
     }
 
     /**

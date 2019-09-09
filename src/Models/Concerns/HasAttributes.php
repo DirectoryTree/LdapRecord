@@ -6,7 +6,6 @@ use Tightenco\Collect\Support\Arr;
 
 trait HasAttributes
 {
-
     /**
      * The models original attributes.
      *
@@ -122,8 +121,8 @@ trait HasAttributes
     /**
      * Sets an attributes value by the specified key and sub-key.
      *
-     * @param mixed  $key
-     * @param mixed  $value
+     * @param mixed $key
+     * @param mixed $value
      *
      * @return $this
      */

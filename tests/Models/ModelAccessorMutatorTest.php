@@ -2,6 +2,8 @@
 
 namespace LdapRecord\Tests\Models;
 
+use Carbon\Carbon;
+use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 
@@ -54,12 +56,51 @@ class ModelAccessorTest extends TestCase
         $this->assertNull($model->foobar);
         $this->assertNull($model->getAttribute('foobar'));
     }
+
+    public function test_models_convert_dates_to_ldap_type()
+    {
+        $model = new ModelDateMutatorStub();
+        $date = new Carbon();
+
+        $model->createtimestamp = $date;
+
+        // Case insensitivity
+        $this->assertInstanceOf(Carbon::class, $model->createTimestamp);
+        $this->assertEquals($date->setTimezone('UTC')->micro(0), $model->createtimestamp);
+        $this->assertEquals($date->format('YmdHis\Z'), $model->getAttributes()['createtimestamp'][0]);
+    }
+
+    public function test_models_convert_dates_to_windows_type()
+    {
+        $model = new ModelDateMutatorStub();
+        $date = new Carbon();
+
+        $model->whenchanged = $date;
+
+        // Case insensitivity
+        $this->assertInstanceOf(Carbon::class, $model->whenChanged);
+        $this->assertEquals($date->setTimezone('UTC')->micro(0), $model->whenchanged);
+        $this->assertEquals($date->format('YmdHis.0\Z'), $model->getAttributes()['whenchanged'][0]);
+    }
+
+    public function test_models_convert_dates_to_windows_integer_type()
+    {
+        $model = new ModelDateMutatorStub();
+        $date = new Carbon();
+
+        $model->accountexpires = $date;
+
+        // Case insensitivity
+        $this->assertInstanceOf(Carbon::class, $model->accountExpires);
+        $this->assertEquals($date->setTimezone('UTC')->micro(0), $model->accountexpires);
+        $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $model->getAttributes()['accountexpires'][0]);
+    }
 }
 
 class ModelAccessorStub extends Model
 {
     protected $attributes = [
-        'foo'     => ['bar'],
+        'foo' => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
@@ -77,7 +118,7 @@ class ModelAccessorStub extends Model
 class ModelMutatorStub extends Model
 {
     protected $attributes = [
-        'foo'     => ['bar'],
+        'foo' => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
@@ -90,4 +131,13 @@ class ModelMutatorStub extends Model
     {
         $this->attributes['foo-bar'] = [$baz.'-other'];
     }
+}
+
+class ModelDateMutatorStub extends Model
+{
+    protected $dates = [
+        'createTimestamp' => 'ldap',
+        'whenchanged' => 'windows',
+        'accountexpires' => 'windows-int'
+    ];
 }

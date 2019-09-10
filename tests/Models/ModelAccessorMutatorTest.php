@@ -136,7 +136,7 @@ class ModelAccessorTest extends TestCase
 class ModelAccessorStub extends Model
 {
     protected $attributes = [
-        'foo' => ['bar'],
+        'foo'     => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
@@ -154,7 +154,7 @@ class ModelAccessorStub extends Model
 class ModelMutatorStub extends Model
 {
     protected $attributes = [
-        'foo' => ['bar'],
+        'foo'     => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
@@ -173,8 +173,8 @@ class ModelDateMutatorStub extends Model
 {
     protected $dates = [
         'createTimestamp' => 'ldap',
-        'whenchanged' => 'windows',
-        'accountexpires' => 'windows-int'
+        'whenchanged'     => 'windows',
+        'accountexpires'  => 'windows-int',
     ];
 }
 
@@ -182,7 +182,7 @@ class ModelDateAccessorStub extends ModelDateMutatorStub
 {
     protected $attributes = [
         'createTimestamp' => ['20190910220204Z'],
-        'whenchanged' => ['20190910220204.0Z'],
-        'accountexpires' => ['132126265240000000'],
+        'whenchanged'     => ['20190910220204.0Z'],
+        'accountexpires'  => ['132126265240000000'],
     ];
 }

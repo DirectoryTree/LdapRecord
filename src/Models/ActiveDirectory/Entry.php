@@ -13,11 +13,11 @@ use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 class Entry extends BaseEntry implements ActiveDirectory
 {
     /**
-     * The attributes that should be mutated to dates.
+     * The default attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = [
+    protected $defaultDates = [
         'whenchanged' => 'windows',
         'whencreated' => 'windows',
     ];

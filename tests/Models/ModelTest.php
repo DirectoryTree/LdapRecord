@@ -128,10 +128,13 @@ class ModelTest extends TestCase
         $model = new Entry();
         $model->FOO = 1;
         $model->BARbAz = 2;
+        $model->foo_bar = 3;
         $this->assertEquals([1], $model->foo);
         $this->assertEquals([1], $model->getAttribute('foo'));
         $this->assertEquals([2], $model->barbaz);
         $this->assertEquals([2], $model->getAttribute('barbaz'));
+        $this->assertEquals([3], $model->foo_bar);
+        $this->assertEquals([3], $model->getAttribute('foo-bar'));
     }
 
     public function test_dirty_attributes()

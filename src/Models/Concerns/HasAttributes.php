@@ -91,9 +91,7 @@ trait HasAttributes
             return;
         }
 
-        return $this->getAttributeValue(
-            $this->normalizeAttributeKey($key)
-        );
+        return $this->getAttributeValue($key);
     }
 
     /**
@@ -105,6 +103,7 @@ trait HasAttributes
      */
     public function getAttributeValue($key)
     {
+        $key = $this->normalizeAttributeKey($key);
         $value = $this->getAttributeFromArray($key);
 
         if ($this->hasAttribute($key) && $this->hasGetMutator($key)) {
@@ -154,7 +153,17 @@ trait HasAttributes
      */
     protected function getAttributeFromArray($key)
     {
-        return $this->attributes[$key] ?? null;
+        return $this->getNormalizedAttributes()[$key] ?? null;
+    }
+
+    /**
+     * Get the attributes with their keys normalized.
+     *
+     * @return array
+     */
+    protected function getNormalizedAttributes()
+    {
+        return array_change_key_case($this->attributes, CASE_LOWER);
     }
 
     /**
@@ -356,7 +365,7 @@ trait HasAttributes
      */
     public function hasAttribute($key)
     {
-        return array_key_exists($this->normalizeAttributeKey($key), $this->attributes);
+        return array_key_exists($this->normalizeAttributeKey($key), $this->getNormalizedAttributes());
     }
 
     /**

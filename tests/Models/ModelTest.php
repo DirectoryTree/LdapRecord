@@ -116,6 +116,11 @@ class ModelTest extends TestCase
         $model->setFirstAttribute('baz', 2);
         $this->assertEquals([1], $model->getAttribute('bar'));
         $this->assertEquals([2], $model->getAttribute('baz'));
+
+        // Hyphenated attributes.
+        $model->foo_bar = 'baz';
+        $this->assertEquals(['baz'], $model->foo_bar);
+        $this->assertEquals(['baz'], $model->getAttribute('foo-bar'));
     }
 
     public function test_attribute_keys_are_normalized()

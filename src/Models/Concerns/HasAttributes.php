@@ -34,6 +34,16 @@ trait HasAttributes
     protected $dates = [];
 
     /**
+     * The default attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $defaultDates = [
+        'createtimestamp' => 'ldap',
+        'modifytimestamp' => 'ldap',
+    ];
+
+    /**
      * The format to use when converting dates to strings.
      *
      * @var string
@@ -102,7 +112,7 @@ trait HasAttributes
         }
 
         if ($this->isDateAttribute($key) && !is_null($value)) {
-            return $this->asDateTime($this->dates[$key], Arr::first($value));
+            return $this->asDateTime($this->getDates()[$key], Arr::first($value));
         }
 
         return $value;
@@ -117,7 +127,22 @@ trait HasAttributes
      */
     protected function isDateAttribute($key)
     {
-        return array_key_exists($key, $this->dates);
+        return array_key_exists($key, $this->getDates());
+    }
+
+    /**
+     * Get the attributes that should be mutated to dates.
+     *
+     * @return array
+     */
+    protected function getDates()
+    {
+        // Since array string keys can be unique depending on casing differences,
+        // we need to normalize the array key case so they are merged properly.
+        $default = array_change_key_case($this->defaultDates, CASE_LOWER);
+        $dates = array_change_key_case($this->dates, CASE_LOWER);
+
+        return array_merge($default, $dates);
     }
 
     /**
@@ -169,7 +194,7 @@ trait HasAttributes
         if ($this->hasSetMutator($key)) {
             return $this->setMutatedAttributeValue($key, $value);
         } elseif ($value && $this->isDateAttribute($key)) {
-            $value = $this->fromDateTime($this->dates[$key], $value);
+            $value = $this->fromDateTime($this->getDates()[$key], $value);
         }
 
         // Due to LDAP's multi-valued nature, we must always wrap given values
@@ -406,6 +431,15 @@ trait HasAttributes
         elseif (is_string($value)) {
             $value = new Carbon($value);
         }
+        // If a date object is given, we will convert it to a carbon instance.
+        elseif ($value instanceof DateTimeInterface) {
+            $value = Carbon::instance($value);
+        }
+
+        // Here we'll set the dates time zone to UTC. LDAP uses UTC
+        // as its timezone for all dates. We will also set the
+        // microseconds to 0 as LDAP does not support them.
+        $value->setTimezone('UTC')->micro(0);
 
         switch ($type) {
             case 'ldap':
@@ -480,7 +514,7 @@ trait HasAttributes
      */
     protected function convertDateTimeToLdapTime(DateTimeInterface $date)
     {
-        return $date->format('YmdHisZ');
+        return $date->format('YmdHis\Z');
     }
 
     /**
@@ -504,7 +538,7 @@ trait HasAttributes
      */
     protected function convertDateTimeToWindows(DateTimeInterface $date)
     {
-        return $date->format('YmdHis.0Z');
+        return $date->format('YmdHis.0\Z');
     }
 
     /**

@@ -97,7 +97,7 @@ trait HasAttributes
     {
         $value = $this->getAttributeFromArray($key);
 
-        if ($this->hasGetMutator($key)) {
+        if ($this->hasAttribute($key) && $this->hasGetMutator($key)) {
             return $this->getMutatedAttributeValue($key, $value);
         }
 
@@ -164,7 +164,6 @@ trait HasAttributes
      */
     public function setAttribute($key, $value)
     {
-        // Normalize key.
         $key = $this->normalizeAttributeKey($key);
 
         if ($this->hasSetMutator($key)) {
@@ -204,7 +203,7 @@ trait HasAttributes
      */
     public function hasGetMutator($key)
     {
-        return method_exists($this, 'get'.$key.'Attribute');
+        return method_exists($this, 'get'.$this->getMutatorMethodName($key).'Attribute');
     }
 
     /**
@@ -216,7 +215,7 @@ trait HasAttributes
      */
     public function hasSetMutator($key)
     {
-        return method_exists($this, 'set'.$key.'Attribute');
+        return method_exists($this, 'set'.$this->getMutatorMethodName($key).'Attribute');
     }
 
     /**
@@ -229,7 +228,7 @@ trait HasAttributes
      */
     protected function setMutatedAttributeValue($key, $value)
     {
-        return $this->{'set'.$key.'Attribute'}($value);
+        return $this->{'set'.$this->getMutatorMethodName($key).'Attribute'}($value);
     }
 
     /**
@@ -242,7 +241,23 @@ trait HasAttributes
      */
     protected function getMutatedAttributeValue($key, $value)
     {
-        return $this->{'get'.$key.'Attribute'}($value);
+        return $this->{'get'.$this->getMutatorMethodName($key).'Attribute'}($value);
+    }
+
+    /**
+     * Get the mutator attribute method name.
+     *
+     * LDAP attributes that contain hyphens
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    protected function getMutatorMethodName($key)
+    {
+        $key = ucwords(str_replace('-', ' ', $key));
+
+        return str_replace(' ', '', $key);
     }
 
     /**
@@ -531,7 +546,12 @@ trait HasAttributes
      */
     protected function normalizeAttributeKey($key)
     {
-        return strtolower($key);
+        // Since LDAP supports hyphens in attribute names,
+        // we'll convert attributes being retrieved by
+        // underscores into hyphens for convenience.
+        return strtolower(
+            str_replace('_', '-', $key)
+        );
     }
 
     /**

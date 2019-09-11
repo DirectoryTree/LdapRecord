@@ -1250,7 +1250,7 @@ class Builder
      */
     public function getSelects()
     {
-        $selects = $this->columns;
+        $selects = $this->columns ?? [];
 
         // If the * character is not provided in the selected columns,
         // we need to ensure we always select the object class, as

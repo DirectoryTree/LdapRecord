@@ -597,13 +597,23 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get a new DistinguishedName object for building onto.
-     *
-     * @param string $baseDn
+     * Get a DistinguishedName object for the model.
      *
      * @return DistinguishedName
      */
-    public function getNewDnBuilder($baseDn = '')
+    public function getDnBuilder()
+    {
+        return $this->getNewDnBuilder($this->dn);
+    }
+
+    /**
+     * Get a new DistinguishedName object for building onto.
+     *
+     * @param string|null $baseDn
+     *
+     * @return DistinguishedName
+     */
+    public function getNewDnBuilder($baseDn = null)
     {
         return new DistinguishedName($baseDn);
     }

@@ -308,7 +308,15 @@ trait HasAttributes
         // We will filter out those annoying 'count' keys returned
         // with LDAP results and lowercase all root array
         // keys to prevent any casing issues.
-        $this->attributes = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
+        $raw = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
+
+        // Before setting the models attributes, we'll filter out the
+        // attributes that contain an integer key. LDAP results
+        // will have contain have keys that contain the
+        // attribute names. We don't need these.
+        $this->attributes = array_filter($raw, function ($key) {
+            return ! is_int($key);
+        }, ARRAY_FILTER_USE_KEY);
 
         // We will pull out the distinguished name from our raw attributes
         // and set it into our attributes array with the full attribute

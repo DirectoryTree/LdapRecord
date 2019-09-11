@@ -315,7 +315,7 @@ trait HasAttributes
         // will have contain have keys that contain the
         // attribute names. We don't need these.
         $this->attributes = array_filter($raw, function ($key) {
-            return ! is_int($key);
+            return !is_int($key);
         }, ARRAY_FILTER_USE_KEY);
 
         // We will pull out the distinguished name from our raw attributes

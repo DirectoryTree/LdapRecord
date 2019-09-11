@@ -363,7 +363,7 @@ class Builder
      *
      * @return \LdapRecord\Query\Collection|array
      */
-    public function paginate($pageSize = 50, $isCritical = true)
+    public function paginate($pageSize = 1000, $isCritical = true)
     {
         $this->paginated = true;
 

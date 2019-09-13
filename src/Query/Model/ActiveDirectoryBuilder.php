@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Query\Model;
 
-use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 
 class ActiveDirectoryBuilder extends Builder
@@ -13,7 +12,7 @@ class ActiveDirectoryBuilder extends Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @return Model|static|null
+     * @return \LdapRecord\Models\ActiveDirectory\Entry|static|null
      */
     public function findBySid($sid, $columns = [])
     {
@@ -34,7 +33,7 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @throws ModelNotFoundException
      *
-     * @return Model|static
+     * @return \LdapRecord\Models\ActiveDirectory\Entry|static
      */
     public function findBySidOrFail($sid, $columns = [])
     {
@@ -62,50 +61,98 @@ class ActiveDirectoryBuilder extends Builder
     }
 
     /**
-     * Adds a 'member ' filter to the current query.
+     * Adds a 'where member' filter to the current query.
      *
      * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
-    public function whereMember($dn)
+    public function whereMember($dn, $nested = false)
     {
-        return $this->whereEquals('member:1.2.840.113556.1.4.1941:', $dn);
+        return $this->whereEquals(
+            $nested ? 'member:1.2.840.113556.1.4.1941:' : 'member',
+            $dn
+        );
     }
 
     /**
-     * Adds an 'or member' filter to the current query.
+     * Adds an 'or where member' filter to the current query.
      *
      * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
-    public function orWhereMember($dn)
+    public function orWhereMember($dn, $nested = false)
     {
-        return $this->orWhereEquals('member:1.2.840.113556.1.4.1941:', $dn);
+        return $this->orWhereEquals(
+            $nested ? 'member:1.2.840.113556.1.4.1941:' : 'member',
+            $dn
+        );
     }
 
     /**
-     * Adds a 'member of' filter to the current query.
+     * Adds a 'where member of' filter to the current query.
      *
      * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
-    public function whereMemberOf($dn)
+    public function whereMemberOf($dn, $nested = false)
     {
-        return $this->whereEquals('memberof:1.2.840.113556.1.4.1941:', $dn);
+        return $this->whereEquals(
+            $nested ? 'memberof:1.2.840.113556.1.4.1941:' : 'memberof',
+            $dn
+        );
     }
 
     /**
      * Adds an 'or where member of' filter to the current query.
      *
      * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
-    public function orWhereMemberOf($dn)
+    public function orWhereMemberOf($dn, $nested = false)
     {
-        return $this->orWhereEquals('memberof:1.2.840.113556.1.4.1941:', $dn);
+        return $this->orWhereEquals(
+            $nested ? 'memberof:1.2.840.113556.1.4.1941:' : 'memberof',
+            $dn
+        );
+    }
+
+    /**
+     * Adds a 'where manager' filter to the current query.
+     *
+     * @param string $dn
+     * @param bool   $nested
+     *
+     * @return $this
+     */
+    public function whereManager($dn, $nested = false)
+    {
+        return $this->whereEquals(
+            $nested ? 'manager:1.2.840.113556.1.4.1941:' : 'manager',
+            $dn
+        );
+    }
+
+    /**
+     * Adds an 'or where manager' filter to the current query.
+     *
+     * @param string $dn
+     * @param bool   $nested
+     *
+     * @return $this
+     */
+    public function orWhereManager($dn, $nested = false)
+    {
+        return $this->orWhereEquals(
+            $nested ? 'manager:1.2.840.113556.1.4.1941:' : 'manager',
+            $dn
+        );
     }
 }

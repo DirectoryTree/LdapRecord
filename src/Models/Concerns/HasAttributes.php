@@ -44,13 +44,6 @@ trait HasAttributes
     ];
 
     /**
-     * The format to use when converting dates to strings.
-     *
-     * @var string
-     */
-    protected $dateFormat = 'Y-m-d H:i:s';
-
-    /**
      * Set the model's original attributes with the model's current attributes.
      *
      * @return $this

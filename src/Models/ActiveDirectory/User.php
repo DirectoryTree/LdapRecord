@@ -19,11 +19,11 @@ class User extends Entry implements Authenticatable
      * @var array
      */
     protected $dates = [
-        'lastlogon' => 'windows-int',
-        'lastlogoff' => 'windows-int',
-        'lockouttime' => 'windows-int',
-        'accountexpires' => 'windows-int',
-        'badpasswordtime' => 'windows-int',
+        'lastlogon'          => 'windows-int',
+        'lastlogoff'         => 'windows-int',
+        'lockouttime'        => 'windows-int',
+        'accountexpires'     => 'windows-int',
+        'badpasswordtime'    => 'windows-int',
         'lastlogontimestamp' => 'windows-int',
     ];
 

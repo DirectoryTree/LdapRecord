@@ -13,7 +13,7 @@ class ModelHasManyUsingTest extends TestCase
 {
     public function test_attach()
     {
-        $model = new ModelHasManyStub();
+        $model = new ModelHasManyUsingStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -28,7 +28,7 @@ class ModelHasManyUsingTest extends TestCase
 
     public function test_detach()
     {
-        $model = new ModelHasManyStub();
+        $model = new ModelHasManyUsingStub();
         $model->setDn('baz');
         $model->setAttribute('member', ['foo']);
 
@@ -43,7 +43,7 @@ class ModelHasManyUsingTest extends TestCase
     }
 }
 
-class ModelHasManyStub extends Model
+class ModelHasManyUsingStub extends Model
 {
     public function relation($mockBuilder = null)
     {

@@ -159,7 +159,7 @@ class HasMany extends OneToMany
         // model being attached along with its relation attribute.
         $related = $this->setCurrentRelationValue($current, $model);
 
-        // Finally, we will save the returned related model if successful.
+        // Finally, we will save the related model and return if successful.
         return $related->save() ? $model : false;
     }
 

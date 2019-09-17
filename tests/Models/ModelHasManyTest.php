@@ -25,7 +25,7 @@ class ModelHasManyTest extends TestCase
     {
         $this->assertEquals(
             'relation',
-            (new ModelHasManyUsingStub())->relation(m::mock(Builder::class))->getRelationName()
+            (new ModelHasManyStub())->relation(m::mock(Builder::class))->getRelationName()
         );
     }
 
@@ -37,7 +37,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([new Entry()]));
 
-        $model = (new ModelHasManyUsingStub())->setRawAttributes(['dn' => 'bar']);
+        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
 
         $collection = $relation->getResults();
@@ -61,7 +61,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
-        $model = (new ModelHasManyUsingStub())->setRawAttributes(['dn' => 'bar']);
+        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
 
         $collection = $relation->recursive()->getResults();
@@ -72,7 +72,7 @@ class ModelHasManyTest extends TestCase
 
     public function test_attach()
     {
-        $model = new ModelHasManyUsingStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -88,7 +88,7 @@ class ModelHasManyTest extends TestCase
 
     public function test_attach_with_already_attached_model()
     {
-        $model = new ModelHasManyUsingStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);
@@ -103,7 +103,7 @@ class ModelHasManyTest extends TestCase
 
     public function test_detach()
     {
-        $model = new ModelHasManyUsingStub();
+        $model = new ModelHasManyStub();
         // This DN will be missing from the below setAttribute call
         // since we are detaching it from the related model.
         $model->setDn('baz');
@@ -121,7 +121,7 @@ class ModelHasManyTest extends TestCase
 
     public function test_detaching_all_related_models()
     {
-        $model = new ModelHasManyUsingStub();
+        $model = new ModelHasManyStub();
         $model->setDn('baz');
 
         $related = m::mock(Entry::class);

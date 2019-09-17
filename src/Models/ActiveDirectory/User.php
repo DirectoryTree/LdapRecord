@@ -14,6 +14,20 @@ class User extends Entry implements Authenticatable
         CanAuthenticate;
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'lastlogon' => 'windows-int',
+        'lastlogoff' => 'windows-int',
+        'lockouttime' => 'windows-int',
+        'accountexpires' => 'windows-int',
+        'badpasswordtime' => 'windows-int',
+        'lastlogontimestamp' => 'windows-int',
+    ];
+
+    /**
      * The object classes of the LDAP model.
      *
      * @var array

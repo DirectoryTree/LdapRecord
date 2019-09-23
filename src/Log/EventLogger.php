@@ -57,7 +57,6 @@ class EventLogger
             $connection = $event->getConnection();
 
             $message = "LDAP ({$connection->getHost()})"
-                ." - Connection: {$connection->getName()}"
                 ." - Operation: {$this->getOperationName($event)}"
                 ." - Username: {$event->getUsername()}";
 
@@ -87,10 +86,9 @@ class EventLogger
 
             $on = get_class($model);
 
-            $connection = $model->getQuery()->getConnection();
+            $connection = $model->getConnection()->getLdapConnection();
 
             $message = "LDAP ({$connection->getHost()})"
-                ." - Connection: {$connection->getName()}"
                 ." - Operation: {$this->getOperationName($event)}"
                 ." - On: {$on}"
                 ." - Distinguished Name: {$model->getDn()}";
@@ -116,7 +114,6 @@ class EventLogger
             $selected = implode(',', $query->getSelects());
 
             $message = "LDAP ({$connection->getHost()})"
-                ." - Connection: {$connection->getName()}"
                 ." - Operation: {$this->getOperationName($event)}"
                 ." - Base DN: {$query->getDn()}"
                 ." - Filter: {$query->getUnescapedQuery()}"

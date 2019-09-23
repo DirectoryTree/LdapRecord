@@ -20,13 +20,11 @@ class EventLoggerTest extends TestCase
         $connection = m::mock(ConnectionInterface::class);
 
         $logger->shouldReceive('info')->once()->withArgs(function ($logged) {
-            return strpos($logged, 'LDAP (ldap://192.168.1.1) - Connection: domain-a') !== false &&
+            return strpos($logged, 'LDAP (ldap://192.168.1.1)') !== false &&
                 strpos($logged, 'Username: jdoe@acme.org') !== false;
         });
 
-        $connection
-            ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
-            ->shouldReceive('getName')->once()->andReturn('domain-a');
+        $connection->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1');
 
         $event
             ->shouldReceive('getConnection')->once()->andReturn($connection)
@@ -44,13 +42,12 @@ class EventLoggerTest extends TestCase
 
         $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret');
 
-        $log = 'LDAP (ldap://192.168.1.1) - Connection: domain-a - Operation: Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
+        $log = 'LDAP (ldap://192.168.1.1) - Operation: Failed - Username: jdoe@acme.org - Reason: Invalid Credentials';
 
         $logger->shouldReceive('warning')->once()->with($log);
 
         $ldap
             ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
-            ->shouldReceive('getName')->once()->andReturn('domain-a')
             ->shouldReceive('getLastError')->once()->andReturn('Invalid Credentials');
 
         $eLogger = new EventLogger($logger);

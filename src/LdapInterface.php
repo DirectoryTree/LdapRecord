@@ -40,13 +40,6 @@ interface LdapInterface
     const PORT = 389;
 
     /**
-     * Constructor.
-     *
-     * @param string|null $name The connection name.
-     */
-    public function __construct($name = null);
-
-    /**
      * Returns true / false if the current connection instance is using SSL.
      *
      * @return bool
@@ -100,13 +93,6 @@ interface LdapInterface
      * @return string|null
      */
     public function getHost();
-
-    /**
-     * Returns the connections name.
-     *
-     * @return string|null
-     */
-    public function getName();
 
     /**
      * Get the underlying connection resource.

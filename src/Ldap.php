@@ -5,13 +5,6 @@ namespace LdapRecord;
 class Ldap implements LdapInterface
 {
     /**
-     * The connection name.
-     *
-     * @var string|null
-     */
-    protected $name;
-
-    /**
      * The LDAP host that is currently connected.
      *
      * @var string|null
@@ -45,14 +38,6 @@ class Ldap implements LdapInterface
      * @var bool
      */
     protected $useTLS = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($name = null)
-    {
-        $this->name = $name;
-    }
 
     /**
      * {@inheritdoc}
@@ -112,14 +97,6 @@ class Ldap implements LdapInterface
     public function getHost()
     {
         return $this->host;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**

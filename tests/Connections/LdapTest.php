@@ -74,13 +74,6 @@ class LdapTest extends TestCase
         $this->assertNull($ldap->getHost());
     }
 
-    public function test_connections_can_be_named()
-    {
-        $ldap = new Ldap('domain-a');
-
-        $this->assertEquals('domain-a', $ldap->getName());
-    }
-
     public function test_can_change_passwords()
     {
         $ldap = new Ldap();

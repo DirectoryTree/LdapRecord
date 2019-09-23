@@ -265,6 +265,16 @@ class Builder
     }
 
     /**
+     * Returns the query type.
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * Returns the builders DN to perform searches upon.
      *
      * @return string

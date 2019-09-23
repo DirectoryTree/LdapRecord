@@ -272,6 +272,48 @@ class ModelQueryTest extends TestCase
         $this->assertEquals(2, ModelDestroyStub::destroy(['foo', 'bar']));
         $this->assertEquals(2, ModelDestroyStub::destroy(new Collection(['foo', 'bar'])));
     }
+
+    public function test_descendants_scope()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $model = new Entry();
+        $model->setDn('ou=Users,dc=acme,dc=org');
+
+        $query = $model->descendants();
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $this->assertEquals('ou=Users,dc=acme,dc=org', $query->getDn());
+        $this->assertEquals('listing', $query->getType());
+    }
+
+    public function test_ancestors_scope()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $model = new Entry();
+        $model->setDn('ou=Office,ou=Users,dc=acme,dc=org');
+
+        $query = $model->ancestors();
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $this->assertEquals('dc=acme,dc=org', $query->getDn());
+        $this->assertEquals('listing', $query->getType());
+    }
+
+    public function test_siblings_scope()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $model = new Entry();
+        $model->setDn('ou=Users,dc=acme,dc=org');
+
+        $query = $model->siblings();
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $this->assertEquals('dc=acme,dc=org', $query->getDn());
+        $this->assertEquals('listing', $query->getType());
+    }
 }
 
 class ModelDestroyStub extends Model

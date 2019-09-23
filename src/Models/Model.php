@@ -464,7 +464,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      *
-     * @param Model $model
+     * @param static $model
      *
      * @return bool
      */
@@ -490,7 +490,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Converts the current model into the given model.
      *
-     * @param Model $into
+     * @param static $into
      *
      * @return Model
      */
@@ -645,29 +645,50 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Determine if the current model is located inside the given OU.
+     * Determine if the current model is a direct descendant of the given.
      *
-     * If a model instance is given, the strict parameter is ignored.
-     *
-     * @param Model|string $ou     The organizational unit to check.
-     * @param bool         $strict Whether the check is case-sensitive.
+     * @param static|string $model
      *
      * @return bool
      */
-    public function inOu($ou, $strict = false)
+    public function isDescendantOf($model)
     {
-        if ($ou instanceof static) {
-            // Since we have been given a model, we can simply
-            // check if the OU's distinguished name is
-            // contained in the current model.
-            return (bool) strpos(strtolower($this->getDn()), strtolower($ou->getDn()));
+        return $this->dnIsInside($this->getDn(), $model);
+    }
+
+    /**
+     * Determine if the current model is a direct ancestor of the given.
+     *
+     * @param static|string $model
+     *
+     * @return bool
+     */
+    public function isAncestorOf($model)
+    {
+        return $this->dnIsInside($model, $this->getDn());
+    }
+
+    /**
+     * Determines if the DN is inside of the parent DN.
+     *
+     * @param static|string $dn
+     * @param static|string $parentDn
+     *
+     * @return bool
+     */
+    protected function dnIsInside($dn, $parentDn)
+    {
+        if (!$dn) {
+            return false;
         }
 
-        $suffix = $strict ? '' : 'i';
+        if ($parts = Utilities::explodeDn($dn, false)) {
+            unset($parts['count'], $parts[0]);
 
-        $dn = $this->getNewDnBuilder($this->getDn());
+            return strtolower(implode(',', $parts)) == strtolower($parentDn);
+        }
 
-        return (bool) preg_grep("/{$ou}/{$suffix}", $dn->getComponents('ou'));
+        return false;
     }
 
     /**
@@ -926,8 +947,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * For example: $user->move($ou);
      *
-     * @param Model|string $newParentDn  The new parent of the current model.
-     * @param bool         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
+     * @param static|string $newParentDn  The new parent of the current model.
+     * @param bool          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
      * @throws ModelDoesNotExistException
      *
@@ -952,9 +973,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Rename the model to a new RDN and new parent.
      *
-     * @param string            $rdn          The models new relative distinguished name. Example: "cn=JohnDoe"
-     * @param Model|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
-     * @param bool|true         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
+     * @param string             $rdn          The models new relative distinguished name. Example: "cn=JohnDoe"
+     * @param static|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
+     * @param bool|true          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
      * @throws ModelDoesNotExistException
      *

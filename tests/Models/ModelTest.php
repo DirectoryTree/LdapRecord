@@ -294,25 +294,42 @@ class ModelTest extends TestCase
         $this->assertEquals(1, $modifications[2]['modtype']);
     }
 
-    public function test_in_ou()
+    public function test_is_descendent_of()
     {
         $model = new Entry();
-        $this->assertFalse($model->inOu(null));
-        $this->assertFalse($model->inOu(''));
+        $this->assertFalse($model->isDescendantOf(null));
+        $this->assertFalse($model->isDescendantOf(''));
 
         $model->setDn('cn=foo,ou=bar,dc=acme,dc=org');
-        $this->assertFalse($model->inOu('foo'));
-        $this->assertTrue($model->inOu('bar'));
-        $this->assertTrue($model->inOu('BAR'));
-        $this->assertTrue($model->inOu('BaR'));
-        $this->assertFalse($model->inOu('bar,'));
-        $this->assertFalse($model->inOu('ou=bar'));
+        $this->assertFalse($model->isDescendantOf('foo'));
+        $this->assertFalse($model->isDescendantOf('ou=bar'));
+        $this->assertFalse($model->isDescendantOf('ou=bar,dc=acme'));
+        $this->assertTrue($model->isDescendantOf('ou=bar,dc=acme,dc=org'));
+        $this->assertTrue($model->isDescendantOf('ou=bar,dc=ACME,dc=org'));
 
-        $ou = new Entry();
-        $ou->setDn('ou=bar,dc=acme,dc=org');
-        $this->assertTrue($model->inOu($ou));
+        $parent = new Entry();
+        $parent->setDn('ou=bar,dc=acme,dc=org');
+        $this->assertTrue($model->isDescendantOf($parent));
 
-        $ou->setDn('Ou=BaR,dc=acme,dc=org');
-        $this->assertTrue($model->inOu($ou));
+        $parent->setDn('Ou=BaR,dc=acme,dc=org');
+        $this->assertTrue($model->isDescendantOf($parent));
+    }
+
+    public function test_is_ancestor_of()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->isAncestorOf(null));
+        $this->assertFalse($model->isAncestorOf(''));
+
+        $model->setDn('ou=bar,dc=acme,dc=org');
+        $this->assertTrue($model->isAncestorOf('cn=foo,ou=bar,dc=acme,dc=org'));
+        $this->assertFalse($model->isAncestorOf('cn=foo,ou=test,ou=bar,dc=acme,dc=org'));
+
+        $child = new Entry();
+        $child->setDn('cn=foo,ou=bar,dc=acme,dc=org');
+        $this->assertTrue($model->isAncestorOf($child));
+
+        $child->setDn('cn=foo,Ou=BaR,dc=acme,dc=org');
+        $this->assertTrue($model->isAncestorOf($child));
     }
 }

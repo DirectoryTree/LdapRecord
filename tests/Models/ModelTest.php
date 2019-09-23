@@ -43,6 +43,16 @@ class ModelTest extends TestCase
         $this->assertEquals('foo', (string) $model);
     }
 
+    public function test_getting_parent_dn()
+    {
+        $model = new Entry();
+        $model->setDn('cn=user,dc=acme,dc=org');
+        $this->assertEquals('dc=acme,dc=org', $model->getParentDn($model->getDn()));
+        $this->assertEmpty($model->getParentDn(null));
+        $this->assertEmpty($model->getParentDn(''));
+        $this->assertEmpty($model->getParentDn('invalid'));
+    }
+
     public function test_creatable_dn()
     {
         Container::getNewInstance()->add(new Connection([

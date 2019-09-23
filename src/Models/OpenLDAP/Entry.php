@@ -11,6 +11,13 @@ use LdapRecord\Query\Model\OpenLdapBuilder;
 class Entry extends BaseEntry implements OpenLDAP
 {
     /**
+     * The attribute key that contains the Object GUID.
+     *
+     * @var string
+     */
+    protected $guidKey = 'entryuuid';
+
+    /**
      * Create a new query builder.
      *
      * @param LdapInterface $connection

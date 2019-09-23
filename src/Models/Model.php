@@ -619,6 +619,22 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the parent distinguished name of the given.
+     *
+     * @param static|string
+     *
+     * @return string|null
+     */
+    public function getParentDn($dn)
+    {
+        if ($parts = Utilities::explodeDn($dn, false)) {
+            unset($parts['count'], $parts[0]);
+
+            return implode(',', $parts);
+        }
+    }
+
+    /**
      * Get the models binary object GUID.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
@@ -682,10 +698,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
             return false;
         }
 
-        if ($parts = Utilities::explodeDn($dn, false)) {
-            unset($parts['count'], $parts[0]);
-
-            return strtolower(implode(',', $parts)) == strtolower($parentDn);
+        if ($dn = $this->getParentDn($dn)) {
+            return strtolower($dn) == strtolower($parentDn);
         }
 
         return false;

@@ -13,7 +13,6 @@ use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Attributes\MbString;
-use LdapRecord\Models\Attributes\DistinguishedName;
 
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
@@ -36,6 +35,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var string|null
      */
     protected $dn;
+
+    /**
+     * The base DN of where the model should be created in.
+     *
+     * @var string|null
+     */
+    protected $in;
 
     /**
      * The object classes of the LDAP model.
@@ -597,28 +603,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get a DistinguishedName object for the model.
-     *
-     * @return DistinguishedName
-     */
-    public function getDnBuilder()
-    {
-        return $this->getNewDnBuilder($this->dn);
-    }
-
-    /**
-     * Get a new DistinguishedName object for building onto.
-     *
-     * @param string|null $baseDn
-     *
-     * @return DistinguishedName
-     */
-    public function getNewDnBuilder($baseDn = null)
-    {
-        return new DistinguishedName($baseDn);
-    }
-
-    /**
      * Get the models RDN.
      *
      * @return string|null
@@ -717,6 +701,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         return false;
+    }
+
+    /**
+     * Set the base DN of where the model should be created in.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function inside($dn)
+    {
+        $this->in = $dn;
+
+        return $this;
     }
 
     /**
@@ -1029,13 +1027,23 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Build a new distinguished name that is creatable.
+     * Get a distinguished name that is creatable for the model.
      *
-     * @return DistinguishedName
+     * @return string
      */
     public function getCreatableDn()
     {
-        return $this->getNewDnBuilder($this->newQuery()->getDn())->addCn($this->getFirstAttribute('cn'));
+        return implode(',', [$this->getCreatableRdn(), $this->in ?? $this->newQuery()->getDn()]);
+    }
+
+    /**
+     * Get a creatable RDN for the model.
+     *
+     * @return string
+     */
+    public function getCreatableRdn()
+    {
+        return "cn={$this->getFirstAttribute('cn')}";
     }
 
     /**

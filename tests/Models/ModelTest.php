@@ -71,6 +71,15 @@ class ModelTest extends TestCase
         $this->assertNull((new Entry())->getRdn());
     }
 
+    public function test_creatable_rdn()
+    {
+        $model = new Entry();
+        $this->assertEquals('cn=', $model->getCreatableRdn());
+
+        $model->cn = 'John Doe';
+        $this->assertEquals('cn=John Doe', $model->getCreatableRdn());
+    }
+
     public function test_creatable_dn()
     {
         Container::getNewInstance()->add(new Connection([
@@ -79,10 +88,16 @@ class ModelTest extends TestCase
 
         $model = new Entry();
         $model->cn = 'foo';
-        $this->assertEquals('cn=foo,dc=acme,dc=org', (string) $model->getCreatableDn());
+        $this->assertEquals('cn=foo,dc=acme,dc=org', $model->getCreatableDn());
 
         $model = new Entry();
-        $this->assertEquals('dc=acme,dc=org', (string) $model->getCreatableDn());
+        $this->assertEquals('cn=,dc=acme,dc=org', $model->getCreatableDn());
+
+        $model = (new Entry())->inside('ou=Users,dc=acme,dc=org');
+        $this->assertEquals('cn=,ou=Users,dc=acme,dc=org', $model->getCreatableDn());
+
+        $model->cn = 'John Doe';
+        $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getCreatableDn());
     }
 
     public function test_raw_attribute_filling_sets_dn()

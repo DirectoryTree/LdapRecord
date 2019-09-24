@@ -15,10 +15,12 @@ class OrganizationalUnit extends Entry
     ];
 
     /**
-     * {@inheritdoc}
+     * Get a creatable RDN for the model.
+     *
+     * @return string
      */
-    public function getCreatableDn()
+    public function getCreatableRdn()
     {
-        return $this->getNewDnBuilder($this->newQuery()->getDn())->addOu($this->getFirstAttribute('ou'));
+        return "ou={$this->getFirstAttribute('ou')}";
     }
 }

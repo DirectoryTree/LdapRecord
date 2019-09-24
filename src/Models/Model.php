@@ -10,7 +10,6 @@ use InvalidArgumentException;
 use LdapRecord\LdapInterface;
 use UnexpectedValueException;
 use LdapRecord\Query\Collection;
-use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Attributes\MbString;
@@ -620,6 +619,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the models RDN.
+     *
+     * @return string|null
+     */
+    public function getRdn()
+    {
+        if ($parts = Utilities::explodeDn($this->dn, $removeAttrPrefixes = false)) {
+            unset($parts['count']);
+
+            return array_key_exists(0, $parts) ? $parts[0] : null;
+        }
+    }
+
+    /**
      * Get the parent distinguished name of the given.
      *
      * @param static|string
@@ -973,12 +986,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        $rdns = Arr::except(
-            Utilities::explodeDn($this->dn, $removeAttrPrefixes = false),
-            ['count']
-        );
-
-        if ($rdn = Arr::first($rdns)) {
+        if ($rdn = $this->getRdn()) {
             return $this->rename($rdn, $newParentDn, $deleteOldRdn);
         }
 
@@ -1004,17 +1012,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $newParentDn = $newParentDn->getDn();
         }
 
-        // If no new parent has been given, we need to generate one.
-        // We will explode the models current distinguished name
-        // and remove the initial RDN and count keys. Then we
-        // glue it back together for a seamless rename.
         if (is_null($newParentDn)) {
-            $base = Arr::except(
-                Utilities::explodeDn($this->dn, $removeAttrPrefixes = false),
-                [0, 'count']
-            );
-
-            $newParentDn = implode(',', $base);
+            $newParentDn = $this->getParentDn($this->dn);
         }
 
         if ($this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn)) {

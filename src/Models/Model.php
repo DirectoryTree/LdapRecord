@@ -20,6 +20,7 @@ use LdapRecord\Models\Attributes\DistinguishedName;
 abstract class Model implements ArrayAccess, JsonSerializable
 {
     use Concerns\HasEvents,
+        Concerns\HasScopes,
         Concerns\HasAttributes,
         Concerns\HasRelationships;
 

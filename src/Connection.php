@@ -146,7 +146,7 @@ class Connection implements ConnectionInterface
         if (is_null($username) && is_null($password)) {
             // If both the username and password are null, we'll connect to the server
             // using the configured administrator username and password.
-            $guard->bindAsAdministrator();
+            $guard->bindAsConfiguredUser();
         } else {
             // Bind to the server with the specified username and password otherwise.
             $guard->bind($username, $password);

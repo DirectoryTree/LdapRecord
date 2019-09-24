@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Auth;
 
-use Exception;
 use Throwable;
+use Exception;
 use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
@@ -36,12 +36,31 @@ class Guard
      */
     protected $events;
 
+    /**
+     * Constructor.
+     *
+     * @param LdapInterface       $connection
+     * @param DomainConfiguration $configuration
+     */
     public function __construct(LdapInterface $connection, DomainConfiguration $configuration)
     {
         $this->connection = $connection;
         $this->configuration = $configuration;
     }
 
+    /**
+     * Attempt binding a user to the LDAP server.
+     *
+     * @param string $username
+     * @param string $password
+     * @param bool $bindAsUser
+     *
+     * @return bool
+     *
+     * @throws BindException
+     * @throws PasswordRequiredException
+     * @throws UsernameRequiredException
+     */
     public function attempt($username, $password, $bindAsUser = false)
     {
         if (empty($username)) {
@@ -70,12 +89,20 @@ class Guard
         // If we are not binding as the user, we will rebind the configured
         // account so LDAP operations can be ran during the same request.
         if ($bindAsUser === false) {
-            $this->bindAsAdministrator();
+            $this->bindAsConfiguredUser();
         }
 
         return $result;
     }
 
+    /**
+     * Attempt binding a user to the LDAP server. Supports anonymous binding.
+     *
+     * @param string|null $username
+     * @param string|null $password
+     *
+     * @throws BindException
+     */
     public function bind($username = null, $password = null)
     {
         $this->fireBindingEvent($username, $password);
@@ -94,7 +121,13 @@ class Guard
         }
     }
 
-    public function bindAsAdministrator()
+    /**
+     * Bind to the LDAP server using the configured username and password.
+     *
+     * @throws BindException
+     * @throws \LdapRecord\Configuration\ConfigurationException
+     */
+    public function bindAsConfiguredUser()
     {
         $this->bind(
             $this->configuration->get('username'),

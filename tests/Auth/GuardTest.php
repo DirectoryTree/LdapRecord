@@ -89,7 +89,7 @@ class GuardTest extends TestCase
 
         $guard = new Guard($ldap, $config);
 
-        $this->assertNull($guard->bindAsAdministrator());
+        $this->assertNull($guard->bindAsConfiguredUser());
     }
 
     public function test_binding_events_are_fired_during_bind()

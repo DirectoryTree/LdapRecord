@@ -126,6 +126,8 @@ class ModelTest extends TestCase
         $model->setFirstAttribute('baz', 2);
         $this->assertEquals([1], $model->getAttribute('bar'));
         $this->assertEquals([2], $model->getAttribute('baz'));
+        $this->assertTrue(empty($model->invalid));
+        $this->assertFalse(empty($model->bar));
 
         // Hyphenated attributes.
         $model->foo_bar = 'baz';

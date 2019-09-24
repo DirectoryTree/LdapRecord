@@ -2,12 +2,16 @@
 
 namespace LdapRecord\Tests\Models;
 
+use Mockery as m;
 use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
+use LdapRecord\Models\Model;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ContainerException;
 use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelTest extends TestCase
 {
@@ -51,6 +55,20 @@ class ModelTest extends TestCase
         $this->assertEmpty($model->getParentDn(null));
         $this->assertEmpty($model->getParentDn(''));
         $this->assertEmpty($model->getParentDn('invalid'));
+    }
+
+    public function test_getting_rdn()
+    {
+        $model = (new Entry())->setDn('cn=John Doe,dc=acme,dc=org');
+        $this->assertEquals('cn=John Doe', $model->getRdn());
+
+        $model = (new Entry())->setDn('cn=John Doe');
+        $this->assertEquals('cn=John Doe', $model->getRdn());
+
+        $model = (new Entry())->setDn('dc=acme,dc=org');
+        $this->assertEquals('dc=acme', $model->getRdn());
+
+        $this->assertNull((new Entry())->getRdn());
     }
 
     public function test_creatable_dn()
@@ -343,5 +361,83 @@ class ModelTest extends TestCase
 
         $child->setDn('cn=foo,Ou=BaR,dc=acme,dc=org');
         $this->assertTrue($model->isAncestorOf($child));
+    }
+
+    public function test_rename()
+    {
+        $model = new ModelRenameStub();
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $this->assertTrue($model->rename('cn=Jane Doe'));
+        $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
+    }
+
+    public function test_rename_with_parent()
+    {
+        $model = new ModelRenameWithParentStub();
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $this->assertTrue($model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org'));
+        $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
+    }
+
+    public function test_rename_without_existing_model()
+    {
+        $model = new Entry();
+
+        $this->expectException(ModelDoesNotExistException::class);
+
+        $model->rename('invalid');
+    }
+
+    public function test_move()
+    {
+        $model = new ModelMoveStub();
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $this->assertTrue($model->move('ou=Users,dc=acme,dc=org'));
+        $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
+    }
+}
+
+class ModelRenameStub extends Model
+{
+    public function newQuery()
+    {
+        $builder = m::mock(Builder::class);
+        $builder->shouldReceive('rename')
+            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org', true])
+            ->once()
+            ->andReturnTrue();
+
+        return $builder;
+    }
+}
+
+class ModelRenameWithParentStub extends Model
+{
+    public function newQuery()
+    {
+        $builder = m::mock(Builder::class);
+        $builder->shouldReceive('rename')
+            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org', true])
+            ->once()
+            ->andReturnTrue();
+
+        return $builder;
+    }
+}
+
+class ModelMoveStub extends Model
+{
+    public function newQuery()
+    {
+        $builder = m::mock(Builder::class);
+        $builder->shouldReceive('rename')
+            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org', true])
+            ->once()
+            ->andReturnTrue();
+
+        return $builder;
     }
 }

@@ -4,7 +4,6 @@ namespace LdapRecord\Tests\Models\Attributes;
 
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\BatchModification;
-use LdapRecord\Models\Attributes\DistinguishedName;
 
 class BatchModificationTest extends TestCase
 {
@@ -132,10 +131,17 @@ class BatchModificationTest extends TestCase
 
     public function test_values_are_converted_to_strings()
     {
+        $class = new class {
+            public function __toString()
+            {
+                return 'test';
+            }
+        };
+
         $modification = new BatchModification('attribute', 1, [
-            500,
-            10.5,
-            (new DistinguishedName('test')),
+            (int) 500,
+            (float) 10.5,
+            (new $class),
         ]);
 
         $this->assertInternalType('string', $modification->getValues()[0]);

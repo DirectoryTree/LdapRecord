@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Auth;
 
-use Throwable;
 use Exception;
+use Throwable;
 use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
@@ -53,13 +53,13 @@ class Guard
      *
      * @param string $username
      * @param string $password
-     * @param bool $bindAsUser
-     *
-     * @return bool
+     * @param bool   $bindAsUser
      *
      * @throws BindException
      * @throws PasswordRequiredException
      * @throws UsernameRequiredException
+     *
+     * @return bool
      */
     public function attempt($username, $password, $bindAsUser = false)
     {

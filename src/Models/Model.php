@@ -771,13 +771,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // Before performing the insert, we will filter the attributes of the model
         // to ensure no empty values are sent. If empty values are sent, then
         // the LDAP server will return an error message indicating such.
-        $query->insert($this->dn, array_filter($this->getAttributes()));
+        if ($query->insert($this->dn, array_filter($this->getAttributes()))) {
+            $this->fireModelEvent(new Events\Created($this));
 
-        $this->fireModelEvent(new Events\Created($this));
+            $this->exists = true;
 
-        $this->exists = true;
+            return $this->synchronize();
+        }
 
-        return $this->synchronize();
+        return false;
     }
 
     /**
@@ -822,15 +824,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
         if (count($modifications) > 0) {
             $this->fireModelEvent(new Events\Updating($this));
 
-            $this->newQuery()->update($this->dn, $modifications);
+            if ($this->newQuery()->update($this->dn, $modifications)) {
+                $this->fireModelEvent(new Events\Updated($this));
 
-            $this->fireModelEvent(new Events\Updated($this));
+                // Re-set the models modifications.
+                $this->modifications = [];
 
-            // Re-set the models modifications.
-            $this->modifications = [];
+                // Re-sync the models attributes.
+                return $this->synchronize();
+            }
 
-            // Re-sync the models attributes.
-            return $this->synchronize();
+            return false;
         }
 
         return true;
@@ -879,9 +883,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $instance = new static();
 
         foreach ($dns as $dn) {
-            if ($model = $instance->find($dn)) {
-                $model->delete($recursive);
+            $model = $instance->find($dn);
 
+            if ($model && $model->delete($recursive)) {
                 $count++;
             }
         }
@@ -911,15 +915,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $this->deleteLeafNodes();
         }
 
-        $this->newQuery()->delete($this->dn);
+        if ($this->newQuery()->delete($this->dn)) {
+            // If the deletion was successful, we'll mark the model
+            // as non-existing and fire the deleted event.
+            $this->exists = false;
 
-        // If the deletion was successful, we'll mark the model
-        // as non-existing and fire the deleted event.
-        $this->exists = false;
+            $this->fireModelEvent(new Events\Deleted($this));
 
-        $this->fireModelEvent(new Events\Deleted($this));
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     /**

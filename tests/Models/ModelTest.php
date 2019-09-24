@@ -7,9 +7,9 @@ use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ContainerException;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\ModelDoesNotExistException;
 

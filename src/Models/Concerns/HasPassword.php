@@ -2,12 +2,8 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use Exception;
 use LdapRecord\Utilities;
 use LdapRecord\ConnectionException;
-use LdapRecord\LdapRecordException;
-use LdapRecord\Models\UserPasswordPolicyException;
-use LdapRecord\Models\UserPasswordIncorrectException;
 
 trait HasPassword
 {
@@ -19,107 +15,77 @@ trait HasPassword
     protected $passwordAttribute = 'unicodepwd';
 
     /**
-     * Sets the password on the current user.
+     * Set the password on the user.
      *
-     * @param string $password
+     * @param string|array $password
      *
-     * @throws \Exception When no SSL or TLS secured connection is present.
-     *
-     * @return \LdapRecord\Models\ActiveDirectory\User
+     * @throws \LdapRecord\ConnectionException
      */
-    public function setPassword($password)
+    public function setUnicodepwdAttribute($password)
     {
         $this->validateSecureConnection();
 
-        $encodedPassword = Utilities::encodePassword($password);
-
-        // If the record exists, we need to add a batch replace
-        // modification, otherwise we'll receive a "type or
-        // value" exists exception from our LDAP server.
-        if ($this->exists) {
-            return $this->addModification(
-                $this->newBatchModification(
-                    $this->passwordAttribute,
-                    LDAP_MODIFY_BATCH_REPLACE,
-                    [$encodedPassword]
-                )
+        // If the password given is an array, we can assume we
+        // are changing the password for the current user.
+        if (is_array($password)) {
+            $this->setChangedPassword(
+                $this->getEncodedPassword($password[0]),
+                $this->getEncodedPassword($password[1])
             );
         }
-        // Otherwise, we are creating a new record
-        // and we can set the attribute normally.
+        // Otherwise, we will set the password normally.
         else {
-            return $this->setFirstAttribute($this->passwordAttribute, $encodedPassword);
+            $this->setPassword($this->getEncodedPassword($password));
         }
     }
 
     /**
-     * Change the password of the current user. This must be performed over SSL / TLS.
+     * Set the changed password.
      *
-     * Throws an exception on failure.
-     *
-     * @param string $oldPassword The new password
-     * @param string $newPassword The old password
-     * @param bool   $replace     Alternative password change method. Set to true if you're receiving 'CONSTRAINT'
-     *                            errors.
-     *
-     * @throws UserPasswordPolicyException    When the new password does not match your password policy.
-     * @throws UserPasswordIncorrectException When the old password is incorrect.
-     * @throws LdapRecordException            When an unknown cause of failure occurs.
-     *
-     * @return true
+     * @param $oldPassword
+     * @param $newPassword
      */
-    public function changePassword($oldPassword, $newPassword, $replace = false)
+    protected function setChangedPassword($oldPassword, $newPassword)
     {
-        $this->validateSecureConnection();
+        // Create batch modification for removing the old password.
+        $modifications[] = $this->newBatchModification(
+            $this->passwordAttribute,
+            LDAP_MODIFY_BATCH_REMOVE,
+            [$oldPassword]
+        );
 
-        $modifications = [];
-
-        if ($replace) {
-            $modifications[] = $this->newBatchModification(
-                $this->passwordAttribute,
-                LDAP_MODIFY_BATCH_REPLACE,
-                [Utilities::encodePassword($newPassword)]
-            );
-        } else {
-            // Create batch modification for removing the old password.
-            $modifications[] = $this->newBatchModification(
-                $this->passwordAttribute,
-                LDAP_MODIFY_BATCH_REMOVE,
-                [Utilities::encodePassword($oldPassword)]
-            );
-
-            // Create batch modification for adding the new password.
-            $modifications[] = $this->newBatchModification(
-                $this->passwordAttribute,
-                LDAP_MODIFY_BATCH_ADD,
-                [Utilities::encodePassword($newPassword)]
-            );
-        }
+        // Create batch modification for adding the new password.
+        $modifications[] = $this->newBatchModification(
+            $this->passwordAttribute,
+            LDAP_MODIFY_BATCH_ADD,
+            [$newPassword]
+        );
 
         foreach ($modifications as $modification) {
             $this->addModification($modification);
         }
+    }
 
-        try {
-            return $this->update();
-        } catch (Exception $ex) {
-            $connection = $this->getConnection()->getLdapConnection();
+    /**
+     * Set the password on the model.
+     *
+     * @param string $encodedPassword
+     */
+    protected function setPassword($encodedPassword)
+    {
+        return $this->attributes[$this->passwordAttribute] = [$encodedPassword];
+    }
 
-            $code = $connection->getExtendedErrorCode();
-
-            switch ($code) {
-                case '0000052D':
-                    throw new UserPasswordPolicyException(
-                        "Error: $code. Your new password does not match the password policy."
-                    );
-                case '00000056':
-                    throw new UserPasswordIncorrectException(
-                        "Error: $code. Your old password is incorrect."
-                    );
-                default:
-                    throw new LdapRecordException($connection->getExtendedError(), $code, $ex);
-            }
-        }
+    /**
+     * Encode the given password.
+     *
+     * @param string $password
+     *
+     * @return string
+     */
+    protected function getEncodedPassword($password)
+    {
+        return Utilities::encodePassword($password);
     }
 
     /**

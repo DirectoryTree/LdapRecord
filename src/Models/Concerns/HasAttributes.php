@@ -441,7 +441,7 @@ trait HasAttributes
      *
      * @throws LdapRecordException
      *
-     * @return Carbon
+     * @return Carbon|null
      */
     protected function asDateTime($type, $value)
     {

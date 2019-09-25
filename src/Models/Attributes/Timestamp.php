@@ -107,7 +107,7 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return Carbon|bool
+     * @return Carbon|null
      *
      * @throws LdapRecordException
      */

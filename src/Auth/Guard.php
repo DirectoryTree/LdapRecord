@@ -55,9 +55,7 @@ class Guard
      * @param string $password
      * @param bool   $bindAsUser
      *
-     * @throws BindException
-     * @throws PasswordRequiredException
-     * @throws UsernameRequiredException
+     * @throws BindException|PasswordRequiredException|UsernameRequiredException
      *
      * @return bool
      */
@@ -101,11 +99,18 @@ class Guard
      * @param string|null $username
      * @param string|null $password
      *
-     * @throws BindException
+     * @throws BindException|\LdapRecord\ConnectionException
      */
     public function bind($username = null, $password = null)
     {
         $this->fireBindingEvent($username, $password);
+
+        // Prior to binding, we will upgrade our connectivity to TLS on our current
+        // connection and ensure we are not already bound before upgrading.
+        // This is to prevent subsequent upgrading on several binds.
+        if ($this->connection->isUsingTLS() && !$this->connection->isBound()) {
+            $this->connection->startTLS();
+        }
 
         try {
             if (@$this->connection->bind($username, $password) === true) {
@@ -124,8 +129,7 @@ class Guard
     /**
      * Bind to the LDAP server using the configured username and password.
      *
-     * @throws BindException
-     * @throws \LdapRecord\Configuration\ConfigurationException
+     * @throws BindException|\LdapRecord\Configuration\ConfigurationException
      */
     public function bindAsConfiguredUser()
     {

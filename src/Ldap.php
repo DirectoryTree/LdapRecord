@@ -270,15 +270,6 @@ class Ldap implements LdapInterface
      */
     public function bind($username, $password, $sasl = false)
     {
-        // Prior to binding, we will upgrade our connectivity to TLS on our current
-        // connection and ensure we are not already bound before upgrading.
-        // This is to prevent subsequent upgrading on several binds.
-        if ($this->isUsingTLS() && !$this->isBound()) {
-            if ($this->startTLS() === false) {
-                return $this->bound = false;
-            }
-        }
-
         if ($sasl) {
             return $this->bound = ldap_sasl_bind($this->connection, null, null, 'GSSAPI');
         }

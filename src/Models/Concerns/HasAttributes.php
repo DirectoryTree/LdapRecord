@@ -2,13 +2,10 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use DateTime;
 use Carbon\Carbon;
-use DateTimeInterface;
-use LdapRecord\Utilities;
-use Carbon\CarbonInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Attributes\Timestamp;
 
 trait HasAttributes
 {
@@ -433,39 +430,7 @@ trait HasAttributes
      */
     protected function fromDateTime($type, $value)
     {
-        // If the value is numeric, we will assume it's a UNIX timestamp.
-        if (is_numeric($value)) {
-            $value = Carbon::createFromTimestamp($value);
-        }
-        // If a string is given, we will pass it into a new carbon instance.
-        elseif (is_string($value)) {
-            $value = new Carbon($value);
-        }
-        // If a date object is given, we will convert it to a carbon instance.
-        elseif ($value instanceof DateTimeInterface) {
-            $value = Carbon::instance($value);
-        }
-
-        // Here we'll set the dates time zone to UTC. LDAP uses UTC
-        // as its timezone for all dates. We will also set the
-        // microseconds to 0 as LDAP does not support them.
-        $value->setTimezone('UTC')->micro(0);
-
-        switch ($type) {
-            case 'ldap':
-                $value = $this->convertDateTimeToLdapTime($value);
-                break;
-            case 'windows':
-                $value = $this->convertDateTimeToWindows($value);
-                break;
-            case 'windows-int':
-                $value = $this->convertDateTimeToWindowsInteger($value);
-                break;
-            default:
-                throw new LdapRecordException("Unrecognized date type '{$type}'");
-        }
-
-        return $value;
+        return (new Timestamp($type))->fromDateTime($value);
     }
 
     /**
@@ -480,105 +445,7 @@ trait HasAttributes
      */
     protected function asDateTime($type, $value)
     {
-        if ($value instanceof CarbonInterface) {
-            return $value;
-        }
-
-        switch ($type) {
-            case 'ldap':
-                $value = $this->convertLdapTimeToDateTime($value);
-                break;
-            case 'windows':
-                $value = $this->convertWindowsTimeToDateTime($value);
-                break;
-            case 'windows-int':
-                $value = $this->convertWindowsIntegerTimeToDateTime($value);
-                break;
-            default:
-                throw new LdapRecordException("Unrecognized date type '{$type}'");
-        }
-
-        if ($value instanceof DateTimeInterface) {
-            return (new Carbon())->setDateTimeFrom($value);
-        }
-    }
-
-    /**
-     * Converts standard LDAP timestamps to a date time object.
-     *
-     * @param string $value
-     *
-     * @return DateTime|bool
-     */
-    protected function convertLdapTimeToDateTime($value)
-    {
-        return DateTime::createFromFormat('YmdHisZ', $value);
-    }
-
-    /**
-     * Converts date objects to a standard LDAP timestamp.
-     *
-     * @param DateTimeInterface $date
-     *
-     * @return string
-     */
-    protected function convertDateTimeToLdapTime(DateTimeInterface $date)
-    {
-        return $date->format('YmdHis\Z');
-    }
-
-    /**
-     * Converts standard windows timestamps to a date time object.
-     *
-     * @param string $value
-     *
-     * @return DateTime|bool
-     */
-    protected function convertWindowsTimeToDateTime($value)
-    {
-        return DateTime::createFromFormat('YmdHis.0Z', $value);
-    }
-
-    /**
-     * Converts date objects to a windows timestamp.
-     *
-     * @param DateTimeInterface $date
-     *
-     * @return string
-     */
-    protected function convertDateTimeToWindows(DateTimeInterface $date)
-    {
-        return $date->format('YmdHis.0\Z');
-    }
-
-    /**
-     * Converts standard windows integer dates to a date time object.
-     *
-     * @param int $value
-     *
-     * @throws \Exception
-     *
-     * @return DateTime|null
-     */
-    protected function convertWindowsIntegerTimeToDateTime($value)
-    {
-        // ActiveDirectory dates that contain integers may return
-        // "0" when they are not set. We will validate that here.
-        return $value ? (new DateTime())->setTimestamp(
-            Utilities::convertWindowsTimeToUnixTime($value)
-        ) : null;
-    }
-
-    /**
-     * Converts date objects to a windows integer timestamp.
-     *
-     * @param DateTimeInterface $date
-     *
-     * @return float
-     */
-    protected function convertDateTimeToWindowsInteger(DateTimeInterface $date)
-    {
-        return Utilities::convertUnixTimeToWindowsTime($date->getTimestamp());
+        return (new Timestamp($type))->toDateTime($value);
     }
 
     /**

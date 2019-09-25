@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
-use LdapRecord\Utilities;
 use LdapRecord\Container;
+use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
@@ -44,14 +44,14 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 2,
-                'values' => [Utilities::encodePassword('bar')],
+                'values'  => [Utilities::encodePassword('bar')],
             ],
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 1,
-                'values' => [Utilities::encodePassword('baz')],
+                'values'  => [Utilities::encodePassword('baz')],
             ],
         ], $user->getModifications());
     }

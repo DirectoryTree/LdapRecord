@@ -274,7 +274,9 @@ class Ldap implements LdapInterface
         // connection and ensure we are not already bound before upgrading.
         // This is to prevent subsequent upgrading on several binds.
         if ($this->isUsingTLS() && !$this->isBound()) {
-            $this->startTLS();
+            if ($this->startTLS() === false) {
+                return $this->bound = false;
+            }
         }
 
         if ($sasl) {

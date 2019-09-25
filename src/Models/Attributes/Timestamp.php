@@ -61,9 +61,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return float|string
-     *
      * @throws LdapRecordException
+     *
+     * @return float|string
      */
     public function fromDateTime($value)
     {
@@ -107,9 +107,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return Carbon|bool
-     *
      * @throws LdapRecordException
+     *
+     * @return Carbon|bool
      */
     public function toDateTime($value)
     {

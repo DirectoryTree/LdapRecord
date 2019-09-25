@@ -609,9 +609,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getRdn()
     {
-        if ($parts = Utilities::explodeDn($this->dn, $removeAttrPrefixes = false)) {
-            unset($parts['count']);
-
+        if ($parts = Utilities::explodeDn($this->dn, false)) {
             return array_key_exists(0, $parts) ? $parts[0] : null;
         }
     }
@@ -626,7 +624,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getParentDn($dn)
     {
         if ($parts = Utilities::explodeDn($dn, false)) {
-            unset($parts['count'], $parts[0]);
+            array_shift($parts);
 
             return implode(',', $parts);
         }

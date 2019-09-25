@@ -20,6 +20,8 @@ class Utilities
         $dn = ldap_explode_dn($dn, ($removeAttributePrefixes ? 1 : 0));
 
         if (is_array($dn) && array_key_exists('count', $dn)) {
+            unset($dn['count']);
+
             foreach ($dn as $rdn => $value) {
                 $dn[$rdn] = static::unescape($value);
             }

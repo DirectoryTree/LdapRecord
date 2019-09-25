@@ -12,13 +12,7 @@ class UtilitiesTest extends TestCase
 
         $split = Utilities::explodeDn($dn);
 
-        $expected = [
-            'count' => 4,
-            0       => 'Testing',
-            1       => 'Folder',
-            2       => 'corp',
-            3       => 'org',
-        ];
+        $expected = ['Testing', 'Folder', 'corp', 'org'];
 
         $this->assertEquals($expected, $split);
     }

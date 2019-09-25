@@ -43,6 +43,7 @@ class GuardTest extends TestCase
         $config->shouldReceive('get')->withArgs(['password'])->once();
 
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->twice()->andReturn(false);
         $ldap->shouldReceive('bind')->twice()->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -55,6 +56,7 @@ class GuardTest extends TestCase
         $config = m::mock(DomainConfiguration::class);
 
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -67,6 +69,7 @@ class GuardTest extends TestCase
         $config = m::mock(DomainConfiguration::class);
 
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
         $ldap->shouldReceive('getLastError')->once()->andReturn('error');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'));
@@ -85,6 +88,7 @@ class GuardTest extends TestCase
         $config->shouldReceive('get')->withArgs(['password'])->once()->andReturn('password');
 
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['admin', 'password'])->andReturn(true);
 
         $guard = new Guard($ldap, $config);
@@ -95,7 +99,7 @@ class GuardTest extends TestCase
     public function test_binding_events_are_fired_during_bind()
     {
         $ldap = m::mock(Ldap::class);
-
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();
@@ -130,6 +134,7 @@ class GuardTest extends TestCase
     public function test_auth_events_are_fired_during_attempt()
     {
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();
@@ -182,6 +187,7 @@ class GuardTest extends TestCase
     public function test_all_auth_events_can_be_listened_to_with_wildcard()
     {
         $ldap = m::mock(Ldap::class);
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
         $events = new Dispatcher();

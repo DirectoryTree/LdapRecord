@@ -2,17 +2,12 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
-use Exception;
-use Mockery as m;
-use LdapRecord\Ldap;
-use LdapRecord\Container;
 use LdapRecord\Utilities;
+use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
 use LdapRecord\Models\ActiveDirectory\User;
-use LdapRecord\Models\UserPasswordPolicyException;
-use LdapRecord\Models\UserPasswordIncorrectException;
 
 class UserTest extends TestCase
 {
@@ -22,8 +17,7 @@ class UserTest extends TestCase
 
         $this->expectException(ConnectionException::class);
 
-        $user = new User();
-        $user->setPassword('foo');
+        new User(['unicodepwd' => 'password']);
     }
 
     public function test_changing_password_requires_secure_connection()
@@ -33,118 +27,38 @@ class UserTest extends TestCase
         $this->expectException(ConnectionException::class);
 
         $user = (new User())->setRawAttributes(['dn' => 'foo']);
-        $user->changePassword('foo', 'bar');
+        $user->unicodepwd = ['old', 'new'];
     }
 
     public function test_set_password_on_new_user()
     {
         $user = new UserPasswordTestStub();
-        $user->setPassword('foo');
-        $this->assertEquals(Utilities::encodePassword('foo'), $user->getFirstAttribute('unicodepwd'));
+        $user->unicodepwd = 'foo';
+        $this->assertEquals([Utilities::encodePassword('foo')], $user->unicodepwd);
     }
 
-    public function test_set_password_on_existing_user()
+    public function test_changing_passwords()
     {
         $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
-        $user->setPassword('bar');
-
-        $expected = [
-            [
-                'attrib'  => 'unicodepwd',
-                'modtype' => 3,
-                'values'  => [Utilities::encodePassword('bar')],
-            ],
-        ];
-
-        $this->assertEquals($expected, $user->getModifications());
-    }
-
-    public function test_change_password()
-    {
-        $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($user->changePassword('bar', 'baz'));
+        $user->unicodepwd = ['bar', 'baz'];
 
         $this->assertEquals([
             [
-                'attrib'  => 'unicodepwd',
+                'attrib' => 'unicodepwd',
                 'modtype' => 2,
-                'values'  => [Utilities::encodePassword('bar')],
+                'values' => [Utilities::encodePassword('bar')],
             ],
             [
-                'attrib'  => 'unicodepwd',
+                'attrib' => 'unicodepwd',
                 'modtype' => 1,
-                'values'  => [Utilities::encodePassword('baz')],
+                'values' => [Utilities::encodePassword('baz')],
             ],
         ], $user->getModifications());
-    }
-
-    public function test_change_password_with_replace()
-    {
-        $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($user->changePassword('bar', 'baz', $replace = true));
-
-        $this->assertEquals([
-            [
-                'attrib'  => 'unicodepwd',
-                'modtype' => 3,
-                'values'  => [Utilities::encodePassword('baz')],
-            ],
-        ], $user->getModifications());
-    }
-
-    public function test_change_password_policy_failure()
-    {
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('0000052D');
-
-        $conn = m::mock(Connection::class);
-        $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
-
-        Container::getInstance()->add($conn);
-
-        $user = (new UserPasswordChangeFailureTestStub())->setRawAttributes(['dn' => 'foo']);
-
-        $this->expectException(UserPasswordPolicyException::class);
-        $user->changePassword('bar', 'baz');
-    }
-
-    public function test_change_password_old_password_incorrect_failure()
-    {
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('getExtendedErrorCode')->once()->andReturn('00000056');
-
-        $conn = m::mock(Connection::class);
-        $conn->shouldReceive('getLdapConnection')->once()->andReturn($ldap);
-
-        Container::getInstance()->add($conn);
-
-        $user = (new UserPasswordChangeFailureTestStub())->setRawAttributes(['dn' => 'foo']);
-
-        $this->expectException(UserPasswordIncorrectException::class);
-        $user->changePassword('bar', 'baz');
     }
 }
 
 class UserPasswordTestStub extends User
 {
-    public function update(array $attributes = [])
-    {
-        return true;
-    }
-
-    protected function validateSecureConnection()
-    {
-        return true;
-    }
-}
-
-class UserPasswordChangeFailureTestStub extends User
-{
-    public function update(array $attributes = [])
-    {
-        throw new Exception();
-    }
-
     protected function validateSecureConnection()
     {
         return true;

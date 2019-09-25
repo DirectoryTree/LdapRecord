@@ -61,6 +61,7 @@ class ConnectionTest extends TestCase
         // Binding as the user.
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
 
         $error = new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A');
@@ -72,6 +73,7 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('errNo')->once()->andReturn(1);
 
         // Rebinds as the administrator.
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs([null, null])->andReturn(true);
 
         // Closes the connection.
@@ -97,9 +99,11 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('isBound')->once()->andReturn(true);
 
         // Authenticates as the user
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
 
         // Re-binds as the administrator
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['foo', 'bar'])->andReturn(true);
         $ldap->shouldReceive('close')->once()->andReturn(true);
 
@@ -122,6 +126,7 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('setOptions')->once();
 
         // Re-binds as the administrator (fails)
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->withArgs(['test', 'test'])->andReturn(false);
         $ldap->shouldReceive('getLastError')->once()->andReturn('');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(null, null, null));
@@ -149,6 +154,7 @@ class ConnectionTest extends TestCase
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
         $ldap->shouldReceive('isBound')->once()->andReturn(true);
         $ldap->shouldReceive('close')->once()->andReturn(true);

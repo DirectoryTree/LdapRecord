@@ -42,38 +42,48 @@ trait HasPassword
     /**
      * Set the changed password.
      *
-     * @param $oldPassword
-     * @param $newPassword
+     * @param string $oldPassword
+     * @param string $newPassword
+     *
+     * @return void
      */
     protected function setChangedPassword($oldPassword, $newPassword)
     {
         // Create batch modification for removing the old password.
-        $modifications[] = $this->newBatchModification(
-            $this->passwordAttribute,
-            LDAP_MODIFY_BATCH_REMOVE,
-            [$oldPassword]
+        $this->addModification(
+            $this->newBatchModification(
+                $this->passwordAttribute,
+                LDAP_MODIFY_BATCH_REMOVE,
+                [$oldPassword]
+            )
         );
 
         // Create batch modification for adding the new password.
-        $modifications[] = $this->newBatchModification(
-            $this->passwordAttribute,
-            LDAP_MODIFY_BATCH_ADD,
-            [$newPassword]
+        $this->addModification(
+            $this->newBatchModification(
+                $this->passwordAttribute,
+                LDAP_MODIFY_BATCH_ADD,
+                [$newPassword]
+            )
         );
-
-        foreach ($modifications as $modification) {
-            $this->addModification($modification);
-        }
     }
 
     /**
      * Set the password on the model.
      *
      * @param string $encodedPassword
+     *
+     * @return void
      */
     protected function setPassword($encodedPassword)
     {
-        return $this->attributes[$this->passwordAttribute] = [$encodedPassword];
+        $this->addModification(
+            $this->newBatchModification(
+                $this->passwordAttribute,
+                LDAP_MODIFY_BATCH_REPLACE,
+                [$encodedPassword]
+            )
+        );
     }
 
     /**

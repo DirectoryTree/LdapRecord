@@ -34,7 +34,7 @@ class UserTest extends TestCase
     {
         $user = new UserPasswordTestStub();
         $user->unicodepwd = 'foo';
-        $this->assertEquals([Utilities::encodePassword('foo')], $user->unicodepwd);
+        $this->assertEquals([Utilities::encodePassword('foo')], $user->getModifications()[0]['values']);
     }
 
     public function test_changing_passwords()

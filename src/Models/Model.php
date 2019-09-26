@@ -704,13 +704,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Set the base DN of where the model should be created in.
      *
-     * @param string $dn
+     * @param static|string $dn
      *
      * @return $this
      */
     public function inside($dn)
     {
-        $this->in = $dn;
+        $this->in = $dn instanceof self ? $dn->getDn() : $dn;
 
         return $this;
     }

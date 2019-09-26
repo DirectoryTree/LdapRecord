@@ -18,7 +18,7 @@
 
 <p align="center">
     LdapRecord leverages the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>
-    to provide you with LDAP authentication and directory management tools.
+    to make working with LDAP directories a breeze - making your life as a developer easier.
 </p>
 
 <h4 align="center">

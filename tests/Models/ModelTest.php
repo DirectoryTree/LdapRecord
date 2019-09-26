@@ -98,6 +98,9 @@ class ModelTest extends TestCase
 
         $model->cn = 'John Doe';
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getCreatableDn());
+
+        $model = (new Entry(['cn' => 'John Doe']))->inside((new Entry())->setDn('ou=Test,dc=acme,dc=org'));
+        $this->assertEquals('cn=John Doe,ou=Test,dc=acme,dc=org', $model->getCreatableDn());
     }
 
     public function test_raw_attribute_filling_sets_dn()

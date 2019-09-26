@@ -14,20 +14,6 @@ class User extends Entry implements Authenticatable
         CanAuthenticate;
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'lastlogon'          => 'windows-int',
-        'lastlogoff'         => 'windows-int',
-        'lockouttime'        => 'windows-int',
-        'accountexpires'     => 'windows-int',
-        'badpasswordtime'    => 'windows-int',
-        'lastlogontimestamp' => 'windows-int',
-    ];
-
-    /**
      * The object classes of the LDAP model.
      *
      * @var array
@@ -37,6 +23,21 @@ class User extends Entry implements Authenticatable
         'person',
         'organizationalperson',
         'user',
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'lastlogon'          => 'windows-int',
+        'lastlogoff'         => 'windows-int',
+        'pwdlastset'         => 'windows-int',
+        'lockouttime'        => 'windows-int',
+        'accountexpires'     => 'windows-int',
+        'badpasswordtime'    => 'windows-int',
+        'lastlogontimestamp' => 'windows-int',
     ];
 
     /**
@@ -64,7 +65,7 @@ class User extends Entry implements Authenticatable
     }
 
     /**
-     * The the primary group relationship of the current user.
+     * The primary group relationship of the current user.
      *
      * Retrieves the primary group the user is apart of.
      *

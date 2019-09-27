@@ -4,13 +4,6 @@ namespace LdapRecord\Models\Attributes;
 
 use ReflectionClass;
 
-/**
- * The Account Control class.
- *
- * This class is for easily building a user account control value.
- *
- * @link https://support.microsoft.com/en-us/kb/305144
- */
 class AccountControl
 {
     const SCRIPT = 1;

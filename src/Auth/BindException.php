@@ -5,11 +5,6 @@ namespace LdapRecord\Auth;
 use LdapRecord\DetailedError;
 use LdapRecord\LdapRecordException;
 
-/**
- * Class BindException.
- *
- * Thrown when binding to an LDAP connection fails.
- */
 class BindException extends LdapRecordException
 {
     /**

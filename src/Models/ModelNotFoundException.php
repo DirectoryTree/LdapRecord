@@ -4,11 +4,6 @@ namespace LdapRecord\Models;
 
 use LdapRecord\LdapRecordException;
 
-/**
- * Class ModelNotFoundException.
- *
- * Thrown when an LDAP record is not found.
- */
 class ModelNotFoundException extends LdapRecordException
 {
     /**

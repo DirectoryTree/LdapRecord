@@ -4,12 +4,6 @@ namespace LdapRecord\Models;
 
 use InvalidArgumentException;
 
-/**
- * Class BatchModification.
- *
- * A utility class to assist in the creation of LDAP
- * batch modifications and ensure their validity.
- */
 class BatchModification
 {
     /**

@@ -55,12 +55,12 @@ class Guard
      * @param string $password
      * @param bool   $bindAsUser
      *
-     * @return bool
-     *
      * @throws BindException
      * @throws PasswordRequiredException
      * @throws UsernameRequiredException
      * @throws \LdapRecord\ConnectionException
+     *
+     * @return bool
      */
     public function attempt($username, $password, $bindAsUser = false)
     {

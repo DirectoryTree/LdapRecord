@@ -20,6 +20,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     protected $defaultDates = [
         'whenchanged' => 'windows',
         'whencreated' => 'windows',
+        'dscorepropagationdata' => 'windows',
     ];
 
     /**

@@ -2,20 +2,12 @@
 
 namespace LdapRecord\Models\OpenLDAP;
 
-use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 
 class User extends Entry implements Authenticatable
 {
-    use HasPassword, CanAuthenticate;
-
-    /**
-     * The attribute to use for password changes.
-     *
-     * @var string
-     */
-    protected $passwordAttribute = 'userpassword';
+    use CanAuthenticate;
 
     /**
      * The object classes of the LDAP model.

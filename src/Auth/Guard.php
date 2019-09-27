@@ -55,9 +55,12 @@ class Guard
      * @param string $password
      * @param bool   $bindAsUser
      *
-     * @throws BindException|PasswordRequiredException|UsernameRequiredException
-     *
      * @return bool
+     *
+     * @throws BindException
+     * @throws PasswordRequiredException
+     * @throws UsernameRequiredException
+     * @throws \LdapRecord\ConnectionException
      */
     public function attempt($username, $password, $bindAsUser = false)
     {
@@ -129,7 +132,9 @@ class Guard
     /**
      * Bind to the LDAP server using the configured username and password.
      *
-     * @throws BindException|\LdapRecord\Configuration\ConfigurationException
+     * @throws BindException
+     * @throws \LdapRecord\ConnectionException
+     * @throws \LdapRecord\Configuration\ConfigurationException
      */
     public function bindAsConfiguredUser()
     {

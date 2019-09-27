@@ -55,8 +55,8 @@ class Builder extends BaseBuilder
             return $this->findManyByAnr($value, $columns);
         }
 
-        // If we're not using ActiveDirectory, we can't use ANR.
-        // We will make our own equivalent query.
+        // If we're not using ActiveDirectory, we can't use
+        // ANR. We will make our own equivalent query.
         if (!$this->model instanceof ActiveDirectory) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
@@ -175,24 +175,5 @@ class Builder extends BaseBuilder
     protected function process(array $results)
     {
         return $this->model->hydrate(parent::process($results));
-    }
-
-    /**
-     * Parse a list of relations into individuals.
-     *
-     * @param array $relations
-     *
-     * @return array
-     */
-    protected function parseWithRelations(array $relations)
-    {
-        $results = [];
-
-        foreach ($relations as $name) {
-            $results[$name] = function () {
-            };
-        }
-
-        return $results;
     }
 }

@@ -27,8 +27,14 @@
     <a href="https://ldaprecord.com/docs">Documentation</a>
 </h4>
 
-- **Up and running in minutes.** Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.
+⏲ **Up and running in minutes.**
 
-- **Fluent query builder.** Building LDAP queries has never been so easy. Find the objects you're looking for in a couple lines or less with a fluent interface.
+Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.
 
-- **Supercharged Active Record.** Create and modify LDAP obects with ease. All LDAP objects are individual models. Simply modify the attributes on the model and save it to persist the changes to your LDAP server.
+💡 **Fluent query builder.**
+
+Building LDAP queries has never been so easy. Find the objects you're looking for in a couple lines or less with a fluent interface.
+
+🔥 **Supercharged ActiveRecord.**
+
+Create and modify LDAP obects with ease. All LDAP objects are individual models. Simply modify the attributes on the model and save it to persist the changes to your LDAP server.

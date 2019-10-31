@@ -16,14 +16,14 @@ interface ConnectionInterface
     public function __construct($configuration, LdapInterface $ldap = null);
 
     /**
-     * Returns the current connection instance.
+     * Get the LDAP connection instance.
      *
      * @return LdapInterface
      */
     public function getLdapConnection();
 
     /**
-     * Returns the current configuration instance.
+     * Get the LDAP configuration instance.
      *
      * @return DomainConfiguration
      */
@@ -39,7 +39,7 @@ interface ConnectionInterface
     public function setCache(CacheInterface $store);
 
     /**
-     * Sets the current connection.
+     * Set the LDAP connection.
      *
      * @param LdapInterface $connection
      *
@@ -48,7 +48,7 @@ interface ConnectionInterface
     public function setLdapConnection(LdapInterface $connection = null);
 
     /**
-     * Sets the current configuration.
+     * Set the connection configuration.
      *
      * @param DomainConfiguration|array $configuration
      *
@@ -57,21 +57,21 @@ interface ConnectionInterface
     public function setConfiguration($configuration = []);
 
     /**
-     * Returns a new auth guard instance.
+     * Get a new auth guard instance.
      *
      * @return \LdapRecord\Auth\Guard
      */
     public function auth();
 
     /**
-     * Returns a new query builder for the current connection.
+     * Get a new query builder for the connection.
      *
      * @return \LdapRecord\Query\Builder
      */
     public function query();
 
     /**
-     * Connects and Binds to the Domain Controller.
+     * Connect to the Domain Controller.
      *
      * If no username or password is specified, then the
      * configured administrator credentials are used.
@@ -85,4 +85,11 @@ interface ConnectionInterface
      * @return ConnectionInterface
      */
     public function connect($username = null, $password = null);
+
+    /**
+     * Determine if the LDAP connection is bound.
+     *
+     * @return bool
+     */
+    public function isConnected();
 }

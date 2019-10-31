@@ -42,10 +42,7 @@ class Connection implements ConnectionInterface
      */
     public function __destruct()
     {
-        if (
-            $this->ldap instanceof LdapInterface &&
-            $this->ldap->isBound()
-        ) {
+        if ($this->ldap->isBound()) {
             $this->ldap->close();
         }
     }
@@ -153,6 +150,14 @@ class Connection implements ConnectionInterface
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isConnected()
+    {
+        return $this->ldap->isBound();
     }
 
     /**

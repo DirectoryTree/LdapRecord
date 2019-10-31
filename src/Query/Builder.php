@@ -1230,6 +1230,16 @@ class Builder
     }
 
     /**
+     * Get all the filters on the query.
+     *
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
      * Clear the query filters.
      *
      * @return $this

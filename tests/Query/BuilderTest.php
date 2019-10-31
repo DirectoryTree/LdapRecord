@@ -102,6 +102,28 @@ class BuilderTest extends TestCase
         ]);
     }
 
+    public function test_get_filters()
+    {
+        $b = $this->newBuilder();
+
+        $b->where('foo', '=', 'bar');
+        $b->orWhere('baz', '=', 'foo');
+
+        $this->assertEquals([
+            'and' => [[
+                'field' => 'foo',
+                'operator' => '=',
+                'value' => '\62\61\72',
+            ]],
+            'or' => [[
+                'field' => 'baz',
+                'operator' => '=',
+                'value' => '\66\6f\6f',
+            ]],
+            'raw' => [],
+        ], $b->getFilters());
+    }
+
     public function test_clear_filters()
     {
         $b = $this->newBuilder();

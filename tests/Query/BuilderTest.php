@@ -111,14 +111,14 @@ class BuilderTest extends TestCase
 
         $this->assertEquals([
             'and' => [[
-                'field' => 'foo',
+                'field'    => 'foo',
                 'operator' => '=',
-                'value' => '\62\61\72',
+                'value'    => '\62\61\72',
             ]],
             'or' => [[
-                'field' => 'baz',
+                'field'    => 'baz',
                 'operator' => '=',
-                'value' => '\66\6f\6f',
+                'value'    => '\66\6f\6f',
             ]],
             'raw' => [],
         ], $b->getFilters());

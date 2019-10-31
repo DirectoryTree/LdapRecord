@@ -153,7 +153,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isConnected()
     {

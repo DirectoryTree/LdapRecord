@@ -57,6 +57,21 @@ class ModelTest extends TestCase
         $this->assertEmpty($model->getParentDn('invalid'));
     }
 
+    public function test_getting_name()
+    {
+        $model = (new Entry())->setDn('cn=John Doe,dc=acme,dc=org');
+        $this->assertEquals('John Doe', $model->getName());
+
+        $model = (new Entry())->setDn('dc=acme');
+        $this->assertEquals('acme', $model->getName());
+
+        // Invalid DN.
+        $model = (new Entry())->setDn('invalid');
+        $this->assertNull($model->getName());
+
+        $this->assertNull((new Entry())->getName());
+    }
+
     public function test_getting_rdn()
     {
         $model = (new Entry())->setDn('cn=John Doe,dc=acme,dc=org');

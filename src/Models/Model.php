@@ -603,6 +603,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the models name.
+     *
+     * @return string|null
+     */
+    public function getName()
+    {
+        if ($rdn = $this->getRdn()) {
+            $parts = Utilities::explodeDn($rdn, true);
+
+            return reset($parts);
+        }
+    }
+
+    /**
      * Get the models RDN.
      *
      * @return string|null

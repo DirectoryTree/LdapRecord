@@ -7,7 +7,7 @@ use LdapRecord\Models\Attributes\AccountControl;
 
 class AccountControlTest extends TestCase
 {
-    public function test_default_value()
+    public function test_default_value_is_zero()
     {
         $ac = new AccountControl();
 
@@ -15,7 +15,7 @@ class AccountControlTest extends TestCase
         $this->assertInternalType('int', $ac->getValue());
     }
 
-    public function test_all_options()
+    public function test_all_options_are_applied_correctly()
     {
         $ac = new AccountControl();
 
@@ -48,23 +48,25 @@ class AccountControlTest extends TestCase
         $this->assertEquals(array_sum($values), $ac->getValue());
     }
 
-    public function test_to_int()
+    public function test_can_be_casted_to_int()
     {
         $ac = new AccountControl();
 
         $this->assertEquals(0, $ac->__toInt());
+        $this->assertEquals(0, (int) $ac->getValue());
         $this->assertInternalType('int', $ac->__toInt());
     }
 
-    public function test_to_string()
+    public function test_can_be_casted_to_string()
     {
         $ac = new AccountControl();
 
+        $this->assertEquals('0', (string) $ac);
         $this->assertEquals('0', $ac->__toString());
         $this->assertInternalType('string', $ac->__toString());
     }
 
-    public function test_construct()
+    public function test_multiple_flags_can_be_applied()
     {
         $flag = 522;
 
@@ -92,5 +94,57 @@ class AccountControlTest extends TestCase
         $this->assertFalse($ac->has(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
         $this->assertFalse($ac->has(AccountControl::NORMAL_ACCOUNT));
         $this->assertFalse($ac->has(AccountControl::PASSWD_NOTREQD));
+    }
+
+    public function test_values_are_overwritten()
+    {
+        $ac = new AccountControl();
+
+        $ac->accountIsNormal()
+            ->accountIsNormal()
+            ->accountIsNormal();
+
+        $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
+    }
+
+    public function test_values_can_be_set()
+    {
+        $ac = new AccountControl();
+
+        $ac->accountIsNormal()->accountIsDisabled();
+
+        $values = $ac->getValues();
+
+        unset($values[AccountControl::ACCOUNTDISABLE]);
+
+        $ac->setValues($values);
+
+        $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
+    }
+
+    public function test_values_can_be_added()
+    {
+        $ac = new AccountControl();
+
+        // Values are overwritten.
+        $ac->add(AccountControl::ACCOUNTDISABLE);
+        $ac->add(AccountControl::ACCOUNTDISABLE);
+
+        $this->assertEquals(AccountControl::ACCOUNTDISABLE, $ac->getValue());
+    }
+
+    public function test_values_can_be_removed()
+    {
+        $ac = new AccountControl();
+
+        $ac->accountIsNormal()->accountIsDisabled();
+
+        $ac->remove(AccountControl::ACCOUNTDISABLE);
+
+        $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
+
+        $ac->remove(AccountControl::NORMAL_ACCOUNT);
+        $ac->remove(AccountControl::NORMAL_ACCOUNT);
+        $this->assertEquals(0, $ac->getValue());
     }
 }

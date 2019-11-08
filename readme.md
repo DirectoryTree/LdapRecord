@@ -9,7 +9,7 @@
     <a href="https://scrutinizer-ci.com/g/DirectoryTree/LdapRecord/?branch=master"><img src="https://img.shields.io/scrutinizer/g/DirectoryTree/LdapRecord/master.svg?style=flat-square"/></a>
     <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/dt/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
     <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/v/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
-    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/l/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/github/license/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
 </p>
 
 <p align="center">

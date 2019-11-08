@@ -67,6 +67,8 @@ class Timestamp
      */
     public function fromDateTime($value)
     {
+        $value = is_array($value) ? reset($value) : $value;
+
         // If the value is numeric, we will assume it's a UNIX timestamp.
         if (is_numeric($value)) {
             $value = Carbon::createFromTimestamp($value);
@@ -113,6 +115,8 @@ class Timestamp
      */
     public function toDateTime($value)
     {
+        $value = is_array($value) ? reset($value) : $value;
+
         if ($value instanceof CarbonInterface) {
             return $value;
         }

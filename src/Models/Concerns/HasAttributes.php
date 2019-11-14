@@ -213,10 +213,9 @@ trait HasAttributes
      */
     public function setFirstAttribute($key, $value)
     {
-        $current = $this->getAttribute($key);
-
         return $this->setAttribute($key, array_merge(
-            is_array($current) ? $current : [$current], [$value]
+            Arr::wrap($this->getAttribute($key)),
+            Arr::wrap($value)
         ));
     }
 

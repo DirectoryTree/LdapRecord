@@ -610,9 +610,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getName()
     {
         if ($rdn = $this->getRdn()) {
-            $parts = Utilities::explodeDn($rdn, true);
+            list($attribute, $name) = explode('=', $rdn);
 
-            return is_array($parts) ? reset($parts) : null;
+            return $name;
         }
     }
 

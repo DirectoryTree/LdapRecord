@@ -612,7 +612,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         if ($rdn = $this->getRdn()) {
             $parts = Utilities::explodeDn($rdn, true);
 
-            return reset($parts);
+            return is_array($parts) ? reset($parts) : null;
         }
     }
 

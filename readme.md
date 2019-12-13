@@ -22,7 +22,7 @@
 </p>
 
 <h4 align="center">
-    <a href="https://ldaprecord.com/docs/installation/#installation-quick-start">Quickstart</a>
+    <a href="https://ldaprecord.com/docs/installation/#installation-installing">Quickstart</a>
     <span> · </span>
     <a href="https://ldaprecord.com">Documentation</a>
 </h4>

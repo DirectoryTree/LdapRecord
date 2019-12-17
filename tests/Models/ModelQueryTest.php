@@ -12,6 +12,7 @@ use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\ContainerException;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase
@@ -314,6 +315,59 @@ class ModelQueryTest extends TestCase
         $this->assertEquals('dc=acme,dc=org', $query->getDn());
         $this->assertEquals('listing', $query->getType());
     }
+
+    public function test_all()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $this->assertInstanceOf(Collection::class, ModelAllTest::all());
+    }
+
+    public function test_date_objects_are_converted_to_ldap_timestamps_in_where_clause()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $datetime = new \DateTime();
+
+        $query = ModelQueryDateConversionTest::query()->newInstance()
+            ->whereRaw('standard', '=', $datetime)
+            ->whereRaw('windows', '=', $datetime)
+            ->whereRaw('windowsinteger', '=', $datetime);
+
+        $this->assertEquals((new Timestamp('ldap'))->fromDateTime($datetime), $query->filters['and'][0]['value']);
+        $this->assertEquals((new Timestamp('windows'))->fromDateTime($datetime), $query->filters['and'][1]['value']);
+        $this->assertEquals((new Timestamp('windows-int'))->fromDateTime($datetime), $query->filters['and'][2]['value']);
+    }
+
+    public function test_exception_is_thrown_when_date_objects_cannot_be_converted()
+    {
+        Container::getNewInstance()->add(new Connection());
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Cannot convert field [non-existent-date]');
+
+        Entry::query()->where('non-existent-date', new \DateTime());
+    }
+}
+
+class ModelQueryDateConversionTest extends Model
+{
+    protected $dates = [
+        'standard' => 'ldap',
+        'windows' => 'windows',
+        'windowsinteger' => 'windows-int',
+    ];
+}
+
+class ModelAllTest extends Model
+{
+    public static function query()
+    {
+        $query = m::mock(Builder::class);
+        $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection());
+        return $query;
+    }
 }
 
 class ModelDestroyStub extends Model
@@ -321,9 +375,7 @@ class ModelDestroyStub extends Model
     public function find($dn, $columns = [])
     {
         $stub = m::mock(Entry::class);
-
         $stub->shouldReceive('delete')->once()->andReturnTrue();
-
         return $stub;
     }
 }

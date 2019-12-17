@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Query\Model;
 
+use DateTime;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Types\ActiveDirectory;
@@ -39,6 +40,18 @@ class Builder extends BaseBuilder
     public function getModel()
     {
         return $this->model;
+    }
+
+    /**
+     * Get a new model query builder instance.
+     *
+     * @param string|null $baseDn
+     *
+     * @return static
+     */
+    public function newInstance($baseDn = null)
+    {
+        return parent::newInstance($baseDn)->model($this->model);
     }
 
     /**
@@ -175,5 +188,26 @@ class Builder extends BaseBuilder
     protected function process(array $results)
     {
         return $this->model->hydrate(parent::process($results));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function prepareWhereValue($field, $value, $raw = false)
+    {
+        if ($value instanceof DateTime) {
+            $field = $this->model->normalizeAttributeKey($field);
+
+            if (!$this->model->isDateAttribute($field)) {
+                throw new \UnexpectedValueException(
+                    "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
+                    . " Refer to https://ldaprecord.com/docs/model-mutators/#date-mutators"
+                );
+            }
+
+            $value = $this->model->fromDateTime($this->model->getDates()[$field], $value);
+        }
+
+        return parent::prepareWhereValue($field, $value, $raw);
     }
 }

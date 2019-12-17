@@ -50,7 +50,7 @@ class Timestamp
     public function setType($type)
     {
         if (!in_array($type, $this->types)) {
-            throw new LdapRecordException("Unrecognized date type '{$this->type}'");
+            throw new LdapRecordException("Unrecognized LDAP date type [$type]");
         }
 
         $this->type = $type;

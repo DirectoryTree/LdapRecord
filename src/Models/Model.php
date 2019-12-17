@@ -206,7 +206,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function query()
     {
-        return (new static)->newQuery();
+        return (new static())->newQuery();
     }
 
     /**

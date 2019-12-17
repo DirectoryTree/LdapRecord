@@ -37,6 +37,12 @@ class UserTest extends TestCase
         $this->assertEquals([Utilities::encodePassword('foo')], $user->getModifications()[0]['values']);
     }
 
+    public function test_password_mutator_alias_works()
+    {
+        $user = new UserPasswordTestStub(['password' => 'secret']);
+        $this->assertEquals([Utilities::encodePassword('secret')], $user->getModifications()[0]['values']);
+    }
+
     public function test_changing_passwords()
     {
         $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);

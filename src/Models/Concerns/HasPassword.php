@@ -15,6 +15,18 @@ trait HasPassword
     protected $passwordAttribute = 'unicodepwd';
 
     /**
+     * Alias for setting the password on the user.
+     *
+     * @param string|array $password
+     *
+     * @throws \LdapRecord\ConnectionException
+     */
+    public function setPasswordAttribute($password)
+    {
+        $this->setUnicodepwdAttribute($password);
+    }
+
+    /**
      * Set the password on the user.
      *
      * @param string|array $password

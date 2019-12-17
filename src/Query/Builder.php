@@ -826,13 +826,27 @@ class Builder
         }
 
         // We'll escape the value if raw isn't requested.
-        $value = $raw ? $value : $this->escape($value);
+        $value = $this->prepareWhereValue($field, $value, $raw);
 
         $field = $this->escape($field, $ignore = null, 3);
 
         $this->addFilter($boolean, compact('field', 'operator', 'value'));
 
         return $this;
+    }
+
+    /**
+     * Prepare the value for being queried.
+     *
+     * @param string $field
+     * @param string $value
+     * @param bool   $raw
+     *
+     * @return string
+     */
+    protected function prepareWhereValue($field, $value, $raw = false)
+    {
+        return $raw ? $value : $this->escape($value);
     }
 
     /**

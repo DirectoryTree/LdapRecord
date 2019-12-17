@@ -85,8 +85,8 @@ abstract class OneToMany extends Relation
     /**
      * Get the results for the models relation recursively.
      *
-     * @param Collection       $models The models to retrieve nested relation results from
-     * @param array|string[]   $except The distinguished names to exclude
+     * @param Collection     $models The models to retrieve nested relation results from
+     * @param array|string[] $except The distinguished names to exclude
      *
      * @return Collection
      */

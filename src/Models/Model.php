@@ -186,13 +186,27 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get all the models from the directory.
+     *
+     * @param array|mixed $attributes
+     *
+     * @return Collection|static[]
+     */
+    public static function all($attributes = ['*'])
+    {
+        return static::query()
+            ->select($attributes)
+            ->paginate();
+    }
+
+    /**
      * Begin querying the model.
      *
      * @return Builder
      */
     public static function query()
     {
-        return (new static())->newQuery();
+        return (new static)->newQuery();
     }
 
     /**

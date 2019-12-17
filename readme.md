@@ -1,7 +1,7 @@
 <!-- readme.md -->
 
 <p align="center">
-    <img src="https://ldaprecord.com/assets/img/ldap-record.png" width="250">
+    <img src="https://ldaprecord.com/assets/img/logo.png" width="400">
 </p>
 
 <p align="center">
@@ -22,9 +22,9 @@
 </p>
 
 <h4 align="center">
-    <a href="https://ldaprecord.com/docs/1.0#quick-start">Quickstart</a>
+    <a href="https://ldaprecord.com/docs/installation/#installation-installing">Quickstart</a>
     <span> · </span>
-    <a href="https://ldaprecord.com/docs">Documentation</a>
+    <a href="https://ldaprecord.com">Documentation</a>
 </h4>
 
 ⏲ **Up and running in minutes.**

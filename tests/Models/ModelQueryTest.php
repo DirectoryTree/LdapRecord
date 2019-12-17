@@ -353,8 +353,8 @@ class ModelQueryTest extends TestCase
 class ModelQueryDateConversionTest extends Model
 {
     protected $dates = [
-        'standard' => 'ldap',
-        'windows' => 'windows',
+        'standard'       => 'ldap',
+        'windows'        => 'windows',
         'windowsinteger' => 'windows-int',
     ];
 }
@@ -366,6 +366,7 @@ class ModelAllTest extends Model
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection());
+
         return $query;
     }
 }
@@ -376,6 +377,7 @@ class ModelDestroyStub extends Model
     {
         $stub = m::mock(Entry::class);
         $stub->shouldReceive('delete')->once()->andReturnTrue();
+
         return $stub;
     }
 }

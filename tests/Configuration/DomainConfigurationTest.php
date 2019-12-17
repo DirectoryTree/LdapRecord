@@ -129,4 +129,11 @@ class DomainConfigurationTest extends TestCase
 
         new DomainConfiguration(['options' => 'invalid']);
     }
+
+    public function test_options_can_be_overridden()
+    {
+        $config = new DomainConfiguration(['hosts' => ['one', 'two']]);
+        $config->set('hosts', ['three', 'four']);
+        $this->assertEquals(['three', 'four'], $config->get('hosts'));
+    }
 }

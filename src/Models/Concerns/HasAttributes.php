@@ -114,7 +114,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    protected function isDateAttribute($key)
+    public function isDateAttribute($key)
     {
         return array_key_exists($key, $this->getDates());
     }
@@ -124,14 +124,14 @@ trait HasAttributes
      *
      * @return array
      */
-    protected function getDates()
+    public function getDates()
     {
         // Since array string keys can be unique depending on casing differences,
         // we need to normalize the array key case so they are merged properly.
-        $default = array_change_key_case($this->defaultDates, CASE_LOWER);
-        $dates = array_change_key_case($this->dates, CASE_LOWER);
-
-        return array_merge($default, $dates);
+        return array_merge(
+            array_change_key_case($this->defaultDates, CASE_LOWER),
+            array_change_key_case($this->dates, CASE_LOWER)
+        );
     }
 
     /**
@@ -429,7 +429,7 @@ trait HasAttributes
      *
      * @return float|string
      */
-    protected function fromDateTime($type, $value)
+    public function fromDateTime($type, $value)
     {
         return (new Timestamp($type))->fromDateTime($value);
     }
@@ -444,7 +444,7 @@ trait HasAttributes
      *
      * @return Carbon|null
      */
-    protected function asDateTime($type, $value)
+    public function asDateTime($type, $value)
     {
         return (new Timestamp($type))->toDateTime($value);
     }
@@ -456,7 +456,7 @@ trait HasAttributes
      *
      * @return string
      */
-    protected function normalizeAttributeKey($key)
+    public function normalizeAttributeKey($key)
     {
         // Since LDAP supports hyphens in attribute names,
         // we'll convert attributes being retrieved by

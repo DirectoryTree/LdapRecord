@@ -111,9 +111,9 @@ trait HasPassword
      *
      * @param string $password
      *
-     * @return string
-     *
      * @throws LdapRecordException
+     *
+     * @return string
      */
     protected function getHashedPassword($password)
     {

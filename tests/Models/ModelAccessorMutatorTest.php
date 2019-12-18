@@ -92,8 +92,7 @@ class ModelAccessorTest extends TestCase
 
         // Case insensitivity
         $this->assertInstanceOf(Carbon::class, $model->accountExpires);
-        $this->assertEquals($date->setTimezone('UTC')->micro(0), $model->accountexpires);
-        $this->assertEquals($date->format('Y-m-d H:i:s.u'), $model->getFirstAttribute('accountExpires'));
+        $this->assertTrue($date->setTimezone('UTC')->micro(0)->eq($model->accountexpires));
         $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $model->getAttributes()['accountexpires'][0]);
     }
 
@@ -109,8 +108,8 @@ class ModelAccessorTest extends TestCase
         $this->assertEquals('2019-09-10 22:03:04', $model->createTimestamp->toDateTimeString());
 
         $model->setFirstAttribute('createTimestamp', $model->createTimestamp->addMinute());
+        $this->assertEquals('UTC', $model->createTimestamp->timezoneName);
         $this->assertEquals('2019-09-10 22:03:04', $model->createTimestamp->toDateTimeString());
-        $this->assertEquals('2019-09-10 22:03:04.000000', $model->getFirstAttribute('createTimestamp'));
     }
 
     public function test_models_mutate_from_windows_type_to_date()
@@ -125,8 +124,8 @@ class ModelAccessorTest extends TestCase
         $this->assertEquals('2019-09-10 22:03:04', $model->whenchanged->toDateTimeString());
 
         $model->setFirstAttribute('whenChanged', $model->whenChanged->addMinute());
+        $this->assertEquals('UTC', $model->whenChanged->timezoneName);
         $this->assertEquals('2019-09-10 22:03:04', $model->whenChanged->toDateTimeString());
-        $this->assertEquals('2019-09-10 22:03:04.000000', $model->getFirstAttribute('whenChanged'));
     }
 
     public function test_models_mutate_from_windows_integer_type_to_date()
@@ -141,8 +140,8 @@ class ModelAccessorTest extends TestCase
         $this->assertEquals('2019-09-10 22:03:04', $model->accountExpires->toDateTimeString());
 
         $model->setFirstAttribute('accountExpires', $model->accountExpires->addMinute());
+        $this->assertEquals('UTC', $model->accountExpires->timezoneName);
         $this->assertEquals('2019-09-10 22:03:04', $model->accountExpires->toDateTimeString());
-        $this->assertEquals('2019-09-10 22:03:04.000000', $model->getFirstAttribute('accountExpires'));
     }
 }
 

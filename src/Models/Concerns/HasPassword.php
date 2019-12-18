@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Concerns;
 
 use LdapRecord\ConnectionException;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Password;
 
 trait HasPassword
@@ -15,16 +16,11 @@ trait HasPassword
     protected $passwordAttribute = 'unicodepwd';
 
     /**
-     * Alias for setting the password on the user.
+     * The method to use for hashing / encoding user passwords.
      *
-     * @param string|array $password
-     *
-     * @throws \LdapRecord\ConnectionException
+     * @var string
      */
-    public function setPasswordAttribute($password)
-    {
-        $this->setUnicodepwdAttribute($password);
-    }
+    protected $passwordHashMethod = 'encode';
 
     /**
      * Set the password on the user.
@@ -33,7 +29,7 @@ trait HasPassword
      *
      * @throws \LdapRecord\ConnectionException
      */
-    public function setUnicodepwdAttribute($password)
+    public function setPasswordAttribute($password)
     {
         $this->validateSecureConnection();
 
@@ -41,14 +37,26 @@ trait HasPassword
         // are changing the password for the current user.
         if (is_array($password)) {
             $this->setChangedPassword(
-                $this->getEncodedPassword($password[0]),
-                $this->getEncodedPassword($password[1])
+                $this->getHashedPassword($password[0]),
+                $this->getHashedPassword($password[1])
             );
         }
         // Otherwise, we will set the password normally.
         else {
-            $this->setPassword($this->getEncodedPassword($password));
+            $this->setPassword($this->getHashedPassword($password));
         }
+    }
+
+    /**
+     * Alias for setting the password on the user.
+     *
+     * @param string|array $password
+     *
+     * @throws \LdapRecord\ConnectionException
+     */
+    public function setUnicodepwdAttribute($password)
+    {
+        $this->setPasswordAttribute($password);
     }
 
     /**
@@ -83,31 +91,37 @@ trait HasPassword
     /**
      * Set the password on the model.
      *
-     * @param string $encodedPassword
+     * @param string $password
      *
      * @return void
      */
-    protected function setPassword($encodedPassword)
+    protected function setPassword($password)
     {
         $this->addModification(
             $this->newBatchModification(
                 $this->passwordAttribute,
                 LDAP_MODIFY_BATCH_REPLACE,
-                [$encodedPassword]
+                [$password]
             )
         );
     }
 
     /**
-     * Encode the given password.
+     * Encode / hash the given password.
      *
      * @param string $password
      *
      * @return string
+     *
+     * @throws LdapRecordException
      */
-    protected function getEncodedPassword($password)
+    protected function getHashedPassword($password)
     {
-        return Password::encode($password);
+        if (!method_exists(Password::class, $this->passwordHashMethod)) {
+            throw new LdapRecordException("Password hashing method [{$this->passwordHashMethod}] does not exist.");
+        }
+
+        return Password::{$this->passwordHashMethod}($password);
     }
 
     /**

@@ -44,7 +44,7 @@ class PasswordTest extends TestCase
         );
     }
 
-     public function test_ssha512()
+    public function test_ssha512()
     {
         $this->assertNotEquals(
             Password::ssha512('password'),

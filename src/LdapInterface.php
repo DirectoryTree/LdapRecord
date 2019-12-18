@@ -287,10 +287,12 @@ interface LdapInterface
      * @param bool   $onlyAttributes
      * @param int    $size
      * @param int    $time
+     * @param int    $deref
+     * @param array  $serverControls
      *
      * @return resource
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0);
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = []);
 
     /**
      * Reads an entry on the current connection.
@@ -422,6 +424,22 @@ interface LdapInterface
     public function modDelete($dn, array $entry);
 
     /**
+     * Extract information from an LDAP result.
+     *
+     * @link https://www.php.net/manual/en/function.ldap-parse-result.php
+     *
+     * @param resource $result
+     * @param int      $errorCode
+     * @param string   $dn
+     * @param string   $errorMessage
+     * @param array    $refs
+     * @param array    $serverControls
+     *
+     * @return bool
+     */
+    public function parseResult($result, $errorCode, $dn, $errorMessage, $refs, $serverControls = []);
+
+    /**
      * Send LDAP pagination control.
      *
      * @link http://php.net/manual/en/function.ldap-control-paged-result.php
@@ -439,8 +457,8 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-control-paged-result-response.php
      *
-     * @param $result
-     * @param string $cookie
+     * @param resource $result
+     * @param string   $cookie
      *
      * @return bool
      */

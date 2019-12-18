@@ -230,6 +230,9 @@ class Ldap implements LdapInterface
     {
         $this->host = $this->getConnectionString($hosts, $this->getProtocol(), $port);
 
+        // Reset the bound status if reinitializing the connection.
+        $this->bound = false;
+
         return $this->connection = ldap_connect($this->host);
     }
 
@@ -238,15 +241,21 @@ class Ldap implements LdapInterface
      */
     public function close()
     {
-        return is_resource($this->connection) ? ldap_close($this->connection) : false;
+        $connection = $this->connection;
+
+        $result = is_resource($connection) ? ldap_close($connection) : false;
+
+        $this->bound = false;
+
+        return $result;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        return ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time);
+        return ldap_search(...func_get_args());
     }
 
     /**
@@ -339,6 +348,14 @@ class Ldap implements LdapInterface
     public function modDelete($dn, array $entry)
     {
         return ldap_mod_del($this->connection, $dn, $entry);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResult($result, $errorCode, $dn, $errorMessage, $refs, $serverControls = [])
+    {
+        return ldap_parse_result($this->connection, ...func_get_args());
     }
 
     /**

@@ -25,7 +25,7 @@ class Password
      */
     public static function ssha($password)
     {
-        return "{SSHA}".static::makeHash($password, 'sha1');
+        return '{SSHA}'.static::makeHash($password, 'sha1');
     }
 
     /**
@@ -37,7 +37,7 @@ class Password
      */
     public static function ssha256($password)
     {
-        return "{SSHA256}".static::makeHash($password, 'hash', 'sha256');
+        return '{SSHA256}'.static::makeHash($password, 'hash', 'sha256');
     }
 
     /**
@@ -49,7 +49,7 @@ class Password
      */
     public static function ssha384($password)
     {
-        return "{SSHA384}".static::makeHash($password, 'hash', 'sha384');
+        return '{SSHA384}'.static::makeHash($password, 'hash', 'sha384');
     }
 
     /**
@@ -61,7 +61,7 @@ class Password
      */
     public static function ssha512($password)
     {
-        return "{SSHA512}".static::makeHash($password, 'hash', 'sha512');
+        return '{SSHA512}'.static::makeHash($password, 'hash', 'sha512');
     }
 
     /**
@@ -73,7 +73,7 @@ class Password
      */
     public static function sha($password)
     {
-        return "{SHA}".static::makeHash($password, 'sha1', $algo = null, $salt = false);
+        return '{SHA}'.static::makeHash($password, 'sha1', $algo = null, $salt = false);
     }
 
     /**
@@ -85,7 +85,7 @@ class Password
      */
     public static function sha256($password)
     {
-        return "{SHA256}".static::makeHash($password, 'hash', 'sha256', $salt = false);
+        return '{SHA256}'.static::makeHash($password, 'hash', 'sha256', $salt = false);
     }
 
     /**
@@ -97,7 +97,7 @@ class Password
      */
     public static function sha384($password)
     {
-        return "{SHA384}".static::makeHash($password, 'hash', 'sha384', $salt = false);
+        return '{SHA384}'.static::makeHash($password, 'hash', 'sha384', $salt = false);
     }
 
     /**
@@ -109,7 +109,7 @@ class Password
      */
     public static function sha512($password)
     {
-        return "{SHA512}".static::makeHash($password, 'hash', 'sha512', $salt = false);
+        return '{SHA512}'.static::makeHash($password, 'hash', 'sha512', $salt = false);
     }
 
     /**
@@ -121,7 +121,7 @@ class Password
      */
     public static function smd5($password)
     {
-        return "{SMD5}".static::makeHash($password, 'md5', $algo = null, $salt = true);
+        return '{SMD5}'.static::makeHash($password, 'md5', $algo = null, $salt = true);
     }
 
     /**
@@ -133,16 +133,16 @@ class Password
      */
     public static function md5($password)
     {
-        return "{MD5}".static::makeHash($password, 'md5', $algo = null, $salt = false);
+        return '{MD5}'.static::makeHash($password, 'md5', $algo = null, $salt = false);
     }
 
     /**
      * Make a new password hash.
      *
      * @param string      $password The password to make a hash of
-     * @param string      $method The hash function to use
-     * @param string|null $algo The algorithm to use for hashing
-     * @param bool        $salt Whether a salt is required
+     * @param string      $method   The hash function to use
+     * @param string|null $algo     The algorithm to use for hashing
+     * @param bool        $salt     Whether a salt is required
      *
      * @return string
      */
@@ -154,6 +154,6 @@ class Password
         // into the method for generating the password hash.
         $params = $algo ? [$algo, $password.$salt] : [$password.$salt];
 
-        return base64_encode(pack("H*", call_user_func($method, ...$params)) . $salt);
+        return base64_encode(pack('H*', call_user_func($method, ...$params)).$salt);
     }
 }

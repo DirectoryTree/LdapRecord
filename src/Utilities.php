@@ -143,18 +143,6 @@ class Utilities
     }
 
     /**
-     * Encode a password for transmission over LDAP.
-     *
-     * @param string $password The password to encode
-     *
-     * @return string
-     */
-    public static function encodePassword($password)
-    {
-        return iconv('UTF-8', 'UTF-16LE', '"'.$password.'"');
-    }
-
-    /**
      * Round a Windows timestamp down to seconds and remove
      * the seconds between 1601-01-01 and 1970-01-01.
      *

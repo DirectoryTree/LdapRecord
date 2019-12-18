@@ -26,17 +26,6 @@ class UtilitiesTest extends TestCase
         $this->assertEquals($unescaped, Utilities::unescape($escaped));
     }
 
-    public function test_encode_password()
-    {
-        $password = 'password';
-
-        $encoded = Utilities::encodePassword($password);
-
-        $expected = '2200700061007300730077006f00720064002200';
-
-        $this->assertEquals($expected, bin2hex($encoded));
-    }
-
     public function test_is_valid_sid()
     {
         $this->assertTrue(Utilities::isValidSid('S-1-5-21-3623811015-3361044348-30300820-1013'));

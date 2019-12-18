@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Utilities;
 use LdapRecord\ConnectionException;
+use LdapRecord\Models\Attributes\Password;
 
 trait HasPassword
 {
@@ -107,7 +107,7 @@ trait HasPassword
      */
     protected function getEncodedPassword($password)
     {
-        return Utilities::encodePassword($password);
+        return Password::encode($password);
     }
 
     /**

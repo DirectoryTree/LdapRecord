@@ -63,10 +63,17 @@ class DomainConfiguration
     }
 
     /**
-     * Sets a configuration option.
+     * Get all configuration options.
      *
-     * Throws an exception if the specified option does
-     * not exist, or if it's an invalid type.
+     * @return array
+     */
+    public function all()
+    {
+        return $this->options;
+    }
+
+    /**
+     * Sets a configuration option.
      *
      * @param string $key
      * @param mixed  $value
@@ -82,8 +89,6 @@ class DomainConfiguration
 
     /**
      * Returns the value for the specified configuration options.
-     *
-     * Throws an exception if the specified option does not exist.
      *
      * @param string $key
      *
@@ -113,10 +118,7 @@ class DomainConfiguration
     }
 
     /**
-     * Validates the new configuration option against its
-     * default value to ensure it's the correct type.
-     *
-     * If an invalid type is given, an exception is thrown.
+     * Validate the configuration option.
      *
      * @param string $key
      * @param mixed  $value

@@ -43,26 +43,6 @@ class Container
     ];
 
     /**
-     * Get or set the current instance of container.
-     *
-     * @return Container
-     */
-    public static function getInstance()
-    {
-        return static::$instance ?? static::getNewInstance();
-    }
-
-    /**
-     * Set and get a new instance of container.
-     *
-     * @return Container
-     */
-    public static function getNewInstance()
-    {
-        return static::$instance = new static;
-    }
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -88,6 +68,38 @@ class Container
                 }
             });
         }
+    }
+
+    /**
+     * Get or set the current instance of container.
+     *
+     * @return Container
+     */
+    public static function getInstance()
+    {
+        return static::$instance ?? static::getNewInstance();
+    }
+
+    /**
+     * Set and get a new instance of container.
+     *
+     * @return Container
+     */
+    public static function getNewInstance()
+    {
+        return static::$instance = new static;
+    }
+
+    /**
+     * Add a connection to the current container instance.
+     *
+     * @param Connection $connection
+     *
+     * @return static
+     */
+    public static function addConnection(Connection $connection)
+    {
+        return static::getInstance()->add($connection);
     }
 
     /**

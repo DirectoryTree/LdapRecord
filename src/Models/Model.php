@@ -51,6 +51,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public static $objectClasses = [];
 
     /**
+     * The connection container instance.
+     *
+     * @var Container
+     */
+    protected static $container;
+
+    /**
      * The current LDAP connection to utilize.
      *
      * @var string
@@ -108,7 +115,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function __callStatic($method, $parameters)
     {
-        return (new static())->$method(...$parameters);
+        return (new static)->$method(...$parameters);
     }
 
     /**
@@ -178,7 +185,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function on($connection = null)
     {
-        $instance = new static();
+        $instance = new static;
 
         $instance->setConnection($connection);
 
@@ -194,9 +201,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function all($attributes = ['*'])
     {
-        return static::query()
-            ->select($attributes)
-            ->paginate();
+        return static::query()->select($attributes)->paginate();
     }
 
     /**
@@ -206,7 +211,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function query()
     {
-        return (new static())->newQuery();
+        return (new static)->newQuery();
     }
 
     /**
@@ -228,9 +233,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newQueryWithoutScopes()
     {
-        $connection = static::resolveConnection($this->connection);
-
-        return $connection->query()->model($this);
+        return static::resolveConnection($this->connection)->query()->model($this);
     }
 
     /**
@@ -254,7 +257,49 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function resolveConnection($connection = null)
     {
-        return Container::getInstance()->get($connection);
+        return static::getConnectionContainer()->get($connection);
+    }
+
+    /**
+     * Get the connection container.
+     *
+     * @return Container
+     */
+    public static function getConnectionContainer()
+    {
+        return static::$container ?? static::getDefaultConnectionContainer();
+    }
+
+    /**
+     * Get the default singleton container instance.
+     *
+     * @return Container
+     */
+    public static function getDefaultConnectionContainer()
+    {
+        return Container::getInstance();
+    }
+
+    /**
+     * Set the connection container.
+     *
+     * @param Container $container
+     *
+     * @return void
+     */
+    public static function setConnectionContainer(Container $container)
+    {
+        static::$container = $container;
+    }
+
+    /**
+     * Unset the connection container.
+     *
+     * @return void
+     */
+    public static function unsetConnectionContainer()
+    {
+        static::$container = null;
     }
 
     /**

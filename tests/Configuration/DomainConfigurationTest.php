@@ -67,6 +67,25 @@ class DomainConfigurationTest extends TestCase
         );
     }
 
+    public function test_get_all()
+    {
+        $config = new DomainConfiguration();
+
+        $this->assertEquals([
+            'hosts' => [],
+            'timeout' => 5,
+            'version' => 3,
+            'port' => 389,
+            'base_dn' => '',
+            'username' => '',
+            'password' => '',
+            'use_ssl' => false,
+            'use_tls' => false,
+            'follow_referrals' => false,
+            'options' => [],
+        ], $config->all());
+    }
+
     public function test_invalid_port()
     {
         $this->expectException(ConfigurationException::class);

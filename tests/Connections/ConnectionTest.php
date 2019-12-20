@@ -15,7 +15,7 @@ class ConnectionTest extends TestCase
 {
     public function test_connection_creates_ldap_connection()
     {
-        $conn = new Connection(new DomainConfiguration());
+        $conn = new Connection([]);
 
         $this->assertInstanceOf(LdapInterface::class, $conn->getLdapConnection());
         $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
@@ -87,11 +87,6 @@ class ConnectionTest extends TestCase
 
     public function test_auth_passes_with_rebind()
     {
-        $config = new DomainConfiguration([
-            'username' => 'foo',
-            'password' => 'bar',
-        ]);
-
         $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
@@ -107,19 +102,16 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('bind')->once()->withArgs(['foo', 'bar'])->andReturn(true);
         $ldap->shouldReceive('close')->once()->andReturn(true);
 
-        $conn = new Connection($config);
-        $conn->setLdapConnection($ldap);
+        $conn = new Connection([
+            'username' => 'foo',
+            'password' => 'bar',
+        ], $ldap);
 
         $this->assertTrue($conn->auth()->attempt('username', 'password'));
     }
 
     public function test_auth_rebind_failure()
     {
-        $config = new DomainConfiguration([
-            'username' => 'test',
-            'password' => 'test',
-        ]);
-
         $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
@@ -136,8 +128,11 @@ class ConnectionTest extends TestCase
 
         $this->expectException(BindException::class);
 
-        $conn = new Connection($config);
-        $conn->setLdapConnection($ldap);
+        $conn = new Connection([
+            'username' => 'test',
+            'password' => 'test',
+        ], $ldap);
+
         $conn->connect();
 
         $this->assertTrue($conn->auth()->attempt('username', 'password'));
@@ -145,11 +140,6 @@ class ConnectionTest extends TestCase
 
     public function test_auth_passes_without_rebind()
     {
-        $config = new DomainConfiguration([
-            'username' => 'test',
-            'password' => 'test',
-        ]);
-
         $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('connect')->once()->andReturn(true);
@@ -159,28 +149,16 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('isBound')->once()->andReturn(true);
         $ldap->shouldReceive('close')->once()->andReturn(true);
 
-        $conn = new Connection($config);
-        $conn->setLdapConnection($ldap);
+        $conn = new Connection([
+            'username' => 'test',
+            'password' => 'test',
+        ], $ldap);
 
         $this->assertTrue($conn->auth()->attempt('username', 'password', true));
     }
 
-    public function test_prepare_connection()
+    public function test_connections_are_setup()
     {
-        $config = m::mock(DomainConfiguration::class);
-
-        $config->shouldReceive('get')->withArgs(['hosts'])->once()->andReturn('host');
-        $config->shouldReceive('get')->withArgs(['port'])->once()->andReturn('389');
-        $config->shouldReceive('get')->withArgs(['use_ssl'])->once()->andReturn(false);
-        $config->shouldReceive('get')->withArgs(['use_tls'])->once()->andReturn(false);
-        $config->shouldReceive('get')->withArgs(['version'])->once()->andReturn(3);
-        $config->shouldReceive('get')->withArgs(['timeout'])->once()->andReturn(5);
-        $config->shouldReceive('get')->withArgs(['follow_referrals'])->andReturn(false);
-
-        // Setting LDAP_OPT_PROTOCOL_VERSION to "2" here enforces the documented behavior of honoring the
-        // "version" key over LDAP_OPT_PROTOCOL_VERSION in custom_options.
-        $config->shouldReceive('get')->withArgs(['options'])->andReturn([LDAP_OPT_PROTOCOL_VERSION => 2]);
-
         $ldap = m::mock(LdapInterface::class);
 
         $ldap->shouldReceive('setOptions')->once()->withArgs([[
@@ -188,11 +166,10 @@ class ConnectionTest extends TestCase
             LDAP_OPT_NETWORK_TIMEOUT  => 5,
             LDAP_OPT_REFERRALS        => false,
         ]]);
-        $ldap->shouldReceive('connect')->once()->withArgs(['host', '389']);
+
+        $ldap->shouldReceive('connect')->once()->withArgs([['foo', 'bar'], '389']);
         $ldap->shouldReceive('isBound')->once()->andReturn(false);
 
-        $conn = new Connection($config, $ldap);
-
-        $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
+        new Connection(['hosts' => ['foo', 'bar']], $ldap);
     }
 }

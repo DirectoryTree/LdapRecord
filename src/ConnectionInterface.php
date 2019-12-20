@@ -2,19 +2,12 @@
 
 namespace LdapRecord;
 
+use Closure;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 interface ConnectionInterface
 {
-    /**
-     * Constructor.
-     *
-     * @param array             $config
-     * @param LdapInterface|null $ldap
-     */
-    public function __construct($config, LdapInterface $ldap = null);
-
     /**
      * Get the LDAP connection instance.
      *
@@ -85,6 +78,22 @@ interface ConnectionInterface
      * @return ConnectionInterface
      */
     public function connect($username = null, $password = null);
+
+    /**
+     * Perform the operation on the LDAP connection.
+     *
+     * @param Closure $operation
+     *
+     * @return mixed
+     */
+    public function run(Closure $operation);
+
+    /**
+     * Disconnect from the LDAP server.
+     *
+     * @return void
+     */
+    public function disconnect();
 
     /**
      * Determine if the LDAP connection is bound.

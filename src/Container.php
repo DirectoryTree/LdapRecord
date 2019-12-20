@@ -104,6 +104,20 @@ class Container
     }
 
     /**
+     * Get a connection by name or return the default.
+     *
+     * @param string|null $name
+     *
+     * @throws ContainerException If the given connection does not exist.
+     *
+     * @return Connection
+     */
+    public static function getConnection($name = null)
+    {
+        return static::getInstance()->get($name);
+    }
+
+    /**
      * Add a new connection into the container.
      *
      * @param ConnectionInterface $connection
@@ -111,7 +125,7 @@ class Container
      *
      * @return $this
      */
-    public function add(ConnectionInterface $connection, string $name = null)
+    public function add(ConnectionInterface $connection, $name = null)
     {
         $this->connections[$name ?? $this->default] = $connection;
 
@@ -151,9 +165,9 @@ class Container
      *
      * @throws ContainerException If the given connection does not exist.
      *
-     * @return mixed
+     * @return Connection
      */
-    public function get(string $name = null)
+    public function get($name = null)
     {
         $name = $name ?? $this->default;
 

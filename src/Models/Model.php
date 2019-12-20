@@ -115,7 +115,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function __callStatic($method, $parameters)
     {
-        return (new static)->$method(...$parameters);
+        return (new static())->$method(...$parameters);
     }
 
     /**
@@ -185,7 +185,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function on($connection = null)
     {
-        $instance = new static;
+        $instance = new static();
 
         $instance->setConnection($connection);
 
@@ -211,7 +211,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function query()
     {
-        return (new static)->newQuery();
+        return (new static())->newQuery();
     }
 
     /**

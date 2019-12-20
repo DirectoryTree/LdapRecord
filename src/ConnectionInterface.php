@@ -10,7 +10,7 @@ interface ConnectionInterface
     /**
      * Constructor.
      *
-     * @param array             $config
+     * @param array              $config
      * @param LdapInterface|null $ldap
      */
     public function __construct($config, LdapInterface $ldap = null);

@@ -59,7 +59,7 @@ class Container
      */
     public static function getNewInstance()
     {
-        return static::$instance = new static;
+        return static::$instance = new static();
     }
 
     /**

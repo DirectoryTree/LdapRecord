@@ -2,6 +2,8 @@
 
 namespace LdapRecord;
 
+use ErrorException;
+
 class Ldap implements LdapInterface
 {
     /**
@@ -206,6 +208,14 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
+    public function getOption($option, $value)
+    {
+        return ldap_get_option($this->connection, $option, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setRebindCallback(callable $callback)
     {
         return ldap_set_rebind_proc($this->connection, $callback);
@@ -218,7 +228,7 @@ class Ldap implements LdapInterface
     {
         try {
             return ldap_start_tls($this->connection);
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -230,7 +240,6 @@ class Ldap implements LdapInterface
     {
         $this->host = $this->getConnectionString($hosts, $this->getProtocol(), $port);
 
-        // Reset the bound status if reinitializing the connection.
         $this->bound = false;
 
         return $this->connection = ldap_connect($this->host);
@@ -241,10 +250,9 @@ class Ldap implements LdapInterface
      */
     public function close()
     {
-        $connection = $this->connection;
+        $result = is_resource($this->connection) ? ldap_close($this->connection) : false;
 
-        $result = is_resource($connection) ? ldap_close($connection) : false;
-
+        $this->connection = null;
         $this->bound = false;
 
         return $result;
@@ -279,10 +287,6 @@ class Ldap implements LdapInterface
      */
     public function bind($username, $password, $sasl = false)
     {
-        if ($sasl) {
-            return $this->bound = ldap_sasl_bind($this->connection, null, null, 'GSSAPI');
-        }
-
         return $this->bound = ldap_bind($this->connection, $username, html_entity_decode($password));
     }
 

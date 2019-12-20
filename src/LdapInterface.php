@@ -216,6 +216,18 @@ interface LdapInterface
     public function setOptions(array $options = []);
 
     /**
+     * Get the value for the LDAP option.
+     *
+     * @link https://www.php.net/manual/en/function.ldap-get-option.php
+     *
+     * @param int   $option
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    public function getOption($option, $value);
+
+    /**
      * Set a callback function to do re-binds on referral chasing.
      *
      * @link http://php.net/manual/en/function.ldap-set-rebind-proc.php
@@ -257,13 +269,12 @@ interface LdapInterface
      *
      * @param string $username
      * @param string $password
-     * @param bool   $sasl
      *
      * @throws ConnectionException If starting TLS fails.
      *
      * @return bool
      */
-    public function bind($username, $password, $sasl = false);
+    public function bind($username, $password);
 
     /**
      * Closes the current connection.

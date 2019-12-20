@@ -93,13 +93,14 @@ class Container
     /**
      * Add a connection to the current container instance.
      *
-     * @param Connection $connection
+     * @param Connection  $connection
+     * @param string|null $name
      *
      * @return static
      */
-    public static function addConnection(Connection $connection)
+    public static function addConnection(Connection $connection, $name = null)
     {
-        return static::getInstance()->add($connection);
+        return static::getInstance()->add($connection, $name);
     }
 
     /**

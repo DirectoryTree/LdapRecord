@@ -263,7 +263,7 @@ class Ldap implements LdapInterface
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        return ldap_search(...func_get_args());
+        return ldap_search($this->connection, ...func_get_args());
     }
 
     /**

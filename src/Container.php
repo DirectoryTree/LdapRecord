@@ -2,13 +2,13 @@
 
 namespace LdapRecord;
 
+use LdapRecord\Log\HasLogger;
 use LdapRecord\Log\EventLogger;
-use LdapRecord\Log\LogsInformation;
 use LdapRecord\Events\DispatchesEvents;
 
 class Container
 {
-    use DispatchesEvents, LogsInformation;
+    use DispatchesEvents, HasLogger;
 
     /**
      * Current instance of the container.
@@ -49,7 +49,7 @@ class Container
      */
     public static function getInstance()
     {
-        return self::$instance ?? self::getNewInstance();
+        return static::$instance ?? static::getNewInstance();
     }
 
     /**
@@ -59,7 +59,7 @@ class Container
      */
     public static function getNewInstance()
     {
-        return self::$instance = new self();
+        return static::$instance = new static;
     }
 
     /**

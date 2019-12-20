@@ -168,7 +168,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function disconnect()
     {
@@ -176,7 +176,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function run(Closure $operation)
     {
@@ -192,9 +192,9 @@ class Connection implements ConnectionInterface
      *
      * @param Closure $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function runOperationCallback(Closure $operation)
     {
@@ -239,9 +239,9 @@ class Connection implements ConnectionInterface
      * @param LdapRecordException $e
      * @param Closure             $callback
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $callback)
     {

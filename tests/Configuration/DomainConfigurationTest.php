@@ -72,17 +72,17 @@ class DomainConfigurationTest extends TestCase
         $config = new DomainConfiguration();
 
         $this->assertEquals([
-            'hosts' => [],
-            'timeout' => 5,
-            'version' => 3,
-            'port' => 389,
-            'base_dn' => '',
-            'username' => '',
-            'password' => '',
-            'use_ssl' => false,
-            'use_tls' => false,
+            'hosts'            => [],
+            'timeout'          => 5,
+            'version'          => 3,
+            'port'             => 389,
+            'base_dn'          => '',
+            'username'         => '',
+            'password'         => '',
+            'use_ssl'          => false,
+            'use_tls'          => false,
             'follow_referrals' => false,
-            'options' => [],
+            'options'          => [],
         ], $config->all());
     }
 

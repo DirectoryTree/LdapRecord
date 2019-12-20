@@ -10,10 +10,10 @@ interface ConnectionInterface
     /**
      * Constructor.
      *
-     * @param array|DomainConfiguration $configuration
-     * @param LdapInterface|null        $ldap
+     * @param array             $config
+     * @param LdapInterface|null $ldap
      */
-    public function __construct($configuration, LdapInterface $ldap = null);
+    public function __construct($config, LdapInterface $ldap = null);
 
     /**
      * Get the LDAP connection instance.
@@ -45,16 +45,16 @@ interface ConnectionInterface
      *
      * @return $this
      */
-    public function setLdapConnection(LdapInterface $connection = null);
+    public function setLdapConnection(LdapInterface $connection);
 
     /**
      * Set the connection configuration.
      *
-     * @param DomainConfiguration|array $configuration
+     * @param array $config
      *
      * @throws \LdapRecord\Configuration\ConfigurationException
      */
-    public function setConfiguration($configuration = []);
+    public function setConfiguration($config = []);
 
     /**
      * Get a new auth guard instance.

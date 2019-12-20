@@ -4,7 +4,6 @@ namespace LdapRecord;
 
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
-use InvalidArgumentException;
 use LdapRecord\Query\Builder;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
@@ -29,10 +28,11 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct($configuration = [], LdapInterface $ldap = null)
+    public function __construct($config = [], LdapInterface $ldap = null)
     {
-        $this->setConfiguration($configuration)
-            ->setLdapConnection($ldap ?? new Ldap());
+        $this->setConfiguration($config);
+
+        $this->setLdapConnection($ldap ?? new Ldap());
     }
 
     /**
@@ -50,39 +50,21 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setConfiguration($configuration = [])
+    public function setConfiguration($config = [])
     {
-        if (is_array($configuration)) {
-            $configuration = new DomainConfiguration($configuration);
-        }
+        $this->configuration = new DomainConfiguration($config);
 
-        if ($configuration instanceof DomainConfiguration) {
-            $this->configuration = $configuration;
-
-            return $this;
-        }
-
-        throw new InvalidArgumentException(
-            sprintf('Configuration must be array or instance of %s', DomainConfiguration::class)
-        );
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setLdapConnection(LdapInterface $ldap = null)
+    public function setLdapConnection(LdapInterface $ldap)
     {
-        // We will create a standard connection if one isn't given.
-        $this->ldap = $ldap ?: new Ldap();
+        $this->ldap = $ldap;
 
-        // Prepare the connection.
-        $this->prepareConnection();
-
-        // Instantiate the LDAP connection.
-        $this->ldap->connect(
-            $this->configuration->get('hosts'),
-            $this->configuration->get('port')
-        );
+        $this->setup();
 
         return $this;
     }
@@ -138,15 +120,10 @@ class Connection implements ConnectionInterface
      */
     public function connect($username = null, $password = null)
     {
-        $guard = $this->auth();
-
         if (is_null($username) && is_null($password)) {
-            // If both the username and password are null, we'll connect to the server
-            // using the configured administrator username and password.
-            $guard->bindAsConfiguredUser();
+            $this->auth()->bindAsConfiguredUser();
         } else {
-            // Bind to the server with the specified username and password otherwise.
-            $guard->bind($username, $password);
+            $this->auth()->bind($username, $password);
         }
 
         return $this;
@@ -161,14 +138,17 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Prepares the connection by setting configured parameters.
-     *
-     * @throws \LdapRecord\Configuration\ConfigurationException When configuration options requested do not exist
+     * Setup the LDAP connection.
      *
      * @return void
      */
-    protected function prepareConnection()
+    protected function setup()
     {
+        $this->ldap->connect(
+            $this->configuration->get('hosts'),
+            $this->configuration->get('port')
+        );
+
         if ($this->configuration->get('use_ssl')) {
             $this->ldap->ssl();
         } elseif ($this->configuration->get('use_tls')) {

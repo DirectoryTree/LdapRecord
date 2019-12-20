@@ -4,7 +4,7 @@ namespace LdapRecord\Log;
 
 use Psr\Log\LoggerInterface;
 
-trait LogsInformation
+trait HasLogger
 {
     /**
      * The logger instance.

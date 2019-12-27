@@ -12,6 +12,7 @@ class BuilderTest extends TestCase
 {
     use CreatesConnectedLdapMocks;
 
+    /** @return Builder */
     protected function newBuilder()
     {
         $ldap = $this->newConnectedLdapMock();
@@ -270,6 +271,17 @@ class BuilderTest extends TestCase
         $this->assertEquals('not_ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(!(cn=*test))', $b->getUnescapedQuery());
+    }
+
+    public function test_where_deleted()
+    {
+        $b = $this->newBuilder();
+
+        $b->whereDeleted();
+
+        $this->assertEquals([['oid' => '1.2.840.113556.1.4.417', 'iscritical' => true]], $b->controls);
+
+        $this->assertEquals('(isDeleted=TRUE)', $b->getUnescapedQuery());
     }
 
     public function test_where_between()
@@ -900,5 +912,45 @@ class BuilderTest extends TestCase
             ->where('other', '!', 'value');
 
         $this->assertEquals('(&(!(field=value))(!(other=value)))', $b->getUnescapedQuery());
+    }
+
+    public function test_controls_can_be_added()
+    {
+        $b = $this->newBuilder();
+        $this->assertEmpty($b->controls);
+
+        $b->addControl('foo', true);
+        $this->assertEquals([['oid' => 'foo', 'isCritical' => true]], $b->controls);
+    }
+
+    public function test_has_control()
+    {
+        $b = $this->newBuilder();
+        $this->assertFalse($b->hasControl('foo'));
+
+        $b->addControl('foo');
+        $this->assertTrue($b->hasControl('foo'));
+    }
+
+    public function test_controls_are_not_stacked()
+    {
+        $b = $this->newBuilder();
+        $b->addControl('foo');
+        $b->addControl('foo');
+
+        $this->assertCount(1, $b->controls);
+        $this->assertEquals([['oid' => 'foo', 'isCritical' => false]], $b->controls);
+    }
+
+    public function test_getting_results_sets_ldap_controls()
+    {
+        $b = $this->newBuilder();
+
+        $ldap = $b->getConnection()->getLdapConnection();
+        $ldap->shouldReceive('setOption')->once()->withArgs([LDAP_OPT_SERVER_CONTROLS, []]);
+        $ldap->shouldReceive('search')->once()->andReturnNull();
+        $ldap->shouldReceive('getEntries')->once()->andReturnNull();
+
+        $b->get();
     }
 }

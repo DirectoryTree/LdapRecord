@@ -37,6 +37,13 @@ class Builder
     ];
 
     /**
+     * The LDAP server controls to be sent.
+     *
+     * @var array
+     */
+    public $controls = [];
+
+    /**
      * The size limit of the query.
      *
      * @var int
@@ -258,7 +265,7 @@ class Builder
     /**
      * Returns the current Connection instance.
      *
-     * @return LdapInterface
+     * @return Connection
      */
     public function getConnection()
     {
@@ -472,6 +479,11 @@ class Builder
     protected function run($filter)
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($filter) {
+            // Before running the query, we will set the LDAP server controls. This
+            // allows the controls to be automatically reset upon each new query
+            // that is conducted on the same connection during each request.
+            $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
+
             return $ldap->{$this->type}(
                 $this->getDn(),
                 $filter,
@@ -1044,6 +1056,55 @@ class Builder
     public function whereNotEndsWith($field, $value)
     {
         return $this->where($field, 'not_ends_with', $value);
+    }
+
+    /**
+     * Only include deleted models in the results.
+     *
+     * @return $this
+     */
+    public function whereDeleted()
+    {
+        return $this->withDeleted()->whereEquals('isDeleted', 'TRUE');
+    }
+
+    /**
+     * Set the LDAP control option to include deleted LDAP models.
+     *
+     * @return $this
+     */
+    public function withDeleted()
+    {
+        return $this->addControl('1.2.840.113556.1.4.417', $isCritical = true);
+    }
+
+    /**
+     * Add a server control to the query.
+     *
+     * @param string $oid
+     * @param bool   $isCritical
+     *
+     * @return $this
+     */
+    public function addControl($oid, $isCritical = false)
+    {
+        if (!$this->hasControl($oid)) {
+            $this->controls[] = compact('oid', 'isCritical');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Determine if the server control exists on the query.
+     *
+     * @param string $oid
+     *
+     * @return bool
+     */
+    public function hasControl($oid)
+    {
+        return array_search($oid, array_column($this->controls, 'oid')) !== false;
     }
 
     /**

@@ -296,7 +296,7 @@ class Ldap implements LdapInterface
      */
     public function bind($username, $password)
     {
-        return $this->executeFailableOperation(
+        return $this->bound = $this->executeFailableOperation(
             'ldap_bind',
             $this->connection,
             $username, html_entity_decode($password)

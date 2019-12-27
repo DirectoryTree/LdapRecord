@@ -812,7 +812,7 @@ class Builder
 
         // We'll bypass the 'has' and 'notHas' operator since they
         // only require two arguments inside the where method.
-        $bypass = [Operator::$has, Operator::$notHas];
+        $bypass = ['*', '!*'];
 
         // Here we will make some assumptions about the operator. If only
         // 2 values are passed to the method, we will assume that
@@ -821,8 +821,8 @@ class Builder
             list($value, $operator) = [$operator, '='];
         }
 
-        if (!in_array($operator, Operator::all())) {
-            throw new InvalidArgumentException("Invalid where operator: {$operator}");
+        if (!in_array($operator, $this->grammar->getOperators())) {
+            throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
         // We'll escape the value if raw isn't requested.
@@ -875,7 +875,7 @@ class Builder
      */
     public function whereEquals($field, $value)
     {
-        return $this->where($field, Operator::$equals, $value);
+        return $this->where($field, '=', $value);
     }
 
     /**
@@ -888,7 +888,7 @@ class Builder
      */
     public function whereNotEquals($field, $value)
     {
-        return $this->where($field, Operator::$doesNotEqual, $value);
+        return $this->where($field, '!', $value);
     }
 
     /**
@@ -901,7 +901,7 @@ class Builder
      */
     public function whereApproximatelyEquals($field, $value)
     {
-        return $this->where($field, Operator::$approximatelyEquals, $value);
+        return $this->where($field, '~=', $value);
     }
 
     /**
@@ -913,7 +913,7 @@ class Builder
      */
     public function whereHas($field)
     {
-        return $this->where($field, Operator::$has);
+        return $this->where($field, '*');
     }
 
     /**
@@ -925,7 +925,7 @@ class Builder
      */
     public function whereNotHas($field)
     {
-        return $this->where($field, Operator::$notHas);
+        return $this->where($field, '!*');
     }
 
     /**
@@ -938,7 +938,7 @@ class Builder
      */
     public function whereContains($field, $value)
     {
-        return $this->where($field, Operator::$contains, $value);
+        return $this->where($field, 'contains', $value);
     }
 
     /**
@@ -951,7 +951,7 @@ class Builder
      */
     public function whereNotContains($field, $value)
     {
-        return $this->where($field, Operator::$notContains, $value);
+        return $this->where($field, 'not_contains', $value);
     }
 
     /**
@@ -997,7 +997,7 @@ class Builder
      */
     public function whereStartsWith($field, $value)
     {
-        return $this->where($field, Operator::$startsWith, $value);
+        return $this->where($field, 'starts_with', $value);
     }
 
     /**
@@ -1010,7 +1010,7 @@ class Builder
      */
     public function whereNotStartsWith($field, $value)
     {
-        return $this->where($field, Operator::$notStartsWith, $value);
+        return $this->where($field, 'not_starts_with', $value);
     }
 
     /**
@@ -1023,7 +1023,7 @@ class Builder
      */
     public function whereEndsWith($field, $value)
     {
-        return $this->where($field, Operator::$endsWith, $value);
+        return $this->where($field, 'ends_with', $value);
     }
 
     /**
@@ -1036,7 +1036,7 @@ class Builder
      */
     public function whereNotEndsWith($field, $value)
     {
-        return $this->where($field, Operator::$notEndsWith, $value);
+        return $this->where($field, 'not_ends_with', $value);
     }
 
     /**
@@ -1078,7 +1078,7 @@ class Builder
      */
     public function orWhereHas($field)
     {
-        return $this->orWhere($field, Operator::$has);
+        return $this->orWhere($field, '*');
     }
 
     /**
@@ -1090,7 +1090,7 @@ class Builder
      */
     public function orWhereNotHas($field)
     {
-        return $this->orWhere($field, Operator::$notHas);
+        return $this->orWhere($field, '!*');
     }
 
     /**
@@ -1103,7 +1103,7 @@ class Builder
      */
     public function orWhereEquals($field, $value)
     {
-        return $this->orWhere($field, Operator::$equals, $value);
+        return $this->orWhere($field, '=', $value);
     }
 
     /**
@@ -1116,7 +1116,7 @@ class Builder
      */
     public function orWhereNotEquals($field, $value)
     {
-        return $this->orWhere($field, Operator::$doesNotEqual, $value);
+        return $this->orWhere($field, '!', $value);
     }
 
     /**
@@ -1129,7 +1129,7 @@ class Builder
      */
     public function orWhereApproximatelyEquals($field, $value)
     {
-        return $this->orWhere($field, Operator::$approximatelyEquals, $value);
+        return $this->orWhere($field, '~=', $value);
     }
 
     /**
@@ -1142,7 +1142,7 @@ class Builder
      */
     public function orWhereContains($field, $value)
     {
-        return $this->orWhere($field, Operator::$contains, $value);
+        return $this->orWhere($field, 'contains', $value);
     }
 
     /**
@@ -1155,7 +1155,7 @@ class Builder
      */
     public function orWhereNotContains($field, $value)
     {
-        return $this->orWhere($field, Operator::$notContains, $value);
+        return $this->orWhere($field, 'not_contains', $value);
     }
 
     /**
@@ -1168,7 +1168,7 @@ class Builder
      */
     public function orWhereStartsWith($field, $value)
     {
-        return $this->orWhere($field, Operator::$startsWith, $value);
+        return $this->orWhere($field, 'starts_with', $value);
     }
 
     /**
@@ -1181,7 +1181,7 @@ class Builder
      */
     public function orWhereNotStartsWith($field, $value)
     {
-        return $this->orWhere($field, Operator::$notStartsWith, $value);
+        return $this->orWhere($field, 'not_starts_with', $value);
     }
 
     /**
@@ -1194,7 +1194,7 @@ class Builder
      */
     public function orWhereEndsWith($field, $value)
     {
-        return $this->orWhere($field, Operator::$endsWith, $value);
+        return $this->orWhere($field, 'ends_with', $value);
     }
 
     /**
@@ -1207,7 +1207,7 @@ class Builder
      */
     public function orWhereNotEndsWith($field, $value)
     {
-        return $this->orWhere($field, Operator::$notEndsWith, $value);
+        return $this->orWhere($field, 'not_ends_with', $value);
     }
 
     /**
@@ -1599,7 +1599,7 @@ class Builder
                 $this->where($field, $condition, $value, $boolean);
             } else {
                 // If the value is not an array, we will assume an equals clause.
-                $this->where($key, Operator::$equals, $value, $boolean, $raw);
+                $this->where($key, '=', $value, $boolean, $raw);
             }
         }
 

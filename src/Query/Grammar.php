@@ -2,8 +2,42 @@
 
 namespace LdapRecord\Query;
 
+use UnexpectedValueException;
+
 class Grammar
 {
+    /**
+     * The query operators and their method names.
+     *
+     * @var array
+     */
+    public $operators = [
+        '*' => 'has',
+        '!*' => 'notHas',
+        '=' => 'equals',
+        '!' => 'doesNotEqual',
+        '!=' => 'doesNotEqual',
+        '>=' => 'greaterThanOrEquals',
+        '<=' => 'lessThanOrEquals',
+        '~=' => 'approximatelyEquals',
+        'starts_with' => 'startsWith',
+        'not_starts_with' => 'notStartsWith',
+        'ends_with' => 'endsWith',
+        'not_ends_with' => 'notEndsWith',
+        'contains' => 'contains',
+        'not_contains' => 'notContains',
+    ];
+
+    /**
+     * Get all the available operators.
+     *
+     * @return array
+     */
+    public function getOperators()
+    {
+        return array_keys($this->operators);
+    }
+
     /**
      * Wraps a query string in brackets.
      *
@@ -29,29 +63,44 @@ class Grammar
      */
     public function compile(Builder $builder)
     {
-        $ands = $builder->filters['and'];
-        $ors = $builder->filters['or'];
-        $raws = $builder->filters['raw'];
+        $query = $this->generateAndConcatenate($builder);
 
-        $query = $this->concatenate($raws);
-        $query = $this->compileWheres($ands, $query);
-        $query = $this->compileOrWheres($ors, $query);
+        if ($builder->isNested()) {
+            return $query;
+        }
 
-        // We need to check if the query is already nested, otherwise
-        // we'll nest it here and return the result.
-        if (!$builder->isNested()) {
-            $total = count($ands) + count($raws);
+        $ands = count($builder->filters['and']);
+        $ors = count($builder->filters['or']);
 
-            // Make sure we wrap the query in an 'and' if using
-            // multiple filters. We also need to check if only
-            // one where is used with multiple orWheres, that
-            // we wrap it in an `and` query.
-            if ($total > 1 || (count($ands) === 1 && count($ors) > 0)) {
-                $query = $this->compileAnd($query);
-            }
+        $requiredFilters = $ands + count($builder->filters['raw']);
+
+        // Make sure we wrap the query in an 'and' if using
+        // multiple filters. We also need to check if only
+        // one where is used with multiple orWheres, that
+        // we wrap it in an `and` query.
+        if ($requiredFilters > 1 || ($ands === 1 && $ors > 0)) {
+            $query = $this->compileAnd($query);
         }
 
         return $query;
+    }
+
+    /**
+     * Generate and concatenate the query filter.
+     *
+     * @param Builder $query
+     *
+     * @return string
+     */
+    protected function generateAndConcatenate(Builder $query)
+    {
+        return $this->compileOrWheres(
+            $query->filters['or'],
+            $this->compileWheres(
+                $query->filters['and'],
+                $this->concatenate($query->filters['raw'])
+            )
+        );
     }
 
     /**
@@ -83,7 +132,7 @@ class Grammar
      */
     public function compileEquals($field, $value)
     {
-        return $this->wrap($field.Operator::$equals.$value);
+        return $this->wrap($field.'='.$value);
     }
 
     /**
@@ -128,7 +177,7 @@ class Grammar
      */
     public function compileGreaterThanOrEquals($field, $value)
     {
-        return $this->wrap($field.Operator::$greaterThanOrEquals.$value);
+        return $this->wrap("$field>=$value");
     }
 
     /**
@@ -143,7 +192,7 @@ class Grammar
      */
     public function compileLessThanOrEquals($field, $value)
     {
-        return $this->wrap($field.Operator::$lessThanOrEquals.$value);
+        return $this->wrap("$field<=$value");
     }
 
     /**
@@ -158,7 +207,7 @@ class Grammar
      */
     public function compileApproximatelyEquals($field, $value)
     {
-        return $this->wrap($field.Operator::$approximatelyEquals.$value);
+        return $this->wrap("$field~=$value");
     }
 
     /**
@@ -173,7 +222,7 @@ class Grammar
      */
     public function compileStartsWith($field, $value)
     {
-        return $this->wrap($field.Operator::$equals.$value.Operator::$has);
+        return $this->wrap("$field=$value*");
     }
 
     /**
@@ -203,7 +252,7 @@ class Grammar
      */
     public function compileEndsWith($field, $value)
     {
-        return $this->wrap($field.Operator::$equals.Operator::$has.$value);
+        return $this->wrap("$field=*$value");
     }
 
     /**
@@ -233,7 +282,7 @@ class Grammar
      */
     public function compileContains($field, $value)
     {
-        return $this->wrap($field.Operator::$equals.Operator::$has.$value.Operator::$has);
+        return $this->wrap("$field=*$value*");
     }
 
     /**
@@ -262,7 +311,7 @@ class Grammar
      */
     public function compileHas($field)
     {
-        return $this->wrap($field.Operator::$equals.Operator::$has);
+        return $this->wrap("$field=*");
     }
 
     /**
@@ -364,25 +413,22 @@ class Grammar
     }
 
     /**
-     * Assembles a single where query based
-     * on its operator and returns it.
+     * Assembles a single where query.
      *
      * @param array $where
      *
-     * @return string|null
+     * @throws UnexpectedValueException
+     *
+     * @return string
      */
     protected function compileWhere(array $where)
     {
-        // Get the name of the operator.
-        if ($name = array_search($where['operator'], Operator::all())) {
-            // If the name was found we'll camel case it
-            // to run it through the compile method.
-            $method = 'compile'.ucfirst($name);
+        if (array_key_exists($where['operator'], $this->operators)) {
+            $method = 'compile'.ucfirst($this->operators[$where['operator']]);
 
-            // Make sure the compile method exists for the operator.
-            if (method_exists($this, $method)) {
-                return $this->{$method}($where['field'], $where['value']);
-            }
+            return $this->{$method}($where['field'], $where['value']);
         }
+
+        throw new UnexpectedValueException('Invalid LDAP filter operator ['.$where['operator'].']');
     }
 }

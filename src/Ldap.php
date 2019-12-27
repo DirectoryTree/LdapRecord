@@ -192,7 +192,7 @@ class Ldap implements LdapInterface
      */
     public function setOption($option, $value)
     {
-        return $this->executeFailableOperation('ldap_set_option', $this->connection, $option, $value);
+        return ldap_set_option($this->connection, $option, $value);
     }
 
     /**
@@ -261,6 +261,9 @@ class Ldap implements LdapInterface
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
+        // Since PHP 7.3 has added further parameters to the ldap_search
+        // method, we'll pass in all the given parameters to support
+        // earlier versions of PHP that doesn't yet support them.
         return $this->executeFailableOperation('ldap_search', $this->connection, ...func_get_args());
     }
 
@@ -269,7 +272,11 @@ class Ldap implements LdapInterface
      */
     public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
     {
-        return $this->executeFailableOperation('ldap_list', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(
+            'ldap_list',
+            $this->connection,
+            $dn, $filter, $fields, $onlyAttributes, $size, $time
+        );
     }
 
     /**
@@ -277,7 +284,11 @@ class Ldap implements LdapInterface
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
     {
-        return $this->executeFailableOperation('ldap_read', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(
+            'ldap_read',
+            $this->connection,
+            $dn, $filter, $fields, $onlyAttributes, $size, $time
+        );
     }
 
     /**
@@ -286,7 +297,9 @@ class Ldap implements LdapInterface
     public function bind($username, $password)
     {
         return $this->executeFailableOperation(
-            'ldap_bind', $this->connection, $username, html_entity_decode($password)
+            'ldap_bind',
+            $this->connection,
+            $username, html_entity_decode($password)
         );
     }
 
@@ -311,7 +324,11 @@ class Ldap implements LdapInterface
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
-        return $this->executeFailableOperation('ldap_rename', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(
+            'ldap_rename',
+            $this->connection,
+            $dn, $newRdn, $newParent, $deleteOldRdn
+        );
     }
 
     /**
@@ -359,7 +376,11 @@ class Ldap implements LdapInterface
      */
     public function parseResult($result, $errorCode, $dn, $errorMessage, $refs, $serverControls = [])
     {
-        return $this->executeFailableOperation('ldap_parse_result', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(
+            'ldap_parse_result',
+            $this->connection,
+            $result, $errorCode, $dn, $errorMessage, $refs, $serverControls
+        );
     }
 
     /**
@@ -367,7 +388,11 @@ class Ldap implements LdapInterface
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
     {
-        return $this->executeFailableOperation('ldap_control_paged_result', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(
+            'ldap_control_paged_result',
+            $this->connection,
+            $pageSize, $isCritical, $cookie
+        );
     }
 
     /**
@@ -375,7 +400,11 @@ class Ldap implements LdapInterface
      */
     public function controlPagedResultResponse($result, &$cookie)
     {
-        return $this->executeFailableOperation('ldap_control_paged_result_response', $this->connection, $result, $cookie);
+        return $this->executeFailableOperation(
+            'ldap_control_paged_result_response',
+            $this->connection,
+            $result, $cookie
+        );
     }
 
     /**
@@ -471,7 +500,9 @@ class Ldap implements LdapInterface
     protected function executeFailableOperation($method, ...$args)
     {
         set_error_handler(function ($severity, $message, $file, $line) {
-            throw new ErrorException($message, $severity, $severity, $file, $line);
+            if (!$this->causedBySizeLimit($message)) {
+                throw new ErrorException($message, $severity, $severity, $file, $line);
+            }
         });
 
         $result = $method(...$args);
@@ -479,6 +510,18 @@ class Ldap implements LdapInterface
         restore_error_handler();
 
         return $result;
+    }
+
+    /**
+     * Determine if the given error message was a size limit warning.
+     *
+     * @param $message
+     *
+     * @return bool
+     */
+    protected function causedBySizeLimit($message)
+    {
+        return strpos($message, 'Partial search results returned') !== false;
     }
 
     /**

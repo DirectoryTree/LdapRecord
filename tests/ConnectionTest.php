@@ -129,7 +129,6 @@ class ConnectionTest extends TestCase
     public function test_auth_passes_without_rebind()
     {
         $ldap = m::mock(LdapInterface::class);
-
         $ldap->shouldReceive('connect')->once()->andReturn(true);
         $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
@@ -156,5 +155,69 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('connect')->once()->withArgs([['foo', 'bar'], '389']);
 
         new Connection(['hosts' => ['foo', 'bar']], $ldap);
+    }
+
+    public function test_reconnect()
+    {
+        $ldap = m::mock(LdapInterface::class);
+        // Initial connection.
+        $ldap->shouldReceive('connect')->twice()->andReturn(true);
+        $ldap->shouldReceive('setOptions')->twice();
+
+        // Reconnection.
+        $ldap->shouldReceive('close')->once();
+        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
+        $ldap->shouldReceive('bind')->once()->withArgs(['foo', 'bar'])->andReturn(true);
+
+        $conn = new Connection([
+            'username' => 'foo',
+            'password' => 'bar',
+        ], $ldap);
+
+        $conn->reconnect();
+    }
+
+    public function test_ldap_operations_can_be_ran_with_connections()
+    {
+        $conn = new Connection();
+
+        $ran = false;
+
+        $conn->run(function (LdapInterface $ldap) use (&$ran) {
+            $ran = true;
+            $this->assertInstanceOf(LdapInterface::class, $ldap);
+        });
+
+        $this->assertTrue($ran);
+    }
+
+    public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
+    {
+        $conn = new Connection();
+
+        $called = 0;
+
+        $executed = $conn->run(function () use (&$called) {
+            $called++;
+
+            if ($called === 1) {
+                throw new \Exception('Cannot contact LDAP server');
+            }
+
+            return $called === 2;
+        });
+
+        $this->assertTrue($executed);
+    }
+
+    public function test_ran_ldap_operations_are_not_retried_when_other_exception_is_thrown()
+    {
+        $conn = new Connection();
+
+        $this->expectException(\Exception::class);
+
+        $conn->run(function () {
+            throw new \Exception();
+        });
     }
 }

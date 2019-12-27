@@ -255,7 +255,7 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @throws ConnectionException If starting TLS fails.
+     * @throws \ErrorException If starting TLS fails.
      *
      * @return bool
      */

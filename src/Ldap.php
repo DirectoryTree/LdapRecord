@@ -114,7 +114,7 @@ class Ldap implements LdapInterface
      */
     public function getEntries($searchResults)
     {
-        return ldap_get_entries($this->connection, $searchResults);
+        return $this->executeFailableOperation('ldap_get_entries', $this->connection, $searchResults);
     }
 
     /**
@@ -122,7 +122,7 @@ class Ldap implements LdapInterface
      */
     public function getFirstEntry($searchResults)
     {
-        return ldap_first_entry($this->connection, $searchResults);
+        return $this->executeFailableOperation('ldap_first_entry', $this->connection, $searchResults);
     }
 
     /**
@@ -130,7 +130,7 @@ class Ldap implements LdapInterface
      */
     public function getNextEntry($entry)
     {
-        return ldap_next_entry($this->connection, $entry);
+        return $this->executeFailableOperation('ldap_next_entry', $this->connection, $entry);
     }
 
     /**
@@ -138,7 +138,7 @@ class Ldap implements LdapInterface
      */
     public function getAttributes($entry)
     {
-        return ldap_get_attributes($this->connection, $entry);
+        return $this->executeFailableOperation('ldap_get_attributes', $this->connection, $entry);
     }
 
     /**
@@ -146,7 +146,7 @@ class Ldap implements LdapInterface
      */
     public function countEntries($searchResults)
     {
-        return ldap_count_entries($this->connection, $searchResults);
+        return $this->executeFailableOperation('ldap_count_entries', $this->connection, $searchResults);
     }
 
     /**
@@ -154,7 +154,7 @@ class Ldap implements LdapInterface
      */
     public function compare($dn, $attribute, $value)
     {
-        return ldap_compare($this->connection, $dn, $attribute, $value);
+        return $this->executeFailableOperation('ldap_compare', $this->connection, $dn, $attribute, $value);
     }
 
     /**
@@ -184,7 +184,7 @@ class Ldap implements LdapInterface
      */
     public function getValuesLen($entry, $attribute)
     {
-        return ldap_get_values_len($this->connection, $entry, $attribute);
+        return $this->executeFailableOperation('ldap_get_values_len', $this->connection, $entry, $attribute);
     }
 
     /**
@@ -192,7 +192,7 @@ class Ldap implements LdapInterface
      */
     public function setOption($option, $value)
     {
-        return ldap_set_option($this->connection, $option, $value);
+        return $this->executeFailableOperation('ldap_set_option', $this->connection, $option, $value);
     }
 
     /**
@@ -210,7 +210,7 @@ class Ldap implements LdapInterface
      */
     public function getOption($option, $value)
     {
-        return ldap_get_option($this->connection, $option, $value);
+        return $this->executeFailableOperation('ldap_get_option', $this->connection, $option, $value);
     }
 
     /**
@@ -226,11 +226,7 @@ class Ldap implements LdapInterface
      */
     public function startTLS()
     {
-        try {
-            return ldap_start_tls($this->connection);
-        } catch (ErrorException $e) {
-            throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->executeFailableOperation('ldap_start_tls', $this->connection);
     }
 
     /**
@@ -242,7 +238,7 @@ class Ldap implements LdapInterface
 
         $this->bound = false;
 
-        return $this->connection = ldap_connect($this->host);
+        return $this->connection = $this->executeFailableOperation('ldap_connect', $this->host);
     }
 
     /**
@@ -250,7 +246,7 @@ class Ldap implements LdapInterface
      */
     public function close()
     {
-        $result = is_resource($this->connection) ? ldap_close($this->connection) : false;
+        $result = is_resource($this->connection) ? @ldap_close($this->connection) : false;
 
         $this->connection = null;
         $this->bound = false;
@@ -263,7 +259,7 @@ class Ldap implements LdapInterface
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        return ldap_search($this->connection, ...func_get_args());
+        return $this->executeFailableOperation('ldap_search', $this->connection, ...func_get_args());
     }
 
     /**
@@ -271,7 +267,7 @@ class Ldap implements LdapInterface
      */
     public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
     {
-        return ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time);
+        return $this->executeFailableOperation('ldap_list', $this->connection, ...func_get_args());
     }
 
     /**
@@ -279,15 +275,17 @@ class Ldap implements LdapInterface
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
     {
-        return ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time);
+        return $this->executeFailableOperation('ldap_read', $this->connection, ...func_get_args());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bind($username, $password, $sasl = false)
+    public function bind($username, $password)
     {
-        return $this->bound = ldap_bind($this->connection, $username, html_entity_decode($password));
+        return $this->executeFailableOperation(
+            'ldap_bind', $this->connection, $username, html_entity_decode($password)
+        );
     }
 
     /**
@@ -295,7 +293,7 @@ class Ldap implements LdapInterface
      */
     public function add($dn, array $entry)
     {
-        return ldap_add($this->connection, $dn, $entry);
+        return $this->executeFailableOperation('ldap_add', $this->connection, $dn, $entry);
     }
 
     /**
@@ -303,7 +301,7 @@ class Ldap implements LdapInterface
      */
     public function delete($dn)
     {
-        return ldap_delete($this->connection, $dn);
+        return $this->executeFailableOperation('ldap_delete', $this->connection, $dn);
     }
 
     /**
@@ -311,7 +309,7 @@ class Ldap implements LdapInterface
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
-        return ldap_rename($this->connection, $dn, $newRdn, $newParent, $deleteOldRdn);
+        return $this->executeFailableOperation('ldap_rename', $this->connection, ...func_get_args());
     }
 
     /**
@@ -319,7 +317,7 @@ class Ldap implements LdapInterface
      */
     public function modify($dn, array $entry)
     {
-        return ldap_modify($this->connection, $dn, $entry);
+        return $this->executeFailableOperation('ldap_modify', $this->connection, $dn, $entry);
     }
 
     /**
@@ -327,7 +325,7 @@ class Ldap implements LdapInterface
      */
     public function modifyBatch($dn, array $values)
     {
-        return ldap_modify_batch($this->connection, $dn, $values);
+        return $this->executeFailableOperation('ldap_modify_batch', $this->connection, $dn, $values);
     }
 
     /**
@@ -335,7 +333,7 @@ class Ldap implements LdapInterface
      */
     public function modAdd($dn, array $entry)
     {
-        return ldap_mod_add($this->connection, $dn, $entry);
+        return $this->executeFailableOperation('ldap_mod_add', $this->connection, $dn, $entry);
     }
 
     /**
@@ -343,7 +341,7 @@ class Ldap implements LdapInterface
      */
     public function modReplace($dn, array $entry)
     {
-        return ldap_mod_replace($this->connection, $dn, $entry);
+        return $this->executeFailableOperation('ldap_mod_replace', $this->connection, $dn, $entry);
     }
 
     /**
@@ -351,7 +349,7 @@ class Ldap implements LdapInterface
      */
     public function modDelete($dn, array $entry)
     {
-        return ldap_mod_del($this->connection, $dn, $entry);
+        return $this->executeFailableOperation('ldap_mod_del', $this->connection, $dn, $entry);
     }
 
     /**
@@ -359,7 +357,7 @@ class Ldap implements LdapInterface
      */
     public function parseResult($result, $errorCode, $dn, $errorMessage, $refs, $serverControls = [])
     {
-        return ldap_parse_result($this->connection, ...func_get_args());
+        return $this->executeFailableOperation('ldap_parse_result', $this->connection, ...func_get_args());
     }
 
     /**
@@ -367,7 +365,7 @@ class Ldap implements LdapInterface
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
     {
-        return ldap_control_paged_result($this->connection, $pageSize, $isCritical, $cookie);
+        return $this->executeFailableOperation('ldap_control_paged_result', $this->connection, ...func_get_args());
     }
 
     /**
@@ -375,7 +373,7 @@ class Ldap implements LdapInterface
      */
     public function controlPagedResultResponse($result, &$cookie)
     {
-        return ldap_control_paged_result_response($this->connection, $result, $cookie);
+        return $this->executeFailableOperation('ldap_control_paged_result_response', $this->connection, $result, $cookie);
     }
 
     /**
@@ -456,6 +454,29 @@ class Ldap implements LdapInterface
     public function getProtocol()
     {
         return $this->isUsingSSL() ? $this::PROTOCOL_SSL : $this::PROTOCOL;
+    }
+
+    /**
+     * Convert warnings to exceptions for the given operation.
+     *
+     * @param string $method
+     * @param mixed  $args
+     *
+     * @throws ErrorException
+     *
+     * @return mixed
+     */
+    protected function executeFailableOperation($method, ...$args)
+    {
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new ErrorException($message, $severity, $severity, $file, $line);
+        });
+
+        $result = $method(...$args);
+
+        restore_error_handler();
+
+        return $result;
     }
 
     /**

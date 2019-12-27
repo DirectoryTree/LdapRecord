@@ -225,7 +225,7 @@ interface LdapInterface
      *
      * @return mixed
      */
-    public function getOption($option, $value);
+    public function getOption($option, &$value);
 
     /**
      * Set a callback function to do re-binds on referral chasing.

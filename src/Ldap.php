@@ -173,7 +173,7 @@ class Ldap implements LdapInterface
         // If the returned error number is zero, the last LDAP operation
         // succeeded. In such case we won't return a detailed error.
         if ($number = $this->errNo()) {
-            ldap_get_option($this->connection, LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
+            $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
 
             return new DetailedError($number, $this->err2Str($number), $message);
         }
@@ -208,9 +208,11 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function getOption($option, $value)
+    public function getOption($option, &$value)
     {
-        return $this->executeFailableOperation('ldap_get_option', $this->connection, $option, $value);
+        ldap_get_option($this->connection, $option, $value);
+
+        return $value;
     }
 
     /**
@@ -431,7 +433,7 @@ class Ldap implements LdapInterface
      */
     public function getDiagnosticMessage()
     {
-        ldap_get_option($this->connection, LDAP_OPT_ERROR_STRING, $message);
+        $this->getOption(LDAP_OPT_ERROR_STRING, $message);
 
         return $message;
     }

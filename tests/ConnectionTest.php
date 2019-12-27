@@ -4,6 +4,8 @@ namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Connection;
+use LdapRecord\Auth\Guard;
+use LdapRecord\Query\Builder;
 use LdapRecord\DetailedError;
 use LdapRecord\LdapInterface;
 use LdapRecord\Auth\BindException;
@@ -19,6 +21,16 @@ class ConnectionTest extends TestCase
 
         $this->assertInstanceOf(LdapInterface::class, $conn->getLdapConnection());
         $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
+    }
+
+    public function test_connections_can_create_auth_instance()
+    {
+        $this->assertInstanceOf(Guard::class, (new Connection)->auth());
+    }
+
+    public function test_connections_can_create_queries()
+    {
+        $this->assertInstanceOf(Builder::class, (new Connection)->query());
     }
 
     public function test_auth_username_failure()

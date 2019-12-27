@@ -27,7 +27,6 @@ class ConnectionTest extends TestCase
 
         $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('connect')->once();
-        $ldap->shouldReceive('close')->once()->andReturn(true);
 
         $conn = new Connection();
         $conn->setLdapConnection($ldap);
@@ -44,7 +43,6 @@ class ConnectionTest extends TestCase
 
         $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('connect')->once();
-        $ldap->shouldReceive('close')->once()->andReturn(true);
 
         $conn = new Connection();
         $conn->setLdapConnection($ldap);
@@ -73,9 +71,6 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs([null, null])->andReturn(true);
 
-        // Closes the connection.
-        $ldap->shouldReceive('close')->once()->andReturn(true);
-
         $conn = new Connection();
         $conn->setLdapConnection($ldap);
 
@@ -96,7 +91,6 @@ class ConnectionTest extends TestCase
         // Re-binds as the administrator
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['foo', 'bar'])->andReturn(true);
-        $ldap->shouldReceive('close')->once()->andReturn(true);
 
         $conn = new Connection([
             'username' => 'foo',
@@ -119,7 +113,6 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('getLastError')->once()->andReturn('');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(null, null, null));
         $ldap->shouldReceive('errNo')->once()->andReturn(1);
-        $ldap->shouldReceive('close')->once()->andReturn(true);
 
         $this->expectException(BindException::class);
 
@@ -141,7 +134,6 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
-        $ldap->shouldReceive('close')->once()->andReturn(true);
 
         $conn = new Connection([
             'username' => 'test',
@@ -162,7 +154,6 @@ class ConnectionTest extends TestCase
         ]]);
 
         $ldap->shouldReceive('connect')->once()->withArgs([['foo', 'bar'], '389']);
-        $ldap->shouldReceive('close')->once()->withNoArgs();
 
         new Connection(['hosts' => ['foo', 'bar']], $ldap);
     }

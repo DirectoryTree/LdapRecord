@@ -41,16 +41,6 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Disconnect the LDAP connection.
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        $this->disconnect();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function setConfiguration($config = [])

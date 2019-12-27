@@ -14,7 +14,6 @@ class ActiveDirectoryTest extends TestCase
     protected function newBuilder()
     {
         $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('close')->once();
 
         return new ActiveDirectoryBuilder(new Connection([], $ldap));
     }

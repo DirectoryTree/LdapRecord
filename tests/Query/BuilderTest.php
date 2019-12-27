@@ -15,7 +15,6 @@ class BuilderTest extends TestCase
     protected function newBuilder()
     {
         $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('close')->once();
 
         return new Builder(new Connection([], $ldap));
     }

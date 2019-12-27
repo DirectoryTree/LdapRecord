@@ -116,7 +116,7 @@ class Guard
         }
 
         try {
-            if (@$this->connection->bind($username, $password) === true) {
+            if ($this->connection->bind($username, $password) === true) {
                 $this->fireBoundEvent($username, $password);
             } else {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());

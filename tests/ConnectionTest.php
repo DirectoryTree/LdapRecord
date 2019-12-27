@@ -181,14 +181,16 @@ class ConnectionTest extends TestCase
     {
         $conn = new Connection();
 
-        $ran = false;
+        $executed = false;
 
-        $conn->run(function (LdapInterface $ldap) use (&$ran) {
-            $ran = true;
+        $returned = $conn->run(function (LdapInterface $ldap) use (&$executed) {
             $this->assertInstanceOf(LdapInterface::class, $ldap);
+
+            return $executed = true;
         });
 
-        $this->assertTrue($ran);
+        $this->assertTrue($executed);
+        $this->assertTrue($returned);
     }
 
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()

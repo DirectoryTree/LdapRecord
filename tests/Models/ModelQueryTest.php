@@ -12,8 +12,8 @@ use LdapRecord\Query\Collection;
 use LdapRecord\ContainerException;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Attributes\Timestamp;
-use LdapRecord\Models\ModelDoesNotExistException;
 use LdapRecord\Tests\CreatesConnectedLdapMocks;
+use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase
 {

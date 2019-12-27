@@ -4,9 +4,9 @@ namespace LdapRecord\Models;
 
 use ArrayAccess;
 use JsonSerializable;
-use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
+use LdapRecord\Connection;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use LdapRecord\Query\Collection;

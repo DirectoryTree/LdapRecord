@@ -71,7 +71,7 @@ class Container
     }
 
     /**
-     * Get or set the current instance of container.
+     * Get or set the current instance of the container.
      *
      * @return Container
      */
@@ -81,7 +81,7 @@ class Container
     }
 
     /**
-     * Set and get a new instance of container.
+     * Set and get a new instance of the container.
      *
      * @return Container
      */
@@ -91,7 +91,7 @@ class Container
     }
 
     /**
-     * Add a connection to the current container instance.
+     * Add a connection to the container.
      *
      * @param Connection  $connection
      * @param string|null $name
@@ -101,6 +101,18 @@ class Container
     public static function addConnection(Connection $connection, $name = null)
     {
         return static::getInstance()->add($connection, $name);
+    }
+
+    /**
+     * Remove a connection from the container.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public static function removeConnection($name)
+    {
+        static::getInstance()->remove($name);
     }
 
     /**
@@ -175,7 +187,7 @@ class Container
             return $this->connections[$name];
         }
 
-        throw new ContainerException("The connection connection '$name' does not exist.");
+        throw new ContainerException("The connection connection [$name] does not exist.");
     }
 
     /**

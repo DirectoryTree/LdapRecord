@@ -155,7 +155,7 @@ class DispatcherTest extends TestCase
         $this->assertTrue($d->hasListeners('foo.*'));
     }
 
-    public function testEventPassedFirstToWildcards()
+    public function test_event_passed_first_to_wildcards()
     {
         $d = new Dispatcher();
 
@@ -176,7 +176,7 @@ class DispatcherTest extends TestCase
         $d->fire('foo.bar', ['first', 'second']);
     }
 
-    public function testClassesWork()
+    public function test_classes_work()
     {
         unset($_SERVER['__event.test']);
 
@@ -191,7 +191,7 @@ class DispatcherTest extends TestCase
         $this->assertSame('baz', $_SERVER['__event.test']);
     }
 
-    public function testInterfacesWork()
+    public function test_interfaces_work()
     {
         unset($_SERVER['__event.test']);
 
@@ -206,7 +206,7 @@ class DispatcherTest extends TestCase
         $this->assertSame('bar', $_SERVER['__event.test']);
     }
 
-    public function testBothClassesAndInterfacesWork()
+    public function test_both_classes_and_interfaces_work()
     {
         unset($_SERVER['__event.test']);
 

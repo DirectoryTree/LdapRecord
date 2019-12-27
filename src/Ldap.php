@@ -505,11 +505,13 @@ class Ldap implements LdapInterface
             }
         });
 
-        $result = $method(...$args);
-
-        restore_error_handler();
-
-        return $result;
+        try {
+            return $method(...$args);
+        } catch (ErrorException $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**

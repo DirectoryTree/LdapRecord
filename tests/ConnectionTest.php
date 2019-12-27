@@ -195,7 +195,7 @@ class ConnectionTest extends TestCase
 
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
-        $conn = new Connection();
+        $conn = new ReconnectConnectionMock();
 
         $called = 0;
 
@@ -210,6 +210,7 @@ class ConnectionTest extends TestCase
         });
 
         $this->assertTrue($executed);
+        $this->assertTrue($conn->reconnected);
     }
 
     public function test_ran_ldap_operations_are_not_retried_when_other_exception_is_thrown()
@@ -221,5 +222,15 @@ class ConnectionTest extends TestCase
         $conn->run(function () {
             throw new \Exception();
         });
+    }
+}
+
+class ReconnectConnectionMock extends Connection
+{
+    public $reconnected = false;
+
+    public function reconnect()
+    {
+        $this->reconnected = true;
     }
 }

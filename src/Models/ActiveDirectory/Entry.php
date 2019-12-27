@@ -3,7 +3,7 @@
 namespace LdapRecord\Models\ActiveDirectory;
 
 use InvalidArgumentException;
-use LdapRecord\LdapInterface;
+use LdapRecord\Connection;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
@@ -61,11 +61,11 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Create a new query builder.
      *
-     * @param LdapInterface $connection
+     * @param Connection $connection
      *
      * @return ActiveDirectoryBuilder
      */
-    public function newQueryBuilder(LdapInterface $connection)
+    public function newQueryBuilder(Connection $connection)
     {
         return new ActiveDirectoryBuilder($connection);
     }

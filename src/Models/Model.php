@@ -4,10 +4,10 @@ namespace LdapRecord\Models;
 
 use ArrayAccess;
 use JsonSerializable;
+use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
 use InvalidArgumentException;
-use LdapRecord\LdapInterface;
 use UnexpectedValueException;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
@@ -239,11 +239,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Create a new query builder.
      *
-     * @param LdapInterface $connection
+     * @param Connection $connection
      *
      * @return Builder
      */
-    public function newQueryBuilder(LdapInterface $connection)
+    public function newQueryBuilder(Connection $connection)
     {
         return new Builder($connection);
     }

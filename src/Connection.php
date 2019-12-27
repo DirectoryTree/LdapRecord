@@ -35,7 +35,7 @@ class Connection implements ConnectionInterface
      */
     public function __construct($config = [], LdapInterface $ldap = null)
     {
-        $this->setConfiguration($config);
+        $this->configuration = new DomainConfiguration($config);
 
         $this->setLdapConnection($ldap ?? new Ldap());
     }
@@ -222,7 +222,7 @@ class Connection implements ConnectionInterface
      */
     public function query()
     {
-        return (new Builder($this->ldap))->in($this->configuration->get('base_dn'));
+        return (new Builder($this))->in($this->configuration->get('base_dn'));
     }
 
     /**

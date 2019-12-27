@@ -29,6 +29,10 @@ class ContainerTest extends TestCase
         $container = Container::getNewInstance();
         $container->add(new Connection());
         $this->assertInstanceOf(Container::class, $container->add(new Connection(), 'other'));
+
+        Container::getNewInstance();
+        Container::addConnection(new Connection(), 'test');
+        $this->assertInstanceOf(Connection::class, Container::getConnection('test'));
     }
 
     public function test_getting_connections()
@@ -40,6 +44,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Connection::class, $container->get());
         $this->assertInstanceOf(Connection::class, $container->get('default'));
         $this->assertInstanceOf(Connection::class, $container->get('other'));
+        $this->assertInstanceOf(Connection::class, Container::getConnection('other'));
 
         $this->expectException(ContainerException::class);
 
@@ -51,6 +56,7 @@ class ContainerTest extends TestCase
         $container = Container::getNewInstance();
         $container->add(new Connection());
         $this->assertInstanceOf(Connection::class, $container->getDefault());
+        $this->assertInstanceOf(Connection::class, Container::getConnection('default'));
     }
 
     public function test_setting_default_connections()
@@ -90,6 +96,9 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Connection::class, $container->get('other'));
 
         $container->remove('other');
+
+        Container::removeConnection('default');
+        $this->assertFalse(Container::getInstance()->exists('default'));
 
         $this->expectException(ContainerException::class);
 

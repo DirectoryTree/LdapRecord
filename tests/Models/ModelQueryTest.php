@@ -7,16 +7,18 @@ use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\LdapInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\ContainerException;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\ModelDoesNotExistException;
+use LdapRecord\Tests\CreatesConnectedLdapMocks;
 
 class ModelQueryTest extends TestCase
 {
+    use CreatesConnectedLdapMocks;
+
     public function setUp()
     {
         parent::setUp();
@@ -98,10 +100,10 @@ class ModelQueryTest extends TestCase
 
     public function test_create()
     {
-        $conn = m::mock(LdapInterface::class);
-        $conn->shouldReceive('add')->once()->withArgs(['cn=foo,dc=bar,dc=baz', ['cn' => ['foo'], 'objectclass' => ['bar']]])->andReturnTrue();
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('add')->once()->withArgs(['cn=foo,dc=bar,dc=baz', ['cn' => ['foo'], 'objectclass' => ['bar']]])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
@@ -127,10 +129,10 @@ class ModelQueryTest extends TestCase
 
     public function test_create_attribute()
     {
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('modAdd')->once()->withArgs(['foo', ['bar' => ['baz']]])->andReturnTrue();
 
-        $query = new Builder($ldap);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
@@ -151,10 +153,10 @@ class ModelQueryTest extends TestCase
     {
         $mod = ['attrib' => 'cn', 'modtype' => 3, 'values' => [0 => 'baz']];
 
-        $conn = m::mock(LdapInterface::class);
-        $conn->shouldReceive('modifyBatch')->once()->withArgs(['foo', [$mod]])->andReturnTrue();
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('modifyBatch')->once()->withArgs(['foo', [$mod]])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
@@ -181,10 +183,10 @@ class ModelQueryTest extends TestCase
 
     public function test_update_attribute()
     {
-        $conn = m::mock(LdapInterface::class);
-        $conn->shouldReceive('modReplace')->once()->withArgs(['foo', ['bar' => ['baz']]])->andReturnTrue();
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('modReplace')->once()->withArgs(['foo', ['bar' => ['baz']]])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
@@ -203,10 +205,10 @@ class ModelQueryTest extends TestCase
 
     public function test_delete()
     {
-        $conn = m::mock(LdapInterface::class);
-        $conn->shouldReceive('delete')->once()->withArgs(['foo'])->andReturnTrue();
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('delete')->once()->withArgs(['foo'])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
@@ -224,10 +226,10 @@ class ModelQueryTest extends TestCase
 
     public function test_delete_attribute()
     {
-        $conn = m::mock(LdapInterface::class);
-        $conn->shouldReceive('modDelete')->once()->withArgs(['foo', ['bar' => []]])->andReturnTrue();
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('modDelete')->once()->withArgs(['foo', ['bar' => []]])->andReturnTrue();
 
-        $query = new Builder($conn);
+        $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);

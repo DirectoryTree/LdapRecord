@@ -3,15 +3,21 @@
 namespace LdapRecord\Tests\Query;
 
 use DateTime;
-use LdapRecord\Ldap;
+use LdapRecord\Connection;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Tests\CreatesConnectedLdapMocks;
 
 class BuilderTest extends TestCase
 {
+    use CreatesConnectedLdapMocks;
+
     protected function newBuilder()
     {
-        return new Builder(new Ldap());
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('close')->once();
+
+        return new Builder(new Connection([], $ldap));
     }
 
     public function test_builder_always_has_default_filter()

@@ -31,8 +31,7 @@ class Utilities
     }
 
     /**
-     * Un-escapes a hexadecimal string into
-     * its original string representation.
+     * Un-escapes a hexadecimal string into its original string representation.
      *
      * @param string $value
      *

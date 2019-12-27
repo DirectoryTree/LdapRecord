@@ -17,11 +17,9 @@ class Collection extends BaseCollection
         }
 
         return function ($item) use ($value) {
-            if ($item instanceof Model) {
-                return $item->getFirstAttribute($value);
-            }
-
-            return data_get($item, $value);
+            return $item instanceof Model ?
+                $item->getFirstAttribute($value) :
+                data_get($item, $value);
         };
     }
 }

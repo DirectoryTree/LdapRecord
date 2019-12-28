@@ -568,7 +568,9 @@ class Builder
      */
     protected function getCacheKey($query)
     {
-        $key = $this->connection->getHost()
+        $host = $this->connection->getLdapConnection()->getHost();
+
+        $key = $host
             .$this->type
             .$this->getDn()
             .$query

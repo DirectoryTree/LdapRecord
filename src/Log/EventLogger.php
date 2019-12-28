@@ -109,7 +109,7 @@ class EventLogger
         if (isset($this->logger)) {
             $query = $event->getQuery();
 
-            $connection = $query->getConnection();
+            $connection = $query->getConnection()->getLdapConnection();
 
             $selected = implode(',', $query->getSelects());
 

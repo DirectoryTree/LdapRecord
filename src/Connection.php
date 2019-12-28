@@ -151,8 +151,7 @@ class Connection
     /**
      * Connect to the Domain Controller.
      *
-     * If no username or password is specified, then the
-     * configured administrator credentials are used.
+     * If no username or password is specified, then the configured credentials are used.
      *
      * @param string|null $username
      * @param string|null $password

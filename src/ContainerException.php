@@ -2,9 +2,7 @@
 
 namespace LdapRecord;
 
-use InvalidArgumentException;
-
-class ContainerException extends InvalidArgumentException
+class ContainerException extends LdapRecordException
 {
     //
 }

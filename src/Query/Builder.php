@@ -1084,13 +1084,14 @@ class Builder
      *
      * @param string $oid
      * @param bool   $isCritical
+     * @param mixed  $value
      *
      * @return $this
      */
-    public function addControl($oid, $isCritical = false)
+    public function addControl($oid, $isCritical = false, $value = null)
     {
         if (!$this->hasControl($oid)) {
-            $this->controls[] = compact('oid', 'isCritical');
+            $this->controls[] = compact('oid', 'isCritical', 'value');
         }
 
         return $this;

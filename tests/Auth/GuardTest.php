@@ -13,8 +13,8 @@ use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Auth\PasswordRequiredException;
+use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class GuardTest extends TestCase
@@ -22,14 +22,14 @@ class GuardTest extends TestCase
     public function test_validate_username()
     {
         $this->expectException(UsernameRequiredException::class);
-        $guard = new Guard(new Ldap, new DomainConfiguration);
+        $guard = new Guard(new Ldap(), new DomainConfiguration());
         $guard->attempt('', 'password');
     }
 
     public function test_validate_password()
     {
         $this->expectException(PasswordRequiredException::class);
-        $guard = new Guard(new Ldap, new DomainConfiguration);
+        $guard = new Guard(new Ldap(), new DomainConfiguration());
         $guard->attempt('username', '');
     }
 
@@ -99,7 +99,7 @@ class GuardTest extends TestCase
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
-        $events = new Dispatcher;
+        $events = new Dispatcher();
 
         $firedBinding = false;
         $firedBound = false;
@@ -134,7 +134,7 @@ class GuardTest extends TestCase
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
 
-        $events = new Dispatcher;
+        $events = new Dispatcher();
 
         $firedBinding = false;
         $firedBound = false;
@@ -169,7 +169,7 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $guard->setDispatcher($events);
 
@@ -195,7 +195,7 @@ class GuardTest extends TestCase
             $totalFired++;
         });
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
         $guard->setDispatcher($events);
 
         $this->assertTrue($guard->attempt('johndoe', 'secret', $bindAsUser = true));

@@ -4,7 +4,6 @@ namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Ldap;
-use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Builder;
 use LdapRecord\DetailedError;
@@ -23,7 +22,7 @@ class ConnectionTest extends TestCase
 
         $this->assertInstanceOf(Ldap::class, $conn->getLdapConnection());
         $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
-        $this->assertEquals($conn->getConfiguration()->all(), (new DomainConfiguration)->all());
+        $this->assertEquals($conn->getConfiguration()->all(), (new DomainConfiguration())->all());
     }
 
     public function test_ldap_connection_can_be_set()

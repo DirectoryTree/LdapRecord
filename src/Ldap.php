@@ -823,13 +823,13 @@ class Ldap
     /**
      * Determine if the given error message was a size limit warning.
      *
-     * @param $message
+     * @param $error
      *
      * @return bool
      */
-    protected function causedBySizeLimit($message)
+    protected function causedBySizeLimit($error)
     {
-        return strpos($message, 'Partial search results returned') !== false;
+        return strpos($error, 'Partial search results returned') !== false;
     }
 
     /**
@@ -849,12 +849,9 @@ class Ldap
             $port = static::PORT_SSL;
         }
 
-        // Normalize hosts into an array.
-        $hosts = is_array($hosts) ? $hosts : [$hosts];
-
         $hosts = array_map(function ($host) use ($protocol, $port) {
             return "{$protocol}{$host}:{$port}";
-        }, $hosts);
+        }, (array) $hosts);
 
         return implode(' ', $hosts);
     }

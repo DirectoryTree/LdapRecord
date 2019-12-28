@@ -69,7 +69,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Connection::class, $container->get('other'));
         $this->assertInstanceOf(Connection::class, $container->getDefault());
 
-        $container->setDefault('non-existent');
+        Container::setDefaultConnection('non-existent');
         $this->expectException(ContainerException::class);
         $container->getDefault();
     }

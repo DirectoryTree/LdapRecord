@@ -130,6 +130,18 @@ class Container
     }
 
     /**
+     * Set the default connection name.
+     *
+     * @param string|null $name
+     *
+     * @return static
+     */
+    public static function setDefaultConnection($name = null)
+    {
+        return static::getInstance()->setDefault($name);
+    }
+
+    /**
      * Get the default connection.
      *
      * @return Connection

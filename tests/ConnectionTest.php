@@ -6,7 +6,7 @@ use Mockery as m;
 use LdapRecord\Ldap;
 use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
-use LdapRecord\Query\Builder;
+use LdapRecord\Connection;
 use LdapRecord\DetailedError;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;
@@ -43,12 +43,12 @@ class ConnectionTest extends TestCase
 
     public function test_connections_can_create_auth_instance()
     {
-        $this->assertInstanceOf(Guard::class, (new Connection)->auth());
+        $this->assertInstanceOf(Guard::class, (new Connection())->auth());
     }
 
     public function test_connections_can_create_queries()
     {
-        $this->assertInstanceOf(Builder::class, (new Connection)->query());
+        $this->assertInstanceOf(Builder::class, (new Connection())->query());
     }
 
     public function test_is_connected()

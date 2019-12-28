@@ -1076,7 +1076,7 @@ class Builder
      */
     public function withDeleted()
     {
-        return $this->addControl('1.2.840.113556.1.4.417', $isCritical = true);
+        return $this->addControl(Ldap::OID_SERVER_SHOW_DELETED, $isCritical = true);
     }
 
     /**

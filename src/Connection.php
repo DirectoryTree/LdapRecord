@@ -10,19 +10,25 @@ use LdapRecord\Query\Builder;
 use Psr\SimpleCache\CacheInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
-class Connection implements ConnectionInterface
+class Connection
 {
     /**
-     * @var LdapInterface
+     * The underlying LDAP connection.
+     *
+     * @var Ldap
      */
     protected $ldap;
 
     /**
+     * The domain configuration.
+     *
      * @var DomainConfiguration
      */
     protected $configuration;
 
     /**
+     * The cache driver.
+     *
      * @var Cache|null
      */
     protected $cache;
@@ -30,10 +36,10 @@ class Connection implements ConnectionInterface
     /**
      * Constructor.
      *
-     * @param array              $config
-     * @param LdapInterface|null $ldap
+     * @param array     $config
+     * @param Ldap|null $ldap
      */
-    public function __construct($config = [], LdapInterface $ldap = null)
+    public function __construct($config = [], Ldap $ldap = null)
     {
         $this->configuration = new DomainConfiguration($config);
 
@@ -41,7 +47,11 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Set the connection configuration.
+     *
+     * @param array $config
+     *
+     * @throws \LdapRecord\Configuration\ConfigurationException
      */
     public function setConfiguration($config = [])
     {
@@ -51,9 +61,13 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Set the LDAP connection.
+     *
+     * @param Ldap $ldap
+     *
+     * @return $this
      */
-    public function setLdapConnection(LdapInterface $ldap)
+    public function setLdapConnection(Ldap $ldap)
     {
         $this->ldap = $ldap;
 
@@ -90,20 +104,22 @@ class Connection implements ConnectionInterface
             $this->ldap->tls();
         }
 
-        $options = array_replace(
+        $this->ldap->setOptions(array_replace(
             $this->configuration->get('options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
                 LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),
                 LDAP_OPT_REFERRALS        => $this->configuration->get('follow_referrals'),
             ]
-        );
-
-        $this->ldap->setOptions($options);
+        ));
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the cache store.
+     *
+     * @param CacheInterface $store
+     *
+     * @return $this
      */
     public function setCache(CacheInterface $store)
     {
@@ -113,7 +129,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get the LDAP configuration instance.
+     *
+     * @return DomainConfiguration
      */
     public function getConfiguration()
     {
@@ -121,7 +139,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get the LDAP connection instance.
+     *
+     * @return Ldap
      */
     public function getLdapConnection()
     {
@@ -129,7 +149,18 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Connect to the Domain Controller.
+     *
+     * If no username or password is specified, then the
+     * configured administrator credentials are used.
+     *
+     * @param string|null $username
+     * @param string|null $password
+     *
+     * @throws ConnectionException            If upgrading the connection to TLS fails
+     * @throws \LdapRecord\Auth\BindException If binding to the LDAP server fails.
+     *
+     * @return Connection
      */
     public function connect($username = null, $password = null)
     {
@@ -158,7 +189,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Disconnect from the LDAP server.
+     *
+     * @return void
      */
     public function disconnect()
     {
@@ -166,7 +199,11 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Perform the operation on the LDAP connection.
+     *
+     * @param Closure $operation
+     *
+     * @return mixed
      */
     public function run(Closure $operation)
     {
@@ -196,7 +233,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get a new auth guard instance.
+     *
+     * @return \LdapRecord\Auth\Guard
      */
     public function auth()
     {
@@ -208,7 +247,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get a new query builder for the connection.
+     *
+     * @return \LdapRecord\Query\Builder
      */
     public function query()
     {
@@ -216,7 +257,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Determine if the LDAP connection is bound.
+     *
+     * @return bool
      */
     public function isConnected()
     {

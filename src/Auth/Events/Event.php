@@ -2,14 +2,14 @@
 
 namespace LdapRecord\Auth\Events;
 
-use LdapRecord\LdapInterface;
+use LdapRecord\Ldap;
 
 abstract class Event
 {
     /**
      * The connection that the username and password is being bound on.
      *
-     * @var LdapInterface
+     * @var Ldap
      */
     protected $connection;
 
@@ -30,11 +30,11 @@ abstract class Event
     /**
      * Constructor.
      *
-     * @param LdapInterface $connection
-     * @param string        $username
-     * @param string        $password
+     * @param Ldap   $connection
+     * @param string $username
+     * @param string $password
      */
-    public function __construct(LdapInterface $connection, $username, $password)
+    public function __construct(Ldap $connection, $username, $password)
     {
         $this->connection = $connection;
         $this->username = $username;
@@ -44,7 +44,7 @@ abstract class Event
     /**
      * Returns the events connection.
      *
-     * @return LdapInterface
+     * @return Ldap
      */
     public function getConnection()
     {

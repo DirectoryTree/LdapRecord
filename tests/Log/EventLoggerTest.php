@@ -3,12 +3,12 @@
 namespace LdapRecord\Tests\Log;
 
 use Mockery as m;
+use LdapRecord\Ldap;
+use LdapRecord\Connection;
 use Psr\Log\LoggerInterface;
-use LdapRecord\LdapInterface;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Log\EventLogger;
 use LdapRecord\Auth\Events\Failed;
-use LdapRecord\ConnectionInterface;
 use LdapRecord\Auth\Events\Event as AuthEvent;
 
 class EventLoggerTest extends TestCase
@@ -17,7 +17,7 @@ class EventLoggerTest extends TestCase
     {
         $event = m::mock(AuthEvent::class);
         $logger = m::mock(LoggerInterface::class);
-        $connection = m::mock(ConnectionInterface::class);
+        $connection = m::mock(Connection::class);
 
         $logger->shouldReceive('info')->once()->withArgs(function ($logged) {
             return strpos($logged, 'LDAP (ldap://192.168.1.1)') !== false &&
@@ -38,7 +38,7 @@ class EventLoggerTest extends TestCase
     public function test_failed_auth_event_reports_result()
     {
         $logger = m::mock(LoggerInterface::class);
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = m::mock(Ldap::class);
 
         $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret');
 

@@ -3,11 +3,11 @@
 namespace LdapRecord\Tests;
 
 use Mockery as m;
+use LdapRecord\Ldap;
 use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Builder;
 use LdapRecord\DetailedError;
-use LdapRecord\LdapInterface;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
@@ -15,12 +15,30 @@ use LdapRecord\Configuration\DomainConfiguration;
 
 class ConnectionTest extends TestCase
 {
-    public function test_connection_creates_ldap_connection()
-    {
-        $conn = new Connection([]);
+    use CreatesConnectedLdapMocks;
 
-        $this->assertInstanceOf(LdapInterface::class, $conn->getLdapConnection());
+    public function test_connection_defaults()
+    {
+        $conn = new Connection();
+
+        $this->assertInstanceOf(Ldap::class, $conn->getLdapConnection());
         $this->assertInstanceOf(DomainConfiguration::class, $conn->getConfiguration());
+        $this->assertEquals($conn->getConfiguration()->all(), (new DomainConfiguration)->all());
+    }
+
+    public function test_ldap_connection_can_be_set()
+    {
+        $conn = new Connection();
+        $ldap = $this->newConnectedLdapMock();
+        $conn->setLdapConnection($ldap);
+        $this->assertEquals($ldap, $conn->getLdapConnection());
+    }
+
+    public function test_configuration_can_be_set()
+    {
+        $conn = new Connection();
+        $conn->setConfiguration(['hosts' => ['foo', 'bar']]);
+        $this->assertEquals(['foo', 'bar'], $conn->getConfiguration()->get('hosts'));
     }
 
     public function test_connections_can_create_auth_instance()
@@ -33,42 +51,33 @@ class ConnectionTest extends TestCase
         $this->assertInstanceOf(Builder::class, (new Connection)->query());
     }
 
+    public function test_is_connected()
+    {
+        $ldap = $this->newConnectedLdapMock();
+        $ldap->shouldReceive('isBound')->once()->withNoArgs()->andReturnTrue();
+        $conn = new Connection([], $ldap);
+        $this->assertTrue($conn->isConnected());
+    }
+
     public function test_auth_username_failure()
     {
-        $ldap = m::mock(LdapInterface::class);
-
-        $ldap->shouldReceive('setOptions')->once();
-        $ldap->shouldReceive('connect')->once();
-
         $conn = new Connection();
-        $conn->setLdapConnection($ldap);
-
         $this->expectException(UsernameRequiredException::class);
         $conn->auth()->attempt('', 'password');
     }
 
     public function test_auth_password_failure()
     {
-        $this->expectException(PasswordRequiredException::class);
-
-        $ldap = m::mock(LdapInterface::class);
-
-        $ldap->shouldReceive('setOptions')->once();
-        $ldap->shouldReceive('connect')->once();
-
         $conn = new Connection();
-        $conn->setLdapConnection($ldap);
-
+        $this->expectException(PasswordRequiredException::class);
         $conn->auth()->attempt('username', '');
     }
 
     public function test_auth_failure()
     {
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = $this->newConnectedLdapMock();
 
         // Binding as the user.
-        $ldap->shouldReceive('connect')->once()->andReturn(true);
-        $ldap->shouldReceive('setOptions')->once();
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
 
@@ -83,18 +92,14 @@ class ConnectionTest extends TestCase
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs([null, null])->andReturn(true);
 
-        $conn = new Connection();
-        $conn->setLdapConnection($ldap);
+        $conn = new Connection([], $ldap);
 
         $this->assertFalse($conn->auth()->attempt('username', 'password'));
     }
 
     public function test_auth_passes_with_rebind()
     {
-        $ldap = m::mock(LdapInterface::class);
-
-        $ldap->shouldReceive('connect')->once()->andReturn(true);
-        $ldap->shouldReceive('setOptions')->once();
+        $ldap = $this->newConnectedLdapMock();
 
         // Authenticates as the user
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
@@ -114,10 +119,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_rebind_failure()
     {
-        $ldap = m::mock(LdapInterface::class);
-
-        $ldap->shouldReceive('connect')->once()->andReturn(true);
-        $ldap->shouldReceive('setOptions')->once();
+        $ldap = $this->newConnectedLdapMock();
 
         // Re-binds as the administrator (fails)
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
@@ -140,9 +142,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_passes_without_rebind()
     {
-        $ldap = m::mock(LdapInterface::class);
-        $ldap->shouldReceive('connect')->once()->andReturn(true);
-        $ldap->shouldReceive('setOptions')->once();
+        $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
         $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
 
@@ -156,7 +156,7 @@ class ConnectionTest extends TestCase
 
     public function test_connections_are_setup()
     {
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = m::mock(Ldap::class);
 
         $ldap->shouldReceive('setOptions')->once()->withArgs([[
             LDAP_OPT_PROTOCOL_VERSION => 3,
@@ -171,7 +171,7 @@ class ConnectionTest extends TestCase
 
     public function test_reconnect()
     {
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = m::mock(Ldap::class);
         // Initial connection.
         $ldap->shouldReceive('connect')->twice()->andReturn(true);
         $ldap->shouldReceive('setOptions')->twice();
@@ -195,8 +195,8 @@ class ConnectionTest extends TestCase
 
         $executed = false;
 
-        $returned = $conn->run(function (LdapInterface $ldap) use (&$executed) {
-            $this->assertInstanceOf(LdapInterface::class, $ldap);
+        $returned = $conn->run(function (Ldap $ldap) use (&$executed) {
+            $this->assertInstanceOf(Ldap::class, $ldap);
 
             return $executed = true;
         });

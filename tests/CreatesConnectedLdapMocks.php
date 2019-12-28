@@ -3,13 +3,13 @@
 namespace LdapRecord\Tests;
 
 use Mockery as m;
-use LdapRecord\LdapInterface;
+use LdapRecord\Ldap;
 
 trait CreatesConnectedLdapMocks
 {
     protected function newConnectedLdapMock()
     {
-        $ldap = m::mock(LdapInterface::class);
+        $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('connect')->once();
         $ldap->shouldReceive('setOptions')->once();
 

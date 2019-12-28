@@ -132,12 +132,12 @@ class Container
     /**
      * Add a new connection into the container.
      *
-     * @param ConnectionInterface $connection
-     * @param string              $name
+     * @param Connection $connection
+     * @param string     $name
      *
      * @return $this
      */
-    public function add(ConnectionInterface $connection, $name = null)
+    public function add(Connection $connection, $name = null)
     {
         $this->connections[$name ?? $this->default] = $connection;
 

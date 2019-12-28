@@ -4,13 +4,13 @@ namespace LdapRecord\Query;
 
 use Closure;
 use Exception;
+use LdapRecord\Ldap;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use BadMethodCallException;
 use LdapRecord\Models\Model;
 use InvalidArgumentException;
-use LdapRecord\LdapInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Models\ModelNotFoundException;
@@ -201,7 +201,7 @@ class Builder
         $query = $this->newInstance()->nested();
 
         if ($closure) {
-            call_user_func($closure, $query);
+            $closure($query);
         }
 
         return $query;
@@ -478,7 +478,7 @@ class Builder
      */
     protected function run($filter)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($filter) {
+        return $this->connection->run(function (Ldap $ldap) use ($filter) {
             // Before running the query, we will set the LDAP server controls. This
             // allows the controls to be automatically reset upon each new query
             // that is conducted on the same connection during each request.
@@ -505,7 +505,7 @@ class Builder
      */
     protected function runPaginate($filter, $perPage, $isCritical)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+        return $this->connection->run(function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
             $pages = [];
 
             $cookie = '';
@@ -544,7 +544,7 @@ class Builder
      */
     protected function parse($resource)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
+        return $this->connection->run(function (Ldap $ldap) use ($resource) {
             // Normalize entries. Get entries returns false on failure.
             // We'll always want an array in this situation.
             $entries = $ldap->getEntries($resource) ?: [];
@@ -1495,7 +1495,7 @@ class Builder
             );
         }
 
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
             return $ldap->add($dn, $attributes);
         });
     }
@@ -1510,7 +1510,7 @@ class Builder
      */
     public function insertAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
             return $ldap->modAdd($dn, $attributes);
         });
     }
@@ -1525,7 +1525,7 @@ class Builder
      */
     public function update($dn, array $modifications)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $modifications) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $modifications) {
             return $ldap->modifyBatch($dn, $modifications);
         });
     }
@@ -1540,7 +1540,7 @@ class Builder
      */
     public function updateAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
             return $ldap->modReplace($dn, $attributes);
         });
     }
@@ -1554,7 +1554,7 @@ class Builder
      */
     public function delete($dn)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn) {
             return $ldap->delete($dn);
         });
     }
@@ -1569,7 +1569,7 @@ class Builder
      */
     public function deleteAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
             return $ldap->modDelete($dn, $attributes);
         });
     }
@@ -1586,7 +1586,7 @@ class Builder
      */
     public function rename($dn, $rdn, $newParentDn, $deleteOldRdn = true)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
+        return $this->connection->run(function (Ldap $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
             return $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn);
         });
     }

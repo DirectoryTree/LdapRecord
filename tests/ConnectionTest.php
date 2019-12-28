@@ -4,8 +4,8 @@ namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Ldap;
-use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
+use LdapRecord\Connection;
 use LdapRecord\DetailedError;
 use LdapRecord\Query\Builder;
 use LdapRecord\Auth\BindException;

@@ -4,8 +4,8 @@ namespace LdapRecord\Query;
 
 use Closure;
 use Exception;
-use DateTimeInterface;
 use LdapRecord\Ldap;
+use DateTimeInterface;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
@@ -1426,7 +1426,7 @@ class Builder
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      *
      * @param DateTimeInterface $until When to expire the query cache.
-     * @param bool               $flush Whether to force-flush the query cache.
+     * @param bool              $flush Whether to force-flush the query cache.
      *
      * @return $this
      */

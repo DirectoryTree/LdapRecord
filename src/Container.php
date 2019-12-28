@@ -130,6 +130,16 @@ class Container
     }
 
     /**
+     * Get the default connection.
+     *
+     * @return Connection
+     */
+    public static function getDefaultConnection()
+    {
+        return static::getInstance()->getDefault();
+    }
+
+    /**
      * Add a new connection into the container.
      *
      * @param Connection $connection

@@ -145,7 +145,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get the LDAP connection for the model.
      *
-     * @return \LdapRecord\Connection
+     * @return Connection
      */
     public function getConnection()
     {

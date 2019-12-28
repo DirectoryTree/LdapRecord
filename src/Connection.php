@@ -51,7 +51,7 @@ class Connection
      *
      * @param array $config
      *
-     * @throws \LdapRecord\Configuration\ConfigurationException
+     * @throws Configuration\ConfigurationException
      */
     public function setConfiguration($config = [])
     {
@@ -157,8 +157,8 @@ class Connection
      * @param string|null $username
      * @param string|null $password
      *
-     * @throws ConnectionException            If upgrading the connection to TLS fails
-     * @throws \LdapRecord\Auth\BindException If binding to the LDAP server fails.
+     * @throws ConnectionException If upgrading the connection to TLS fails
+     * @throws Auth\BindException  If binding to the LDAP server fails.
      *
      * @return Connection
      */
@@ -235,7 +235,7 @@ class Connection
     /**
      * Get a new auth guard instance.
      *
-     * @return \LdapRecord\Auth\Guard
+     * @return Auth\Guard
      */
     public function auth()
     {
@@ -249,7 +249,7 @@ class Connection
     /**
      * Get a new query builder for the connection.
      *
-     * @return \LdapRecord\Query\Builder
+     * @return Query\Builder
      */
     public function query()
     {

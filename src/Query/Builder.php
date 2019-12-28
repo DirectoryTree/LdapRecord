@@ -4,6 +4,7 @@ namespace LdapRecord\Query;
 
 use Closure;
 use Exception;
+use DateTimeInterface;
 use LdapRecord\Ldap;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
@@ -88,7 +89,7 @@ class Builder
     /**
      * How long the query should be cached until.
      *
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      */
     protected $cacheUntil = null;
 
@@ -351,7 +352,7 @@ class Builder
      *
      * @param string $query
      *
-     * @return \LdapRecord\Query\Collection|array
+     * @return Collection|array
      */
     public function query($query)
     {
@@ -379,7 +380,7 @@ class Builder
      * @param int  $pageSize
      * @param bool $isCritical
      *
-     * @return \LdapRecord\Query\Collection|array
+     * @return Collection|array
      */
     public function paginate($pageSize = 1000, $isCritical = true)
     {
@@ -1424,12 +1425,12 @@ class Builder
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      *
-     * @param \DateTimeInterface $until When to expire the query cache.
+     * @param DateTimeInterface $until When to expire the query cache.
      * @param bool               $flush Whether to force-flush the query cache.
      *
      * @return $this
      */
-    public function cache(\DateTimeInterface $until = null, $flush = false)
+    public function cache(DateTimeInterface $until = null, $flush = false)
     {
         $this->caching = true;
         $this->cacheUntil = $until;

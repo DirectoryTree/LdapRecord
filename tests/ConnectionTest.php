@@ -6,7 +6,7 @@ use Mockery as m;
 use LdapRecord\Ldap;
 use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
-use LdapRecord\Connection;
+use LdapRecord\Query\Builder;
 use LdapRecord\DetailedError;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;

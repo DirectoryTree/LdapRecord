@@ -209,7 +209,7 @@ class Container
             return $this->connections[$name];
         }
 
-        throw new ContainerException("The connection connection [$name] does not exist.");
+        throw new ContainerException("The connection [$name] does not exist.");
     }
 
     /**

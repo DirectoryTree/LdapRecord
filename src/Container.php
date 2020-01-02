@@ -209,7 +209,7 @@ class Container
             return $this->connections[$name];
         }
 
-        throw new ContainerException("The connection [$name] does not exist.");
+        throw new ContainerException("The LDAP connection [$name] does not exist.");
     }
 
     /**

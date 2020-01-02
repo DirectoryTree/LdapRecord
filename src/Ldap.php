@@ -6,6 +6,8 @@ use ErrorException;
 
 class Ldap
 {
+    use DetectsErrors;
+
     /**
      * The SSL LDAP protocol string.
      *
@@ -855,49 +857,6 @@ class Ldap
     protected function shouldBypassError($error)
     {
         return $this->causedByPaginationSupport($error) || $this->causedBySizeLimit($error);
-    }
-
-    /**
-     * Determine if the error was caused by lack of pagination support.
-     *
-     * @param string $error
-     *
-     * @return bool
-     */
-    protected function causedByPaginationSupport($error)
-    {
-        return $this->errorContainsMessage($error, 'No server controls in result');
-    }
-
-    /**
-     * Determine if the error was caused by a size limit warning.
-     *
-     * @param $error
-     *
-     * @return bool
-     */
-    protected function causedBySizeLimit($error)
-    {
-        return $this->errorContainsMessage($error, ['Partial search results returned', 'Size limit exceeded']);
-    }
-
-    /**
-     * Determine if the given error contains the any of the messages.
-     *
-     * @param string       $error
-     * @param string|array $messages
-     *
-     * @return bool
-     */
-    protected function errorContainsMessage($error, $messages = [])
-    {
-        foreach ((array) $messages as $message) {
-            if (strpos($error, $message) !== false) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

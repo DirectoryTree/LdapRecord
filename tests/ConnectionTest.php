@@ -215,7 +215,7 @@ class ConnectionTest extends TestCase
             $called++;
 
             if ($called === 1) {
-                throw new \Exception('Cannot contact LDAP server');
+                throw new \Exception("Can't contact LDAP server");
             }
 
             return $called === 2;

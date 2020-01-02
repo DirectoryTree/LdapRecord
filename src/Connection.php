@@ -12,6 +12,8 @@ use LdapRecord\Configuration\DomainConfiguration;
 
 class Connection
 {
+    use DetectsErrors;
+
     /**
      * The underlying LDAP connection.
      *
@@ -277,24 +279,12 @@ class Connection
      */
     protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $callback)
     {
-        if ($this->causedByLostConnection($e)) {
+        if ($this->causedByLostConnection($e->getMessage())) {
             $this->reconnect();
 
             return $this->runOperationCallback($callback);
         }
 
         throw $e;
-    }
-
-    /**
-     * Determine if the given exception was caused by a lost connection.
-     *
-     * @param LdapRecordException $e
-     *
-     * @return bool
-     */
-    protected function causedByLostConnection(LdapRecordException $e)
-    {
-        return strpos($e->getMessage(), 'contact LDAP server') !== false;
     }
 }

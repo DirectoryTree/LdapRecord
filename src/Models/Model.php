@@ -58,11 +58,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected static $container;
 
     /**
-     * The current LDAP connection to utilize.
+     * The LDAP connection name for the model.
      *
-     * @var string
+     * @var string|null
      */
-    protected $connection = 'default';
+    protected $connection;
 
     /**
      * The attribute key that contains the Object GUID.

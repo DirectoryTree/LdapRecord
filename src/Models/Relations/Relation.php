@@ -278,7 +278,7 @@ abstract class Relation
         return $results->transform(function (Model $entry) use ($related) {
             $model = $this->determineModelFromRelated($entry, $related);
 
-            return $model ? $entry->convert(new $model()) : $entry;
+            return $model ? $entry->convert(new $model) : $entry;
         });
     }
 

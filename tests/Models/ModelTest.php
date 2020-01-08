@@ -29,6 +29,15 @@ class ModelTest extends TestCase
         $model->getConnection();
     }
 
+    public function test_model_can_create_new_instances()
+    {
+        $model = new Entry();
+        $new = $model->newInstance(['foo' => 'bar']);
+        $this->assertEquals($model->getConnectionName(), $new->getConnectionName());
+        $this->assertEquals(['foo' => ['bar']], $new->getAttributes());
+        $this->assertFalse($new->exists);
+    }
+
     public function test_fill()
     {
         $this->assertEmpty((new Entry())->getDn());

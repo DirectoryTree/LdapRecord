@@ -115,7 +115,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function __callStatic($method, $parameters)
     {
-        return (new static)->$method(...$parameters);
+        return (new static())->$method(...$parameters);
     }
 
     /**
@@ -211,7 +211,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public static function query()
     {
-        return (new static)->newQuery();
+        return (new static())->newQuery();
     }
 
     /**
@@ -563,7 +563,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function hydrate($records)
     {
         return $this->newCollection($records)->transform(function ($attributes) {
-            return (new static)->setRawAttributes($attributes)->setConnection($this->getConnectionName());
+            return (new static())->setRawAttributes($attributes)->setConnection($this->getConnectionName());
         });
     }
 

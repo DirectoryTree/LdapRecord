@@ -1,4 +1,3 @@
-- LdapRecord Version: #.#
 - LDAP Server Type: <!-- Active Directory / OpenLDAP / FreeIPA / Sun Directory Server? -->
 - PHP Version: #.#
 

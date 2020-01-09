@@ -9,9 +9,9 @@ use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 
 class User extends Entry implements Authenticatable
 {
-    use HasPassword,
-        HasPrimaryGroup,
-        CanAuthenticate;
+    use HasPassword;
+    use HasPrimaryGroup;
+    use CanAuthenticate;
 
     /**
      * The object classes of the LDAP model.

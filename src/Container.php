@@ -8,8 +8,8 @@ use LdapRecord\Events\DispatchesEvents;
 
 class Container
 {
-    use DispatchesEvents, HasLogger;
-
+    use DispatchesEvents;
+    use HasLogger;
     /**
      * Current instance of the container.
      *

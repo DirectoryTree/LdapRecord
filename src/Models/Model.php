@@ -17,10 +17,10 @@ use LdapRecord\Models\Attributes\MbString;
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
-    use Concerns\HasEvents,
-        Concerns\HasScopes,
-        Concerns\HasAttributes,
-        Concerns\HasRelationships;
+    use Concerns\HasEvents;
+    use Concerns\HasScopes;
+    use Concerns\HasAttributes;
+    use Concerns\HasRelationships;
 
     /**
      * Indicates if the model exists.

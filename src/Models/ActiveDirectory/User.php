@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
@@ -39,6 +40,20 @@ class User extends Entry implements Authenticatable
         'badpasswordtime'    => 'windows-int',
         'lastlogontimestamp' => 'windows-int',
     ];
+
+    /**
+     * {@inheritDoc}
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Here we will add a global scope to reject the 'computer' object
+        // class. This is needed due to computer objects containing all
+        // of the ActiveDirectory 'user' object classes. Without
+        // this scope, they would be included in results.
+        static::addGlobalScope(new RejectComputerObjectClass);
+    }
 
     /**
      * The groups relationship.

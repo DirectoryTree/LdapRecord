@@ -3,9 +3,9 @@
 namespace LdapRecord\Query\Model;
 
 use DateTime;
-use LdapRecord\Models\Scope;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
 use LdapRecord\Models\ModelNotFoundException;
@@ -194,7 +194,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get()
     {
@@ -208,7 +208,7 @@ class Builder extends BaseBuilder
      */
     public function applyScopes()
     {
-        if (! $this->scopes) {
+        if (!$this->scopes) {
             return $this;
         }
 
@@ -244,7 +244,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScope($scope)
     {
-        if (! is_string($scope)) {
+        if (!is_string($scope)) {
             $scope = get_class($scope);
         }
 
@@ -264,7 +264,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScopes(array $scopes = null)
     {
-        if (! is_array($scopes)) {
+        if (!is_array($scopes)) {
             $scopes = array_keys($this->scopes);
         }
 

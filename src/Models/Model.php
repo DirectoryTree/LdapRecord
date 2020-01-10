@@ -20,6 +20,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     use Concerns\HasEvents;
     use Concerns\HasScopes;
     use Concerns\HasAttributes;
+    use Concerns\HasGlobalScopes;
     use Concerns\HasRelationships;
 
     /**
@@ -77,6 +78,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @var array
      */
     protected $modifications = [];
+
+    /**
+     * The array of global scopes on the model.
+     *
+     * @var array
+     */
+    protected static $globalScopes = [];
 
     /**
      * Constructor.
@@ -328,7 +336,25 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->applyObjectClassScopes($builder);
 
+        $this->registerGlobalScopes($builder, $this);
+
         return $builder;
+    }
+
+    /**
+     * Register the global model scopes.
+     *
+     * @param Builder $builder
+     * @param Model   $model
+     *
+     * @return void
+     */
+    public function registerGlobalScopes($builder, Model $model)
+    {
+        foreach ($this->getGlobalScopes() as $identifier => $scope) {
+            $scope instanceof ScopeInterface ?
+                $scope->apply($builder, $model) : $scope($builder, $model);
+        }
     }
 
     /**

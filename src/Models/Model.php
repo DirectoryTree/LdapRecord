@@ -349,7 +349,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return void
      */
-    public function registerGlobalScopes($builder, Model $model)
+    public function registerGlobalScopes($builder, self $model)
     {
         foreach ($this->getGlobalScopes() as $identifier => $scope) {
             $scope instanceof ScopeInterface ?

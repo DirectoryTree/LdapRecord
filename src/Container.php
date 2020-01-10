@@ -229,7 +229,7 @@ class Container
      *
      * @return bool
      */
-    public function exists($name): bool
+    public function exists($name)
     {
         return array_key_exists($name, $this->connections);
     }

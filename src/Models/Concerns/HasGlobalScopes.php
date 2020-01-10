@@ -3,21 +3,20 @@
 namespace LdapRecord\Models\Concerns;
 
 use Closure;
-use InvalidArgumentException;
 use LdapRecord\Models\Scope;
+use InvalidArgumentException;
 
 trait HasGlobalScopes
 {
     /**
      * Register a new global scope on the model.
      *
-     * @param \LdapRecord\Models\Scope|\Closure|string  $scope
-     * @param \Closure|null                                      $implementation
-     *
-     * @return mixed
+     * @param \LdapRecord\Models\Scope|\Closure|string $scope
+     * @param \Closure|null                            $implementation
      *
      * @throws \InvalidArgumentException
      *
+     * @return mixed
      * @return mixed
      */
     public static function addGlobalScope($scope, Closure $implementation = null)

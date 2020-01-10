@@ -87,13 +87,46 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected static $globalScopes = [];
 
     /**
+     * The array of booted models.
+     *
+     * @var array
+     */
+    protected static $booted = [];
+
+    /**
      * Constructor.
      *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
+        $this->bootIfNotBooted();
+
         $this->fill($attributes);
+    }
+
+    /**
+     * Check if the model needs to be booted and if so, do it.
+     *
+     * @return void
+     */
+    protected function bootIfNotBooted()
+    {
+        if (! isset(static::$booted[static::class])) {
+            static::$booted[static::class] = true;
+
+            static::boot();
+        }
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        //
     }
 
     /**

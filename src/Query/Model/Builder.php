@@ -3,6 +3,7 @@
 namespace LdapRecord\Query\Model;
 
 use DateTime;
+use LdapRecord\Models\Scope;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Types\ActiveDirectory;
@@ -17,6 +18,20 @@ class Builder extends BaseBuilder
      * @var Model
      */
     protected $model;
+
+    /**
+     * Applied global scopes.
+     *
+     * @var array
+     */
+    protected $scopes = [];
+
+    /**
+     * The removed global scopes.
+     *
+     * @var array
+     */
+    protected $removedScopes = [];
 
     /**
      * Sets the model instance for the model being queried.
@@ -176,6 +191,98 @@ class Builder extends BaseBuilder
         return $this->select($columns)->whereRaw([
             $this->model->getGuidKey() => $guid,
         ])->firstOrFail();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function get()
+    {
+        return $this->applyScopes()->get();
+    }
+
+    /**
+     * Apply the global query scopes.
+     *
+     * @return $this
+     */
+    public function applyScopes()
+    {
+        if (! $this->scopes) {
+            return $this;
+        }
+
+        foreach ($this->scopes as $identifier => $scope) {
+            $scope instanceof Scope ?
+                $scope->apply($this, $this->getModel()) : $scope($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Register a new global scope.
+     *
+     * @param string                            $identifier
+     * @param \LdapRecord\Models\Scope|\Closure $scope
+     *
+     * @return $this
+     */
+    public function withGlobalScope($identifier, $scope)
+    {
+        $this->scopes[$identifier] = $scope;
+
+        return $this;
+    }
+
+    /**
+     * Remove a registered global scope.
+     *
+     * @param \LdapRecord\Models\Scope|string $scope
+     *
+     * @return $this
+     */
+    public function withoutGlobalScope($scope)
+    {
+        if (! is_string($scope)) {
+            $scope = get_class($scope);
+        }
+
+        unset($this->scopes[$scope]);
+
+        $this->removedScopes[] = $scope;
+
+        return $this;
+    }
+
+    /**
+     * Remove all or passed registered global scopes.
+     *
+     * @param array|null $scopes
+     *
+     * @return $this
+     */
+    public function withoutGlobalScopes(array $scopes = null)
+    {
+        if (! is_array($scopes)) {
+            $scopes = array_keys($this->scopes);
+        }
+
+        foreach ($scopes as $scope) {
+            $this->withoutGlobalScope($scope);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get an array of global scopes that were removed from the query.
+     *
+     * @return array
+     */
+    public function removedScopes()
+    {
+        return $this->removedScopes;
     }
 
     /**

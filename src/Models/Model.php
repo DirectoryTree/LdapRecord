@@ -265,10 +265,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newInstance(array $attributes = [])
     {
-        $model = new static($attributes);
-        $model->setConnection($this->getConnectionName());
-
-        return $model;
+        return (new static($attributes))->setConnection($this->getConnectionName());
     }
 
     /**
@@ -336,7 +333,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->applyObjectClassScopes($builder);
 
-        $this->registerGlobalScopes($builder, $this);
+        $this->registerGlobalScopes($builder);
 
         return $builder;
     }
@@ -345,16 +342,16 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Register the global model scopes.
      *
      * @param Builder $builder
-     * @param Model   $model
      *
-     * @return void
+     * @return Builder
      */
-    public function registerGlobalScopes($builder, Model $model)
+    public function registerGlobalScopes($builder)
     {
         foreach ($this->getGlobalScopes() as $identifier => $scope) {
-            $scope instanceof ScopeInterface ?
-                $scope->apply($builder, $model) : $scope($builder, $model);
+            $builder->withGlobalScope($identifier, $scope);
         }
+
+        return $builder;
     }
 
     /**

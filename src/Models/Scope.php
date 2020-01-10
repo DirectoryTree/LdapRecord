@@ -4,7 +4,7 @@ namespace LdapRecord\Models;
 
 use LdapRecord\Query\Model\Builder;
 
-interface ScopeInterface
+interface Scope
 {
     /**
      * Apply the scope to the given query.

@@ -4,14 +4,14 @@ namespace LdapRecord\Models\Concerns;
 
 use Closure;
 use InvalidArgumentException;
-use LdapRecord\Models\ScopeInterface;
+use LdapRecord\Models\Scope;
 
 trait HasGlobalScopes
 {
     /**
      * Register a new global scope on the model.
      *
-     * @param \LdapRecord\Models\ScopeInterface|\Closure|string  $scope
+     * @param \LdapRecord\Models\Scope|\Closure|string  $scope
      * @param \Closure|null                                      $implementation
      *
      * @return mixed
@@ -24,7 +24,7 @@ trait HasGlobalScopes
             return static::$globalScopes[static::class][$scope] = $implementation;
         } elseif ($scope instanceof Closure) {
             return static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
-        } elseif ($scope instanceof ScopeInterface) {
+        } elseif ($scope instanceof Scope) {
             return static::$globalScopes[static::class][get_class($scope)] = $scope;
         }
 
@@ -34,7 +34,7 @@ trait HasGlobalScopes
     /**
      * Determine if a model has a global scope.
      *
-     * @param \LdapRecord\Models\ScopeInterface|string $scope
+     * @param \LdapRecord\Models\Scope|string $scope
      *
      * @return bool
      */
@@ -46,9 +46,9 @@ trait HasGlobalScopes
     /**
      * Get a global scope registered with the model.
      *
-     * @param \LdapRecord\Models\ScopeInterface|string $scope
+     * @param \LdapRecord\Models\Scope|string $scope
      *
-     * @return \LdapRecord\Models\ScopeInterface|\Closure|null
+     * @return \LdapRecord\Models\Scope|\Closure|null
      */
     public static function getGlobalScope($scope)
     {

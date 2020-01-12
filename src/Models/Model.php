@@ -130,6 +130,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Clear the list of booted models so they will be re-booted.
+     *
+     * @return void
+     */
+    public static function clearBootedModels()
+    {
+        static::$booted = [];
+
+        static::$globalScopes = [];
+    }
+
+    /**
      * Handle dynamic method calls into the model.
      *
      * @param string $method

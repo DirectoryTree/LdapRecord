@@ -198,7 +198,9 @@ class Builder extends BaseBuilder
      */
     public function get()
     {
-        return $this->applyScopes()->get();
+        $this->applyScopes();
+
+        return parent::get();
     }
 
     /**

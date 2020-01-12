@@ -1307,7 +1307,7 @@ class Builder
             // Retrieve the keys that are missing in the bindings array.
             $missing = implode(', ', array_diff($required, array_flip($bindings)));
 
-            throw new InvalidArgumentException("Invalid filter bindings. Missing: {$missing} keys.");
+            throw new InvalidArgumentException("Invalid filter bindings. Missing: [{$missing}] keys.");
         }
 
         $this->filters[$type][] = $bindings;

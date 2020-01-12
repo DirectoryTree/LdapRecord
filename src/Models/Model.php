@@ -112,7 +112,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function bootIfNotBooted()
     {
-        if (! isset(static::$booted[static::class])) {
+        if (!isset(static::$booted[static::class])) {
             static::$booted[static::class] = true;
 
             static::boot();

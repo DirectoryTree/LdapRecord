@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
+use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 
 class User extends Entry implements Authenticatable
 {
@@ -42,7 +42,7 @@ class User extends Entry implements Authenticatable
     ];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected static function boot()
     {
@@ -52,7 +52,7 @@ class User extends Entry implements Authenticatable
         // class. This is needed due to computer objects containing all
         // of the ActiveDirectory 'user' object classes. Without
         // this scope, they would be included in results.
-        static::addGlobalScope(new RejectComputerObjectClass);
+        static::addGlobalScope(new RejectComputerObjectClass());
     }
 
     /**

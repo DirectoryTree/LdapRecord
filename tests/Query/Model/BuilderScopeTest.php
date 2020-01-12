@@ -13,7 +13,7 @@ class BuilderScopeTest extends TestCase
 {
     public function test_closure_scopes_can_be_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Connection());
 
         $b->withGlobalScope('foo', function ($query) use ($b) {
             $this->assertSame($b, $query);
@@ -24,11 +24,11 @@ class BuilderScopeTest extends TestCase
 
     public function test_class_scopes_can_be_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Connection());
 
-        $b->setModel(new Entry);
+        $b->setModel(new Entry());
 
-        $b->withGlobalScope('foo', new TestModelScope);
+        $b->withGlobalScope('foo', new TestModelScope());
 
         $b->applyScopes();
 
@@ -37,9 +37,10 @@ class BuilderScopeTest extends TestCase
 
     public function test_scopes_can_be_removed_after_being_added()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Connection());
 
-        $b->withGlobalScope('foo', function () {});
+        $b->withGlobalScope('foo', function () {
+        });
 
         $b->withoutGlobalScope('foo');
 
@@ -48,10 +49,12 @@ class BuilderScopeTest extends TestCase
 
     public function test_many_scopes_can_be_removed_after_being_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Connection());
 
-        $b->withGlobalScope('foo', function () {});
-        $b->withGlobalScope('bar', function () {});
+        $b->withGlobalScope('foo', function () {
+        });
+        $b->withGlobalScope('bar', function () {
+        });
 
         $b->withoutGlobalScopes(['foo', 'bar']);
 

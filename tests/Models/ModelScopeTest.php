@@ -18,6 +18,13 @@ class ModelScopeTest extends TestCase
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
     }
 
+    public function test_has_scope()
+    {
+        new ModelScopeTestStub();
+        $this->assertTrue(ModelScopeTestStub::hasGlobalScope('foo'));
+        $this->assertTrue(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+    }
+
     public function test_scopes_are_applied_to_query()
     {
         Container::addConnection(new Connection());

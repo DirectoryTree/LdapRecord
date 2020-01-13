@@ -2,12 +2,14 @@
 
 namespace LdapRecord\Tests\Query\Model;
 
+use Mockery as m;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Model\Builder;
+use ReflectionFunction;
 
 class BuilderScopeTest extends TestCase
 {
@@ -59,6 +61,28 @@ class BuilderScopeTest extends TestCase
         $b->withoutGlobalScopes(['foo', 'bar']);
 
         $this->assertEquals(['foo', 'bar'], $b->removedScopes());
+    }
+
+    public function test_scopes_are_applied_when_getting_records()
+    {
+        $connection = m::mock(Connection::class);
+        $connection->shouldReceive('run')->twice()->with(m::on(function ($closure) {
+            $func = new ReflectionFunction($closure);
+            return $func->getClosureThis()->filters['and'][0] == [
+                'field' => 'foo',
+                'operator' => '=',
+                'value' => 'bar'
+            ];
+        }))->andReturn([]);
+
+        $b = new Builder($connection);
+        $b->setModel(new Entry());
+
+        $b->withGlobalScope('foo', function ($query) {
+            $query->whereRaw('foo', '=', 'bar');
+        });
+
+        $b->get();
     }
 }
 

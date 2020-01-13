@@ -37,6 +37,13 @@ class ModelTest extends TestCase
         $this->assertEquals(['foo' => ['bar']], $new->getAttributes());
         $this->assertFalse($new->exists);
     }
+    
+    public function test_boot_is_called_upon_creation()
+    {
+        new ModelBootingTestStub;
+        $this->assertTrue(ModelBootingTestStub::isBooted());
+        $this->assertEquals([ModelBootingTestStub::class => true], ModelBootingTestStub::booted());
+    }
 
     public function test_fill()
     {
@@ -413,7 +420,7 @@ class ModelTest extends TestCase
 
     public function test_rename()
     {
-        $model = new ModelRenameStub();
+        $model = new ModelRenameTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
         $this->assertTrue($model->rename('cn=Jane Doe'));
@@ -422,7 +429,7 @@ class ModelTest extends TestCase
 
     public function test_rename_with_parent()
     {
-        $model = new ModelRenameWithParentStub();
+        $model = new ModelRenameWithParentTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
         $this->assertTrue($model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org'));
@@ -440,7 +447,7 @@ class ModelTest extends TestCase
 
     public function test_move()
     {
-        $model = new ModelMoveStub();
+        $model = new ModelMoveTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
         $this->assertTrue($model->move('ou=Users,dc=acme,dc=org'));
@@ -448,7 +455,20 @@ class ModelTest extends TestCase
     }
 }
 
-class ModelRenameStub extends Model
+class ModelBootingTestStub extends Model
+{
+    public static function isBooted()
+    {
+        return array_key_exists(static::class, static::booted());
+    }
+
+    public static function booted()
+    {
+        return static::$booted;
+    }
+}
+
+class ModelRenameTestStub extends Model
 {
     public function newQuery()
     {
@@ -462,7 +482,7 @@ class ModelRenameStub extends Model
     }
 }
 
-class ModelRenameWithParentStub extends Model
+class ModelRenameWithParentTestStub extends Model
 {
     public function newQuery()
     {
@@ -476,7 +496,7 @@ class ModelRenameWithParentStub extends Model
     }
 }
 
-class ModelMoveStub extends Model
+class ModelMoveTestStub extends Model
 {
     public function newQuery()
     {

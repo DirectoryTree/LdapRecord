@@ -17,8 +17,10 @@ class ModelTest extends TestCase
 {
     public function setUp()
     {
-        // Flush container instance.
+        // Flush container singleton instance.
         Container::getNewInstance();
+
+        Model::clearBootedModels();
     }
 
     public function test_model_must_have_default_connection()

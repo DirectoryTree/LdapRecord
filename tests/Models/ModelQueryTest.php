@@ -76,11 +76,9 @@ class ModelQueryTest extends TestCase
     {
         Container::getNewInstance()->add(new Connection());
 
-        Entry::$objectClasses = ['foo', 'bar', 'baz'];
-
         $this->assertEquals(
             '(&(objectclass=foo)(objectclass=bar)(objectclass=baz))',
-            Entry::query()->getUnescapedQuery()
+            ModelWithObjectClassStub::query()->getUnescapedQuery()
         );
     }
 
@@ -350,6 +348,11 @@ class ModelQueryTest extends TestCase
 
         Entry::query()->where('non-existent-date', new \DateTime());
     }
+}
+
+class ModelWithObjectClassStub extends Model
+{
+    public static $objectClasses = ['foo', 'bar', 'baz'];
 }
 
 class ModelQueryDateConversionTest extends Model

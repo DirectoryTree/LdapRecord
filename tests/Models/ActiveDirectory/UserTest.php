@@ -4,11 +4,11 @@ namespace LdapRecord\Tests\Models\ActiveDirectory;
 
 use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 
 class UserTest extends TestCase
 {
@@ -65,7 +65,7 @@ class UserTest extends TestCase
 
     public function test_reject_computer_object_class_is_a_default_scope()
     {
-        $this->assertInstanceOf(RejectComputerObjectClass::class, (new User)->getGlobalScopes()[RejectComputerObjectClass::class]);
+        $this->assertInstanceOf(RejectComputerObjectClass::class, (new User())->getGlobalScopes()[RejectComputerObjectClass::class]);
     }
 }
 

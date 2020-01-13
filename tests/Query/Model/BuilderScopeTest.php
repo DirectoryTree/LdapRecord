@@ -3,13 +3,13 @@
 namespace LdapRecord\Tests\Query\Model;
 
 use Mockery as m;
+use ReflectionFunction;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Model\Builder;
-use ReflectionFunction;
 
 class BuilderScopeTest extends TestCase
 {
@@ -68,10 +68,11 @@ class BuilderScopeTest extends TestCase
         $connection = m::mock(Connection::class);
         $connection->shouldReceive('run')->twice()->with(m::on(function ($closure) {
             $func = new ReflectionFunction($closure);
+
             return $func->getClosureThis()->filters['and'][0] == [
-                'field' => 'foo',
+                'field'    => 'foo',
                 'operator' => '=',
-                'value' => 'bar'
+                'value'    => 'bar',
             ];
         }))->andReturn([]);
 

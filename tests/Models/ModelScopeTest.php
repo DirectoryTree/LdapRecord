@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Query\Model\Builder;
 
 class ModelScopeTest extends TestCase
 {
@@ -20,14 +20,14 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_query()
     {
-        Container::addConnection(new Connection);
+        Container::addConnection(new Connection());
 
-        $query = (new ModelScopeTestStub)->newQuery()->applyScopes();
+        $query = (new ModelScopeTestStub())->newQuery()->applyScopes();
 
         $this->assertEquals([
-            'field' => 'foo',
+            'field'    => 'foo',
             'operator' => '=',
-            'value' => 'bar',
+            'value'    => 'bar',
         ], $query->filters['and'][0]);
     }
 }
@@ -38,8 +38,9 @@ class ModelScopeTestStub extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('foo', function () {});
-        static::addGlobalScope(new ScopeTestStub);
+        static::addGlobalScope('foo', function () {
+        });
+        static::addGlobalScope(new ScopeTestStub());
     }
 }
 

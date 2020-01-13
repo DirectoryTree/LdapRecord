@@ -37,10 +37,10 @@ class ModelTest extends TestCase
         $this->assertEquals(['foo' => ['bar']], $new->getAttributes());
         $this->assertFalse($new->exists);
     }
-    
+
     public function test_boot_is_called_upon_creation()
     {
-        new ModelBootingTestStub;
+        new ModelBootingTestStub();
         $this->assertTrue(ModelBootingTestStub::isBooted());
         $this->assertEquals([ModelBootingTestStub::class => true], ModelBootingTestStub::booted());
     }

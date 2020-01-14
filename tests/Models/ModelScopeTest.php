@@ -11,6 +11,11 @@ use LdapRecord\Query\Model\Builder;
 
 class ModelScopeTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        ModelScopeTestStub::clearBootedModels();
+    }
+
     public function test_scopes_can_be_added_to_models()
     {
         $model = new ModelScopeTestStub();
@@ -20,9 +25,14 @@ class ModelScopeTest extends TestCase
 
     public function test_has_scope()
     {
+        $this->assertFalse(ModelScopeTestStub::hasGlobalScope('foo'));
+        $this->assertFalse(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+
         new ModelScopeTestStub();
         $this->assertTrue(ModelScopeTestStub::hasGlobalScope('foo'));
         $this->assertTrue(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+
+        $this->assertCount(2, (new ModelScopeTestStub)->getGlobalScopes());
     }
 
     public function test_scopes_are_applied_to_query()

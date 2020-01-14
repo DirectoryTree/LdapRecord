@@ -32,7 +32,7 @@ class ModelScopeTest extends TestCase
         $this->assertTrue(ModelScopeTestStub::hasGlobalScope('foo'));
         $this->assertTrue(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
-        $this->assertCount(2, (new ModelScopeTestStub)->getGlobalScopes());
+        $this->assertCount(2, (new ModelScopeTestStub())->getGlobalScopes());
     }
 
     public function test_scopes_are_applied_to_query()

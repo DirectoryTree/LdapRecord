@@ -51,12 +51,67 @@ class ConnectionTest extends TestCase
         $this->assertInstanceOf(Builder::class, (new Connection())->query());
     }
 
+    public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()
+    {
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => false]);
+        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
+    }
+
+    public function test_ssl_protocol_and_port_is_used_when_enabled()
+    {
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => true]);
+        $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
+    }
+
+    public function test_reinitialize_using_ssl_swaps_protocol_and_port()
+    {
+        $conn = new Connection(['hosts' => ['127.0.0.1']]);
+        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
+
+        $conn->getConfiguration()->set('use_ssl', true);
+        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
+
+        $conn->initialize();
+        $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
+    }
+
+    public function test_configured_non_standard_port_is_used_when_ssl_is_enabled()
+    {
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+        $this->assertEquals('ldaps://127.0.0.1:123', $conn->getLdapConnection()->getHost());
+    }
+
+    public function test_setting_ldap_connection_initializes_it()
+    {
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+        $ldap = new Ldap();
+        $this->assertEquals('', $ldap->getHost());
+
+        $conn->setLdapConnection($ldap);
+        $this->assertEquals('ldaps://127.0.0.1:123', $ldap->getHost());
+    }
+
     public function test_is_connected()
     {
         $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('isBound')->once()->withNoArgs()->andReturnTrue();
         $conn = new Connection([], $ldap);
         $this->assertTrue($conn->isConnected());
+    }
+
+    public function test_reconnect_initializes_connection()
+    {
+        $ldap = m::mock(Ldap::class);
+        $ldap->makePartial();
+        $ldap->shouldAllowMockingProtectedMethods();
+        $ldap->shouldReceive('close')->once()->withNoArgs();
+        $ldap->shouldReceive('setOptions')->twice()->withAnyArgs();
+        $ldap->shouldReceive('ssl')->twice()->withNoArgs();
+        $ldap->shouldReceive('bind')->once()->withArgs(['foo', 'bar'])->andReturnTrue();
+
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => true, 'username' => 'foo', 'password' => 'bar'], $ldap);
+        $conn->reconnect();
+        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
     }
 
     public function test_auth_username_failure()

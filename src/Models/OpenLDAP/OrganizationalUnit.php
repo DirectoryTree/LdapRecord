@@ -9,7 +9,7 @@ class OrganizationalUnit extends Entry
      *
      * @var array
      */
-    protected static $objectClasses = [
+    public static $objectClasses = [
         'top',
         'organizationalunit',
     ];

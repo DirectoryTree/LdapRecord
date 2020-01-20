@@ -398,7 +398,7 @@ class Ldap
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @param string|array $hostname
+     * @param string|array $hosts
      * @param int          $port
      *
      * @return resource|false

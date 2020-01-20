@@ -85,12 +85,12 @@ class Connection
      */
     public function initialize()
     {
+        $this->configure();
+
         $this->ldap->connect(
             $this->configuration->get('hosts'),
             $this->configuration->get('port')
         );
-
-        $this->configure();
     }
 
     /**

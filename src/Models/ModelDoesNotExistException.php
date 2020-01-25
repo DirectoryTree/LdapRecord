@@ -14,6 +14,18 @@ class ModelDoesNotExistException extends LdapRecordException
     protected $model;
 
     /**
+     * Create a new exception for the given model.
+     *
+     * @param Model $model
+     *
+     * @return ModelDoesNotExistException
+     */
+    public static function forModel(Model $model)
+    {
+        return (new ModelDoesNotExistException)->setModel($model);
+    }
+
+    /**
      * Sets the model that does not exist.
      *
      * @param Model $model

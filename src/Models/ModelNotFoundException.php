@@ -21,19 +21,32 @@ class ModelNotFoundException extends LdapRecordException
     protected $baseDn;
 
     /**
-     * Sets the query that was used.
+     * Create a new exception for the executed filter.
      *
-     * @param string $query
-     * @param string $baseDn
+     * @param string $filter
+     * @param null   $baseDn
      *
      * @return ModelNotFoundException
      */
-    public function setQuery($query, $baseDn)
+    public static function forQuery($filter, $baseDn = null)
+    {
+        return (new ModelNotFoundException)->setQuery($filter, $baseDn);
+    }
+
+    /**
+     * Sets the query that was used.
+     *
+     * @param string      $query
+     * @param string|null $baseDn
+     *
+     * @return ModelNotFoundException
+     */
+    public function setQuery($query, $baseDn = null)
     {
         $this->query = $query;
         $this->baseDn = $baseDn;
 
-        $this->message = "No LDAP query results for filter: [{$query}] in: [{$baseDn}]";
+        $this->message = "No LDAP query results for filter: [$query] in: [$baseDn]";
 
         return $this;
     }

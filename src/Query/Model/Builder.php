@@ -110,8 +110,7 @@ class Builder extends BaseBuilder
             return $entry;
         }
 
-        throw (new ModelNotFoundException())
-            ->setQuery($this->getUnescapedQuery(), $this->dn);
+        throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
     }
 
     /**

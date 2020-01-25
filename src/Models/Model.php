@@ -1264,7 +1264,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected function validateExistence()
     {
         if (!$this->exists || is_null($this->dn)) {
-            throw (new ModelDoesNotExistException())->setModel($this);
+            throw ModelDoesNotExistException::forModel($this);
         }
     }
 }

@@ -611,8 +611,7 @@ class Builder
         $record = $this->first($columns);
 
         if (!$record) {
-            throw (new ModelNotFoundException())
-                ->setQuery($this->getUnescapedQuery(), $this->dn);
+            throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
         }
 
         return $record;

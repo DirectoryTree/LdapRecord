@@ -22,7 +22,7 @@ class ModelDoesNotExistException extends LdapRecordException
      */
     public static function forModel(Model $model)
     {
-        return (new ModelDoesNotExistException)->setModel($model);
+        return (new self())->setModel($model);
     }
 
     /**

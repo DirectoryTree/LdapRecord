@@ -2,6 +2,7 @@
 
 namespace LdapRecord;
 
+use Closure;
 use ErrorException;
 
 class Ldap
@@ -197,7 +198,9 @@ class Ldap
      */
     public function getEntries($searchResults)
     {
-        return $this->executeFailableOperation('ldap_get_entries', $this->connection, $searchResults);
+        return $this->executeFailableOperation(function () use ($searchResults) {
+            return ldap_get_entries($this->connection, $searchResults);
+        });
     }
 
     /**
@@ -211,7 +214,9 @@ class Ldap
      */
     public function getFirstEntry($searchResults)
     {
-        return $this->executeFailableOperation('ldap_first_entry', $this->connection, $searchResults);
+        return $this->executeFailableOperation(function () use ($searchResults) {
+            return ldap_first_entry($this->connection, $searchResults);
+        });
     }
 
     /**
@@ -225,7 +230,9 @@ class Ldap
      */
     public function getNextEntry($entry)
     {
-        return $this->executeFailableOperation('ldap_next_entry', $this->connection, $entry);
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_next_entry($this->connection, $entry);
+        });
     }
 
     /**
@@ -239,7 +246,9 @@ class Ldap
      */
     public function getAttributes($entry)
     {
-        return $this->executeFailableOperation('ldap_get_attributes', $this->connection, $entry);
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_get_attributes($this->connection, $entry);
+        });
     }
 
     /**
@@ -253,7 +262,9 @@ class Ldap
      */
     public function countEntries($searchResults)
     {
-        return $this->executeFailableOperation('ldap_count_entries', $this->connection, $searchResults);
+        return $this->executeFailableOperation(function () use ($searchResults) {
+            return ldap_count_entries($this->connection, $searchResults);
+        });
     }
 
     /**
@@ -269,7 +280,9 @@ class Ldap
      */
     public function compare($dn, $attribute, $value)
     {
-        return $this->executeFailableOperation('ldap_compare', $this->connection, $dn, $attribute, $value);
+        return $this->executeFailableOperation(function () use ($dn, $attribute, $value) {
+            return ldap_compare($this->connection, $dn, $attribute, $value);
+        });
     }
 
     /**
@@ -316,7 +329,9 @@ class Ldap
      */
     public function getValuesLen($entry, $attribute)
     {
-        return $this->executeFailableOperation('ldap_get_values_len', $this->connection, $entry, $attribute);
+        return $this->executeFailableOperation(function () use ($entry, $attribute) {
+            return ldap_get_values_len($this->connection, $entry, $attribute);
+        });
     }
 
     /**
@@ -390,7 +405,9 @@ class Ldap
      */
     public function startTLS()
     {
-        return $this->executeFailableOperation('ldap_start_tls', $this->connection);
+        return $this->executeFailableOperation(function () {
+            return ldap_start_tls($this->connection);
+        });
     }
 
     /**
@@ -409,7 +426,9 @@ class Ldap
 
         $this->bound = false;
 
-        return $this->connection = $this->executeFailableOperation('ldap_connect', $this->host);
+        return $this->connection = $this->executeFailableOperation(function () {
+            return ldap_connect($this->host);
+        });
     }
 
     /**
@@ -449,10 +468,13 @@ class Ldap
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        // Since PHP 7.3 has added further parameters to the ldap_search
-        // method, we'll pass in all the given parameters to support
-        // earlier versions of PHP that doesn't yet support them.
-        return $this->executeFailableOperation('ldap_search', $this->connection, ...func_get_args());
+        return $this->executeFailableOperation(function () use (
+            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+        ) {
+            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
+                ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
+                ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+        });
     }
 
     /**
@@ -466,16 +488,20 @@ class Ldap
      * @param bool   $onlyAttributes
      * @param int    $size
      * @param int    $time
+     * @param int    $deref
+     * @param array  $serverControls
      *
      * @return resource
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        return $this->executeFailableOperation(
-            'ldap_list',
-            $this->connection,
-            $dn, $filter, $fields, $onlyAttributes, $size, $time
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+        ) {
+            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
+                ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
+                ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+        });
     }
 
     /**
@@ -484,21 +510,50 @@ class Ldap
      * @link http://php.net/manual/en/function.ldap-read.php
      *
      * @param string $dn
-     * @param $filter
-     * @param array $fields
-     * @param bool  $onlyAttributes
-     * @param int   $size
-     * @param int   $time
+     * @param string $filter
+     * @param array  $fields
+     * @param bool   $onlyAttributes
+     * @param int    $size
+     * @param int    $time
+     * @param int    $deref
+     * @param array  $serverControls
      *
      * @return resource
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0)
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
-        return $this->executeFailableOperation(
-            'ldap_read',
-            $this->connection,
-            $dn, $filter, $fields, $onlyAttributes, $size, $time
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+        ) {
+            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
+                ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
+                ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+        });
+    }
+
+    /**
+     * Extract information from an LDAP result.
+     *
+     * @link https://www.php.net/manual/en/function.ldap-parse-result.php
+     *
+     * @param resource $result
+     * @param int      $errorCode
+     * @param string   $dn
+     * @param string   $errorMessage
+     * @param array    $referrals
+     * @param array    $serverControls
+     *
+     * @return bool
+     */
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
+    {
+        return $this->executeFailableOperation(function () use (
+            $result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls
+        ) {
+            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
+                ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls) :
+                ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
+        });
     }
 
     /**
@@ -516,11 +571,9 @@ class Ldap
      */
     public function bind($username, $password)
     {
-        return $this->bound = $this->executeFailableOperation(
-            'ldap_bind',
-            $this->connection,
-            $username, html_entity_decode($password)
-        );
+        return $this->bound = $this->executeFailableOperation(function () use ($username, $password) {
+            return ldap_bind($this->connection, $username, html_entity_decode($password));
+        });
     }
 
     /**
@@ -535,7 +588,9 @@ class Ldap
      */
     public function add($dn, array $entry)
     {
-        return $this->executeFailableOperation('ldap_add', $this->connection, $dn, $entry);
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_add($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -549,7 +604,9 @@ class Ldap
      */
     public function delete($dn)
     {
-        return $this->executeFailableOperation('ldap_delete', $this->connection, $dn);
+        return $this->executeFailableOperation(function () use ($dn) {
+            return ldap_delete($this->connection, $dn);
+        });
     }
 
     /**
@@ -566,11 +623,11 @@ class Ldap
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
-        return $this->executeFailableOperation(
-            'ldap_rename',
-            $this->connection,
+        return $this->executeFailableOperation(function () use (
             $dn, $newRdn, $newParent, $deleteOldRdn
-        );
+        ) {
+            return ldap_rename($this->connection, $dn, $newRdn, $newParent, $deleteOldRdn);
+        });
     }
 
     /**
@@ -585,7 +642,9 @@ class Ldap
      */
     public function modify($dn, array $entry)
     {
-        return $this->executeFailableOperation('ldap_modify', $this->connection, $dn, $entry);
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_modify($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -600,7 +659,9 @@ class Ldap
      */
     public function modifyBatch($dn, array $values)
     {
-        return $this->executeFailableOperation('ldap_modify_batch', $this->connection, $dn, $values);
+        return $this->executeFailableOperation(function () use ($dn, $values) {
+            return ldap_modify_batch($this->connection, $dn, $values);
+        });
     }
 
     /**
@@ -615,7 +676,9 @@ class Ldap
      */
     public function modAdd($dn, array $entry)
     {
-        return $this->executeFailableOperation('ldap_mod_add', $this->connection, $dn, $entry);
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_add($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -630,7 +693,9 @@ class Ldap
      */
     public function modReplace($dn, array $entry)
     {
-        return $this->executeFailableOperation('ldap_mod_replace', $this->connection, $dn, $entry);
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_replace($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -645,30 +710,9 @@ class Ldap
      */
     public function modDelete($dn, array $entry)
     {
-        return $this->executeFailableOperation('ldap_mod_del', $this->connection, $dn, $entry);
-    }
-
-    /**
-     * Extract information from an LDAP result.
-     *
-     * @link https://www.php.net/manual/en/function.ldap-parse-result.php
-     *
-     * @param resource $result
-     * @param int      $errorCode
-     * @param string   $dn
-     * @param string   $errorMessage
-     * @param array    $refs
-     * @param array    $serverControls
-     *
-     * @return bool
-     */
-    public function parseResult($result, $errorCode, $dn, $errorMessage, $refs, $serverControls = [])
-    {
-        return $this->executeFailableOperation(
-            'ldap_parse_result',
-            $this->connection,
-            $result, $errorCode, $dn, $errorMessage, $refs, $serverControls
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_del($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -684,11 +728,9 @@ class Ldap
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
     {
-        return $this->executeFailableOperation(
-            'ldap_control_paged_result',
-            $this->connection,
-            $pageSize, $isCritical, $cookie
-        );
+        return $this->executeFailableOperation(function () use ($pageSize, $isCritical, $cookie) {
+            return ldap_control_paged_result($this->connection, $pageSize, $isCritical, $cookie);
+        });
     }
 
     /**
@@ -703,11 +745,9 @@ class Ldap
      */
     public function controlPagedResultResponse($result, &$cookie)
     {
-        return $this->executeFailableOperation(
-            'ldap_control_paged_result_response',
-            $this->connection,
-            $result, $cookie
-        );
+        return $this->executeFailableOperation(function () use ($result, &$cookie) {
+            return ldap_control_paged_result_response($this->connection, $result, $cookie);
+        });
     }
 
     /**
@@ -823,14 +863,13 @@ class Ldap
     /**
      * Convert warnings to exceptions for the given operation.
      *
-     * @param string $method
-     * @param mixed  $args
+     * @param Closure $operation
      *
      * @throws ErrorException
      *
      * @return mixed
      */
-    protected function executeFailableOperation($method, ...$args)
+    protected function executeFailableOperation(Closure $operation)
     {
         set_error_handler(function ($severity, $message, $file, $line) {
             if (!$this->shouldBypassError($message)) {
@@ -839,7 +878,7 @@ class Ldap
         });
 
         try {
-            return $method(...$args);
+            return $operation();
         } catch (ErrorException $e) {
             throw $e;
         } finally {
@@ -857,6 +896,16 @@ class Ldap
     protected function shouldBypassError($error)
     {
         return $this->causedByPaginationSupport($error) || $this->causedBySizeLimit($error);
+    }
+
+    /**
+     * Determine if the current PHP version supports server controls.
+     *
+     * @return bool
+     */
+    public function supportsServerControlsInMethods()
+    {
+        return version_compare(PHP_VERSION, '7.3.0') >= 0;
     }
 
     /**

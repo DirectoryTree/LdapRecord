@@ -41,4 +41,4 @@ Built-in connection management allows you to associate your models with your LDA
 
 🔥 **Supercharged ActiveRecord.**
 
-Create and modify LDAP obects with minimal code. All LDAP objects are individual models. Simply modify the attributes on the model and save it to persist the changes to your LDAP server.
+Create and modify LDAP obects with minimal code. Set attributes on your models and save them to persist the changes to your LDAP server.

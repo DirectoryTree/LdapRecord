@@ -279,7 +279,9 @@ class BuilderTest extends TestCase
 
         $b->whereDeleted();
 
-        $this->assertEquals([['oid' => '1.2.840.113556.1.4.417', 'isCritical' => true, 'value' => null]], $b->controls);
+        $this->assertEquals([
+            '1.2.840.113556.1.4.417' => ['oid' => '1.2.840.113556.1.4.417', 'isCritical' => true, 'value' => null]
+        ], $b->controls);
 
         $this->assertEquals('(isDeleted=TRUE)', $b->getUnescapedQuery());
     }
@@ -920,7 +922,7 @@ class BuilderTest extends TestCase
         $this->assertEmpty($b->controls);
 
         $b->addControl('foo', true);
-        $this->assertEquals([['oid' => 'foo', 'isCritical' => true, 'value' => null]], $b->controls);
+        $this->assertEquals(['foo' => ['oid' => 'foo', 'isCritical' => true, 'value' => null]], $b->controls);
     }
 
     public function test_has_control()
@@ -939,7 +941,7 @@ class BuilderTest extends TestCase
         $b->addControl('foo');
 
         $this->assertCount(1, $b->controls);
-        $this->assertEquals([['oid' => 'foo', 'isCritical' => false, 'value' => null]], $b->controls);
+        $this->assertEquals(['foo' => ['oid' => 'foo', 'isCritical' => false, 'value' => null]], $b->controls);
     }
 
     public function test_getting_results_sets_ldap_controls()

@@ -280,7 +280,7 @@ class BuilderTest extends TestCase
         $b->whereDeleted();
 
         $this->assertEquals([
-            '1.2.840.113556.1.4.417' => ['oid' => '1.2.840.113556.1.4.417', 'isCritical' => true, 'value' => null]
+            '1.2.840.113556.1.4.417' => ['oid' => '1.2.840.113556.1.4.417', 'isCritical' => true, 'value' => null],
         ], $b->controls);
 
         $this->assertEquals('(isDeleted=TRUE)', $b->getUnescapedQuery());

@@ -480,10 +480,15 @@ class Builder
     protected function run($filter)
     {
         return $this->connection->run(function (Ldap $ldap) use ($filter) {
-            // Before running the query, we will set the LDAP server controls. This
-            // allows the controls to be automatically reset upon each new query
-            // that is conducted on the same connection during each request.
-            $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
+            // We will avoid setting the controls during any pagination
+            // requests as it will clear the cookie we need to send
+            // to the server upon retrieving every page.
+            if (!$this->paginated) {
+                // Before running the query, we will set the LDAP server controls. This
+                // allows the controls to be automatically reset upon each new query
+                // that is conducted on the same connection during each request.
+                $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
+            }
 
             return $ldap->{$this->type}(
                 $this->getDn(),
@@ -507,6 +512,26 @@ class Builder
     protected function runPaginate($filter, $perPage, $isCritical)
     {
         return $this->connection->run(function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
+            $callback = $ldap->supportsServerControlsInMethods() ?
+                $this->compatiblePaginationCallback($filter, $perPage, $isCritical) :
+                $this->deprecatedPaginationCallback($filter, $perPage, $isCritical);
+
+            return $callback($ldap);
+        });
+    }
+
+    /**
+     * Create a deprecated pagination callback compatible with PHP 7.2.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return Closure
+     */
+    protected function deprecatedPaginationCallback($filter, $perPage, $isCritical)
+    {
+        return function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
             $pages = [];
 
             $cookie = '';
@@ -533,7 +558,53 @@ class Builder
             $ldap->controlPagedResult();
 
             return $pages;
-        });
+        };
+    }
+
+    /**
+     * Create a compatible pagination callback compatible with PHP 7.3 and greater.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return Closure
+     */
+    protected function compatiblePaginationCallback($filter, $perPage, $isCritical)
+    {
+        return function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
+            $pages = [];
+
+            // Add our paged results control.
+            $this->addControl(LDAP_CONTROL_PAGEDRESULTS, $isCritical = false, [
+                'size' => $perPage, 'cookie' => '',
+            ]);
+
+            do {
+                // Update the server controls.
+                $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
+
+                // Run the search.
+                $resource = $this->run($filter);
+
+                if ($resource) {
+                    $errorCode = $dn = $errorMessage = $refs = null;
+
+                    // Update the server controls with the servers response.
+                    $ldap->parseResult($resource, $errorCode, $dn, $errorMessage, $refs, $this->controls);
+
+                    $pages[] = $this->parse($resource);
+
+                    // Reset paged result on the current connection. We won't pass in the current $perPage
+                    // parameter since we want to reset the page size to the default '1000'. Sending '0'
+                    // eliminates any further opportunity for running queries in the same request,
+                    // even though that is supposed to be the correct usage.
+                    $this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $perPage;
+                }
+            } while (!empty($this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie']));
+
+            return $pages;
+        };
     }
 
     /**
@@ -1091,9 +1162,7 @@ class Builder
      */
     public function addControl($oid, $isCritical = false, $value = null)
     {
-        if (!$this->hasControl($oid)) {
-            $this->controls[] = compact('oid', 'isCritical', 'value');
-        }
+        $this->controls[$oid] = compact('oid', 'isCritical', 'value');
 
         return $this;
     }
@@ -1107,7 +1176,7 @@ class Builder
      */
     public function hasControl($oid)
     {
-        return array_search($oid, array_column($this->controls, 'oid')) !== false;
+        return array_key_exists($oid, $this->controls);
     }
 
     /**

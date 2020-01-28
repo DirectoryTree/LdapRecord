@@ -373,7 +373,7 @@ class Ldap
      *
      * @return mixed
      */
-    public function getOption($option, &$value)
+    public function getOption($option, &$value = null)
     {
         ldap_get_option($this->connection, $option, $value);
 

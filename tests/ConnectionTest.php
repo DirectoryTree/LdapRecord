@@ -245,7 +245,8 @@ class ConnectionTest extends TestCase
 
     public function test_ldap_operations_can_be_ran_with_connections()
     {
-        $conn = new Connection();
+        $ldap = $this->newConnectedLdapMock();
+        $conn = new Connection([], $ldap);
 
         $executed = false;
 
@@ -261,7 +262,8 @@ class ConnectionTest extends TestCase
 
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
-        $conn = new ReconnectConnectionMock();
+        $ldap = $this->newConnectedLdapMock();
+        $conn = new ReconnectConnectionMock([], $ldap);
 
         $called = 0;
 

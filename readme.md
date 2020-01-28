@@ -27,14 +27,18 @@
     <a href="https://ldaprecord.com/docs/">Documentation</a>
 </h4>
 
-⏲ **Up and running in minutes.**
+⏲ **Up and Running Fast.**
 
 Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.
 
-💡 **Fluent query builder.**
+💡 **Fluent Filter Builder.**
 
-Building LDAP queries has never been so easy. Find the objects you're looking for in a couple lines or less with a fluent interface.
+Easily find the objects you're looking for with a fluent LDAP filter builder.
+
+💼 **Multi-Domain Ready.**
+
+Built-in connection management allows you to associate your models with your LDAP connections.
 
 🔥 **Supercharged ActiveRecord.**
 
-Create and modify LDAP obects with ease. All LDAP objects are individual models. Simply modify the attributes on the model and save it to persist the changes to your LDAP server.
+Create and modify LDAP obects with minimal code. Set attributes on your models and save them to persist the changes to your LDAP server.

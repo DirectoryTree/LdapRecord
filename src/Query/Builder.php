@@ -382,7 +382,7 @@ class Builder
      *
      * @return Collection|array
      */
-    public function paginate($pageSize = 1000, $isCritical = true)
+    public function paginate($pageSize = 1000, $isCritical = false)
     {
         $this->paginated = true;
 

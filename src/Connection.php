@@ -209,6 +209,13 @@ class Connection
     public function run(Closure $operation)
     {
         try {
+            // Before running the operation, we will check if the current
+            // connection is bound and connect if necessary. Otherwise
+            // some LDAP operations will not be executed properly.
+            if (!$this->isConnected()) {
+                $this->connect();
+            }
+
             return $this->runOperationCallback($operation);
         } catch (LdapRecordException $e) {
             return $this->tryAgainIfCausedByLostConnection($e, $operation);

@@ -94,7 +94,6 @@ class ConnectionTest extends TestCase
     public function test_is_connected()
     {
         $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('isBound')->once()->withNoArgs()->andReturnTrue();
         $conn = new Connection([], $ldap);
         $this->assertTrue($conn->isConnected());
     }

@@ -10,7 +10,7 @@ class Container
 {
     use DispatchesEvents;
     use HasLogger;
-    
+
     /**
      * Current instance of the container.
      *

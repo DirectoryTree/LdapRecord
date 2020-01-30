@@ -56,9 +56,9 @@ class ModelHasOneTest extends TestCase
         $model->bar = ['dn'];
 
         $model->relation()->detach();
+        $this->assertEquals([], $model->bar);
 
-        $this->assertEquals([null], $model->bar);
-        $this->assertEquals(['bar' => [null]], $model->getDirty());
+        $this->assertEquals(['bar' => []], $model->getDirty());
     }
 }
 

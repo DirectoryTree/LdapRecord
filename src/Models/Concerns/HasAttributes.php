@@ -192,15 +192,29 @@ trait HasAttributes
 
         if ($this->hasSetMutator($key)) {
             return $this->setMutatedAttributeValue($key, $value);
-        } elseif ($value && $this->isDateAttribute($key)) {
+        } elseif (
+            $value &&
+            $this->isDateAttribute($key) &&
+            !$this->valueIsResetInteger($value)
+        ) {
             $value = $this->fromDateTime($this->getDates()[$key], $value);
         }
 
-        // Due to LDAP's multi-valued nature, we must always wrap given values
-        // inside of arrays, otherwise we will receive exceptions saving.
-        $this->attributes[$key] = is_array($value) ? $value : [$value];
+        $this->attributes[$key] = Arr::wrap($value);
 
         return $this;
+    }
+
+    /**
+     * Determine if the given value is an LDAP reset integer.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    protected function valueIsResetInteger($value)
+    {
+        return in_array($value, [0, -1], $strict = true);
     }
 
     /**

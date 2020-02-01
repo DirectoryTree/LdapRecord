@@ -203,7 +203,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function paginate($pageSize = 1000, $isCritical = false)
     {

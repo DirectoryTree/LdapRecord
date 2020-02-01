@@ -203,6 +203,16 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function paginate($pageSize = 1000, $isCritical = false)
+    {
+        $this->applyScopes();
+
+        return parent::paginate($pageSize, $isCritical);
+    }
+
+    /**
      * Apply the global query scopes.
      *
      * @return $this

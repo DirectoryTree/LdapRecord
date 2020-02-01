@@ -47,6 +47,20 @@ class ModelScopeTest extends TestCase
             'value'    => 'bar',
         ], $query->filters['and'][0]);
     }
+
+    public function test_scopes_are_applied_to_pagination_request()
+    {
+        Container::addConnection(new Connection());
+
+        $query = (new ModelScopeTestStub())->newQuery();
+        $this->assertEmpty($query->paginate());
+
+        $this->assertEquals([
+            'field'    => 'foo',
+            'operator' => '=',
+            'value'    => 'bar',
+        ], $query->filters['and'][0]);
+    }
 }
 
 class ModelScopeTestStub extends Model
@@ -59,6 +73,11 @@ class ModelScopeTestStub extends Model
         });
         static::addGlobalScope(new ScopeTestStub());
     }
+
+    public function newQueryBuilder(Connection $connection)
+    {
+        return new ModelBuilderTestStub($connection);
+    }
 }
 
 class ScopeTestStub implements Scope
@@ -66,5 +85,13 @@ class ScopeTestStub implements Scope
     public function apply(Builder $query, Model $model)
     {
         $query->whereRaw('foo', '=', 'bar');
+    }
+}
+
+class ModelBuilderTestStub extends Builder
+{
+    protected function runPaginate($filter, $perPage, $isCritical)
+    {
+        return [];
     }
 }

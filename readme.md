@@ -42,3 +42,11 @@ Built-in connection management allows you to associate your models with your LDA
 🔥 **Supercharged ActiveRecord.**
 
 Create and modify LDAP obects with minimal code. Set attributes on your models and save them to persist the changes to your LDAP server.
+
+---
+
+<h3 align="center">LdapRecord is Sponsorware™</h3>
+
+<p align="center">If you really enjoy using LdapRecord, a <a href="https://github.com/sponsors/stevebauman">sponsorship</a> would mean the world :pray:</p>
+
+<p align="center">Thank you for your consideration :heart:</p>

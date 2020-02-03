@@ -30,11 +30,13 @@ class ModelEventTest extends TestCase
         Container::unsetEventDispatcher();
     }
 
-    public function test_save_fires_events()
+    public function test_save_fires_saving_and_create_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class)->makePartial();
         $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Creating::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Created::class]);
         Container::setEventDispatcher($dispatcher);
 
         $model = new ModelEventSaveStub();
@@ -44,7 +46,9 @@ class ModelEventTest extends TestCase
     public function test_create_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Creating::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Created::class]);
         Container::setEventDispatcher($dispatcher);
 
@@ -60,13 +64,15 @@ class ModelEventTest extends TestCase
         $model->setDn('cn=foo,dc=bar,dc=baz');
         $model->cn = 'foo';
         $model->objectclass = 'bar';
-        $this->assertTrue($model->create());
+        $this->assertTrue($model->save());
     }
 
     public function test_updating_model_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Updating::class]);
+        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
         $dispatcher->shouldReceive('fire')->once()->withArgs([Updated::class]);
         Container::setEventDispatcher($dispatcher);
 
@@ -108,7 +114,25 @@ class ModelEventTest extends TestCase
 
 class ModelEventSaveStub extends Model
 {
-    public function create(array $attributes = [])
+    public function newQueryWithoutScopes()
+    {
+        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
+    }
+
+    public function synchronize()
+    {
+        return true;
+    }
+}
+
+class ModelQueryBuilderSaveStub extends Builder
+{
+    public function insert($dn, array $attributes)
+    {
+        return true;
+    }
+
+    public function update($dn, array $modifications)
     {
         return true;
     }

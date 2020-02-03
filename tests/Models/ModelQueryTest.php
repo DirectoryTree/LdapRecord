@@ -109,7 +109,7 @@ class ModelQueryTest extends TestCase
 
         $model->setDn('cn=foo,dc=bar,dc=baz');
         $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
-        $this->assertTrue($model->create());
+        $this->assertTrue($model->save());
     }
 
     public function test_create_without_connection()
@@ -168,8 +168,9 @@ class ModelQueryTest extends TestCase
 
     public function test_update_without_existing_model()
     {
+        Container::addConnection(new Connection());
         $this->expectException(ModelDoesNotExistException::class);
-        $model = new Entry();
+        $model = new Entry(['objectclass' => 'foo', 'bar', 'cn' => 'baz']);
         $model->update();
     }
 

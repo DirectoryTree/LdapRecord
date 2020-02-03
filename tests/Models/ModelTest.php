@@ -420,6 +420,12 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isAncestorOf($child));
     }
 
+    public function test_create_fills_attributes()
+    {
+        $model = ModelCreateTestStub::create(['foo' => ['bar']]);
+        $this->assertEquals(['foo' => ['bar']], $model->getAttributes());
+    }
+
     public function test_rename()
     {
         $model = new ModelRenameTestStub();
@@ -454,6 +460,14 @@ class ModelTest extends TestCase
 
         $this->assertTrue($model->move('ou=Users,dc=acme,dc=org'));
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
+    }
+}
+
+class ModelCreateTestStub extends Model
+{
+    public function save(array $attributes = [])
+    {
+        return true;
     }
 }
 

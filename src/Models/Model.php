@@ -880,9 +880,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function save(array $attributes = [])
     {
+        $this->fill($attributes);
+
         $this->fireModelEvent(new Events\Saving($this));
 
-        $saved = $this->exists ? $this->update($attributes) : $this->create($attributes);
+        $saved = $this->exists ? $this->performUpdate() : $this->performInsert();
 
         if ($saved) {
             $this->fireModelEvent(new Events\Saved($this));
@@ -892,18 +894,14 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Create the model in the directory.
-     *
-     * @param array $attributes The attributes for the new entry.
+     * Inserts the model into the directory.
      *
      * @throws \Exception
      *
      * @return bool
      */
-    public function create(array $attributes = [])
+    protected function performInsert()
     {
-        $this->fill($attributes);
-
         // Here we will populate the models object class if it
         // does not already have one. An LDAP record
         // cannot be created without it.
@@ -916,8 +914,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // If the model doesn't currently have a distinguished
         // name set, we'll create one automatically using
         // the current query builders base DN.
-        if (empty($this->dn)) {
-            $this->dn = $this->getCreatableDn();
+        if (empty($this->getDn())) {
+            $this->setDn($this->getCreatableDn());
         }
 
         $this->fireModelEvent(new Events\Creating($this));
@@ -925,7 +923,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // Before performing the insert, we will filter the attributes of the model
         // to ensure no empty values are sent. If empty values are sent, then
         // the LDAP server will return an error message indicating such.
-        if ($query->insert($this->dn, array_filter($this->getAttributes()))) {
+        if ($query->insert($this->getDn(), array_filter($this->getAttributes()))) {
             $this->fireModelEvent(new Events\Created($this));
 
             $this->exists = true;
@@ -934,6 +932,54 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         return false;
+    }
+
+    /**
+     * Updates the model in the directory.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    protected function performUpdate()
+    {
+        $modifications = $this->getModifications();
+
+        if (count($modifications) > 0) {
+            $this->fireModelEvent(new Events\Updating($this));
+
+            if ($this->newQuery()->update($this->dn, $modifications)) {
+                $this->fireModelEvent(new Events\Updated($this));
+
+                // Re-set the models modifications.
+                $this->modifications = [];
+
+                // Re-sync the models attributes.
+                return $this->synchronize();
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Create the model in the directory.
+     *
+     * @param array $attributes The attributes for the new entry.
+     *
+     * @throws \Exception
+     *
+     * @return Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $instance = new static($attributes);
+
+        $instance->save();
+
+        return $instance;
     }
 
     /**
@@ -971,27 +1017,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        $this->fill($attributes);
-
-        $modifications = $this->getModifications();
-
-        if (count($modifications) > 0) {
-            $this->fireModelEvent(new Events\Updating($this));
-
-            if ($this->newQuery()->update($this->dn, $modifications)) {
-                $this->fireModelEvent(new Events\Updated($this));
-
-                // Re-set the models modifications.
-                $this->modifications = [];
-
-                // Re-sync the models attributes.
-                return $this->synchronize();
-            }
-
-            return false;
-        }
-
-        return true;
+        return $this->save($attributes);
     }
 
     /**

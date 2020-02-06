@@ -3,7 +3,6 @@
 namespace LdapRecord\Testing;
 
 use LdapRecord\Container;
-use LdapRecord\ContainerException;
 
 class FakeDirectory
 {

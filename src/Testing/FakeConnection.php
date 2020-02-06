@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Testing;
 
-use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Connection;
 use LdapRecord\Models\Model;
 
 class FakeConnection extends Connection
@@ -31,7 +31,7 @@ class FakeConnection extends Connection
      */
     public static function make(array $config = [])
     {
-        return new static($config, new FakeLdapConnection);
+        return new static($config, new FakeLdapConnection());
     }
 
     /**

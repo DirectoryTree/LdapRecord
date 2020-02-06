@@ -29,19 +29,19 @@
 
 ⏲ **Up and Running Fast.**
 
-Effortlessly connect to your LDAP servers and start running queries & operations in a matter of minutes.
+Connect to your LDAP servers and start running queries at lightning speed.
 
 💡 **Fluent Filter Builder.**
 
-Easily find the objects you're looking for with a fluent LDAP filter builder.
+Find the LDAP objects you're looking for with a fluent LDAP filter builder.
 
 💼 **Multi-Domain Ready.**
 
-Built-in connection management allows you to associate your models with your LDAP connections.
+Built-in connection management allows you to access multiple domains without breaking a sweat.
 
 🔥 **Supercharged ActiveRecord.**
 
-Create and modify LDAP obects with minimal code. Set attributes on your models and save them to persist the changes to your LDAP server.
+Create and modify LDAP objects with minimal code.
 
 ---
 

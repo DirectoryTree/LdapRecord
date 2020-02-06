@@ -55,7 +55,6 @@ class Guard
      * @param string $password
      * @param bool   $bindAsUser
      *
-     * @throws BindException
      * @throws PasswordRequiredException
      * @throws UsernameRequiredException
      * @throws \LdapRecord\ConnectionException

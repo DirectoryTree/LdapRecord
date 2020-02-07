@@ -70,15 +70,17 @@ class Grammar
         }
 
         $ands = count($builder->filters['and']);
-        $ors = count($builder->filters['or']);
 
-        $requiredFilters = $ands + count($builder->filters['raw']);
-
-        // Make sure we wrap the query in an 'and' if using
-        // multiple filters. We also need to check if only
-        // one where is used with multiple orWheres, that
-        // we wrap it in an `and` query.
-        if ($requiredFilters > 1 || ($ands === 1 && $ors > 0)) {
+        // If multiple filters are being used, we must
+        // wrap the filter in an "and" statement to
+        // make sure a valid filter is generated.
+        if ($ands + count($builder->filters['raw']) > 1) {
+            $query = $this->compileAnd($query);
+        }
+        // This is also the case if we only have a
+        // single "and" statement but are using
+        // any "or" statements in the filter.
+        else if($ands === 1 && count($builder->filters['or']) > 0) {
             $query = $this->compileAnd($query);
         }
 
@@ -401,8 +403,9 @@ class Grammar
             $or .= $this->compileWhere($where);
         }
 
-        // Make sure we wrap the query in an 'or' if using multiple
-        // orWheres. For example (|(QUERY)(ORWHEREQUERY)).
+        // Here we will make sure to wrap the query in an
+        // "or" filter if multiple "or" statements are
+        // given to ensure it's created properly.
         if (($query && count($orWheres) > 0) || count($orWheres) > 1) {
             $query .= $this->compileOr($or);
         } else {

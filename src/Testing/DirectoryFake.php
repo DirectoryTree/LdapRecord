@@ -12,8 +12,8 @@ class DirectoryFake
      * @param string|null $name
      *
      * @return ConnectionFake
-     *@throws \LdapRecord\ContainerException
      *
+     * @throws \LdapRecord\ContainerException
      */
     public static function setup($name = null)
     {

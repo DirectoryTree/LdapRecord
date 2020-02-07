@@ -9,13 +9,6 @@ use LdapRecord\Models\Model;
 class FakeConnection extends Connection
 {
     /**
-     * The currently bound LDAP user.
-     *
-     * @var Model
-     */
-    protected $user;
-
-    /**
      * The underlying fake LDAP connection.
      *
      * @var FakeLdapConnection
@@ -37,15 +30,15 @@ class FakeConnection extends Connection
     /**
      * Set the user to authenticate as.
      *
-     * @param Model $user
+     * @param Model|string $user
      *
      * @return $this
      */
-    public function actingAs(Model $user)
+    public function actingAs($user)
     {
-        $this->user = $user;
-
-        $this->ldap->shouldAuthenticateWith($user->getDn());
+        $this->ldap->shouldAuthenticateWith(
+            $user instanceof Model ? $user->getDn() : $user
+        );
 
         return $this;
     }

@@ -80,7 +80,7 @@ class Grammar
         // This is also the case if we only have a
         // single "and" statement but are using
         // any "or" statements in the filter.
-        else if($ands === 1 && count($builder->filters['or']) > 0) {
+        elseif ($ands === 1 && count($builder->filters['or']) > 0) {
             $query = $this->compileAnd($query);
         }
 

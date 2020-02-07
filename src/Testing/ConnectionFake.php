@@ -6,12 +6,12 @@ use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Model;
 
-class FakeConnection extends Connection
+class ConnectionFake extends Connection
 {
     /**
      * The underlying fake LDAP connection.
      *
-     * @var FakeLdapConnection
+     * @var LdapFake
      */
     protected $ldap;
 
@@ -24,7 +24,7 @@ class FakeConnection extends Connection
      */
     public static function make(array $config = [])
     {
-        return new static($config, new FakeLdapConnection());
+        return new static($config, new LdapFake());
     }
 
     /**
@@ -46,11 +46,11 @@ class FakeConnection extends Connection
     /**
      * Create a new fake auth guard.
      *
-     * @return FakeAuthGuard
+     * @return AuthGuardFake
      */
     public function auth()
     {
-        $guard = new FakeAuthGuard($this->ldap, $this->configuration);
+        $guard = new AuthGuardFake($this->ldap, $this->configuration);
 
         $guard->setDispatcher(Container::getEventDispatcher());
 

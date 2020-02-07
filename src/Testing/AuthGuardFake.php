@@ -4,7 +4,7 @@ namespace LdapRecord\Testing;
 
 use LdapRecord\Auth\Guard;
 
-class FakeAuthGuard extends Guard
+class AuthGuardFake extends Guard
 {
     /**
      * Always allow binding as configured user.

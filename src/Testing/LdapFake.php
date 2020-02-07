@@ -6,7 +6,7 @@ use Closure;
 use LdapRecord\Ldap;
 use LdapRecord\DetailedError;
 
-class FakeLdapConnection extends Ldap
+class LdapFake extends Ldap
 {
     /**
      * The distinguished name of the user

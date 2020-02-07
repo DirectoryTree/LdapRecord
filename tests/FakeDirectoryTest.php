@@ -6,8 +6,8 @@ use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\DetailedError;
 use LdapRecord\Auth\BindException;
-use LdapRecord\Testing\FakeDirectory;
-use LdapRecord\Testing\FakeConnection;
+use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Testing\ConnectionFake;
 use LdapRecord\Models\ActiveDirectory\User;
 
 class FakeDirectoryTest extends TestCase
@@ -18,13 +18,13 @@ class FakeDirectoryTest extends TestCase
 
         Container::addConnection(new Connection());
 
-        FakeDirectory::setup();
+        DirectoryFake::setup();
     }
 
     public function test_connection_is_replaced_with_fake()
     {
-        $this->assertInstanceOf(FakeConnection::class, Container::getConnection(null));
-        $this->assertInstanceOf(FakeConnection::class, Container::getDefaultConnection());
+        $this->assertInstanceOf(ConnectionFake::class, Container::getConnection(null));
+        $this->assertInstanceOf(ConnectionFake::class, Container::getDefaultConnection());
     }
 
     public function test_connection_fake_is_connected()
@@ -50,7 +50,7 @@ class FakeDirectoryTest extends TestCase
 
         Container::addConnection(new Connection($config), 'local');
 
-        $fake = FakeDirectory::setup('local');
+        $fake = DirectoryFake::setup('local');
 
         $this->assertEquals($fake->getConfiguration()->all(), $config);
     }
@@ -109,8 +109,8 @@ class FakeDirectoryTest extends TestCase
         Container::addConnection(new Connection(['hosts' => ['alpha']]), 'alpha');
         Container::addConnection(new Connection(['hosts' => ['bravo']]), 'bravo');
 
-        $alpha = FakeDirectory::setup('alpha');
-        $bravo = FakeDirectory::setup('bravo');
+        $alpha = DirectoryFake::setup('alpha');
+        $bravo = DirectoryFake::setup('bravo');
 
         $this->assertEquals(['alpha'], $alpha->getConfiguration()->get('hosts'));
         $this->assertEquals(['bravo'], $bravo->getConfiguration()->get('hosts'));

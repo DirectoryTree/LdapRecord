@@ -4,16 +4,16 @@ namespace LdapRecord\Testing;
 
 use LdapRecord\Container;
 
-class FakeDirectory
+class DirectoryFake
 {
     /**
      * Setup the fake connection.
      *
      * @param string|null $name
      *
-     * @throws \LdapRecord\ContainerException
+     * @return ConnectionFake
+     *@throws \LdapRecord\ContainerException
      *
-     * @return FakeConnection
      */
     public static function setup($name = null)
     {
@@ -32,10 +32,10 @@ class FakeDirectory
      *
      * @param array $config
      *
-     * @return FakeConnection
+     * @return ConnectionFake
      */
     public static function makeConnectionFake(array $config = [])
     {
-        return FakeConnection::make($config);
+        return ConnectionFake::make($config);
     }
 }

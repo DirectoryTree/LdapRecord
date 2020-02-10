@@ -188,33 +188,6 @@ class Grammar
     }
 
     /**
-     * Determine if the query contains only the given filter statement types.
-     *
-     * @param Builder      $query
-     * @param string|array $type
-     * @param string       $operator
-     * @param int          $count
-     *
-     * @return bool
-     */
-    protected function hasOnly(Builder $query, $type, $operator = '>=', $count = 1)
-    {
-        $types = (array) $type;
-
-        $except = array_filter(array_keys($query->filters), function ($key) use ($types) {
-            return !in_array($key, $types);
-        });
-
-        foreach ($except as $filterType) {
-            if ($this->has($query, $filterType, '>', 0)) {
-                return false;
-            }
-        }
-
-        return $this->has($query, $types, $operator, $count);
-    }
-
-    /**
      * Determine if the query contains the given filter statement type.
      *
      * @param Builder      $query

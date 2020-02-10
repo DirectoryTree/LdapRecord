@@ -114,10 +114,10 @@ class Grammar
     /**
      * Determine if the query contains only the given filter statement types.
      *
-     * @param Builder       $query
-     * @param string|array  $type
-     * @param string        $operator
-     * @param int           $count
+     * @param Builder      $query
+     * @param string|array $type
+     * @param string       $operator
+     * @param int          $count
      *
      * @return bool
      */
@@ -126,7 +126,7 @@ class Grammar
         $types = (array) $type;
 
         $except = array_filter(array_keys($query->filters), function ($key) use ($types) {
-             return !in_array($key, $types);
+            return !in_array($key, $types);
         });
 
         foreach ($except as $filterType) {
@@ -141,10 +141,10 @@ class Grammar
     /**
      * Determine if the query contains the given filter statement type.
      *
-     * @param Builder       $query
-     * @param string|array  $type
-     * @param string        $operator
-     * @param int           $count
+     * @param Builder      $query
+     * @param string|array $type
+     * @param string       $operator
+     * @param int          $count
      *
      * @return bool
      */
@@ -185,8 +185,8 @@ class Grammar
 
         return
             $raw
-            . $this->compileWheres($query)
-            . $this->compileOrWheres($query);
+            .$this->compileWheres($query)
+            .$this->compileOrWheres($query);
     }
 
     /**

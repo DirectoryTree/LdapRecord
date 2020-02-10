@@ -193,7 +193,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getQuery()
     {

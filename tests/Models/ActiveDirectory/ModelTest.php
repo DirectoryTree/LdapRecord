@@ -45,15 +45,15 @@ class ModelTest extends TestCase
 
     public function test_restore_returns_false_when_object_is_not_deleted()
     {
-        $this->assertFalse((new Entry)->isDeleted());
+        $this->assertFalse((new Entry())->isDeleted());
         $this->assertFalse((new Entry(['isdeleted' => 'false']))->isDeleted());
     }
 
     public function test_restore()
     {
-        $m = (new TestModelRestoreStub)->setRawAttributes([
+        $m = (new TestModelRestoreStub())->setRawAttributes([
             'isdeleted' => ['true'],
-            'dn' => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
+            'dn'        => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
         ]);
 
         $this->assertTrue($m->restore());
@@ -74,15 +74,15 @@ class TestModelRestoreStub extends Entry
         $query->shouldReceive('update')->once()->withArgs([
             'CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com', [
                 [
-                    'attrib' => 'isdeleted',
+                    'attrib'  => 'isdeleted',
                     'modtype' => LDAP_MODIFY_BATCH_REMOVE_ALL,
                 ],
                 [
-                    'attrib' => 'distinguishedname',
+                    'attrib'  => 'distinguishedname',
                     'modtype' => LDAP_MODIFY_BATCH_ADD,
-                    'values' => ['CN=John Doe,DC=local,DC=com'],
+                    'values'  => ['CN=John Doe,DC=local,DC=com'],
                 ],
-            ]
+            ],
         ])->andReturnTrue();
 
         return $query;

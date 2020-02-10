@@ -5,8 +5,8 @@ namespace LdapRecord\Models\ActiveDirectory;
 use LdapRecord\Connection;
 use InvalidArgumentException;
 use LdapRecord\Models\Attributes\Sid;
-use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Events\Updated;
+use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 
@@ -108,7 +108,7 @@ class Entry extends BaseEntry implements ActiveDirectory
         });
 
         return $this->save([
-            'isDeleted' => null,
+            'isDeleted'         => null,
             'distinguishedName' => $newDn,
         ]);
     }

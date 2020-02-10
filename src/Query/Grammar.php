@@ -100,79 +100,6 @@ class Grammar
     }
 
     /**
-     * Determine if the query is using multiple filters.
-     *
-     * @param Builder $query
-     *
-     * @return bool
-     */
-    protected function hasMultipleFilters(Builder $query)
-    {
-        return $this->has($query, ['and', 'or', 'raw'], '>', 1);
-    }
-
-    /**
-     * Determine if the query contains only the given filter statement types.
-     *
-     * @param Builder      $query
-     * @param string|array $type
-     * @param string       $operator
-     * @param int          $count
-     *
-     * @return bool
-     */
-    protected function hasOnly(Builder $query, $type, $operator = '>=', $count = 1)
-    {
-        $types = (array) $type;
-
-        $except = array_filter(array_keys($query->filters), function ($key) use ($types) {
-            return !in_array($key, $types);
-        });
-
-        foreach ($except as $filterType) {
-            if ($this->has($query, $filterType, '>', 0)) {
-                return false;
-            }
-        }
-
-        return $this->has($query, $types, $operator, $count);
-    }
-
-    /**
-     * Determine if the query contains the given filter statement type.
-     *
-     * @param Builder      $query
-     * @param string|array $type
-     * @param string       $operator
-     * @param int          $count
-     *
-     * @return bool
-     */
-    protected function has(Builder $query, $type, $operator = '>=', $count = 1)
-    {
-        $types = (array) $type;
-
-        $filters = 0;
-
-        foreach ($types as $type) {
-            $filters += count($query->filters[$type]);
-        }
-
-        switch ($operator) {
-            case '>':
-                return $filters > $count;
-            case '>=':
-                return $filters >= $count;
-            case '<':
-                return $filters < $count;
-            case '<=':
-                return $filters <= $count;
-            default:
-                return $filters == $count;
-        }
-    }
-
-    /**
      * Generate and concatenate the query filter.
      *
      * @param Builder $query
@@ -262,6 +189,79 @@ class Grammar
         });
 
         return implode('', $bindings);
+    }
+
+    /**
+     * Determine if the query is using multiple filters.
+     *
+     * @param Builder $query
+     *
+     * @return bool
+     */
+    protected function hasMultipleFilters(Builder $query)
+    {
+        return $this->has($query, ['and', 'or', 'raw'], '>', 1);
+    }
+
+    /**
+     * Determine if the query contains only the given filter statement types.
+     *
+     * @param Builder      $query
+     * @param string|array $type
+     * @param string       $operator
+     * @param int          $count
+     *
+     * @return bool
+     */
+    protected function hasOnly(Builder $query, $type, $operator = '>=', $count = 1)
+    {
+        $types = (array) $type;
+
+        $except = array_filter(array_keys($query->filters), function ($key) use ($types) {
+            return !in_array($key, $types);
+        });
+
+        foreach ($except as $filterType) {
+            if ($this->has($query, $filterType, '>', 0)) {
+                return false;
+            }
+        }
+
+        return $this->has($query, $types, $operator, $count);
+    }
+
+    /**
+     * Determine if the query contains the given filter statement type.
+     *
+     * @param Builder      $query
+     * @param string|array $type
+     * @param string       $operator
+     * @param int          $count
+     *
+     * @return bool
+     */
+    protected function has(Builder $query, $type, $operator = '>=', $count = 1)
+    {
+        $types = (array) $type;
+
+        $filters = 0;
+
+        foreach ($types as $type) {
+            $filters += count($query->filters[$type]);
+        }
+
+        switch ($operator) {
+            case '>':
+                return $filters > $count;
+            case '>=':
+                return $filters >= $count;
+            case '<':
+                return $filters < $count;
+            case '<=':
+                return $filters <= $count;
+            default:
+                return $filters == $count;
+        }
     }
 
     /**

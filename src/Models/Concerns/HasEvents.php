@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
-use LdapRecord\Container;
+use Closure;
 use LdapRecord\Models\Events\Event;
 
 trait HasEvents
@@ -16,6 +16,19 @@ trait HasEvents
      */
     protected function fireModelEvent(Event $event)
     {
-        return Container::getEventDispatcher()->fire($event);
+        return static::getConnectionContainer()->getEventDispatcher()->fire($event);
+    }
+
+    /**
+     * Listens to a model event.
+     *
+     * @param string  $event
+     * @param Closure $listener
+     *
+     * @return mixed
+     */
+    protected function listenForModelEvent($event, Closure $listener)
+    {
+        return static::getConnectionContainer()->getEventDispatcher()->listen($event, $listener);
     }
 }

@@ -74,7 +74,9 @@ class Grammar
             $this->wrapper = 'and';
         }
 
-        $filter = $this->generateAndConcatenate($query);
+        $filter = $this->concatenate($query->filters['raw'])
+            .$this->compileWheres($query)
+            .$this->compileOrWheres($query);
 
         switch ($this->wrapper) {
             case 'and':
@@ -97,23 +99,6 @@ class Grammar
     protected function queryMustBeWrapped(Builder $query)
     {
         return !$query->isNested() && $this->hasMultipleFilters($query);
-    }
-
-    /**
-     * Generate and concatenate the query filter.
-     *
-     * @param Builder $query
-     *
-     * @return string
-     */
-    protected function generateAndConcatenate(Builder $query)
-    {
-        $raw = $this->concatenate($query->filters['raw']);
-
-        return
-            $raw
-            .$this->compileWheres($query)
-            .$this->compileOrWheres($query);
     }
 
     /**

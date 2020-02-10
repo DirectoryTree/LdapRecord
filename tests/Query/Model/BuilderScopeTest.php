@@ -32,8 +32,6 @@ class BuilderScopeTest extends TestCase
 
         $b->withGlobalScope('foo', new TestModelScope());
 
-        $b->applyScopes();
-
         $this->assertEquals('(foo=LdapRecord\Models\Entry)', $b->getUnescapedQuery());
     }
 

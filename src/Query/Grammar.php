@@ -76,18 +76,15 @@ class Grammar
 
         $filter = $this->generateAndConcatenate($query);
 
-        if ($this->wrapper) {
-            switch ($this->wrapper) {
-                case 'and':
-                    $filter = $this->compileAnd($filter);
-                    break;
-                case 'or':
-                    $filter = $this->compileOr($filter);
-                    break;
-            }
+        switch ($this->wrapper) {
+            case 'and':
+                return $this->compileAnd($filter);
+                break;
+            case 'or':
+                return $this->compileOr($filter);
+            default:
+                return $filter;
         }
-
-        return $filter;
     }
 
     /**
@@ -196,14 +193,15 @@ class Grammar
      * Assembles all where clauses in the current wheres property.
      *
      * @param Builder $builder
+     * @param string  $type
      *
      * @return string
      */
-    protected function compileWheres(Builder $builder)
+    protected function compileWheres(Builder $builder, $type = 'and')
     {
         $filter = '';
 
-        foreach ($builder->filters['and'] as $where) {
+        foreach ($builder->filters[$type] as $where) {
             $filter .= $this->compileWhere($where);
         }
 
@@ -219,21 +217,13 @@ class Grammar
      */
     protected function compileOrWheres(Builder $query)
     {
-        $filter = '';
-
-        foreach ($query->filters['or'] as $where) {
-            $filter .= $this->compileWhere($where);
-        }
+        $filter = $this->compileWheres($query, 'or');
 
         if ($this->hasMultipleFilters($query)) {
             // Here we will detect whether the entire query can be
             // wrapped inside of an "or" statement by checking
             // how many filter statements exist for each type.
-            if (
-                $this->has($query, 'or', '>=', 1) &&
-                $this->has($query, 'and', '<=', 1) &&
-                $this->has($query, 'raw', '=', 0)
-            ) {
+            if ($this->queryCanBeWrappedInSingleOrStatement($query)) {
                 $this->wrapper = 'or';
             } else {
                 $filter = $this->compileOr($filter);
@@ -241,6 +231,20 @@ class Grammar
         }
 
         return $filter;
+    }
+
+    /**
+     * Determine if the query can be wrapped in a single or statement.
+     *
+     * @param Builder $query
+     *
+     * @return bool
+     */
+    protected function queryCanBeWrappedInSingleOrStatement(Builder $query)
+    {
+        return $this->has($query, 'or', '>=', 1) &&
+            $this->has($query, 'and', '<=', 1) &&
+            $this->has($query, 'raw', '=', 0);
     }
 
     /**

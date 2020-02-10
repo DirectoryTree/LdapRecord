@@ -94,7 +94,7 @@ class Entry extends BaseEntry implements ActiveDirectory
             return false;
         }
 
-        $root = $newParentDn ?? $this->getParentDn($this->getParentDn($this->getDn()));
+        $root = $newParentDn ?? $this->getDefaultRestoreLocation();
         $rdn = explode('\0A', $this->getDn(), 2)[0];
         $newDn = implode(',', [$rdn, $root]);
 
@@ -111,6 +111,16 @@ class Entry extends BaseEntry implements ActiveDirectory
             'isDeleted' => null,
             'distinguishedName' => $newDn,
         ]);
+    }
+
+    /**
+     * Get the objects restore location.
+     *
+     * @return string
+     */
+    protected function getDefaultRestoreLocation()
+    {
+        return $this->getFirstAttribute('lastKnownParent') ?? $this->getParentDn($this->getParentDn($this->getDn()));
     }
 
     /**

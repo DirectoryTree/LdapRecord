@@ -78,7 +78,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     public function isDeleted()
     {
-        return $this->getFirstAttribute('isDeleted') === 'TRUE';
+        return strtoupper($this->getFirstAttribute('isDeleted')) === 'TRUE';
     }
 
     /**

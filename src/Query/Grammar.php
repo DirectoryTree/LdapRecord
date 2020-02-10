@@ -81,7 +81,6 @@ class Grammar
         switch ($this->wrapper) {
             case 'and':
                 return $this->compileAnd($filter);
-                break;
             case 'or':
                 return $this->compileOr($filter);
             default:

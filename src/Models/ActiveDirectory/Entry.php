@@ -6,6 +6,7 @@ use LdapRecord\Connection;
 use InvalidArgumentException;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
+use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 
@@ -68,6 +69,48 @@ class Entry extends BaseEntry implements ActiveDirectory
     public function newQueryBuilder(Connection $connection)
     {
         return new ActiveDirectoryBuilder($connection);
+    }
+
+    /**
+     * Determine if the object is deleted.
+     *
+     * @return bool
+     */
+    public function isDeleted()
+    {
+        return $this->getFirstAttribute('isDeleted') === 'TRUE';
+    }
+
+    /**
+     * Restore a deleted object.
+     *
+     * @param string|null $newParentDn
+     *
+     * @return bool
+     */
+    public function restore($newParentDn = null)
+    {
+        if (!$this->isDeleted()) {
+            return false;
+        }
+
+        $root = $newParentDn ?? $this->getParentDn($this->getParentDn($this->getDn()));
+        $rdn = explode('\0A', $this->getDn(), 2)[0];
+        $newDn = implode(',', [$rdn, $root]);
+
+        // We will initialize a model listener for the "updated" event to set
+        // the models distinguished name so all attributes are synchronized
+        // properly after the model has been successfully restored.
+        $this->listenForModelEvent(Updated::class, function (Updated $event) use ($newDn) {
+            if ($this->is($event->getModel())) {
+                $this->setDn($newDn);
+            }
+        });
+
+        return $this->save([
+            'isDeleted' => null,
+            'distinguishedName' => $newDn,
+        ]);
     }
 
     /**

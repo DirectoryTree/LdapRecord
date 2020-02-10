@@ -193,23 +193,13 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function get()
+    public function getQuery()
     {
         $this->applyScopes();
 
-        return parent::get();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function paginate($pageSize = 1000, $isCritical = false)
-    {
-        $this->applyScopes();
-
-        return parent::paginate($pageSize, $isCritical);
+        return parent::getQuery();
     }
 
     /**

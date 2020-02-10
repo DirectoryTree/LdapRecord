@@ -41,6 +41,18 @@ trait DetectsErrors
     }
 
     /**
+     * Determine if the error was caused by a "No such object" warning.
+     *
+     * @param string $error
+     *
+     * @return bool
+     */
+    protected function causedByNoSuchObject($error)
+    {
+        return $this->errorContainsMessage($error, ['No such object']);
+    }
+
+    /**
      * Determine if the error contains the any of the messages.
      *
      * @param string       $error

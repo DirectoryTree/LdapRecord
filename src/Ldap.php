@@ -895,7 +895,7 @@ class Ldap
      */
     protected function shouldBypassError($error)
     {
-        return $this->causedByPaginationSupport($error) || $this->causedBySizeLimit($error);
+        return $this->causedByPaginationSupport($error) || $this->causedBySizeLimit($error) || $this->causedByNoSuchObject($error);
     }
 
     /**

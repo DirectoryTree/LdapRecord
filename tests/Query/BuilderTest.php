@@ -311,6 +311,35 @@ class BuilderTest extends TestCase
         $this->assertEquals('\74\65\73\74', $where['value']);
     }
 
+    public function test_or_where_with_one_where_should_be_converted_to_single_or_filter()
+    {
+        $b = $this->newBuilder()
+            ->where('foo', '=', 'bar')
+            ->orWhere('baz', '=', 'zax');
+
+        $this->assertEquals('(|(foo=\62\61\72)(baz=\7a\61\78))', $b->getQuery());
+    }
+
+    public function test_multiple_or_wheres_should_be_single_statement()
+    {
+        $b = $this->newBuilder()
+            ->orWhere('foo', '=', 'bar')
+            ->orWhere('baz', '=', 'zax');
+
+        $this->assertEquals('(|(foo=\62\61\72)(baz=\7a\61\78))', $b->getQuery());
+    }
+
+    public function test_multiple_wheres_with_or_wheres()
+    {
+        $b = $this->newBuilder()
+            ->where('baz', '=', 'zax')
+            ->where('lao', '=', 'zen')
+            ->orWhere('foo', '=', 'bar')
+            ->orWhere('zue', '=', 'lea');
+
+        $this->assertEquals('(&(baz=zax)(lao=zen)(|(foo=bar)(zue=lea)))', $b->getUnescapedQuery());
+    }
+
     public function test_or_where_with_array()
     {
         $b = $this->newBuilder();
@@ -362,7 +391,7 @@ class BuilderTest extends TestCase
         $this->assertEquals('contains', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
 
-        $this->assertEquals('(&(name=*test*)(|(cn=*test*)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(name=*test*)(cn=*test*))', $b->getUnescapedQuery());
     }
 
     public function test_or_where_starts_with()
@@ -378,7 +407,7 @@ class BuilderTest extends TestCase
         $this->assertEquals('cn', $where['field']);
         $this->assertEquals('starts_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
-        $this->assertEquals('(&(name=test*)(|(cn=test*)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(name=test*)(cn=test*))', $b->getUnescapedQuery());
     }
 
     public function test_or_where_ends_with()
@@ -394,7 +423,7 @@ class BuilderTest extends TestCase
         $this->assertEquals('cn', $where['field']);
         $this->assertEquals('ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
-        $this->assertEquals('(&(name=*test)(|(cn=*test)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(name=*test)(cn=*test))', $b->getUnescapedQuery());
     }
 
     public function test_where_invalid_operator()
@@ -517,7 +546,7 @@ class BuilderTest extends TestCase
 
         $b->orWhere('or', '=', 'value');
 
-        $this->assertEquals('(&(field=value)(|(or=value)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(field=value)(or=value))', $b->getUnescapedQuery());
     }
 
     public function test_built_where_has()
@@ -651,26 +680,22 @@ class BuilderTest extends TestCase
 
     public function test_built_raw_filter_with_wheres()
     {
-        $b = $this->newBuilder();
+        $b = $this->newBuilder()
+            ->rawFilter('(raw=value)')
+            ->where('foo', '=', 'bar')
+            ->where('fee', '=', 'lar')
+            ->orWhere('baz', '=', 'zax')
+            ->orWhere('far', '=', 'zue');
 
-        $b->rawFilter('(field=value)');
-
-        $b->where('field', '=', 'value');
-
-        $b->orWhere('field', '=', 'value');
-
-        $this->assertEquals('(&(field=value)(field=value)(|(field=value)))', $b->getUnescapedQuery());
+        $this->assertEquals('(&(raw=value)(foo=bar)(fee=lar)(|(baz=zax)(far=zue)))', $b->getUnescapedQuery());
     }
 
     public function test_built_raw_filter_multiple()
     {
-        $b = $this->newBuilder();
-
-        $b->rawFilter('(field=value)');
-
-        $b->rawFilter('(|(field=value))');
-
-        $b->rawFilter('(field=value)');
+        $b = $this->newBuilder()
+            ->rawFilter('(field=value)')
+            ->rawFilter('(|(field=value))')
+            ->rawFilter('(field=value)');
 
         $this->assertEquals('(&(field=value)(|(field=value))(field=value))', $b->getQuery());
     }

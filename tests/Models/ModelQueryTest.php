@@ -66,7 +66,7 @@ class ModelQueryTest extends TestCase
         $this->assertEquals('foo', Entry::query()->getDn());
     }
 
-    public function test_new_query_without_connection()
+    public function test_creating_new_query_without_connection_fails()
     {
         $this->expectException(ContainerException::class);
         Entry::query();

@@ -77,7 +77,7 @@ class Builder extends BaseBuilder
      *
      * @return Model|\LdapRecord\Query\Collection|static|null
      */
-    public function findByAnr($value, $columns = [])
+    public function findByAnr($value, $columns = ['*'])
     {
         if (is_array($value)) {
             return $this->findManyByAnr($value, $columns);
@@ -104,7 +104,7 @@ class Builder extends BaseBuilder
      *
      * @return Model
      */
-    public function findByAnrOrFail($value, $columns = [])
+    public function findByAnrOrFail($value, $columns = ['*'])
     {
         if ($entry = $this->findByAnr($value, $columns)) {
             return $entry;
@@ -121,7 +121,7 @@ class Builder extends BaseBuilder
      *
      * @return \LdapRecord\Query\Collection
      */
-    public function findManyByAnr(array $values = [], $columns = [])
+    public function findManyByAnr(array $values = [], $columns = ['*'])
     {
         $this->select($columns);
 
@@ -130,7 +130,7 @@ class Builder extends BaseBuilder
                 $this->prepareAnrEquivalentQuery($value);
             }
 
-            return $this->get();
+            return $this->get($columns);
         }
 
         return $this->findManyBy('anr', $values);
@@ -160,7 +160,7 @@ class Builder extends BaseBuilder
      *
      * @return Model|static|null
      */
-    public function findByGuid($guid, $columns = [])
+    public function findByGuid($guid, $columns = ['*'])
     {
         try {
             return $this->findByGuidOrFail($guid, $columns);
@@ -181,15 +181,15 @@ class Builder extends BaseBuilder
      *
      * @return Model|static
      */
-    public function findByGuidOrFail($guid, $columns = [])
+    public function findByGuidOrFail($guid, $columns = ['*'])
     {
         if ($this->model instanceof ActiveDirectory) {
             $guid = Utilities::stringGuidToHex($guid);
         }
 
-        return $this->select($columns)->whereRaw([
+        return $this->whereRaw([
             $this->model->getGuidKey() => $guid,
-        ])->firstOrFail();
+        ])->firstOrFail($columns);
     }
 
     /**

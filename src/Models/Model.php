@@ -5,6 +5,8 @@ namespace LdapRecord\Models;
 use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Container;
+use LdapRecord\Models\Events\Renamed;
+use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use InvalidArgumentException;
@@ -1200,11 +1202,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $newParentDn = $this->getParentDn($this->dn);
         }
 
+        $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
+
         if ($this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn)) {
             // If the model was successfully renamed, we will set
             // its new DN so any further updates to the model
             // can be performed without any issues.
             $this->dn = implode(',', [$rdn, $newParentDn]);
+
+            $this->fireModelEvent(new Renamed($this));
 
             return true;
         }

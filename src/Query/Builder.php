@@ -227,8 +227,8 @@ class Builder
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param array     $columns
-     * @param callable  $callback
+     * @param array    $columns
+     * @param callable $callback
      *
      * @return mixed
      */

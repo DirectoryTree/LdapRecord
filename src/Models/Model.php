@@ -5,15 +5,15 @@ namespace LdapRecord\Models;
 use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Container;
-use LdapRecord\Models\Events\Renamed;
-use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Models\Attributes\MbString;
 
 /** @mixin Builder */

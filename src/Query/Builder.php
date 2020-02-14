@@ -217,7 +217,7 @@ class Builder
      */
     public function get($columns = ['*'])
     {
-        return $this->onceWithColumns($columns, function () {
+        return $this->onceWithColumns(Arr::wrap($columns), function () {
             return $this->query($this->getQuery());
         });
     }

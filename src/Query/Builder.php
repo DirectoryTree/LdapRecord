@@ -209,7 +209,7 @@ class Builder
     }
 
     /**
-     * Returns the current query.
+     * Executes the LDAP query.
      *
      * @param array $columns
      *

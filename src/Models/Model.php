@@ -679,9 +679,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getModifications()
     {
-        $this->buildModificationsFromDirty();
+        $builtModifications = [];
 
-        return $this->modifications;
+        foreach ($this->buildModificationsFromDirty() as $modification) {
+            $builtModifications[] = $modification->get();
+        }
+
+        return array_merge($this->modifications, $builtModifications);
     }
 
     /**
@@ -693,6 +697,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setModifications(array $modifications = [])
     {
+        $this->modifications = [];
+
         foreach ($modifications as $modification) {
             $this->addModification($modification);
         }
@@ -1255,10 +1261,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Builds the models modifications from its dirty attributes.
      *
-     * @return array
+     * @return BatchModification[]
      */
     protected function buildModificationsFromDirty()
     {
+        $modifications = [];
+
         foreach ($this->getDirty() as $attribute => $values) {
             // Make sure values is always an array.
             $values = (is_array($values) ? $values : [$values]);
@@ -1273,17 +1281,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
                 $modification->setOriginal($this->original[$attribute]);
             }
 
-            // Build the modification from its
-            // possible original values.
-            $modification->build();
-
-            if ($modification->isValid()) {
-                // Finally, we'll add the modification to the model.
-                $this->addModification($modification);
+            if ($modification->build()->isValid()) {
+                $modifications[] = $modification;
             }
         }
 
-        return $this->modifications;
+        return $modifications;
     }
 
     /**

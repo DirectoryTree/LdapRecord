@@ -20,7 +20,7 @@ class Builder extends BaseBuilder
     protected $model;
 
     /**
-     * Applied global scopes.
+     * The global scopes to be applied.
      *
      * @var array
      */

@@ -34,6 +34,13 @@ class Builder extends BaseBuilder
     protected $removedScopes = [];
 
     /**
+     * The applied global scopes.
+     *
+     * @var array
+     */
+    protected $appliedScopes = [];
+
+    /**
      * Sets the model instance for the model being queried.
      *
      * @param Model $model
@@ -214,8 +221,12 @@ class Builder extends BaseBuilder
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            $scope instanceof Scope ?
-                $scope->apply($this, $this->getModel()) : $scope($this);
+            if (!isset($this->appliedScopes[$identifier])) {
+                $scope instanceof Scope ?
+                    $scope->apply($this, $this->getModel()) : $scope($this);
+
+                $this->appliedScopes[$identifier] = $scope;
+            }
         }
 
         return $this;
@@ -284,6 +295,16 @@ class Builder extends BaseBuilder
     public function removedScopes()
     {
         return $this->removedScopes;
+    }
+
+    /**
+     * Get an array of the global scopes that were applied to the query.
+     *
+     * @return array
+     */
+    public function appliedScopes()
+    {
+        return $this->appliedScopes;
     }
 
     /**

@@ -61,6 +61,18 @@ class ModelScopeTest extends TestCase
             'value'    => 'bar',
         ], $query->filters['and'][0]);
     }
+
+    public function test_scopes_are_not_stacked_multiple_times()
+    {
+        Container::addConnection(new Connection());
+
+        $query = (new ModelScopeTestStub())->newQuery();
+        $query->getQuery();
+        $query->getQuery();
+
+        $this->assertCount(1, $query->filters['and']);
+        $this->assertEquals('(foo=bar)', $query->getQuery());
+    }
 }
 
 class ModelScopeTestStub extends Model

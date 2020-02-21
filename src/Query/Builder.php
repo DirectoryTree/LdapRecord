@@ -209,22 +209,42 @@ class Builder
     }
 
     /**
-     * Returns the current query.
+     * Executes the LDAP query.
+     *
+     * @param array $columns
      *
      * @return Collection|array
      */
-    public function get()
+    public function get($columns = ['*'])
     {
-        // If the query does not have any selected attributes, we'll
-        // set it to the * character. This indicates that we
-        // want all attributes returned for LDAP records.
-        if (is_null($this->columns)) {
-            $this->addSelect('*');
+        return $this->onceWithColumns(Arr::wrap($columns), function () {
+            return $this->query($this->getQuery());
+        });
+    }
+
+    /**
+     * Execute the given callback while selecting the given columns.
+     *
+     * After running the callback, the columns are reset to the original value.
+     *
+     * @param array    $columns
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    protected function onceWithColumns($columns, $callback)
+    {
+        $original = $this->columns;
+
+        if (is_null($original)) {
+            $this->columns = $columns;
         }
 
-        // We'll mute any warnings / errors here. We just need to
-        // know if any query results were returned.
-        return $this->query($this->getQuery());
+        $result = $callback();
+
+        $this->columns = $original;
+
+        return $result;
     }
 
     /**
@@ -663,7 +683,7 @@ class Builder
      */
     public function first($columns = ['*'])
     {
-        $results = $this->select($columns)->limit(1)->get();
+        $results = $this->limit(1)->get($columns);
 
         return Arr::get($results, 0);
     }

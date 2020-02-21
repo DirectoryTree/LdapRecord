@@ -9,8 +9,7 @@ use LdapRecord\DetailedError;
 class LdapFake extends Ldap
 {
     /**
-     * The distinguished name of the user
-     * that should pass authentication.
+     * The distinguished name of the user that should pass authentication.
      *
      * @var string|null
      */

@@ -20,7 +20,7 @@ class Builder extends BaseBuilder
     protected $model;
 
     /**
-     * Applied global scopes.
+     * The global scopes to be applied.
      *
      * @var array
      */
@@ -32,6 +32,13 @@ class Builder extends BaseBuilder
      * @var array
      */
     protected $removedScopes = [];
+
+    /**
+     * The applied global scopes.
+     *
+     * @var array
+     */
+    protected $appliedScopes = [];
 
     /**
      * Sets the model instance for the model being queried.
@@ -77,7 +84,7 @@ class Builder extends BaseBuilder
      *
      * @return Model|\LdapRecord\Query\Collection|static|null
      */
-    public function findByAnr($value, $columns = [])
+    public function findByAnr($value, $columns = ['*'])
     {
         if (is_array($value)) {
             return $this->findManyByAnr($value, $columns);
@@ -104,7 +111,7 @@ class Builder extends BaseBuilder
      *
      * @return Model
      */
-    public function findByAnrOrFail($value, $columns = [])
+    public function findByAnrOrFail($value, $columns = ['*'])
     {
         if ($entry = $this->findByAnr($value, $columns)) {
             return $entry;
@@ -121,7 +128,7 @@ class Builder extends BaseBuilder
      *
      * @return \LdapRecord\Query\Collection
      */
-    public function findManyByAnr(array $values = [], $columns = [])
+    public function findManyByAnr(array $values = [], $columns = ['*'])
     {
         $this->select($columns);
 
@@ -130,7 +137,7 @@ class Builder extends BaseBuilder
                 $this->prepareAnrEquivalentQuery($value);
             }
 
-            return $this->get();
+            return $this->get($columns);
         }
 
         return $this->findManyBy('anr', $values);
@@ -160,7 +167,7 @@ class Builder extends BaseBuilder
      *
      * @return Model|static|null
      */
-    public function findByGuid($guid, $columns = [])
+    public function findByGuid($guid, $columns = ['*'])
     {
         try {
             return $this->findByGuidOrFail($guid, $columns);
@@ -181,15 +188,15 @@ class Builder extends BaseBuilder
      *
      * @return Model|static
      */
-    public function findByGuidOrFail($guid, $columns = [])
+    public function findByGuidOrFail($guid, $columns = ['*'])
     {
         if ($this->model instanceof ActiveDirectory) {
             $guid = Utilities::stringGuidToHex($guid);
         }
 
-        return $this->select($columns)->whereRaw([
+        return $this->whereRaw([
             $this->model->getGuidKey() => $guid,
-        ])->firstOrFail();
+        ])->firstOrFail($columns);
     }
 
     /**
@@ -214,8 +221,12 @@ class Builder extends BaseBuilder
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            $scope instanceof Scope ?
-                $scope->apply($this, $this->getModel()) : $scope($this);
+            if (!isset($this->appliedScopes[$identifier])) {
+                $scope instanceof Scope ?
+                    $scope->apply($this, $this->getModel()) : $scope($this);
+
+                $this->appliedScopes[$identifier] = $scope;
+            }
         }
 
         return $this;
@@ -284,6 +295,16 @@ class Builder extends BaseBuilder
     public function removedScopes()
     {
         return $this->removedScopes;
+    }
+
+    /**
+     * Get an array of the global scopes that were applied to the query.
+     *
+     * @return array
+     */
+    public function appliedScopes()
+    {
+        return $this->appliedScopes;
     }
 
     /**

@@ -45,7 +45,6 @@ class ModelNotFoundException extends LdapRecordException
     {
         $this->query = $query;
         $this->baseDn = $baseDn;
-
         $this->message = "No LDAP query results for filter: [$query] in: [$baseDn]";
 
         return $this;

@@ -381,6 +381,22 @@ class ModelTest extends TestCase
         $this->assertEquals(1, $modifications[2]['modtype']);
     }
 
+    public function test_modifications_are_not_stacked()
+    {
+        $model = (new Entry())->setRawAttributes([
+            'cn'             => ['Common Name'],
+            'samaccountname' => ['Account Name'],
+            'name'           => ['Name'],
+        ]);
+
+        $model->cn = null;
+        $model->samaccountname = 'Changed';
+        $model->test = 'New Attribute';
+
+        $this->assertCount(3, $model->getModifications());
+        $this->assertCount(3, $model->getModifications());
+    }
+
     public function test_is_descendent_of()
     {
         $model = new Entry();

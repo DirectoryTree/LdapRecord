@@ -96,7 +96,7 @@ trait HasAttributes
         $key = $this->normalizeAttributeKey($key);
         $value = $this->getAttributeFromArray($key);
 
-        if ($this->hasAttribute($key) && $this->hasGetMutator($key)) {
+        if ($this->hasGetMutator($key)) {
             return $this->getMutatedAttributeValue($key, $value);
         }
 
@@ -290,7 +290,7 @@ trait HasAttributes
     /**
      * Get the mutator attribute method name.
      *
-     * LDAP attributes that contain hyphens
+     * Hyphenated attributes will use pascal cased methods.
      *
      * @param string $key
      *

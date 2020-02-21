@@ -68,7 +68,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected $connection;
 
     /**
-     * The attribute key that contains the Object GUID.
+     * The attribute key that contains the models object GUID.
      *
      * @var string
      */

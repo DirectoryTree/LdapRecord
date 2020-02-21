@@ -20,6 +20,12 @@ class ModelAccessorTest extends TestCase
         $this->assertTrue(isset($model->foo));
     }
 
+    public function test_accessor_is_used_when_attribute_is_null()
+    {
+        $model = new ModelAccessorStub();
+        $this->assertEquals('zax', $model->zax);
+    }
+
     public function test_model_uses_accessor_with_hyphen()
     {
         $model = new ModelAccessorStub();
@@ -27,8 +33,10 @@ class ModelAccessorTest extends TestCase
         $this->assertEquals('baz-other', $model->getAttribute('foo-bar'));
         $this->assertEquals(['baz'], $model->jsonSerialize()['foo-bar']);
         $this->assertEquals('baz-other', $model->foo_bar);
-        $this->assertNull($model->foobar);
-        $this->assertNull($model->getAttribute('foobar'));
+        $this->assertEquals('-other', $model->foobar);
+        $this->assertEquals('-other', $model->getAttribute('foobar'));
+        $this->assertNull($model->bar_foo);
+        $this->assertNull($model->bar);
     }
 
     public function test_model_uses_mutator()
@@ -160,6 +168,11 @@ class ModelAccessorStub extends Model
     public function getFooBarAttribute($baz)
     {
         return $baz[0].'-other';
+    }
+
+    public function getZaxAttribute($value)
+    {
+        return 'zax';
     }
 }
 

@@ -753,13 +753,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models name.
+     * Get the name of the model, or the given DN.
+     *
+     * @param string|null $dn
      *
      * @return string|null
      */
-    public function getName()
+    public function getName($dn = null)
     {
-        if ($rdn = $this->getRdn()) {
+        if ($rdn = $this->getRdn($dn)) {
             list($attribute, $name) = explode('=', $rdn);
 
             return $name;
@@ -767,27 +769,29 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models RDN.
+     * Get the RDN of the model, of the given DN.
+     *
+     * @param string|null
      *
      * @return string|null
      */
-    public function getRdn()
+    public function getRdn($dn = null)
     {
-        if ($parts = Utilities::explodeDn($this->dn, false)) {
+        if ($parts = Utilities::explodeDn($dn ?? $this->dn, false)) {
             return array_key_exists(0, $parts) ? $parts[0] : null;
         }
     }
 
     /**
-     * Get the parent distinguished name of the given.
+     * Get the parent distinguished name of the model, or the given DN.
      *
-     * @param static|string
+     * @param string|null
      *
      * @return string|null
      */
-    public function getParentDn($dn)
+    public function getParentDn($dn = null)
     {
-        if ($parts = Utilities::explodeDn($dn, false)) {
+        if ($parts = Utilities::explodeDn($dn ?? $this->dn, false)) {
             array_shift($parts);
 
             return implode(',', $parts);

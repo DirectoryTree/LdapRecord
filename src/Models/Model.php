@@ -689,7 +689,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Set the models modifications array.
+     * Set the models batch modifications.
      *
      * @param array $modifications
      *
@@ -707,7 +707,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Adds a batch modification to the models modifications array.
+     * Adds a batch modification to the model.
      *
      * @param array|BatchModification $mod
      *

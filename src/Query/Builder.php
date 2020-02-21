@@ -636,10 +636,12 @@ class Builder
      */
     protected function parse($resource)
     {
+        if (!$resource) {
+            return [];
+        }
+
         return $this->connection->run(function (Ldap $ldap) use ($resource) {
-            // Normalize entries. Get entries returns false on failure.
-            // We'll always want an array in this situation.
-            $entries = $ldap->getEntries($resource) ?: [];
+            $entries = $ldap->getEntries($resource);
 
             // Free up memory.
             if (is_resource($resource)) {

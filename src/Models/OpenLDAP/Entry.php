@@ -11,7 +11,7 @@ use LdapRecord\Query\Model\OpenLdapBuilder;
 class Entry extends BaseEntry implements OpenLDAP
 {
     /**
-     * The attribute key that contains the Object GUID.
+     * The attribute key that contains the models object GUID.
      *
      * @var string
      */

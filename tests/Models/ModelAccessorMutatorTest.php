@@ -33,8 +33,8 @@ class ModelAccessorTest extends TestCase
         $this->assertEquals('baz-other', $model->getAttribute('foo-bar'));
         $this->assertEquals(['baz'], $model->jsonSerialize()['foo-bar']);
         $this->assertEquals('baz-other', $model->foo_bar);
-        $this->assertEquals('-other', $model->foobar);
-        $this->assertEquals('-other', $model->getAttribute('foobar'));
+        $this->assertNull($model->foobar);
+        $this->assertNull($model->getAttribute('foobar'));
         $this->assertNull($model->bar_foo);
         $this->assertNull($model->bar);
     }
@@ -167,7 +167,9 @@ class ModelAccessorStub extends Model
 
     public function getFooBarAttribute($baz)
     {
-        return $baz[0].'-other';
+        if ($baz) {
+            return $baz[0].'-other';
+        }
     }
 
     public function getZaxAttribute($value)

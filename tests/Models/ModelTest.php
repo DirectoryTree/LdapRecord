@@ -70,7 +70,7 @@ class ModelTest extends TestCase
         $model = new Entry();
         $model->setDn('cn=user,dc=acme,dc=org');
         $this->assertEquals('dc=acme,dc=org', $model->getParentDn($model->getDn()));
-        $this->assertEmpty($model->getParentDn(null));
+        $this->assertEquals('dc=acme,dc=org', $model->getParentDn());
         $this->assertEmpty($model->getParentDn(''));
         $this->assertEmpty($model->getParentDn('invalid'));
     }

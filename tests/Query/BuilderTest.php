@@ -977,7 +977,6 @@ class BuilderTest extends TestCase
         $ldap->shouldReceive('isBound')->andReturnTrue();
         $ldap->shouldReceive('setOption')->once()->withArgs([LDAP_OPT_SERVER_CONTROLS, []]);
         $ldap->shouldReceive('search')->once()->andReturnNull();
-        $ldap->shouldReceive('getEntries')->once()->andReturnNull();
 
         $b->get();
     }

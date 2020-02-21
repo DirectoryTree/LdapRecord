@@ -64,7 +64,7 @@ class BuilderScopeTest extends TestCase
     public function test_scopes_are_applied_when_getting_records()
     {
         $connection = m::mock(Connection::class);
-        $connection->shouldReceive('run')->twice()->with(m::on(function ($closure) {
+        $connection->shouldReceive('run')->once()->with(m::on(function ($closure) {
             $func = new ReflectionFunction($closure);
 
             return $func->getClosureThis()->filters['and'][0] == [

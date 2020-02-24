@@ -11,7 +11,8 @@
         "windows",
         "adldap",
         "adldap2",
-        "ldaprecord"
+        "ldaprecord",
+        "orm"
     ],
     "license": "MIT",
     "support": {

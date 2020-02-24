@@ -1,7 +1,7 @@
 {
     "name": "directorytree/ldaprecord",
     "type": "library",
-    "description": "ActiveRecord for LDAP.",
+    "description": "A fully-featured LDAP ORM.",
     "homepage": "https://www.ldaprecord.com",
     "keywords": [
         "active directory",

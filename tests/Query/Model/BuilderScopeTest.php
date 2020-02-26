@@ -33,6 +33,9 @@ class BuilderScopeTest extends TestCase
         $b->withGlobalScope('foo', new TestModelScope());
 
         $this->assertEquals('(foo=LdapRecord\Models\Entry)', $b->getUnescapedQuery());
+
+        $this->assertCount(1, $b->appliedScopes());
+        $this->assertArrayHasKey('foo', $b->appliedScopes());
     }
 
     public function test_scopes_can_be_removed_after_being_added()

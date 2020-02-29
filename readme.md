@@ -27,19 +27,19 @@
     <a href="https://ldaprecord.com/docs/">Documentation</a>
 </h4>
 
-⏲ **Up and Running Fast.**
+⏲ **Up and Running Fast**
 
 Connect to your LDAP servers and start running queries at lightning speed.
 
-💡 **Fluent Filter Builder.**
+💡 **Fluent Filter Builder**
 
 Find the LDAP objects you're looking for with a fluent LDAP filter builder.
 
-💼 **Multi-Domain Ready.**
+💼 **Multi-Domain Ready**
 
 Built-in connection management allows you to access multiple domains without breaking a sweat.
 
-🔥 **Supercharged ActiveRecord.**
+🔥 **Supercharged ActiveRecord**
 
 Create and modify LDAP objects with minimal code.
 

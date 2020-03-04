@@ -131,6 +131,16 @@ class Connection
     }
 
     /**
+     * Get the cache store.
+     *
+     * @return Cache|null
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
      * Get the LDAP configuration instance.
      *
      * @return DomainConfiguration

@@ -80,6 +80,9 @@ class LdapFake extends Ldap
     /**
      * Fake a bind attempt.
      *
+     * @param string $username
+     * @param string $password
+     *
      * @return bool
      */
     public function bind($username, $password)

@@ -256,6 +256,6 @@ class Container
      */
     protected function newEventLogger()
     {
-        return new EventLogger(static::getLogger());
+        return new EventLogger($this->getLogger());
     }
 }

@@ -13,7 +13,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getNewInstance();
         $this->assertInstanceOf(Container::class, $container);
-        $this->assertNull($container::getLogger());
+        $this->assertNull($container->getLogger());
 
         $dispatcher = Container::getEventDispatcher();
 

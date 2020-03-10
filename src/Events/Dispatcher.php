@@ -281,13 +281,26 @@ class Dispatcher implements DispatcherInterface
     {
         return function ($event, $payload) use ($listener, $wildcard) {
             if ($wildcard) {
-                return call_user_func($this->parseListenerCallback($listener), $event, $payload);
+                return call_user_func($this->createClassCallable($listener), $event, $payload);
             }
 
             return call_user_func_array(
-                $this->parseListenerCallback($listener), $payload
+                $this->createClassCallable($listener), $payload
             );
         };
+    }
+
+    /**
+     * Create the class based event callable.
+     *
+     * @param  string  $listener
+     * @return callable
+     */
+    protected function createClassCallable($listener)
+    {
+        [$class, $method] = $this->parseListenerCallback($listener);
+
+        return [new $class, $method];
     }
 
     /**

@@ -32,7 +32,8 @@ class HasOne extends Relation
     public function attach(Model $model)
     {
         return $this->parent->setAttribute(
-            $this->relationKey, $this->getForeignValueFromModel($model)
+            $this->relationKey,
+            $this->getForeignValueFromModel($model)
         )->save() ? $model : false;
     }
 
@@ -44,7 +45,8 @@ class HasOne extends Relation
     public function detach()
     {
         return $this->parent->setAttribute(
-            $this->relationKey, null
+            $this->relationKey,
+            null
         )->save();
     }
 }

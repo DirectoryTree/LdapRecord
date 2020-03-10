@@ -55,10 +55,10 @@ abstract class Relation
      * Constructor.
      *
      * @var Builder
-     * @var Model   $parent
-     * @var mixed   $related
-     * @var string  $relationKey
-     * @var string  $foreignKey
+     * @var Model
+     * @var mixed
+     * @var string
+     * @var string
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {
@@ -296,7 +296,7 @@ abstract class Relation
      * Determines the model from the given relations.
      *
      * @var Model
-     * @var array $related
+     * @var array
      *
      * @return string|bool
      */

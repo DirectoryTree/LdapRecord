@@ -293,7 +293,8 @@ class Dispatcher implements DispatcherInterface
     /**
      * Create the class based event callable.
      *
-     * @param  string  $listener
+     * @param string $listener
+     *
      * @return callable
      */
     protected function createClassCallable($listener)

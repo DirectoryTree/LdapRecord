@@ -216,9 +216,7 @@ class DispatcherTest extends TestCase
             $_SERVER['__event.test1'] = 'fooo';
         });
 
-        $d->listen(SomeEventInterface::class, function () {
-            $_SERVER['__event.test2'] = 'baar';
-        });
+        $d->listen(SomeEventInterface::class, ExampleListener::class);
 
         $d->fire(new AnotherEvent());
 
@@ -230,6 +228,14 @@ class DispatcherTest extends TestCase
 class ExampleEvent
 {
     //
+}
+
+class ExampleListener
+{
+    public function handle(SomeEventInterface $event)
+    {
+        $_SERVER['__event.test2'] = 'baar';
+    }
 }
 
 interface SomeEventInterface

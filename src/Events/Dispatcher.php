@@ -102,7 +102,8 @@ class Dispatcher implements DispatcherInterface
         // object and use the class as the event name and this event itself as the
         // payload to the handler, which makes object based events quite simple.
         list($event, $payload) = $this->parseEventAndPayload(
-            $event, $payload
+            $event,
+            $payload
         );
 
         $responses = [];
@@ -285,7 +286,8 @@ class Dispatcher implements DispatcherInterface
             }
 
             return call_user_func_array(
-                $this->createClassCallable($listener), $payload
+                $this->createClassCallable($listener),
+                $payload
             );
         };
     }
@@ -301,7 +303,7 @@ class Dispatcher implements DispatcherInterface
     {
         [$class, $method] = $this->parseListenerCallback($listener);
 
-        return [new $class, $method];
+        return [new $class(), $method];
     }
 
     /**

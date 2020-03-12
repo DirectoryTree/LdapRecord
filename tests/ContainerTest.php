@@ -60,6 +60,15 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Connection::class, Container::getDefaultConnection());
     }
 
+    public function test_getting_default_connection_name()
+    {
+        $container = Container::getInstance();
+        $this->assertEquals('default', $container->getDefaultConnectionName());
+
+        $container->setDefault('other');
+        $this->assertEquals('other', $container->getDefaultConnectionName());
+    }
+
     public function test_setting_default_connections()
     {
         $container = Container::getNewInstance();

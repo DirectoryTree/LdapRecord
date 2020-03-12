@@ -224,6 +224,16 @@ class Container
     }
 
     /**
+     * Get the default connection name.
+     *
+     * @return string
+     */
+    public function getDefaultConnectionName()
+    {
+        return $this->default;
+    }
+
+    /**
      * Checks if the connection exists.
      *
      * @param $name

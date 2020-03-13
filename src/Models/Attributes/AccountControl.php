@@ -16,6 +16,8 @@ class AccountControl
 
     const PASSWD_NOTREQD = 32;
 
+    const PASSWD_CANT_CHANGE = 64;
+
     const ENCRYPTED_TEXT_PWD_ALLOWED = 128;
 
     const TEMP_DUPLICATE_ACCOUNT = 256;

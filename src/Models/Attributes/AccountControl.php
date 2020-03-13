@@ -305,7 +305,7 @@ class AccountControl
      */
     public function passwordCannotBeChanged()
     {
-        return $this->add(static::PASSWD_NOTREQD);
+        return $this->add(static::PASSWD_CANT_CHANGE);
     }
 
     /**

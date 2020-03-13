@@ -4,9 +4,9 @@ namespace LdapRecord\Tests\Query;
 
 use DateTime;
 use LdapRecord\Connection;
-use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Tests\CreatesConnectedLdapMocks;
 
 class BuilderTest extends TestCase

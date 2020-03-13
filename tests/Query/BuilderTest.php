@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Query;
 
 use DateTime;
 use LdapRecord\Connection;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Tests\CreatesConnectedLdapMocks;
@@ -979,5 +980,34 @@ class BuilderTest extends TestCase
         $ldap->shouldReceive('search')->once()->andReturnNull();
 
         $b->get();
+    }
+
+    public function test_insert_requires_distinguished_name()
+    {
+        $b = $this->newBuilder();
+
+        $this->expectException(LdapRecordException::class);
+
+        $b->insert('', []);
+    }
+
+    public function test_insert_requires_object_classes()
+    {
+        $b = $this->newBuilder();
+
+        $this->expectException(LdapRecordException::class);
+
+        $b->insert('cn=John Doe', []);
+    }
+
+    public function test_insert()
+    {
+        $b = $this->newBuilder();
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->shouldReceive('add')->once()->withArgs(['cn=John Doe', ['objectclass' => ['foo']]])->andReturnTrue();
+
+        $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));
     }
 }

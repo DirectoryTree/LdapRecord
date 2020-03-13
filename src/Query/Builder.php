@@ -3,10 +3,10 @@
 namespace LdapRecord\Query;
 
 use Closure;
-use Exception;
 use LdapRecord\Ldap;
 use DateTimeInterface;
 use LdapRecord\Container;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use BadMethodCallException;
@@ -1573,19 +1573,19 @@ class Builder
      * @param string $dn
      * @param array  $attributes
      *
-     * @throws Exception
+     * @throws LdapRecordException
      *
      * @return bool
      */
     public function insert($dn, array $attributes)
     {
         if (empty($dn)) {
-            throw new Exception('A new LDAP entry must have a distinguished name (dn).');
+            throw new LdapRecordException('A new LDAP object must have a distinguished name (dn).');
         }
 
-        if (!array_key_exists('objectclass', $attributes) || !array_key_exists('cn', $attributes)) {
-            throw new Exception(
-                'A new LDAP entry must contain an object class (objectclass) and common name (cn).'
+        if (!array_key_exists('objectclass', $attributes)) {
+            throw new LdapRecordException(
+                'A new LDAP object must contain at least one object class (objectclass) to be created.'
             );
         }
 

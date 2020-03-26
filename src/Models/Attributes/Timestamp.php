@@ -69,6 +69,12 @@ class Timestamp
     {
         $value = is_array($value) ? reset($value) : $value;
 
+        // If the value is being converted to a windows integer format but it
+        // is already in that format, we will simply return the value back.
+        if ($this->type == 'windows-int' && $this->valueIsWindowsIntegerType($value)) {
+            return $value;
+        }
+
         // If the value is numeric, we will assume it's a UNIX timestamp.
         if (is_numeric($value)) {
             $value = Carbon::createFromTimestamp($value);
@@ -105,6 +111,18 @@ class Timestamp
     }
 
     /**
+     * Determine if the value given is in Windows Integer (NTFS Filetime) format.
+     *
+     * @param int|string $value
+     *
+     * @return bool
+     */
+    protected function valueIsWindowsIntegerType($value)
+    {
+        return is_numeric($value) && strlen((string) $value) === 18;
+    }
+
+    /**
      * Converts the LDAP timestamp value to a Carbon instance.
      *
      * @param mixed $value
@@ -117,8 +135,8 @@ class Timestamp
     {
         $value = is_array($value) ? reset($value) : $value;
 
-        if ($value instanceof CarbonInterface) {
-            return $value;
+        if ($value instanceof CarbonInterface || $value instanceof DateTime) {
+            return Carbon::instance($value);
         }
 
         switch ($this->type) {

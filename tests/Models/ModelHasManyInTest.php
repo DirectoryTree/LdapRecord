@@ -58,6 +58,7 @@ class ModelHasManyInStub extends Model
     {
         $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
 
         return new HasManyIn($mockBuilder, $this, Entry::class, 'bar', $foreignKey, 'relation');

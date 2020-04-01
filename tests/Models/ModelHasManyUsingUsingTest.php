@@ -49,6 +49,7 @@ class ModelHasManyUsingStub extends Model
     {
         $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
 
         return (new HasMany($mockBuilder, $this, Entry::class, 'foo', 'dn', 'relation'))

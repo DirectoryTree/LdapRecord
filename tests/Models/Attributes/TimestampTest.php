@@ -3,10 +3,10 @@
 namespace LdapRecord\Tests\Models\Attributes;
 
 use DateTime;
-use LdapRecord\LdapRecordException;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Utilities;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Attributes\Timestamp;
 
 class TimestampTest extends TestCase
 {
@@ -57,7 +57,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp('ldap');
 
-        $date = (new DateTime)->format('YmdHis\Z');
+        $date = (new DateTime())->format('YmdHis\Z');
 
         $this->assertInstanceOf(DateTime::class, $timestamp->toDateTime($date));
     }
@@ -66,7 +66,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp('windows');
 
-        $date = (new DateTime)->format('YmdHis.0\Z');
+        $date = (new DateTime())->format('YmdHis.0\Z');
 
         $this->assertInstanceOf(DateTime::class, $timestamp->toDateTime($date));
     }
@@ -75,9 +75,8 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp('windows-int');
 
-        $date = Utilities::convertUnixTimeToWindowsTime((new DateTime)->getTimestamp());
+        $date = Utilities::convertUnixTimeToWindowsTime((new DateTime())->getTimestamp());
 
         $this->assertInstanceOf(DateTime::class, $timestamp->toDateTime($date));
     }
 }
-

@@ -104,6 +104,7 @@ class ModelRelationTest extends TestCase
         $executedQuery = $query->getQuery();
 
         $this->assertEmpty($query->appliedScopes());
+        $this->assertEquals([ModelRelationScopeTestStub::class], $query->removedScopes());
         $this->assertEquals('(foo=)', $executedQuery);
     }
 }

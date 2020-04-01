@@ -158,14 +158,16 @@ abstract class Relation
     }
 
     /**
-     * Initializes the relation by setting the default model
-     * on the query and resetting the query's filters.
+     * Initializes the relation by setting the default model on
+     * the query and resetting the query's filters and scopes.
      *
      * @return static
      */
     public function initRelation()
     {
-        $this->query->clearFilters()->setModel(new $this->default());
+        $this->query->clearFilters()
+            ->withoutGlobalScopes()
+            ->setModel(new $this->default());
 
         return $this;
     }

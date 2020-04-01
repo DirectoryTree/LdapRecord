@@ -6,6 +6,7 @@ use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Scope;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
@@ -93,6 +94,18 @@ class ModelRelationTest extends TestCase
         $this->assertInstanceOf(Collection::class, $collection);
         $this->assertEquals(['foo', 'objectclass'], $relation->getQuery()->getSelects());
     }
+
+    public function test_parent_model_scope_is_removed_from_relation_query()
+    {
+        $relation = (new ModelRelationWithScopeTestStub)->relation();
+
+        $query = $relation->getRelationQuery();
+
+        $executedQuery = $query->getQuery();
+
+        $this->assertEmpty($query->appliedScopes());
+        $this->assertEquals('(foo=)', $executedQuery);
+    }
 }
 
 class RelationTestStub extends Relation
@@ -113,5 +126,28 @@ class ModelRelationTestStub extends Model
     public function relation()
     {
         return new RelationTestStub($this->newQuery(), $this, RelatedModelTestStub::class, 'foo', 'bar');
+    }
+}
+
+class ModelRelationWithScopeTestStub extends Model
+{
+    public static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new ModelRelationScopeTestStub);
+    }
+
+    public function relation()
+    {
+        return $this->hasMany(ModelRelationWithScopeTestStub::class, 'foo');
+    }
+}
+
+class ModelRelationScopeTestStub implements Scope
+{
+    public function apply(Builder $query, Model $model)
+    {
+        $query->where('bar', '=', 'baz');
     }
 }

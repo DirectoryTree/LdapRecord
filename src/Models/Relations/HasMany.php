@@ -52,7 +52,7 @@ class HasMany extends OneToMany
      *
      * @return \LdapRecord\Query\Model\Builder
      */
-    protected function getRelationQuery()
+    public function getRelationQuery()
     {
         $columns = $this->query->getSelects();
 

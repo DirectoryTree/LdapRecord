@@ -97,7 +97,7 @@ class ModelRelationTest extends TestCase
 
     public function test_parent_model_scope_is_removed_from_relation_query()
     {
-        $relation = (new ModelRelationWithScopeTestStub)->relation();
+        $relation = (new ModelRelationWithScopeTestStub())->relation();
 
         $query = $relation->getRelationQuery();
 
@@ -136,12 +136,12 @@ class ModelRelationWithScopeTestStub extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new ModelRelationScopeTestStub);
+        static::addGlobalScope(new ModelRelationScopeTestStub());
     }
 
     public function relation()
     {
-        return $this->hasMany(ModelRelationWithScopeTestStub::class, 'foo');
+        return $this->hasMany(self::class, 'foo');
     }
 }
 

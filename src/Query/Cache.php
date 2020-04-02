@@ -4,7 +4,6 @@ namespace LdapRecord\Query;
 
 use Closure;
 use DateInterval;
-use Carbon\Carbon;
 use DateTimeInterface;
 use Psr\SimpleCache\CacheInterface;
 

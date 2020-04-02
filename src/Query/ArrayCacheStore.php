@@ -16,11 +16,11 @@ class ArrayCacheStore implements CacheInterface
     protected $storage = [];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get($key, $default = null)
     {
-        if (! isset($this->storage[$key])) {
+        if (!isset($this->storage[$key])) {
             return $default;
         }
 
@@ -38,12 +38,12 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function set($key, $value, $ttl = null)
     {
         $this->storage[$key] = [
-            'value' => $value,
+            'value'     => $value,
             'expiresAt' => $this->parseDateInterval($ttl),
         ];
 
@@ -51,7 +51,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -61,7 +61,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function clear()
     {
@@ -71,7 +71,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getMultiple($keys, $default = null)
     {
@@ -85,7 +85,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function setMultiple($values, $ttl = null)
     {
@@ -97,7 +97,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function deleteMultiple($keys)
     {
@@ -109,7 +109,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function has($key)
     {

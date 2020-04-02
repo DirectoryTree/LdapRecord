@@ -115,13 +115,6 @@ class Builder
     protected $grammar;
 
     /**
-     * The current cache instance.
-     *
-     * @var Cache|null
-     */
-    protected $cache;
-
-    /**
      * Constructor.
      *
      * @param Connection $connection
@@ -156,20 +149,6 @@ class Builder
     public function setGrammar(Grammar $grammar)
     {
         $this->grammar = $grammar;
-
-        return $this;
-    }
-
-    /**
-     * Sets the cache to store query results.
-     *
-     * @param Cache|null $cache
-     *
-     * @return $this
-     */
-    public function setCache(Cache $cache = null)
-    {
-        $this->cache = $cache;
 
         return $this;
     }
@@ -476,14 +455,14 @@ class Builder
     {
         // If caching is enabled and we have a cache instance available,
         // we will try to retrieve the cached results instead.
-        if ($this->caching && $this->cache) {
+        if ($this->caching && $this->connection->getCache()) {
             $key = $this->getCacheKey($query);
 
             if ($this->flushCache) {
-                $this->cache->delete($key);
+                $this->connection->getCache()->delete($key);
             }
 
-            return $this->cache->remember($key, $this->cacheUntil, $callback);
+            return $this->connection->getCache()->remember($key, $this->cacheUntil, $callback);
         }
 
         // Otherwise, we will simply execute the callback.

@@ -271,7 +271,9 @@ class Connection
      */
     public function query()
     {
-        return (new Builder($this))->in($this->configuration->get('base_dn'));
+        return (new Builder($this))
+            ->setCache($this->cache)
+            ->in($this->configuration->get('base_dn'));
     }
 
     /**

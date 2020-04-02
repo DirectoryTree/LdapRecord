@@ -14,13 +14,13 @@ use DateTimeInterface;
 trait InteractsWithTime
 {
     /**
-     * Get the "available at" UNIX timestamp.
+     * Get the "expires at" UNIX timestamp.
      *
      * @param DateTimeInterface|DateInterval|int $delay
      *
      * @return int
      */
-    protected function availableAt($delay = 0)
+    protected function expiresAt($delay = 0)
     {
         $delay = $this->parseDateInterval($delay);
 

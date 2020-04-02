@@ -55,7 +55,7 @@ class Cache
      */
     public function put($key, $value, $ttl = null)
     {
-        return $this->store->set($key, $value, $this->availableAt($ttl));
+        return $this->store->set($key, $value, $this->expiresAt($ttl));
     }
 
     /**

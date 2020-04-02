@@ -2,12 +2,13 @@
 
 namespace LdapRecord\Query;
 
-use Carbon\Carbon;
 use DateInterval;
+use Carbon\Carbon;
 use DateTimeInterface;
 
 /**
  * @author Taylor Otwell
+ *
  * @link https://laravel.com
  */
 trait InteractsWithTime

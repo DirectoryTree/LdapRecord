@@ -10,9 +10,9 @@ class ArrayCacheStoreTest extends TestCase
 {
     public function test_get_returns_default_value()
     {
-        $this->assertNull((new ArrayCacheStore)->get('invalid'));
+        $this->assertNull((new ArrayCacheStore())->get('invalid'));
 
-        $value = (new ArrayCacheStore)->get('invalid', 'value');
+        $value = (new ArrayCacheStore())->get('invalid', 'value');
 
         $this->assertEquals('value', $value);
     }

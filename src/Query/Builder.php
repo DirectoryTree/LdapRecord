@@ -284,6 +284,16 @@ class Builder
     }
 
     /**
+     * Returns the current Cache instance.
+     *
+     * @return Cache|null
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
      * Returns the current Connection instance.
      *
      * @return Connection

@@ -3,8 +3,8 @@
 namespace LdapRecord\Query;
 
 use Closure;
-use Carbon\Carbon;
 use DateInterval;
+use Carbon\Carbon;
 use DateTimeInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -44,8 +44,8 @@ class Cache
     /**
      * Store an item in the cache.
      *
-     * @param string                                    $key
-     * @param mixed                                     $value
+     * @param string                                  $key
+     * @param mixed                                   $value
      * @param DateTimeInterface|DateInterval|int|null $ttl
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException

@@ -3,13 +3,14 @@
 namespace LdapRecord\Query;
 
 use Closure;
-use Carbon\Carbon;
 use DateInterval;
 use DateTimeInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class Cache
 {
+    use InteractsWithTime;
+
     /**
      * The cache driver.
      *
@@ -44,8 +45,8 @@ class Cache
     /**
      * Store an item in the cache.
      *
-     * @param string                                    $key
-     * @param mixed                                     $value
+     * @param string                                  $key
+     * @param mixed                                   $value
      * @param DateTimeInterface|DateInterval|int|null $ttl
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
@@ -54,7 +55,7 @@ class Cache
      */
     public function put($key, $value, $ttl = null)
     {
-        return $this->store->set($key, $value, $this->getSeconds($ttl));
+        return $this->store->set($key, $value, $this->availableAt($ttl));
     }
 
     /**
@@ -76,7 +77,7 @@ class Cache
             return $value;
         }
 
-        $this->put($key, $value = $callback(), $this->getSeconds($ttl));
+        $this->put($key, $value = $callback(), $ttl);
 
         return $value;
     }
@@ -96,40 +97,12 @@ class Cache
     }
 
     /**
-     * Calculate the number of seconds for the given TTL.
+     * Get the underlying cache store.
      *
-     * @author Taylor Otwell
-     *
-     * @param DateTimeInterface|DateInterval|int $ttl
-     *
-     * @return int
+     * @return CacheInterface
      */
-    protected function getSeconds($ttl)
+    public function store()
     {
-        $duration = $this->parseDateInterval($ttl);
-
-        if ($duration instanceof DateTimeInterface) {
-            $duration = Carbon::now()->diffInRealSeconds($duration, false);
-        }
-
-        return (int) $duration > 0 ? $duration : 0;
-    }
-
-    /**
-     * If the given value is an interval, convert it to a DateTime instance.
-     *
-     * @author Taylor Otwell
-     *
-     * @param DateTimeInterface|DateInterval|int $delay
-     *
-     * @return DateTimeInterface|int
-     */
-    protected function parseDateInterval($delay)
-    {
-        if ($delay instanceof DateInterval) {
-            $delay = Carbon::now()->add($delay);
-        }
-
-        return $delay;
+        return $this->store;
     }
 }

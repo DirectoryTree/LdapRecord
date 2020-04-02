@@ -4,7 +4,7 @@ namespace LdapRecord\Query;
 
 use Closure;
 use LdapRecord\Ldap;
-use DateTimeInterface;
+use DateInterval;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
@@ -89,7 +89,7 @@ class Builder
     /**
      * How long the query should be cached until.
      *
-     * @var DateTimeInterface|null
+     * @var DateInterval|null
      */
     protected $cacheUntil = null;
 
@@ -1518,12 +1518,12 @@ class Builder
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      *
-     * @param DateTimeInterface $until When to expire the query cache.
+     * @param DateInterval $until When to expire the query cache.
      * @param bool              $flush Whether to force-flush the query cache.
      *
      * @return $this
      */
-    public function cache(DateTimeInterface $until = null, $flush = false)
+    public function cache(DateInterval $until = null, $flush = false)
     {
         $this->caching = true;
         $this->cacheUntil = $until;

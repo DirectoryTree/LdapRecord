@@ -43,7 +43,7 @@ class Cache
      *
      * @param string                                    $key
      * @param mixed                                     $value
-     * @param \DateTimeInterface|\DateInterval|int|null $ttl
+     * @param \DateInterval|int|null $ttl
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *
@@ -58,7 +58,7 @@ class Cache
      * Get an item from the cache, or execute the given Closure and store the result.
      *
      * @param string                                    $key
-     * @param \DateTimeInterface|\DateInterval|int|null $ttl
+     * @param \DateInterval|int|null $ttl
      * @param Closure                                   $callback
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
@@ -83,7 +83,6 @@ class Cache
      *
      * @param string $key
      *
-     * @throws \Psr\Cache\InvalidArgumentException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return bool

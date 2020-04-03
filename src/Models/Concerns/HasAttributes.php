@@ -231,9 +231,24 @@ trait HasAttributes
      */
     public function setFirstAttribute($key, $value)
     {
-        return $this->setAttribute($key, array_merge(
-            Arr::wrap($this->getAttribute($key)),
-            Arr::wrap($value)
+        return $this->setAttribute($key, Arr::wrap($value));
+    }
+
+    /**
+     * Add a unique value to the given attribute.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    public function addAttributeValue($key, $value)
+    {
+        return $this->setAttribute($key, array_unique(
+            array_merge(
+                Arr::wrap($this->getAttribute($key)),
+                Arr::wrap($value)
+            )
         ));
     }
 

@@ -117,7 +117,7 @@ class ModelAccessorTest extends TestCase
 
         $model->setFirstAttribute('createTimestamp', $model->createTimestamp->addMinute());
         $this->assertEquals('UTC', $model->createTimestamp->timezoneName);
-        $this->assertEquals('2019-09-10 22:03:04', $model->createTimestamp->toDateTimeString());
+        $this->assertEquals('2019-09-10 22:04:04', $model->createTimestamp->toDateTimeString());
     }
 
     public function test_models_mutate_from_windows_type_to_date()
@@ -133,7 +133,7 @@ class ModelAccessorTest extends TestCase
 
         $model->setFirstAttribute('whenChanged', $model->whenChanged->addMinute());
         $this->assertEquals('UTC', $model->whenChanged->timezoneName);
-        $this->assertEquals('2019-09-10 22:03:04', $model->whenChanged->toDateTimeString());
+        $this->assertEquals('2019-09-10 22:04:04', $model->whenChanged->toDateTimeString());
     }
 
     public function test_models_mutate_from_windows_integer_type_to_date()
@@ -149,7 +149,7 @@ class ModelAccessorTest extends TestCase
 
         $model->setFirstAttribute('accountExpires', $model->accountExpires->addMinute());
         $this->assertEquals('UTC', $model->accountExpires->timezoneName);
-        $this->assertEquals('2019-09-10 22:03:04', $model->accountExpires->toDateTimeString());
+        $this->assertEquals('2019-09-10 22:04:04', $model->accountExpires->toDateTimeString());
     }
 }
 

@@ -210,6 +210,29 @@ class ModelTest extends TestCase
         $this->assertEquals(['baz'], $model->getAttribute('foo-bar'));
     }
 
+    public function test_setting_first_attribute()
+    {
+        $model = new Entry();
+        $model->foo = ['bar', 'baz'];
+
+        $model->setFirstAttribute('foo', 'zal');
+
+        $this->assertEquals(['zal'], $model->foo);
+        $this->assertEquals('zal', $model->getFirstAttribute('foo'));
+    }
+
+    public function test_adding_attribute_values()
+    {
+        $model = new Entry();
+        $model->foo = ['bar', 'baz'];
+
+        $model->addAttributeValue('foo', 'zal');
+        $this->assertEquals(['bar', 'baz', 'zal'], $model->foo);
+
+        $model->addAttributeValue('foo', 'bar');
+        $this->assertEquals(['bar', 'baz', 'zal'], $model->foo);
+    }
+
     public function test_attribute_keys_are_normalized()
     {
         $model = new Entry();

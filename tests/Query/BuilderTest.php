@@ -1010,4 +1010,11 @@ class BuilderTest extends TestCase
 
         $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));
     }
+
+    public function test_fields_are_escaped()
+    {
+        $b = $this->newBuilder()->where('(foo)', '=', 'bar');
+
+        $this->assertEquals('(\28foo\29=\62\61\72)', $b->getQuery());
+    }
 }

@@ -10,6 +10,7 @@ use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use BadMethodCallException;
 use LdapRecord\Models\Model;
+use LdapRecord\EscapesValues;
 use InvalidArgumentException;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
@@ -19,6 +20,8 @@ use LdapRecord\Query\Model\Builder as ModelBuilder;
 
 class Builder
 {
+    use EscapesValues;
+
     /**
      * The selected columns to retrieve on the query.
      *
@@ -952,7 +955,7 @@ class Builder
         // We'll escape the value if raw isn't requested.
         $value = $this->prepareWhereValue($field, $value, $raw);
 
-        $field = $this->escape($field, $ignore = null, 3);
+        $field = $this->escape($field)->both()->get();
 
         $this->addFilter($boolean, compact('field', 'operator', 'value'));
 
@@ -1540,20 +1543,6 @@ class Builder
         $this->flushCache = $flush;
 
         return $this;
-    }
-
-    /**
-     * Returns an escaped string for use in an LDAP filter.
-     *
-     * @param string $value
-     * @param string $ignore
-     * @param int    $flags
-     *
-     * @return string
-     */
-    public function escape($value, $ignore = '', $flags = 0)
-    {
-        return ldap_escape($value, $ignore, $flags);
     }
 
     /**

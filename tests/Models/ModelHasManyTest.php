@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Models;
 
+use LdapRecord\Models\Attributes\EscapedValue;
 use Mockery as m;
 use LdapRecord\Container;
 use LdapRecord\Connection;
@@ -32,9 +33,9 @@ class ModelHasManyTest extends TestCase
     public function test_get_results()
     {
         $query = m::mock(Builder::class);
-        $query->shouldReceive('escape')->once()->withArgs(['bar', '', 2])->andReturn('bar');
+        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([new Entry()]));
 
         $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
@@ -56,9 +57,9 @@ class ModelHasManyTest extends TestCase
         $related->shouldReceive('convert')->once()->andReturnSelf();
 
         $query = m::mock(Builder::class);
-        $query->shouldReceive('escape')->once()->withArgs(['bar', '', 2])->andReturn('bar');
+        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'bar'])->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
         $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
@@ -133,9 +134,9 @@ class ModelHasManyTest extends TestCase
 
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('escape')->once()->withArgs(['baz', '', 2])->andReturn('baz');
+        $query->shouldReceive('escape')->once()->withArgs(['baz'])->andReturn(new EscapedValue('baz'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', 'baz'])->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
         $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
 
         $this->assertEquals(

@@ -500,6 +500,17 @@ class ModelTest extends TestCase
         $this->assertTrue($model->move('ou=Users,dc=acme,dc=org'));
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
     }
+
+    public function test_generated_dns_are_properly_escaped()
+    {
+        $model = new Entry();
+
+        $model->inside('dc=local,dc=com');
+
+        $model->cn = "John\\,=+<>;\#Doe";
+
+        $this->assertEquals('cn=John\5c\2c\3d\2b\3c\3e\3b\5c\23Doe,dc=local,dc=com', $model->getCreatableDn());
+    }
 }
 
 class ModelCreateTestStub extends Model

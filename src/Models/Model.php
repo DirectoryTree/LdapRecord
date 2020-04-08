@@ -5,6 +5,7 @@ namespace LdapRecord\Models;
 use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Container;
+use LdapRecord\EscapesValues;
 use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use InvalidArgumentException;
@@ -19,6 +20,7 @@ use LdapRecord\Models\Attributes\MbString;
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
+    use EscapesValues;
     use Concerns\HasEvents;
     use Concerns\HasScopes;
     use Concerns\HasAttributes;
@@ -1245,7 +1247,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCreatableRdn()
     {
-        return "cn={$this->getFirstAttribute('cn')}";
+        $name = $this->escape($this->getFirstAttribute('cn'))->dn();
+
+        return "cn=$name";
     }
 
     /**

@@ -245,7 +245,7 @@ abstract class Relation
      */
     protected function getEscapedForeignValueFromModel(Model $model)
     {
-        return $this->query->escape($this->getForeignValueFromModel($model), '', LDAP_ESCAPE_DN);
+        return $this->query->escape($this->getForeignValueFromModel($model))->dn();
     }
 
     /**

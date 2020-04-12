@@ -3,6 +3,8 @@
 namespace LdapRecord\Models\Concerns;
 
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\Arrayable;
+use LdapRecord\Models\Attributes\MbString;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Timestamp;
@@ -31,6 +33,13 @@ trait HasAttributes
     protected $dates = [];
 
     /**
+     * The format that dates must be output to for serialization.
+     *
+     * @var string
+     */
+    protected $dateFormat;
+
+    /**
      * The default attributes that should be mutated to dates.
      *
      * @var array
@@ -39,6 +48,127 @@ trait HasAttributes
         'createtimestamp' => 'ldap',
         'modifytimestamp' => 'ldap',
     ];
+
+    /**
+     * The cache of the mutated attributes for each class.
+     *
+     * @var array
+     */
+    protected static $mutatorCache = [];
+
+    /**
+     * Convert the model's attributes to an array.
+     *
+     * @return array
+     */
+    public function attributesToArray()
+    {
+        // Here we will replace our LDAP formatted dates with
+        // properly formatted ones, so dates do not need to
+        // be converted manually after being returned.
+        $attributes = $this->addDateAttributesToArray(
+           $attributes = $this->getArrayableAttributes()
+        );
+
+        $attributes = $this->addMutatedAttributesToArray(
+            $attributes, $mutatedAttributes = $this->getMutatedAttributes()
+        );
+
+        // Before we go ahead and encode each value, we'll attempt
+        // converting any necessary attribute values to ensure
+        // they can be encoded, such as GUIDs and SIDs.
+        $attributes = $this->convertAttributesForJson($attributes);
+
+        // Now we will walk through attribute values, recursively encoding each one.
+        array_walk_recursive($attributes, function (&$value) {
+            $value = $this->encodeValue($value);
+        });
+
+        return $attributes;
+    }
+
+    /**
+     * Add the date attributes to the attributes array.
+     *
+     * @param  array  $attributes
+     * @return array
+     */
+    protected function addDateAttributesToArray(array $attributes)
+    {
+        foreach ($this->getDates() as $attribute => $type) {
+            if (! isset($attributes[$attribute])) {
+                continue;
+            }
+
+            $attributes[$attribute] = $this->serializeDate(
+                $this->asDateTime($type, $attributes[$attribute])
+            );
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format($this->getDateFormat());
+    }
+
+    /**
+     * Encode the given value for proper serialization.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function encodeValue($value)
+    {
+        if (MbString::isLoaded() && !MbString::isUtf8($value)) {
+            // If we're able to detect the attribute
+            // encoding, we'll encode only the
+            // attributes that need to be.
+            return utf8_encode($value);
+        }
+
+        // If the mbstring extension is not loaded, we'll
+        // encode all attributes to make sure
+        // they are encoded properly.
+        return utf8_encode($value);
+    }
+
+    /**
+     * Add the mutated attributes to the attributes array.
+     *
+     * @param array $attributes
+     * @param array $mutatedAttributes
+     *
+     * @return array
+     */
+    protected function addMutatedAttributesToArray(array $attributes, array $mutatedAttributes)
+    {
+        foreach ($mutatedAttributes as $key) {
+            // We want to spin through all the mutated attributes for this model and call
+            // the mutator for the attribute. We cache off every mutated attributes so
+            // we don't have to constantly check on attributes that actually change.
+            if (! array_key_exists($key, $attributes)) {
+                continue;
+            }
+
+            // Next, we will call the mutator for this attribute so that we can get these
+            // mutated attribute's actual values. After we finish mutating each of the
+            // attributes we will return this final array of the mutated attributes.
+            $attributes[$key] = $this->mutateAttributeForArray(
+                $key, $attributes[$key]
+            );
+        }
+
+        return $attributes;
+    }
 
     /**
      * Set the model's original attributes with the model's current attributes.
@@ -108,6 +238,36 @@ trait HasAttributes
     }
 
     /**
+     * Get an attribute array of all arrayable attributes.
+     *
+     * @return array
+     */
+    protected function getArrayableAttributes()
+    {
+        return $this->getArrayableItems($this->attributes);
+    }
+
+    /**
+     * Get an attribute array of all arrayable values.
+     *
+     * @param array $values
+     *
+     * @return array
+     */
+    protected function getArrayableItems(array $values)
+    {
+        if (count($this->getVisible()) > 0) {
+            $values = array_intersect_key($values, array_flip($this->getVisible()));
+        }
+
+        if (count($this->getHidden()) > 0) {
+            $values = array_diff_key($values, array_flip($this->getHidden()));
+        }
+
+        return $values;
+    }
+
+    /**
      * Determine if the given attribute is a date.
      *
      * @param string $key
@@ -132,6 +292,30 @@ trait HasAttributes
             array_change_key_case($this->defaultDates, CASE_LOWER),
             array_change_key_case($this->dates, CASE_LOWER)
         );
+    }
+
+    /**
+     * Get the format for date serialization.
+     *
+     * @return string
+     */
+    public function getDateFormat()
+    {
+        return $this->dateFormat ?: 'Y-m-d H:i:s.u';
+    }
+
+    /**
+     * Set the date format used by the model for serialization.
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function setDateFormat($format)
+    {
+        $this->dateFormat = $format;
+
+        return $this;
     }
 
     /**
@@ -316,6 +500,21 @@ trait HasAttributes
         $key = ucwords(str_replace('-', ' ', $key));
 
         return str_replace(' ', '', $key);
+    }
+
+    /**
+     * Get the value of an attribute using its mutator for array conversion.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return mixed
+     */
+    protected function mutateAttributeForArray($key, $value)
+    {
+        $value = $this->getMutatedAttributeValue($key, $value);
+
+        return $value instanceof Arrayable ? $value->toArray() : $value;
     }
 
     /**
@@ -522,5 +721,51 @@ trait HasAttributes
         return  is_numeric($current) &&
                 is_numeric($original) &&
                 strcmp((string) $current, (string) $original) === 0;
+    }
+
+    /**
+     * Get the mutated attributes for a given instance.
+     *
+     * @return array
+     */
+    public function getMutatedAttributes()
+    {
+        $class = static::class;
+
+        if (! isset(static::$mutatorCache[$class])) {
+            static::cacheMutatedAttributes($class);
+        }
+
+        return static::$mutatorCache[$class];
+    }
+
+    /**
+     * Extract and cache all the mutated attributes of a class.
+     *
+     * @param string $class
+     *
+     * @return void
+     */
+    public static function cacheMutatedAttributes($class)
+    {
+        static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))->reject(function ($match) {
+            return $match === 'First';
+        })->map(function ($match) {
+            return lcfirst($match);
+        })->all();
+    }
+
+    /**
+     * Get all of the attribute mutator methods.
+     *
+     * @param mixed $class
+     *
+     * @return array
+     */
+    protected static function getMutatorMethods($class)
+    {
+        preg_match_all('/(?<=^|;)get([^;]+?)Attribute(;|$)/', implode(';', get_class_methods($class)), $matches);
+
+        return $matches[1];
     }
 }

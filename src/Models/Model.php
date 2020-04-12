@@ -15,7 +15,6 @@ use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renaming;
-use LdapRecord\Models\Attributes\MbString;
 
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
@@ -25,6 +24,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     use Concerns\HasScopes;
     use Concerns\HasAttributes;
     use Concerns\HasGlobalScopes;
+    use Concerns\HidesAttributes;
     use Concerns\HasRelationships;
 
     /**
@@ -558,25 +558,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function jsonSerialize()
     {
-        $attributes = $this->getAttributes();
-
-        array_walk_recursive($attributes, function (&$val) {
-            if (MbString::isLoaded()) {
-                // If we're able to detect the attribute
-                // encoding, we'll encode only the
-                // attributes that need to be.
-                if (!MbString::isUtf8($val)) {
-                    $val = utf8_encode($val);
-                }
-            } else {
-                // If the mbstring extension is not loaded, we'll
-                // encode all attributes to make sure
-                // they are encoded properly.
-                $val = utf8_encode($val);
-            }
-        });
-
-        return $this->convertAttributesForJson($attributes);
+        return $this->attributesToArray();
     }
 
     /**

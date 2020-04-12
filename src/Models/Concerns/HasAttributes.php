@@ -262,12 +262,12 @@ trait HasAttributes
      */
     protected function getArrayableItems(array $values)
     {
-        if (count($this->getVisible()) > 0) {
-            $values = array_intersect_key($values, array_flip($this->getVisible()));
+        if (count($visible = $this->getVisible()) > 0) {
+            $values = array_intersect_key($values, array_flip($visible));
         }
 
-        if (count($this->getHidden()) > 0) {
-            $values = array_diff_key($values, array_flip($this->getHidden()));
+        if (count($hidden = $this->getHidden()) > 0) {
+            $values = array_diff_key($values, array_flip($hidden));
         }
 
         return $values;

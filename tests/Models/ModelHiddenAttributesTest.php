@@ -122,6 +122,18 @@ class ModelHiddenAttributesTest extends TestCase
             'baz' => ['zal'],
         ], $m->jsonSerialize());
     }
+
+    public function test_attribute_keys_are_normalized()
+    {
+        $m = new Entry([
+            'foo' => 'bar',
+            'baz' => 'zal',
+        ]);
+
+        $m->makeHidden(['FOO', 'bAz']);
+
+        $this->assertEmpty($m->jsonSerialize());
+    }
 }
 
 class ModelWithHiddenAttributesStub extends Model

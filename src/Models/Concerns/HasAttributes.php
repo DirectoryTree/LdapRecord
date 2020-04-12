@@ -7,7 +7,6 @@ use DateTimeInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\MbString;
-use Illuminate\Contracts\Support\Arrayable;
 use LdapRecord\Models\Attributes\Timestamp;
 
 trait HasAttributes
@@ -103,9 +102,11 @@ trait HasAttributes
                 continue;
             }
 
-            $attributes[$attribute] = $this->serializeDate(
+            $date = $this->serializeDate(
                 $this->asDateTime($type, $attributes[$attribute])
             );
+
+            $attributes[$attribute] = Arr::wrap($date);
         }
 
         return $attributes;
@@ -513,13 +514,13 @@ trait HasAttributes
      * @param string $key
      * @param mixed  $value
      *
-     * @return mixed
+     * @return array
      */
     protected function mutateAttributeForArray($key, $value)
     {
-        $value = $this->getMutatedAttributeValue($key, $value);
-
-        return $value instanceof Arrayable ? $value->toArray() : $value;
+        return Arr::wrap(
+            $this->getMutatedAttributeValue($key, $value)
+        );
     }
 
     /**

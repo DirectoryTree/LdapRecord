@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Concerns;
 
 use Carbon\Carbon;
+use DateTimeInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\MbString;
@@ -113,11 +114,11 @@ trait HasAttributes
     /**
      * Prepare a date for array / JSON serialization.
      *
-     * @param \DateTimeInterface $date
+     * @param DateTimeInterface $date
      *
      * @return string
      */
-    protected function serializeDate(\DateTimeInterface $date)
+    protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format($this->getDateFormat());
     }
@@ -131,16 +132,16 @@ trait HasAttributes
      */
     protected function encodeValue($value)
     {
-        if (MbString::isLoaded() && !MbString::isUtf8($value)) {
-            // If we're able to detect the attribute
-            // encoding, we'll encode only the
-            // attributes that need to be.
-            return utf8_encode($value);
+        if (MbString::isLoaded()) {
+            // If we are able to detect the encoding, we will
+            // encode only the attributes that need to be,
+            // so that we do not double encode values.
+            return MbString::isUtf8($value) ? $value : utf8_encode($value);
         }
 
-        // If the mbstring extension is not loaded, we'll
-        // encode all attributes to make sure
-        // they are encoded properly.
+        // If the mbstring extension is not loaded, we will encode
+        // all attributes to make sure they are encoded properly,
+        // regardless if it may currently be in UTF-8 or not.
         return utf8_encode($value);
     }
 

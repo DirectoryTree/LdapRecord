@@ -4,6 +4,7 @@ namespace LdapRecord\Models\Concerns;
 
 /**
  * @author Taylor Otwell
+ *
  * @link https://laravel.com
  */
 trait HidesAttributes
@@ -56,7 +57,8 @@ trait HidesAttributes
     public function addHidden($attributes = null)
     {
         $this->hidden = array_merge(
-            $this->hidden, is_array($attributes) ? $attributes : func_get_args()
+            $this->hidden,
+            is_array($attributes) ? $attributes : func_get_args()
         );
     }
 
@@ -94,7 +96,8 @@ trait HidesAttributes
     public function addVisible($attributes = null)
     {
         $this->visible = array_merge(
-            $this->visible, is_array($attributes) ? $attributes : func_get_args()
+            $this->visible,
+            is_array($attributes) ? $attributes : func_get_args()
         );
     }
 
@@ -109,7 +112,7 @@ trait HidesAttributes
     {
         $this->hidden = array_diff($this->hidden, (array) $attributes);
 
-        if (! empty($this->visible)) {
+        if (!empty($this->visible)) {
             $this->addVisible($attributes);
         }
 

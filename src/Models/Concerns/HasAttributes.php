@@ -3,10 +3,10 @@
 namespace LdapRecord\Models\Concerns;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Support\Arrayable;
-use LdapRecord\Models\Attributes\MbString;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Attributes\MbString;
+use Illuminate\Contracts\Support\Arrayable;
 use LdapRecord\Models\Attributes\Timestamp;
 
 trait HasAttributes
@@ -67,11 +67,12 @@ trait HasAttributes
         // properly formatted ones, so dates do not need to
         // be converted manually after being returned.
         $attributes = $this->addDateAttributesToArray(
-           $attributes = $this->getArrayableAttributes()
+            $attributes = $this->getArrayableAttributes()
         );
 
         $attributes = $this->addMutatedAttributesToArray(
-            $attributes, $mutatedAttributes = $this->getMutatedAttributes()
+            $attributes,
+            $mutatedAttributes = $this->getMutatedAttributes()
         );
 
         // Before we go ahead and encode each value, we'll attempt
@@ -90,13 +91,14 @@ trait HasAttributes
     /**
      * Add the date attributes to the attributes array.
      *
-     * @param  array  $attributes
+     * @param array $attributes
+     *
      * @return array
      */
     protected function addDateAttributesToArray(array $attributes)
     {
         foreach ($this->getDates() as $attribute => $type) {
-            if (! isset($attributes[$attribute])) {
+            if (!isset($attributes[$attribute])) {
                 continue;
             }
 
@@ -111,7 +113,8 @@ trait HasAttributes
     /**
      * Prepare a date for array / JSON serialization.
      *
-     * @param  \DateTimeInterface  $date
+     * @param \DateTimeInterface $date
+     *
      * @return string
      */
     protected function serializeDate(\DateTimeInterface $date)
@@ -155,7 +158,7 @@ trait HasAttributes
             // We want to spin through all the mutated attributes for this model and call
             // the mutator for the attribute. We cache off every mutated attributes so
             // we don't have to constantly check on attributes that actually change.
-            if (! array_key_exists($key, $attributes)) {
+            if (!array_key_exists($key, $attributes)) {
                 continue;
             }
 
@@ -163,7 +166,8 @@ trait HasAttributes
             // mutated attribute's actual values. After we finish mutating each of the
             // attributes we will return this final array of the mutated attributes.
             $attributes[$key] = $this->mutateAttributeForArray(
-                $key, $attributes[$key]
+                $key,
+                $attributes[$key]
             );
         }
 
@@ -732,7 +736,7 @@ trait HasAttributes
     {
         $class = static::class;
 
-        if (! isset(static::$mutatorCache[$class])) {
+        if (!isset(static::$mutatorCache[$class])) {
             static::cacheMutatedAttributes($class);
         }
 

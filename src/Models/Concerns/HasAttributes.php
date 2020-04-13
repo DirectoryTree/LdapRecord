@@ -299,7 +299,7 @@ trait HasAttributes
      */
     public function getDateFormat()
     {
-        return $this->dateFormat ?: 'Y-m-d H:i:s.u';
+        return $this->dateFormat ?: DateTimeInterface::ISO8601;
     }
 
     /**

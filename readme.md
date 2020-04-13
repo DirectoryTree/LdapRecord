@@ -39,9 +39,27 @@ Find the LDAP objects you're looking for with a fluent LDAP filter builder.
 
 Built-in connection management allows you to access multiple domains without breaking a sweat.
 
-🔥 **Supercharged ActiveRecord**
+🔥 **Supercharged Active Record**
 
 Create and modify LDAP objects with minimal code.
+
+---
+
+<h3 align="center">
+Active Directory Features
+</h3>
+
+🚪 **Enable / Disable Accounts**
+
+Detect and assign User Account Control values on accounts with the fluent [Account Control builder](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#user-account-control).
+
+🔑 **Reset / Change Passwords**
+
+Built-in support for [changing](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#changing-passwords) and [resetting](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#resetting-passwords) passwords on Active Directory accounts.
+
+🗑 **Restore Deleted Objects**
+
+We've all been there -- accidentally deleting a user or group in Active Directory. [Restore them](https://ldaprecord.com/docs/models/#restoring) by seamlessly accessing your directory's recycle bin.
 
 ---
 

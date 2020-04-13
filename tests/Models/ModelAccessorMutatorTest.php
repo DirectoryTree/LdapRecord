@@ -19,7 +19,7 @@ class ModelAccessorTest extends TestCase
 
         $this->assertEquals(['bar'], $model->getAttributes()['foo']);
         $this->assertEquals(['barbaz'], $model->jsonSerialize()['foo']);
-        $this->assertEquals([$date->format('Y-m-d H:i:s.000000')], $model->jsonSerialize()['createtimestamp']);
+        $this->assertEquals([$date->format(\DateTimeInterface::ISO8601)], $model->jsonSerialize()['createtimestamp']);
         $this->assertEquals('barbaz', $model->foo);
         $this->assertEquals('barbaz', $model->getAttribute('foo'));
         $this->assertTrue(isset($model->foo));

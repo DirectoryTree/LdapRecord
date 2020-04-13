@@ -562,7 +562,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Converts attributes for JSON serialization.
+     * Converts extra attributes for JSON serialization.
      *
      * @param array $attributes
      *

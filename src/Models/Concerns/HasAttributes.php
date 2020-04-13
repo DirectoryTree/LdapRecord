@@ -80,7 +80,6 @@ trait HasAttributes
         // they can be encoded, such as GUIDs and SIDs.
         $attributes = $this->convertAttributesForJson($attributes);
 
-        // Now we will walk through attribute values, recursively encoding each one.
         array_walk_recursive($attributes, function (&$value) {
             $value = $this->encodeValue($value);
         });
@@ -133,17 +132,10 @@ trait HasAttributes
      */
     protected function encodeValue($value)
     {
-        if (MbString::isLoaded()) {
-            // If we are able to detect the encoding, we will
-            // encode only the attributes that need to be,
-            // so that we do not double encode values.
-            return MbString::isUtf8($value) ? $value : utf8_encode($value);
-        }
-
-        // If the mbstring extension is not loaded, we will encode
-        // all attributes to make sure they are encoded properly,
-        // regardless if it may currently be in UTF-8 or not.
-        return utf8_encode($value);
+        // If we are able to detect the encoding, we will
+        // encode only the attributes that need to be,
+        // so that we do not double encode values.
+        return MbString::isLoaded() && MbString::isUtf8($value) ? $value : utf8_encode($value);
     }
 
     /**

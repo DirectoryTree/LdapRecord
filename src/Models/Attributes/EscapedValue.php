@@ -46,13 +46,13 @@ class EscapedValue
      */
     public function __toString()
     {
-        return $this->get();
+        return (string) $this->get();
     }
 
     /**
      * Get the escaped value.
      *
-     * @return string
+     * @return mixed
      */
     public function get()
     {

@@ -13,6 +13,8 @@ class RejectComputerObjectClass implements Scope
      *
      * @param Builder $query
      * @param Model   $model
+     *
+     * @return void
      */
     public function apply(Builder $query, Model $model)
     {

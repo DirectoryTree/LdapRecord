@@ -6,6 +6,7 @@ use LdapRecord\Connection;
 use LdapRecord\Models\Types\OpenLDAP;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Query\Model\OpenLdapBuilder;
+use LdapRecord\Models\OpenLDAP\Scopes\AddEntryUuidToSelects;
 
 /** @mixin OpenLdapBuilder */
 class Entry extends BaseEntry implements OpenLDAP
@@ -16,6 +17,19 @@ class Entry extends BaseEntry implements OpenLDAP
      * @var string
      */
     protected $guidKey = 'entryuuid';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Here we'll add a global scope to all OpenLDAP models to ensure the
+        // Entry UUID is always selected on each query. This attribute is
+        // virtual, so it must be manually selected to be included.
+        static::addGlobalScope(new AddEntryUuidToSelects());
+    }
 
     /**
      * Create a new query builder.

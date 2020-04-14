@@ -96,6 +96,22 @@ class AccountControlTest extends TestCase
         $this->assertFalse($ac->has(AccountControl::PASSWD_NOTREQD));
     }
 
+    public function test_doesnt_have()
+    {
+        $ac = new AccountControl();
+
+        $ac
+            ->accountIsLocked()
+            ->passwordDoesNotExpire();
+
+        $this->assertFalse($ac->doesntHave(AccountControl::LOCKOUT));
+        $this->assertFalse($ac->doesntHave(AccountControl::DONT_EXPIRE_PASSWORD));
+        $this->assertTrue($ac->doesntHave(AccountControl::ACCOUNTDISABLE));
+        $this->assertTrue($ac->doesntHave(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
+        $this->assertTrue($ac->doesntHave(AccountControl::NORMAL_ACCOUNT));
+        $this->assertTrue($ac->doesntHave(AccountControl::PASSWD_NOTREQD));
+    }
+
     public function test_values_are_overwritten()
     {
         $ac = new AccountControl();

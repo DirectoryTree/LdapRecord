@@ -51,8 +51,7 @@ class AccountControl
     const PARTIAL_SECRETS_ACCOUNT = 67108864;
 
     /**
-     * Stores the values to be added together to
-     * build the user account control integer.
+     * The account control flag values.
      *
      * @var array
      */
@@ -91,31 +90,31 @@ class AccountControl
     }
 
     /**
-     * Add the value to the account control values.
+     * Add the flag to the account control values.
      *
-     * @param int $value
+     * @param int $flag
      *
-     * @return AccountControl
+     * @return $this
      */
-    public function add($value)
+    public function add($flag)
     {
         // Use the value as a key so if the same value
         // is used, it will always be overwritten
-        $this->values[$value] = $value;
+        $this->values[$flag] = $flag;
 
         return $this;
     }
 
     /**
-     * Remove the value from the account control.
+     * Remove the flag from the account control.
      *
-     * @param int $value
+     * @param int $flag
      *
      * @return $this
      */
-    public function remove($value)
+    public function remove($flag)
     {
-        unset($this->values[$value]);
+        unset($this->values[$flag]);
 
         return $this;
     }
@@ -131,7 +130,7 @@ class AccountControl
     }
 
     /**
-     * Determine if the current AccountControl object contains the given UAC flag(s).
+     * Determine if the account control contains the given UAC flag(s).
      *
      * @param int $flag
      *
@@ -147,9 +146,21 @@ class AccountControl
     }
 
     /**
+     * Determine if the account control does not contain the given UAC flag(s).
+     *
+     * @param int $flag
+     *
+     * @return bool
+     */
+    public function doesntHave($flag)
+    {
+        return !$this->has($flag);
+    }
+
+    /**
      * The logon script will be run.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function runLoginScript()
     {
@@ -159,7 +170,7 @@ class AccountControl
     /**
      * The user account is locked.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsLocked()
     {
@@ -169,7 +180,7 @@ class AccountControl
     /**
      * The user account is disabled.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsDisabled()
     {
@@ -182,7 +193,7 @@ class AccountControl
      * This account provides user access to this domain, but not to any domain that
      * trusts this domain. This is sometimes referred to as a local user account.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsTemporary()
     {
@@ -192,7 +203,7 @@ class AccountControl
     /**
      * This is a default account type that represents a typical user.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsNormal()
     {
@@ -202,7 +213,7 @@ class AccountControl
     /**
      * This is a permit to trust an account for a system domain that trusts other domains.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsForInterdomain()
     {
@@ -214,7 +225,7 @@ class AccountControl
      * Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft
      * Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsForWorkstation()
     {
@@ -224,7 +235,7 @@ class AccountControl
     /**
      * This is a computer account for a domain controller that is a member of this domain.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsForServer()
     {
@@ -234,7 +245,7 @@ class AccountControl
     /**
      * This is an MNS logon account.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsMnsLogon()
     {
@@ -245,7 +256,7 @@ class AccountControl
      * (Windows 2000/Windows Server 2003) This account does
      * not require Kerberos pre-authentication for logging on.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountDoesNotRequirePreAuth()
     {
@@ -255,7 +266,7 @@ class AccountControl
     /**
      * When this flag is set, it forces the user to log on by using a smart card.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountRequiresSmartCard()
     {
@@ -267,7 +278,7 @@ class AccountControl
      *
      * This is a security-sensitive setting. Removing this setting from an RODC compromises security on that server.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function accountIsReadOnly()
     {
@@ -277,7 +288,7 @@ class AccountControl
     /**
      * The home folder is required.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function homeFolderIsRequired()
     {
@@ -287,7 +298,7 @@ class AccountControl
     /**
      * No password is required.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function passwordIsNotRequired()
     {
@@ -301,7 +312,7 @@ class AccountControl
      *
      * @link http://msdn2.microsoft.com/en-us/library/aa746398.aspx
      *
-     * @return AccountControl
+     * @return $this
      */
     public function passwordCannotBeChanged()
     {
@@ -311,7 +322,7 @@ class AccountControl
     /**
      * Represents the password, which should never expire on the account.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function passwordDoesNotExpire()
     {
@@ -321,7 +332,7 @@ class AccountControl
     /**
      * (Windows 2000/Windows Server 2003) The user's password has expired.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function passwordIsExpired()
     {
@@ -331,7 +342,7 @@ class AccountControl
     /**
      * The user can send an encrypted password.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function allowEncryptedTextPassword()
     {
@@ -347,7 +358,7 @@ class AccountControl
      * To enable a service for Kerberos delegation, you must set this
      * flag on the userAccountControl property of the service account.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function trustForDelegation()
     {
@@ -362,7 +373,7 @@ class AccountControl
      * account assume a client's identity and authenticate as that user to other remote
      * servers on the network.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function trustToAuthForDelegation()
     {
@@ -373,7 +384,7 @@ class AccountControl
      * When this flag is set, the security context of the user is not delegated to a
      * service even if the service account is set as trusted for Kerberos delegation.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function doNotTrustForDelegation()
     {
@@ -384,7 +395,7 @@ class AccountControl
      * (Windows 2000/Windows Server 2003) Restrict this principal to
      * use only Data Encryption Standard (DES) encryption types for keys.
      *
-     * @return AccountControl
+     * @return $this
      */
     public function useDesKeyOnly()
     {
@@ -415,6 +426,8 @@ class AccountControl
      * Set the account control values.
      *
      * @param array $flags
+     *
+     * @return void
      */
     public function setValues(array $flags)
     {

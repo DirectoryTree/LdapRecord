@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-    LdapRecord leverages the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record pattern</a>
-    to make working with LDAP directories a breeze.
+    LdapRecord is a fully featured <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record</a>
+    ORM that makes working with LDAP directories a breeze 🍃.
 </p>
 
 <h4 align="center">

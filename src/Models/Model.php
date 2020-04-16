@@ -898,18 +898,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function performInsert()
     {
-        // Here we will populate the models object class if it
-        // does not already have one. An LDAP record
-        // cannot be created without it.
+        // Here we will populate the models object classes if it
+        // does not already have any. An LDAP object cannot
+        // be successfully created without them set.
         if (!$this->hasAttribute('objectclass')) {
             $this->setAttribute('objectclass', static::$objectClasses);
         }
 
         $query = $this->newQuery();
 
-        // If the model doesn't currently have a distinguished
-        // name set, we'll create one automatically using
-        // the current query builders base DN.
+        // If the model does not currently have a distinguished
+        // name, we will attempt to create one automatically
+        // using the current query builders DN as a base.
         if (empty($this->getDn())) {
             $this->setDn($this->getCreatableDn());
         }

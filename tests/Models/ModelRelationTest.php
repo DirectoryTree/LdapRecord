@@ -11,6 +11,7 @@ use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Relations\Relation;
+use LdapRecord\Models\Attributes\EscapedValue;
 
 class ModelRelationTest extends TestCase
 {
@@ -107,6 +108,25 @@ class ModelRelationTest extends TestCase
         $this->assertEquals([ModelRelationScopeTestStub::class], $query->removedScopes());
         $this->assertEquals('(foo=)', $executedQuery);
     }
+
+    public function test_has_many_foreign_values_are_properly_escaped_for_use_in_filters()
+    {
+        $escapedDnCharacters = ['\\', ',', '=', '+', '<', '>', ';', '"', '#'];
+        $escapedFilterCharacters = ['\\', '*', '(', ')', "\x00"];
+
+        $model = new ModelWithHasManyRelationTestStub();
+
+        $characters = implode('', array_merge($escapedDnCharacters, $escapedFilterCharacters));
+
+        $model->setDn($characters);
+
+        $expected = (new EscapedValue($characters))->both()->get();
+
+        $this->assertEquals(
+            "(foo=$expected)",
+            $model->relation()->getRelationQuery()->getQuery()
+        );
+    }
 }
 
 class RelationTestStub extends Relation
@@ -150,5 +170,13 @@ class ModelRelationScopeTestStub implements Scope
     public function apply(Builder $query, Model $model)
     {
         $query->where('bar', '=', 'baz');
+    }
+}
+
+class ModelWithHasManyRelationTestStub extends Model
+{
+    public function relation()
+    {
+        return $this->hasMany(static::class, 'foo');
     }
 }

@@ -323,9 +323,9 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertEquals([
-            'standard' => [$date->format(DateTimeInterface::ISO8601)],
-            'windows' => [$date->format(DateTimeInterface::ISO8601)],
-            'windowsinteger' => [$date->format(DateTimeInterface::ISO8601)]
+            'standard'       => [$date->format(DateTimeInterface::ISO8601)],
+            'windows'        => [$date->format(DateTimeInterface::ISO8601)],
+            'windowsinteger' => [$date->format(DateTimeInterface::ISO8601)],
         ], $model->jsonSerialize());
     }
 
@@ -338,9 +338,9 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertEquals([
-            'standard' => [0],
-            'windows' => [0],
-            'windowsinteger' => [0]
+            'standard'       => [0],
+            'windows'        => [0],
+            'windowsinteger' => [0],
         ], $model->jsonSerialize());
     }
 

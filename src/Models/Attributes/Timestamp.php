@@ -150,7 +150,7 @@ class Timestamp
                 $value = $this->convertWindowsIntegerTimeToDateTime($value);
                 break;
             default:
-                throw new LdapRecordException("Unrecognized date type '{$this->type}'");
+                throw new LdapRecordException("Unrecognized date type [{$this->type}]");
         }
 
         return $value instanceof DateTime

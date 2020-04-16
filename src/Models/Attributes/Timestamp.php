@@ -81,7 +81,7 @@ class Timestamp
         }
         // If a string is given, we will pass it into a new carbon instance.
         elseif (is_string($value)) {
-            $value = new Carbon($value);
+            $value = Carbon::parse($value);
         }
         // If a date object is given, we will convert it to a carbon instance.
         elseif ($value instanceof DateTime) {
@@ -129,7 +129,7 @@ class Timestamp
      *
      * @throws LdapRecordException
      *
-     * @return Carbon|null
+     * @return Carbon|false
      */
     public function toDateTime($value)
     {
@@ -153,9 +153,9 @@ class Timestamp
                 throw new LdapRecordException("Unrecognized date type '{$this->type}'");
         }
 
-        if ($value instanceof DateTime) {
-            return (new Carbon())->setDateTimeFrom($value);
-        }
+        return $value instanceof DateTime
+            ? Carbon::instance($value)
+            : $value;
     }
 
     /**

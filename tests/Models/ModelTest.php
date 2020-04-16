@@ -3,6 +3,8 @@
 namespace LdapRecord\Tests\Models;
 
 use Mockery as m;
+use Carbon\Carbon;
+use DateTimeInterface;
 use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
@@ -11,6 +13,7 @@ use LdapRecord\Tests\TestCase;
 use LdapRecord\ContainerException;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelTest extends TestCase
@@ -280,6 +283,74 @@ class ModelTest extends TestCase
         $this->assertEquals('{"foo":["bar"],"objectguid":["bf9679e7-0de6-11d0-a285-00aa003049e2"]}', json_encode($model->jsonSerialize()));
     }
 
+    public function test_serialization_properly_converts_dates()
+    {
+        $date = Carbon::now();
+
+        $model = new Entry([
+            'createtimestamp' => (new Timestamp('ldap'))->fromDateTime($date),
+        ]);
+
+        $this->assertEquals(
+            ['createtimestamp' => [$date->format(DateTimeInterface::ISO8601)]],
+            $model->jsonSerialize()
+        );
+
+        $this->assertEquals(
+            ['createtimestamp' => [$date->format('Y-m-d')]],
+            $model->setDateFormat('Y-m-d')->jsonSerialize()
+        );
+
+        $this->assertEquals(
+            ['createtimestamp' => [0]],
+            (new Entry(['createtimestamp' => 0]))->jsonSerialize()
+        );
+
+        $this->assertEquals(
+            ['createtimestamp' => ['0']],
+            (new Entry(['createtimestamp' => '0']))->jsonSerialize()
+        );
+    }
+
+    public function test_serialization_converts_all_timestamp_types()
+    {
+        $date = Carbon::now();
+
+        $model = new ModelWithDatesStub([
+            'standard'       => $date,
+            'windows'        => $date,
+            'windowsinteger' => $date,
+        ]);
+
+        $this->assertEquals([
+            'standard' => [$date->format(DateTimeInterface::ISO8601)],
+            'windows' => [$date->format(DateTimeInterface::ISO8601)],
+            'windowsinteger' => [$date->format(DateTimeInterface::ISO8601)]
+        ], $model->jsonSerialize());
+    }
+
+    public function test_serialization_of_all_date_types_ignores_reset_integer_zero()
+    {
+        $model = new ModelWithDatesStub([
+            'standard'       => 0,
+            'windows'        => 0,
+            'windowsinteger' => 0,
+        ]);
+
+        $this->assertEquals([
+            'standard' => [0],
+            'windows' => [0],
+            'windowsinteger' => [0]
+        ], $model->jsonSerialize());
+    }
+
+    public function test_serialization_fails_when_converting_malformed_dates()
+    {
+        $this->expectException(\Exception::class);
+
+        (new Entry(['createtimestamp' => 'invalid']))->jsonSerialize();
+    }
+
     public function test_convert()
     {
         $model = new Entry(['foo' => 'bar']);
@@ -519,6 +590,15 @@ class ModelCreateTestStub extends Model
     {
         return true;
     }
+}
+
+class ModelWithDatesStub extends Model
+{
+    protected $dates = [
+        'standard'       => 'ldap',
+        'windows'        => 'windows',
+        'windowsinteger' => 'windows-int',
+    ];
 }
 
 class ModelBootingTestStub extends Model

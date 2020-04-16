@@ -101,11 +101,11 @@ trait HasAttributes
                 continue;
             }
 
-            $date = $this->serializeDate(
-                $this->asDateTime($type, $attributes[$attribute])
-            );
+            $date = $this->asDateTime($type, $attributes[$attribute]);
 
-            $attributes[$attribute] = Arr::wrap($date);
+            $attributes[$attribute] = $date instanceof Carbon
+                ? Arr::wrap($this->serializeDate($date))
+                : $attributes[$attribute];
         }
 
         return $attributes;
@@ -672,7 +672,7 @@ trait HasAttributes
      *
      * @throws LdapRecordException
      *
-     * @return Carbon|null
+     * @return Carbon|false
      */
     public function asDateTime($type, $value)
     {

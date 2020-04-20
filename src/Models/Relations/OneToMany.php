@@ -103,11 +103,25 @@ abstract class OneToMany extends Relation
             // Here we will call the same relation method on each
             // returned model to retrieve its related models and
             // add them into our final resulting collection.
-            $model->{$this->relationName}()->get()->each(function (Model $related) use ($models) {
+            $this->getRecursiveRelationResults($model)->each(function (Model $related) use ($models) {
                 $models->add($related);
             });
         });
 
         return $models;
+    }
+
+    /**
+     * Get the recursive relation results for given model.
+     *
+     * @param Model $model
+     *
+     * @return Collection
+     */
+    protected function getRecursiveRelationResults(Model $model)
+    {
+        return method_exists($model, $this->relationName)
+            ? $model->{$this->relationName}()->recursive()->get()
+            : $model->newCollection();
     }
 }

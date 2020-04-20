@@ -85,8 +85,8 @@ abstract class OneToMany extends Relation
     /**
      * Get the results for the models relation recursively.
      *
-     * @param Collection     $models The models to retrieve nested relation results from
-     * @param array|string[] $except The distinguished names to exclude
+     * @param Collection $models The models to retrieve nested relation results from
+     * @param string[]   $except The distinguished names to exclude
      *
      * @return Collection
      */
@@ -97,13 +97,16 @@ abstract class OneToMany extends Relation
             // gathered the recursive results for so we don't run
             // into issues with circular relations in LDAP.
             return in_array($model->getDn(), $except);
-        })->each(function (Model $model) use ($except, $models) {
+        })->each(function (Model $model) use (&$except, $models) {
             $except[] = $model->getDn();
 
             // Here we will call the same relation method on each
             // returned model to retrieve its related models and
-            // add them into our final resulting collection.
-            $this->getRecursiveRelationResults($model)->each(function (Model $related) use ($models) {
+            // merge them into our final resulting collection.
+            $this->getRecursiveResults(
+                $this->getRecursiveRelationResults($model),
+                $except
+            )->each(function (Model $related) use ($models) {
                 $models->add($related);
             });
         });

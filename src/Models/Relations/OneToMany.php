@@ -86,32 +86,32 @@ abstract class OneToMany extends Relation
      * Get the results for the models relation recursively.
      *
      * @param Collection $models The models to retrieve nested relation results from
-     * @param string[]   $except The distinguished names to exclude
+     * @param string[]   $loaded The distinguished names of models already loaded
      *
      * @return Collection
      */
-    protected function getRecursiveResults(Collection $models, array $except = [])
+    protected function getRecursiveResults(Collection $models, array &$loaded = [])
     {
-        $models->reject(function (Model $model) use ($except) {
-            // Here we will exclude the models that we have already
-            // gathered the recursive results for so we don't run
-            // into issues with circular relations in LDAP.
-            return in_array($model->getDn(), $except);
-        })->each(function (Model $model) use (&$except, $models) {
-            $except[] = $model->getDn();
+        return $models->unless(empty($loaded), function ($models) use ($loaded) {
+            return $models->reject(function (Model $model) use ($loaded) {
+                // Here we will exclude the models that we have already
+                // gathered the recursive results for so we don't run
+                // into issues with circular relations in LDAP.
+                return in_array($model->getDn(), $loaded);
+            });
+        })->each(function (Model $model) use (&$loaded, $models) {
+            $loaded[] = $model->getDn();
 
             // Here we will call the same relation method on each
             // returned model to retrieve its related models and
             // merge them into our final resulting collection.
             $this->getRecursiveResults(
                 $this->getRecursiveRelationResults($model),
-                $except
+                $loaded
             )->each(function (Model $related) use ($models) {
                 $models->add($related);
             });
         });
-
-        return $models;
     }
 
     /**

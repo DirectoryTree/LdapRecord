@@ -50,7 +50,7 @@ class ModelHasManyTest extends TestCase
     public function test_get_recursive_results()
     {
         $related = m::mock(ModelHasManyStub::class);
-        $related->shouldReceive('getDn')->twice()->andReturn('baz');
+        $related->shouldReceive('getDn')->once()->andReturn('baz');
         $related->shouldReceive('relation')->once()->withNoArgs()->andReturnSelf();
         $related->shouldReceive('get')->once()->andReturn(new Collection());
         $related->shouldReceive('getAttribute')->once()->withArgs(['objectclass'])->andReturnNull();

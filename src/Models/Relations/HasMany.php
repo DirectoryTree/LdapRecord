@@ -95,7 +95,9 @@ class HasMany extends OneToMany
      */
     public function getRelationResults()
     {
-        return $this->transformResults($this->getRelationQuery()->paginate($this->pageSize));
+        return $this->transformResults(
+            $this->getRelationQuery()->paginate($this->pageSize)
+        );
     }
 
     /**

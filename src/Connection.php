@@ -184,7 +184,7 @@ class Connection
     }
 
     /**
-     * Connect to the Domain Controller.
+     * Bind to the LDAP server.
      *
      * If no username or password is specified, then the configured credentials are used.
      *

@@ -36,7 +36,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([new Entry()]));
+        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([new Entry()]));
 
         $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
@@ -61,12 +61,37 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
+        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([$related]));
 
         $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
         $relation = $model->relation($query);
 
         $collection = $relation->recursive()->getResults();
+
+        $this->assertEquals($related, $collection->first());
+        $this->assertInstanceOf(Collection::class, $collection);
+    }
+
+    public function test_page_size_can_be_set()
+    {
+        $related = m::mock(ModelHasManyStub::class);
+        $related->shouldReceive('getDn')->once()->andReturn('baz');
+        $related->shouldReceive('relation')->once()->withNoArgs()->andReturnSelf();
+        $related->shouldReceive('get')->once()->andReturn(new Collection());
+        $related->shouldReceive('getAttribute')->once()->withArgs(['objectclass'])->andReturnNull();
+        $related->shouldReceive('convert')->once()->andReturnSelf();
+        $related->shouldReceive('recursive')->once()->andReturnSelf();
+
+        $query = m::mock(Builder::class);
+        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
+        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->withArgs([500])->andReturn(new Collection([$related]));
+
+        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
+        $relation = $model->relation($query);
+
+        $collection = $relation->recursive()->setPageSize(500)->getResults();
 
         $this->assertEquals($related, $collection->first());
         $this->assertInstanceOf(Collection::class, $collection);
@@ -138,7 +163,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('escape')->once()->withArgs(['baz'])->andReturn(new EscapedValue('baz'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection([$related]));
+        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([$related]));
 
         $this->assertEquals(
             $model->relation($query)->detachAll(),

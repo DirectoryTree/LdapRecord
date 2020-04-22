@@ -22,6 +22,13 @@ class HasMany extends OneToMany
     protected $usingKey;
 
     /**
+     * The pagination page size.
+     *
+     * @var int
+     */
+    protected $pageSize = 1000;
+
+    /**
      * Set the model and attribute to use for attaching / detaching.
      *
      * @param Model  $using
@@ -38,13 +45,57 @@ class HasMany extends OneToMany
     }
 
     /**
+     * Set the pagination page size of the relation query.
+     *
+     * @param int $pageSize
+     *
+     * @return $this
+     */
+    public function setPageSize($pageSize)
+    {
+        $this->pageSize = $pageSize;
+
+        return $this;
+    }
+
+    /**
+     * Paginate the relation using the given page size.
+     *
+     * @param int $pageSize
+     *
+     * @return Collection
+     */
+    public function paginate($pageSize = 1000)
+    {
+        return $this->paginateOnceUsing($pageSize);
+    }
+
+    /**
+     * Paginate the relation using the page size once.
+     *
+     * @param int $pageSize
+     *
+     * @return Collection
+     */
+    protected function paginateOnceUsing($pageSize)
+    {
+        $size = $this->pageSize;
+
+        $result = $this->setPageSize($pageSize)->get();
+
+        $this->pageSize = $size;
+
+        return $result;
+    }
+
+    /**
      * Get the relationships results.
      *
      * @return Collection
      */
-    public function getRelationResults(): Collection
+    public function getRelationResults()
     {
-        return $this->transformResults($this->getRelationQuery()->paginate());
+        return $this->transformResults($this->getRelationQuery()->paginate($this->pageSize));
     }
 
     /**

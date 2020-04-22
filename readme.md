@@ -25,6 +25,8 @@
     <a href="https://ldaprecord.com/docs/quickstart/">Quickstart</a>
     <span> · </span>
     <a href="https://ldaprecord.com/docs/">Documentation</a>
+    <span> · </span>
+    <a href="https://github.com/DirectoryTree/LdapRecord-Discussions/issues/new">Post a Question</a>
 </h4>
 
 ⏲ **Up and Running Fast**

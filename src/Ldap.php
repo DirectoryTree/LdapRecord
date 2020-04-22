@@ -446,6 +446,7 @@ class Ldap
 
         $this->connection = null;
         $this->bound = false;
+        $this->host = null;
 
         return $result;
     }

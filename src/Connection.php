@@ -4,6 +4,7 @@ namespace LdapRecord;
 
 use Closure;
 use Throwable;
+use Carbon\Carbon;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
 use LdapRecord\Query\Builder;
@@ -36,6 +37,27 @@ class Connection
     protected $cache;
 
     /**
+     * The current host connected to.
+     *
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * The configured domain hosts.
+     *
+     * @var array
+     */
+    protected $hosts = [];
+
+    /**
+     * The attempted hosts that failed connecting to.
+     *
+     * @var array
+     */
+    protected $attempted = [];
+
+    /**
      * Constructor.
      *
      * @param array     $config
@@ -44,6 +66,10 @@ class Connection
     public function __construct($config = [], Ldap $ldap = null)
     {
         $this->configuration = new DomainConfiguration($config);
+
+        $this->hosts = $this->configuration->get('hosts');
+
+        $this->host = reset($this->hosts);
 
         $this->setLdapConnection($ldap ?? new Ldap());
     }
@@ -87,10 +113,7 @@ class Connection
     {
         $this->configure();
 
-        $this->ldap->connect(
-            $this->configuration->get('hosts'),
-            $this->configuration->get('port')
-        );
+        $this->ldap->connect($this->host, $this->configuration->get('port'));
     }
 
     /**
@@ -210,6 +233,16 @@ class Connection
     }
 
     /**
+     * Get the attempted hosts that failed connecting to.
+     *
+     * @return array
+     */
+    public function attempted()
+    {
+        return $this->attempted;
+    }
+
+    /**
      * Perform the operation on the LDAP connection.
      *
      * @param Closure $operation
@@ -290,20 +323,54 @@ class Connection
      * Attempt to retry an LDAP operation if due to a lost connection.
      *
      * @param LdapRecordException $e
-     * @param Closure             $callback
+     * @param Closure             $operation
      *
      * @throws LdapRecordException
      *
      * @return mixed
      */
-    protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $callback)
+    protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $operation)
     {
         if ($this->causedByLostConnection($e->getMessage())) {
-            $this->reconnect();
+            // If the operation failed due to a lost or failed connection,
+            // we'll mark the time the host failed and attempt running
+            // the operation again underneath the next host in line.
+            $this->attempted[$this->host] = Carbon::now();
 
-            return $this->runOperationCallback($callback);
+            if (($key = array_search($this->host, $this->hosts)) !== false) {
+                unset($this->hosts[$key]);
+            }
+
+            return $this->tryNextHost($e, $operation);
         }
 
         throw $e;
+    }
+
+    /**
+     * Attempt the operation again on the next host.
+     *
+     * @param LdapRecordException $e
+     * @param Closure             $operation
+     *
+     * @throws LdapRecordException
+     *
+     * @return mixed
+     */
+    protected function tryNextHost(LdapRecordException $e, Closure $operation)
+    {
+        $this->host = reset($this->hosts);
+
+        if ($this->host === false) {
+            throw $e;
+        }
+
+        try {
+            $this->reconnect();
+
+            return $this->runOperationCallback($operation);
+        } catch (LdapRecordException $e) {
+            return $this->tryAgainIfCausedByLostConnection($e, $operation);
+        }
     }
 }

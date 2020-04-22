@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests;
 
 use Mockery as m;
+use Carbon\Carbon;
 use LdapRecord\Ldap;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Connection;
@@ -218,7 +219,7 @@ class ConnectionTest extends TestCase
             LDAP_OPT_REFERRALS        => false,
         ]]);
 
-        $ldap->shouldReceive('connect')->once()->withArgs([['foo', 'bar'], '389']);
+        $ldap->shouldReceive('connect')->once()->withArgs(['foo', '389']);
 
         new Connection(['hosts' => ['foo', 'bar']], $ldap);
     }
@@ -263,22 +264,30 @@ class ConnectionTest extends TestCase
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
         $ldap = $this->newConnectedLdapMock();
-        $conn = new ReconnectConnectionMock([], $ldap);
+        $conn = new ReconnectConnectionMock([
+            'hosts' => ['foo', 'bar', 'baz']
+        ], $ldap);
 
         $called = 0;
 
         $executed = $conn->run(function () use (&$called) {
             $called++;
 
-            if ($called === 1) {
+            if (in_array($called, [1, 2])) {
                 throw new \Exception("Can't contact LDAP server");
             }
 
-            return $called === 2;
+            return $called === 3;
         });
+
+        $attempted = $conn->attempted();
 
         $this->assertTrue($executed);
         $this->assertTrue($conn->reconnected);
+        $this->assertCount(2, $attempted);
+        $this->assertArrayNotHasKey('baz', $attempted);
+        $this->assertInstanceOf(Carbon::class, $attempted['foo']);
+        $this->assertInstanceOf(Carbon::class, $attempted['bar']);
     }
 
     public function test_ran_ldap_operations_are_not_retried_when_other_exception_is_thrown()

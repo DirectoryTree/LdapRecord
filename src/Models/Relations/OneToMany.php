@@ -93,16 +93,16 @@ abstract class OneToMany extends Relation
     protected function getRecursiveResults(Collection $models, array &$loaded = [])
     {
         return $models->unless(empty($loaded), function ($models) use ($loaded) {
+            // Here we will exclude the models that we have already
+            // gathered the recursive results for so we don't run
+            // into issues with circular relations in LDAP.
             return $models->reject(function (Model $model) use ($loaded) {
-                // Here we will exclude the models that we have already
-                // gathered the recursive results for so we don't run
-                // into issues with circular relations in LDAP.
                 return in_array($model->getDn(), $loaded);
             });
         })->each(function (Model $model) use (&$loaded, $models) {
             $loaded[] = $model->getDn();
 
-            // Here we will call the same relation method on each
+            // Next, we will call the same relation method on each
             // returned model to retrieve its related models and
             // merge them into our final resulting collection.
             $this->getRecursiveResults(

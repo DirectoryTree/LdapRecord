@@ -265,7 +265,7 @@ class ConnectionTest extends TestCase
     {
         $ldap = $this->newConnectedLdapMock();
         $conn = new ReconnectConnectionMock([
-            'hosts' => ['foo', 'bar', 'baz']
+            'hosts' => ['foo', 'bar', 'baz'],
         ], $ldap);
 
         $called = 0;

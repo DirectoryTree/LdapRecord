@@ -13,16 +13,4 @@ class Group extends Entry
         'top',
         'groupofuniquenames',
     ];
-
-    /**
-     * Get a creatable RDN for the model.
-     *
-     * @return string
-     */
-    public function getCreatableRdn()
-    {
-        $name = $this->escape($this->getFirstAttribute('ou'))->dn();
-
-        return "ou=$name";
-    }
 }

@@ -315,9 +315,9 @@ class Dispatcher implements DispatcherInterface
      */
     protected function parseListenerCallback($listener)
     {
-        return strpos($listener, '@') !== false ?
-            explode('@', $listener, 2) :
-            [$listener, 'handle'];
+        return strpos($listener, '@') !== false
+            ? explode('@', $listener, 2)
+            : [$listener, 'handle'];
     }
 
     /**

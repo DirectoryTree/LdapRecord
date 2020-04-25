@@ -545,9 +545,9 @@ class Builder
     protected function runPaginate($filter, $perPage, $isCritical)
     {
         return $this->connection->run(function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
-            $callback = $ldap->supportsServerControlsInMethods() ?
-                $this->compatiblePaginationCallback($filter, $perPage, $isCritical) :
-                $this->deprecatedPaginationCallback($filter, $perPage, $isCritical);
+            $callback = $ldap->supportsServerControlsInMethods()
+                ? $this->compatiblePaginationCallback($filter, $perPage, $isCritical)
+                : $this->deprecatedPaginationCallback($filter, $perPage, $isCritical);
 
             return $callback($ldap);
         });

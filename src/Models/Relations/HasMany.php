@@ -252,9 +252,9 @@ class HasMany extends OneToMany
      */
     protected function setCurrentRelationValue($value, Model $model)
     {
-        return $this->using ?
-            $this->setUsingValue($value) :
-            $this->setRelatedValue($model, $value);
+        return $this->using
+            ? $this->setUsingValue($value)
+            : $this->setRelatedValue($model, $value);
     }
 
     /**
@@ -268,9 +268,9 @@ class HasMany extends OneToMany
      */
     protected function getCurrentForeignValue(Model $model)
     {
-        return $this->using ?
-            $this->getForeignValueFromModel($model) :
-            $this->getForeignValueFromModel($this->parent);
+        return $this->using
+            ? $this->getForeignValueFromModel($model)
+            : $this->getForeignValueFromModel($this->parent);
     }
 
     /**

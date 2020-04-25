@@ -67,9 +67,9 @@ abstract class OneToMany extends Relation
      */
     public function getResults()
     {
-        return $this->recursive ?
-            $this->getRecursiveResults($this->getRelationResults()) :
-            $this->getRelationResults();
+        return $this->recursive
+            ? $this->getRecursiveResults($this->getRelationResults())
+            : $this->getRelationResults();
     }
 
     /**

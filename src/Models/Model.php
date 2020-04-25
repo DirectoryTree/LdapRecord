@@ -624,18 +624,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Converts the current model into the given model.
      *
-     * @param static $into
+     * @param Model $into
      *
      * @return Model
      */
-    public function convert(self $into)
+    public function convert(Model $into)
     {
         $into->setDn($this->getDn());
         $into->setConnection($this->getConnectionName());
 
-        $this->exists ?
-            $into->setRawAttributes($this->getAttributes()) :
-            $into->fill($this->getAttributes());
+        $this->exists
+            ? $into->setRawAttributes($this->getAttributes())
+            : $into->fill($this->getAttributes());
 
         return $into;
     }

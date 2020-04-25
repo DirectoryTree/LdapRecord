@@ -479,9 +479,9 @@ class Ldap
         return $this->executeFailableOperation(function () use (
             $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
-                ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
-                ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
+                ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+                : ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
     }
 
@@ -506,9 +506,9 @@ class Ldap
         return $this->executeFailableOperation(function () use (
             $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
-                ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
-                ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
+                ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+                : ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
     }
 
@@ -533,9 +533,9 @@ class Ldap
         return $this->executeFailableOperation(function () use (
             $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
-                ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls) :
-                ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
+                ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+                : ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
     }
 
@@ -558,9 +558,9 @@ class Ldap
         return $this->executeFailableOperation(function () use (
             $result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
-                ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls) :
-                ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
+                ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls)
+                : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
         });
     }
 

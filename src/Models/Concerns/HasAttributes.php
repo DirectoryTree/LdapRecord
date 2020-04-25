@@ -547,9 +547,9 @@ trait HasAttributes
             // In some LDAP instances the distinguished name may
             // be returned as an array. We will pull the
             // first value in this case.
-            $this->dn = is_array($attributes['dn']) ?
-                reset($attributes['dn']) :
-                $attributes['dn'];
+            $this->dn = is_array($attributes['dn'])
+                ? reset($attributes['dn'])
+                : $attributes['dn'];
         }
 
         $this->syncOriginal();
@@ -577,9 +577,9 @@ trait HasAttributes
         }
 
         foreach ($attributes as $key => $value) {
-            $attributes[$key] = is_array($value) ?
-                $this->filterRawAttributes($value, $keys) :
-                $value;
+            $attributes[$key] = is_array($value)
+                ? $this->filterRawAttributes($value, $keys)
+                : $value;
         }
 
         return $attributes;

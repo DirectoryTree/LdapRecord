@@ -56,8 +56,9 @@ trait HasGlobalScopes
         if (array_key_exists(static::class, static::$globalScopes)) {
             $scopeName = is_string($scope) ? $scope : get_class($scope);
 
-            return array_key_exists($scopeName, static::$globalScopes[static::class]) ?
-                static::$globalScopes[static::class][$scopeName] : null;
+            return array_key_exists($scopeName, static::$globalScopes[static::class])
+                ? static::$globalScopes[static::class][$scopeName]
+                : null;
         }
     }
 

@@ -46,6 +46,19 @@ class ModelRelationTest extends TestCase
         );
     }
 
+    public function test_has_default_model()
+    {
+        $this->assertEquals(
+            Entry::class,
+            (new ModelRelationTestStub())->relation()->getDefaultModel()
+        );
+
+        $this->assertInstanceOf(
+            Entry::class,
+            (new ModelRelationTestStub())->relation()->getNewDefaultModel()
+        );
+    }
+
     public function test_query_has_no_filters()
     {
         $this->assertEquals(
@@ -94,6 +107,35 @@ class ModelRelationTest extends TestCase
         $this->assertEmpty($collection);
         $this->assertInstanceOf(Collection::class, $collection);
         $this->assertEquals(['foo', 'objectclass'], $relation->getQuery()->getSelects());
+    }
+
+    public function test_relation_default_model_uses_parent_connection()
+    {
+        Container::addConnection(new Connection, 'other');
+
+        $model = new ModelRelationTestStub();
+
+        $model->setConnection($connection = 'other');
+
+        $defaultModel = $model->relation()->getNewDefaultModel();
+
+        $this->assertEquals($connection, $defaultModel->getConnectionName());
+    }
+
+    public function test_relation_query_uses_models_parent_connection()
+    {
+        Container::addConnection($connection = new Connection, 'other');
+
+        $model = new ModelRelationTestStub();
+
+        $model->setConnection($connectionName = 'other');
+
+        $relationQuery = $model->relation()->getQuery();
+
+        $defaultModel = $relationQuery->getModel();
+
+        $this->assertEquals($connection, $relationQuery->getConnection());
+        $this->assertEquals($connectionName, $defaultModel->getConnectionName());
     }
 
     public function test_parent_model_scope_is_removed_from_relation_query()

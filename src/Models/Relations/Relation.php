@@ -165,9 +165,10 @@ abstract class Relation
      */
     public function initRelation()
     {
-        $this->query->clearFilters()
+        $this->query
+            ->clearFilters()
             ->withoutGlobalScopes()
-            ->setModel(new $this->default());
+            ->setModel($this->getNewDefaultModel());
 
         return $this;
     }
@@ -203,7 +204,7 @@ abstract class Relation
     }
 
     /**
-     * Get the related models for the relation.
+     * Get the related model classes for the relation.
      *
      * @return array
      */
@@ -223,6 +224,30 @@ abstract class Relation
     }
 
     /**
+     * Get the class of the default model.
+     *
+     * @return string
+     */
+    public function getDefaultModel()
+    {
+        return $this->default;
+    }
+
+    /**
+     * Get a new instance of the default model on the relation.
+     *
+     * @return Model
+     */
+    public function getNewDefaultModel()
+    {
+        $model = new $this->default;
+
+        $model->setConnection($this->parent->getConnectionName());
+
+        return $model;
+    }
+
+    /**
      * Get the foreign model by the given value.
      *
      * @param string $value
@@ -231,9 +256,9 @@ abstract class Relation
      */
     protected function getForeignModelByValue($value)
     {
-        return $this->foreignKeyIsDistinguishedName() ?
-            $this->query->find($value) :
-            $this->query->findBy($this->foreignKey, $value);
+        return $this->foreignKeyIsDistinguishedName()
+            ? $this->query->find($value)
+            : $this->query->findBy($this->foreignKey, $value);
     }
 
     /**
@@ -257,9 +282,9 @@ abstract class Relation
      */
     protected function getForeignValueFromModel(Model $model)
     {
-        return $this->foreignKeyIsDistinguishedName() ?
-            $model->getDn() :
-            $model->getFirstAttribute($this->foreignKey);
+        return $this->foreignKeyIsDistinguishedName()
+            ? $model->getDn()
+            : $model->getFirstAttribute($this->foreignKey);
     }
 
     /**

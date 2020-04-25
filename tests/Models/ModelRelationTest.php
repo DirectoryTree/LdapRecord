@@ -111,7 +111,7 @@ class ModelRelationTest extends TestCase
 
     public function test_relation_default_model_uses_parent_connection()
     {
-        Container::addConnection(new Connection, 'other');
+        Container::addConnection(new Connection(), 'other');
 
         $model = new ModelRelationTestStub();
 
@@ -124,7 +124,7 @@ class ModelRelationTest extends TestCase
 
     public function test_relation_query_uses_models_parent_connection()
     {
-        Container::addConnection($connection = new Connection, 'other');
+        Container::addConnection($connection = new Connection(), 'other');
 
         $model = new ModelRelationTestStub();
 

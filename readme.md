@@ -55,11 +55,11 @@ Active Directory Features
 
 🚪 **Enable / Disable Accounts**
 
-Detect and assign User Account Control values on accounts with the fluent [Account Control builder](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#user-account-control).
+Detect and assign User Account Control values on accounts with the fluent [Account Control builder](https://ldaprecord.com/docs/active-directory/users/#uac).
 
 🔑 **Reset / Change Passwords**
 
-Built-in support for [changing](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#changing-passwords) and [resetting](https://ldaprecord.com/docs/tutorials/activedirectory/user-management/#resetting-passwords) passwords on Active Directory accounts.
+Built-in support for [changing](https://ldaprecord.com/docs/active-directory/users/#changing-passwords) and [resetting](https://ldaprecord.com/docs/active-directory/users/#resetting-passwords) passwords on Active Directory accounts.
 
 🗑 **Restore Deleted Objects**
 

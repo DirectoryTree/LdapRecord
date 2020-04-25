@@ -29,6 +29,8 @@
     <a href="https://github.com/DirectoryTree/LdapRecord-Discussions/issues/new">Post a Question</a>
 </h4>
 
+---
+
 ⏲ **Up and Running Fast**
 
 Connect to your LDAP servers and start running queries at lightning speed.

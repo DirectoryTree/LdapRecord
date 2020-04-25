@@ -252,7 +252,7 @@ abstract class Relation
      *
      * @param string $value
      *
-     * @return \LdapRecord\Models\Model|null
+     * @return Model|null
      */
     protected function getForeignModelByValue($value)
     {

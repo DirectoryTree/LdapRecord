@@ -323,8 +323,8 @@ abstract class Relation
     /**
      * Determines the model from the given relations.
      *
-     * @var Model
-     * @var array
+     * @var Model $model
+     * @var array $related
      *
      * @return string|bool
      */

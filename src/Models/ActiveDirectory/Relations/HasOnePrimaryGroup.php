@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\ActiveDirectory\Relations;
 
+use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasOne;
 
 class HasOnePrimaryGroup extends HasOne
@@ -18,6 +19,22 @@ class HasOnePrimaryGroup extends HasOne
         return $this->query->findBySid(
             $this->getParentModelObjectSid()
         );
+    }
+
+    /**
+     * Get the foreign value from the given model.
+     *
+     * Retrieves the last RID from the models Object SID.
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    protected function getForeignValueFromModel(Model $model)
+    {
+        $objectSidComponents = explode('-', $model->getConvertedSid());
+
+        return end($objectSidComponents);
     }
 
     /**

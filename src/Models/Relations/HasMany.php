@@ -22,6 +22,13 @@ class HasMany extends OneToMany
     protected $usingKey;
 
     /**
+     * The relation to merge results with.
+     *
+     * @var OneToMany|null
+     */
+    protected $with;
+
+    /**
      * The pagination page size.
      *
      * @var int
@@ -40,6 +47,20 @@ class HasMany extends OneToMany
     {
         $this->using = $using;
         $this->usingKey = $usingKey;
+
+        return $this;
+    }
+
+    /**
+     * Set the relation to load with its parent.
+     *
+     * @param OneToMany $relation
+     *
+     * @return $this
+     */
+    public function with(OneToMany $relation)
+    {
+        $this->with = $relation;
 
         return $this;
     }
@@ -97,7 +118,11 @@ class HasMany extends OneToMany
     {
         return $this->transformResults(
             $this->getRelationQuery()->paginate($this->pageSize)
-        );
+        )->when($this->with, function (Collection $results, OneToMany $relation) {
+            return $results->merge(
+                $relation->recursive($this->recursive)->get()
+            );
+        });
     }
 
     /**

@@ -36,7 +36,33 @@ class Group extends Entry
     public function members()
     {
         return $this->hasMany([
-            static::class, User::class, Contact::class,
-        ], 'memberof')->using($this, 'member');
+            static::class, User::class, Contact::class, Computer::class,
+        ], 'memberof')
+            ->with($this->secondaries())
+            ->using($this, 'member');
+    }
+
+    /**
+     * The secondaries relationship, for retrieving members of primary groups.
+     *
+     * @return \LdapRecord\Models\Relations\HasMany
+     */
+    protected function secondaries()
+    {
+        return $this->hasMany([
+            static::class, User::class, Contact::class, Computer::class,
+        ], 'primarygroupid', 'rid');
+    }
+
+    /**
+     * Get the RID of the group.
+     *
+     * @return array
+     */
+    public function getRidAttribute()
+    {
+        $objectSidComponents = explode('-', $this->getConvertedSid());
+
+        return [end($objectSidComponents)];
     }
 }

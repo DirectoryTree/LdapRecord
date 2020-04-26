@@ -269,7 +269,9 @@ abstract class Relation
      */
     protected function getEscapedForeignValueFromModel(Model $model)
     {
-        return $this->query->escape($this->getForeignValueFromModel($model))->both();
+        return $this->query->escape(
+            $this->getForeignValueFromModel($model)
+        )->both();
     }
 
     /**

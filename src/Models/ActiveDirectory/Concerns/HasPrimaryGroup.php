@@ -7,7 +7,7 @@ use LdapRecord\Models\ActiveDirectory\Relations\HasOnePrimaryGroup;
 trait HasPrimaryGroup
 {
     /**
-     * Returns a new has one relationship.
+     * Returns a new has one primary group relationship.
      *
      * @param mixed  $related
      * @param string $relationKey

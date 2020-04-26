@@ -2,8 +2,12 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
+
 class Computer extends Entry
 {
+    use HasPrimaryGroup;
+
     /**
      * The object classes of the LDAP model.
      *
@@ -27,6 +31,16 @@ class Computer extends Entry
     public function groups()
     {
         return $this->hasMany(Group::class, 'member');
+    }
+
+    /**
+     * The primary group relationship.
+     *
+     * @return Relations\HasOnePrimaryGroup
+     */
+    public function primaryGroup()
+    {
+        return $this->hasOnePrimaryGroup(Group::class, 'primarygroupid');
     }
 
     /**

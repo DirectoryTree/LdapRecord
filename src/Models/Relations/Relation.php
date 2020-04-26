@@ -158,8 +158,7 @@ abstract class Relation
     }
 
     /**
-     * Initializes the relation by setting the default model on
-     * the query and resetting the query's filters and scopes.
+     * Prepare the relation query.
      *
      * @return static
      */

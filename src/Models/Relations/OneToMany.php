@@ -53,7 +53,7 @@ abstract class OneToMany extends Relation
      *
      * @return $this
      */
-    public function with(self $relation)
+    public function with(OneToMany $relation)
     {
         $this->with = $relation;
 

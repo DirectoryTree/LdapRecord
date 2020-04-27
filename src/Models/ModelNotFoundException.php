@@ -30,7 +30,7 @@ class ModelNotFoundException extends LdapRecordException
      */
     public static function forQuery($filter, $baseDn = null)
     {
-        return (new self())->setQuery($filter, $baseDn);
+        return (new static())->setQuery($filter, $baseDn);
     }
 
     /**

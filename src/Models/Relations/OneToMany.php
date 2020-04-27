@@ -9,6 +9,13 @@ use LdapRecord\Query\Model\Builder;
 abstract class OneToMany extends Relation
 {
     /**
+     * The relation to merge results with.
+     *
+     * @var OneToMany|null
+     */
+    protected $with;
+
+    /**
      * The name of the relationship.
      *
      * @var string
@@ -40,6 +47,20 @@ abstract class OneToMany extends Relation
     }
 
     /**
+     * Set the relation to load with its parent.
+     *
+     * @param OneToMany $relation
+     *
+     * @return $this
+     */
+    public function with(OneToMany $relation)
+    {
+        $this->with = $relation;
+
+        return $this;
+    }
+
+    /**
      * Whether to include recursive results.
      *
      * @param bool $enable
@@ -67,9 +88,13 @@ abstract class OneToMany extends Relation
      */
     public function getResults()
     {
-        return $this->recursive
+        $results = $this->recursive
             ? $this->getRecursiveResults($this->getRelationResults())
             : $this->getRelationResults();
+
+        return $results->merge(
+            $this->getMergingRelationResults()
+        );
     }
 
     /**
@@ -80,6 +105,18 @@ abstract class OneToMany extends Relation
     public function getRelationName()
     {
         return $this->relationName;
+    }
+
+    /**
+     * Get the results of the merging 'with' relation.
+     *
+     * @return Collection
+     */
+    protected function getMergingRelationResults()
+    {
+        return $this->with
+            ? $this->with->recursive($this->recursive)->get()
+            : $this->parent->newCollection();
     }
 
     /**

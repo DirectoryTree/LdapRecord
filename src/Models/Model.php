@@ -762,7 +762,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getRdn($dn = null)
     {
         if ($parts = Utilities::explodeDn($dn ?? $this->dn, false)) {
-            return array_key_exists(0, $parts) ? $parts[0] : null;
+            return reset($parts) ?? null;
         }
     }
 

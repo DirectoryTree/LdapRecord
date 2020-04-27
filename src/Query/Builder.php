@@ -1091,7 +1091,7 @@ class Builder
      */
     public function whereIn($field, array $values)
     {
-        return $this->orFilter(function (Builder $query) use ($field, $values) {
+        return $this->orFilter(function (self $query) use ($field, $values) {
             foreach ($values as $value) {
                 $query->whereEquals($field, $value);
             }

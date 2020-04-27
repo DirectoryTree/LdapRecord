@@ -29,7 +29,7 @@ class Group extends Entry
     /**
      * The members relationship.
      *
-     * Retrieves members that are apart of the current group.
+     * Retrieves members that are apart of the group.
      *
      * @return \LdapRecord\Models\Relations\HasMany
      */
@@ -38,16 +38,18 @@ class Group extends Entry
         return $this->hasMany([
             static::class, User::class, Contact::class, Computer::class,
         ], 'memberof')
-            ->with($this->secondaries())
-            ->using($this, 'member');
+            ->using($this, 'member')
+            ->with($this->primaryGroupMembers());
     }
 
     /**
-     * The secondaries relationship, for retrieving members of primary groups.
+     * The primary group members relationship.
+     *
+     * Retrieves members that are apart the primary group.
      *
      * @return \LdapRecord\Models\Relations\HasMany
      */
-    protected function secondaries()
+    protected function primaryGroupMembers()
     {
         return $this->hasMany([
             static::class, User::class, Contact::class, Computer::class,

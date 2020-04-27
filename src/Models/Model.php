@@ -602,7 +602,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return bool
      */
-    public function is(Model $model)
+    public function is(self $model)
     {
         return $this->dn == $model->getDn() && $this->connection == $model->getConnectionName();
     }
@@ -628,7 +628,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return Model
      */
-    public function convert(Model $into)
+    public function convert(self $into)
     {
         $into->setDn($this->getDn());
         $into->setConnection($this->getConnectionName());
@@ -862,7 +862,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function inside($dn)
     {
-        $this->in = $dn instanceof Model ? $dn->getDn() : $dn;
+        $this->in = $dn instanceof self ? $dn->getDn() : $dn;
 
         return $this;
     }
@@ -1111,7 +1111,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function deleteLeafNodes()
     {
-        return $this->newQuery()->listing()->in($this->dn)->get()->each(function (Model $model) {
+        return $this->newQuery()->listing()->in($this->dn)->get()->each(function (self $model) {
             $model->delete(true);
         });
     }
@@ -1188,7 +1188,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        if ($newParentDn instanceof Model) {
+        if ($newParentDn instanceof self) {
             $newParentDn = $newParentDn->getDn();
         }
 

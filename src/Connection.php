@@ -332,13 +332,35 @@ class Connection
     protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $operation)
     {
         // If the operation failed due to a lost or failed connection,
-        // we'll mark the time the host failed and attempt running
-        // the operation again underneath the next host in line.
+        // we'll attempt reconnecting and running the operation again
+        // underneath the same host, and then move onto the next.
         if ($this->causedByLostConnection($e->getMessage())) {
-            return $this->retryOnNextHost($e, $operation);
+            return $this->retry($operation);
         }
 
         throw $e;
+    }
+
+    /**
+     * Retry the operation on the current host.
+     *
+     * @param Closure $operation
+     *
+     * @throws LdapRecordException
+     *
+     * @return mixed
+     */
+    protected function retry(Closure $operation)
+    {
+        try {
+            $this->reconnect();
+
+            return $this->runOperationCallback($operation);
+        } catch (LdapRecordException $e) {
+            $this->attempted[$this->host] = Carbon::now();
+
+            return $this->retryOnNextHost($e, $operation);
+        }
     }
 
     /**
@@ -353,8 +375,6 @@ class Connection
      */
     protected function retryOnNextHost(LdapRecordException $e, Closure $operation)
     {
-        $this->attempted[$this->host] = Carbon::now();
-
         if (($key = array_search($this->host, $this->hosts)) !== false) {
             unset($this->hosts[$key]);
         }
@@ -365,12 +385,6 @@ class Connection
 
         $this->host = $next;
 
-        try {
-            $this->reconnect();
-
-            return $this->runOperationCallback($operation);
-        } catch (LdapRecordException $e) {
-            return $this->tryAgainIfCausedByLostConnection($e, $operation);
-        }
+        return $this->tryAgainIfCausedByLostConnection($e, $operation);
     }
 }

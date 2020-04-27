@@ -273,11 +273,11 @@ class ConnectionTest extends TestCase
         $executed = $conn->run(function () use (&$called) {
             $called++;
 
-            if (in_array($called, [1, 2])) {
+            if ($called <= 3) {
                 throw new \Exception("Can't contact LDAP server");
             }
 
-            return $called === 3;
+            return $called === 4;
         });
 
         $attempted = $conn->attempted();

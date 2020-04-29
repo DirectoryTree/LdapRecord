@@ -346,13 +346,6 @@ class Ldap
      */
     public function setOption($option, $value)
     {
-        // Some PHP versions do not allow you to pass empty arrays to
-        // ldap_set_option and will throw a warning. We will prevent
-        // this by simply returning false to indicate it wasn't set.
-        if (is_array($value) && empty($value)) {
-            return false;
-        }
-
         return ldap_set_option($this->connection, $option, $value);
     }
 

@@ -112,7 +112,7 @@ class DistinguishedName
      *
      * @return bool
      */
-    public function isParentOf(DistinguishedName $child)
+    public function isParentOf(self $child)
     {
         return $child->isChildOf($this);
     }
@@ -124,7 +124,7 @@ class DistinguishedName
      *
      * @return bool
      */
-    public function isChildOf(DistinguishedName $parent)
+    public function isChildOf(self $parent)
     {
         if (
             empty($components = $this->components()) ||
@@ -145,7 +145,7 @@ class DistinguishedName
      *
      * @return bool
      */
-    public function isAncestorOf(DistinguishedName $descendant)
+    public function isAncestorOf(self $descendant)
     {
         return $descendant->isDescendantOf($this);
     }
@@ -157,7 +157,7 @@ class DistinguishedName
      *
      * @return bool
      */
-    public function isDescendantOf(DistinguishedName $ancestor)
+    public function isDescendantOf(self $ancestor)
     {
         if (
             empty($components = $this->components()) ||
@@ -166,7 +166,7 @@ class DistinguishedName
             return false;
         }
 
-        if (! $length = count($components) - count($ancestorComponents)) {
+        if (!$length = count($components) - count($ancestorComponents)) {
             return false;
         }
 

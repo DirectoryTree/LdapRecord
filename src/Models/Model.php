@@ -5,7 +5,6 @@ namespace LdapRecord\Models;
 use ArrayAccess;
 use JsonSerializable;
 use LdapRecord\Container;
-use LdapRecord\Utilities;
 use LdapRecord\Connection;
 use InvalidArgumentException;
 use LdapRecord\EscapesValues;
@@ -15,6 +14,7 @@ use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renaming;
+use LdapRecord\Models\Attributes\DistinguishedName;
 
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
@@ -745,11 +745,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getName($dn = null)
     {
-        if ($rdn = $this->getRdn($dn)) {
-            list($attribute, $name) = explode('=', $rdn);
-
-            return $name;
-        }
+        return (new DistinguishedName($dn ?? $this->dn))->name();
     }
 
     /**
@@ -761,9 +757,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getRdn($dn = null)
     {
-        if ($parts = Utilities::explodeDn($dn ?? $this->dn, false)) {
-            return reset($parts) ?? null;
-        }
+        return (new DistinguishedName($dn ?? $this->dn))->relative();
     }
 
     /**
@@ -775,11 +769,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getParentDn($dn = null)
     {
-        if ($parts = Utilities::explodeDn($dn ?? $this->dn, false)) {
-            array_shift($parts);
-
-            return implode(',', $parts);
-        }
+        return (new DistinguishedName($dn ?? $this->dn))->parent();
     }
 
     /**
@@ -811,6 +801,34 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Determine if the current model is a direct descendant of the given.
      *
+     * @param static|string $parent
+     *
+     * @return bool
+     */
+    public function isChildOf($parent)
+    {
+        return (new DistinguishedName($this->getDn()))->isChildOf(
+            new DistinguishedName((string) $parent)
+        );
+    }
+
+    /**
+     * Determine if the current model is a direct ascendant of the given.
+     *
+     * @param static|string $child
+     *
+     * @return bool
+     */
+    public function isParentOf($child)
+    {
+        return (new DistinguishedName($this->getDn()))->isParentOf(
+            new DistinguishedName((string) $child)
+        );
+    }
+
+    /**
+     * Determine if the current model is a descendant of the given.
+     *
      * @param static|string $model
      *
      * @return bool
@@ -821,7 +839,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Determine if the current model is a direct ancestor of the given.
+     * Determine if the current model is a ancestor of the given.
      *
      * @param static|string $model
      *
@@ -842,15 +860,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function dnIsInside($dn, $parentDn)
     {
-        if (!$dn) {
-            return false;
-        }
-
-        if ($dn = $this->getParentDn($dn)) {
-            return strtolower($dn) == strtolower($parentDn);
-        }
-
-        return false;
+        return (new DistinguishedName((string) $dn))->isDescendantOf(
+            new DistinguishedName($parentDn)
+        );
     }
 
     /**

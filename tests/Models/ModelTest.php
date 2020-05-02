@@ -87,7 +87,7 @@ class ModelTest extends TestCase
         $this->assertEquals('John', $model->getName());
 
         $model = (new Entry())->setDn('dn=test=test=test');
-        $this->assertEquals('test', $model->getName());
+        $this->assertEquals('test=test=test', $model->getName());
 
         $model = (new Entry())->setDn('dc=acme');
         $this->assertEquals('acme', $model->getName());
@@ -520,7 +520,7 @@ class ModelTest extends TestCase
 
         $model->setDn('ou=bar,dc=acme,dc=org');
         $this->assertTrue($model->isAncestorOf('cn=foo,ou=bar,dc=acme,dc=org'));
-        $this->assertFalse($model->isAncestorOf('cn=foo,ou=test,ou=bar,dc=acme,dc=org'));
+        $this->assertTrue($model->isAncestorOf('cn=foo,ou=test,ou=bar,dc=acme,dc=org'));
 
         $child = new Entry();
         $child->setDn('cn=foo,ou=bar,dc=acme,dc=org');
@@ -528,6 +528,35 @@ class ModelTest extends TestCase
 
         $child->setDn('cn=foo,Ou=BaR,dc=acme,dc=org');
         $this->assertTrue($model->isAncestorOf($child));
+    }
+
+    public function test_is_child_of()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->isChildOf(null));
+
+        $model->setDn('dc=bar,dc=baz');
+        $this->assertFalse($model->isChildOf('dc=bar,dc=baz'));
+        $this->assertFalse($model->isChildOf('ou=foo,dc=bar,dc=baz'));
+
+        $model->setDn('ou=foo,dc=bar,dc=baz');
+        $this->assertFalse($model->isChildOf('dc=baz'));
+        $this->assertTrue($model->isChildOf('dc=bar,dc=baz'));
+        $this->assertTrue($model->isChildOf((new Entry())->setDn('dc=bar,dc=baz')));
+    }
+
+    public function test_is_parent_of()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->isParentOf(null));
+
+        $model->setDn('dc=bar,dc=baz');
+        $this->assertFalse($model->isParentOf('dc=bar,dc=baz'));
+
+        $model->setDn('dc=baz');
+        $this->assertFalse($model->isParentOf('ou=foo,dc=bar,dc=baz'));
+        $this->assertTrue($model->isParentOf('dc=bar,dc=baz'));
+        $this->assertTrue($model->isParentOf((new Entry())->setDn('dc=bar,dc=baz')));
     }
 
     public function test_create_fills_attributes()

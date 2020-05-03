@@ -71,4 +71,6 @@ We've all been there -- accidentally deleting a user or group in Active Director
 
 <p align="center">If you really enjoy using LdapRecord, a <a href="https://github.com/sponsors/stevebauman">sponsorship</a> would mean the world :pray:</p>
 
+<p align="center">If you are unable to sponsor, a star really helps :star:</p>
+
 <p align="center">Thank you for your consideration :heart:</p>

@@ -570,9 +570,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
+        // If the model has a GUID set, we need to convert
+        // it due to it being in binary. Otherwise we'll
+        // receive a JSON serialization exception.
         if ($this->hasAttribute($this->guidKey)) {
-            // If the model has a GUID set, we need to convert it due to it being in
-            // binary. Otherwise we will receive a JSON serialization exception.
             return array_replace($attributes, [
                 $this->guidKey => [$this->getConvertedGuid()],
             ]);
@@ -928,9 +929,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Creating($this));
 
-        // Before performing the insert, we will filter the attributes of the model
-        // to ensure no empty values are sent. If empty values are sent, then
-        // the LDAP server will return an error message indicating such.
+        // Here we perform the insert of the object in the directory.
+        // We will also filter out any empty attribute values here,
+        // otherwise the LDAP server will return an error message.
         if ($query->insert($this->getDn(), array_filter($this->getAttributes()))) {
             $this->fireModelEvent(new Events\Created($this));
 
@@ -1104,8 +1105,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         if ($this->newQuery()->delete($this->dn)) {
-            // If the deletion was successful, we'll mark the model
-            // as non-existing and fire the deleted event.
+            // If the deletion is successful, we will mark the model
+            // as non-existing, and then fire the deleted event so
+            // developers can hook in and run further operations.
             $this->exists = false;
 
             $this->fireModelEvent(new Events\Deleted($this));
@@ -1150,9 +1152,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        // If we've been given a string, we'll assume we're removing a
-        // single attribute. Otherwise, we'll assume it's
-        // an array of attributes to remove.
+        // If we have been given a string, we will assume we're
+        // removing a single attribute. Otherwise, we will
+        // assume it's an array of attributes to remove.
         $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
 
         if ($this->newQuery()->deleteAttributes($this->dn, $attributes)) {
@@ -1277,9 +1279,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $modification = $this->newBatchModification($attribute, null, $values);
 
             if (array_key_exists($attribute, $this->original)) {
-                // If the attribute we're modifying has an original value, we'll give the
-                // BatchModification object its values to automatically determine
-                // which type of LDAP operation we need to perform.
+                // If the attribute we're modifying has an original value, we will
+                // give the BatchModification object its values to automatically
+                // determine which type of LDAP operation we need to perform.
                 $modification->setOriginal($this->original[$attribute]);
             }
 

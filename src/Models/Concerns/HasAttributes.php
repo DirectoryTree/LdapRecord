@@ -79,12 +79,11 @@ trait HasAttributes
         // converting any necessary attribute values to ensure
         // they can be encoded, such as GUIDs and SIDs.
         $attributes = $this->convertAttributesForJson($attributes);
-
-        array_walk_recursive($attributes, function (&$value) {
-            $value = $this->encodeValue($value);
-        });
-
-        return $attributes;
+        
+        // Now we will go through each attribute to make sure it is
+        // properly encoded. If attributes aren't in UTF-8, we will
+        // encounter JSON encoding errors upon model serialization.
+        return $this->encodeAttributes($attributes);
     }
 
     /**
@@ -121,6 +120,20 @@ trait HasAttributes
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format($this->getDateFormat());
+    }
+
+    /**
+     * Recursively UTF-8 encode the given attributes.
+     * 
+     * @return array
+     */
+    public function encodeAttributes($attributes)
+    {
+        array_walk_recursive($attributes, function (&$value) {
+            $value = $this->encodeValue($value);
+        });
+
+        return $attributes;
     }
 
     /**
@@ -284,8 +297,9 @@ trait HasAttributes
      */
     public function getDates()
     {
-        // Since array string keys can be unique depending on casing differences,
-        // we need to normalize the array key case so they are merged properly.
+        // Since array string keys can be unique depending
+        // on casing differences, we need to normalize the
+        // array key case so they are merged properly.
         return array_merge(
             array_change_key_case($this->defaultDates, CASE_LOWER),
             array_change_key_case($this->dates, CASE_LOWER)
@@ -526,27 +540,23 @@ trait HasAttributes
      */
     public function setRawAttributes(array $attributes = [])
     {
-        // We will filter out those annoying 'count' keys returned
-        // with LDAP results and lowercase all root array
-        // keys to prevent any casing issues.
+        // We will filter out those annoying 'count' keys
+        // returned with LDAP results and lowercase all
+        // root array keys to prevent any casing issues.
         $raw = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
-
-        // Before setting the models attributes, we'll filter out the
-        // attributes that contain an integer key. LDAP results
-        // will have contain have keys that contain the
-        // attribute names. We don't need these.
+        
+        // Before setting the models attributes, we will filter
+        // out the attributes that contain an integer key. LDAP
+        // search results will contain integer keys that have
+        // attribute names as values. We don't need these.
         $this->attributes = array_filter($raw, function ($key) {
             return !is_int($key);
         }, ARRAY_FILTER_USE_KEY);
 
-        // We will pull out the distinguished name from our raw attributes
-        // and set it into our attributes array with the full attribute
-        // definition. This allows us to normalize distinguished
-        // names across different LDAP variants.
+        // LDAP search results will contain the distinguished
+        // name inside of the `dn` key. We will retrieve this,
+        // and then set it on the model for accessibility.
         if (array_key_exists('dn', $attributes)) {
-            // In some LDAP instances the distinguished name may
-            // be returned as an array. We will pull the
-            // first value in this case.
             $this->dn = is_array($attributes['dn'])
                 ? reset($attributes['dn'])
                 : $attributes['dn'];
@@ -554,9 +564,9 @@ trait HasAttributes
 
         $this->syncOriginal();
 
-        // Here we will set the exists attribute to true since
-        // raw attributes are only set in the case of
-        // attributes being loaded by query results.
+        // Here we will set the exists attribute to true,
+        // since raw attributes are only set in the case
+        // of attributes being loaded by query results.
         $this->exists = true;
 
         return $this;
@@ -594,7 +604,9 @@ trait HasAttributes
      */
     public function hasAttribute($key)
     {
-        return array_key_exists($this->normalizeAttributeKey($key), $this->getNormalizedAttributes());
+        return array_key_exists(
+            $this->normalizeAttributeKey($key), $this->getNormalizedAttributes()
+        );
     }
 
     /**
@@ -630,6 +642,7 @@ trait HasAttributes
             if ($this->isDirty($key)) {
                 // We need to reset the array using array_values due to
                 // LDAP requiring consecutive indices (0, 1, 2 etc.).
+                // We would receive an exception otherwise.
                 $dirty[$key] = array_values($value);
             }
         }

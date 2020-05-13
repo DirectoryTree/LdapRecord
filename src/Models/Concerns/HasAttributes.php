@@ -79,7 +79,7 @@ trait HasAttributes
         // converting any necessary attribute values to ensure
         // they can be encoded, such as GUIDs and SIDs.
         $attributes = $this->convertAttributesForJson($attributes);
-        
+
         // Now we will go through each attribute to make sure it is
         // properly encoded. If attributes aren't in UTF-8, we will
         // encounter JSON encoding errors upon model serialization.
@@ -124,7 +124,7 @@ trait HasAttributes
 
     /**
      * Recursively UTF-8 encode the given attributes.
-     * 
+     *
      * @return array
      */
     public function encodeAttributes($attributes)
@@ -544,7 +544,7 @@ trait HasAttributes
         // returned with LDAP results and lowercase all
         // root array keys to prevent any casing issues.
         $raw = array_change_key_case($this->filterRawAttributes($attributes), CASE_LOWER);
-        
+
         // Before setting the models attributes, we will filter
         // out the attributes that contain an integer key. LDAP
         // search results will contain integer keys that have
@@ -605,7 +605,8 @@ trait HasAttributes
     public function hasAttribute($key)
     {
         return array_key_exists(
-            $this->normalizeAttributeKey($key), $this->getNormalizedAttributes()
+            $this->normalizeAttributeKey($key),
+            $this->getNormalizedAttributes()
         );
     }
 

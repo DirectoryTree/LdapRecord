@@ -188,7 +188,7 @@ class BatchModification
      */
     public function build()
     {
-        switch(true) {
+        switch (true) {
             case empty($this->original) && empty($this->values):
                 return $this;
             case !empty($this->original) && empty($this->values):

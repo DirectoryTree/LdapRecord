@@ -112,10 +112,10 @@ class BatchModification
      */
     public function setValues(array $values = [])
     {
-        // Here we will convert all of the values to strings, then trim them.
-        // Only strings can be used in batch modifications, otherwise we
-        // will we will receive an LDAP exception during processing.
-        $values = array_map('trim', array_map('strval', $values));
+        // We must convert all of the values to strings. Only strings can
+        // be used in batch modifications, otherwise we will we will
+        // receive an LDAP exception while attempting to save.
+        $values = array_map('strval', $values);
 
         // Null and empty values must also not be added to a batch
         // modification. Passing null or empty values will result

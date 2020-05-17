@@ -57,6 +57,38 @@ class BatchModificationTest extends TestCase
         $this->assertNull($modification->getType());
     }
 
+    public function test_build_with_added_value()
+    {
+        $original = ['foo', 'bar'];
+
+        $modification = new BatchModification();
+
+        $modification->setAttribute('member');
+        $modification->setOriginal($original);
+        $modification->setValues(array_merge($original, ['baz']));
+
+        $modification->build();
+
+        $this->assertEquals(['baz'], $modification->getValues());
+        $this->assertEquals(LDAP_MODIFY_BATCH_ADD, $modification->getType());
+    }
+
+    public function test_build_with_removed_value()
+    {
+        $original = ['foo', 'bar'];
+
+        $modification = new BatchModification();
+
+        $modification->setAttribute('member');
+        $modification->setOriginal($original);
+        $modification->setValues(array_diff($original, ['bar']));
+
+        $modification->build();
+
+        $this->assertEquals(['bar'], $modification->getValues());
+        $this->assertEquals(LDAP_MODIFY_BATCH_REMOVE, $modification->getType());
+    }
+
     public function test_get()
     {
         $modification = new BatchModification();

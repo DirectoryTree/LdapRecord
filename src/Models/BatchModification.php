@@ -14,18 +14,18 @@ class BatchModification
     const KEY_VALUES = 'values';
 
     /**
-     * The original value of the attribute before modification.
-     *
-     * @var null
-     */
-    protected $original = null;
-
-    /**
      * The attribute of the modification.
      *
-     * @var int|string
+     * @var string|null
      */
     protected $attribute;
+
+    /**
+     * The original value of the attribute before modification.
+     *
+     * @var array
+     */
+    protected $original = [];
 
     /**
      * The values of the modification.
@@ -37,7 +37,7 @@ class BatchModification
     /**
      * The modtype integer of the batch modification.
      *
-     * @var int
+     * @var int|null
      */
     protected $type;
 
@@ -58,13 +58,13 @@ class BatchModification
     /**
      * Sets the original value of the attribute before modification.
      *
-     * @param mixed $original
+     * @param array|string $original
      *
      * @return $this
      */
-    public function setOriginal($original = null)
+    public function setOriginal($original = [])
     {
-        $this->original = $original;
+        $this->original = (array) $original;
 
         return $this;
     }
@@ -112,12 +112,17 @@ class BatchModification
      */
     public function setValues(array $values = [])
     {
-        $this->values = array_map(function ($value) {
-            // We need to make sure all values given to a batch modification are
-            // strings, otherwise we'll receive an LDAP exception when
-            // we try to process the modification.
-            return (string) $value;
-        }, $values);
+        // Here we will convert all of the values to strings, then trim them.
+        // Only strings can be used in batch modifications, otherwise we
+        // will we will receive an LDAP exception during processing.
+        $values = array_map('trim', array_map('strval', $values));
+
+        // Null and empty values must also not be added to a batch
+        // modification. Passing null or empty values will result
+        // in an exception when trying to save the modification.
+        $this->values = array_filter($values, function ($value) {
+            return !empty($value);
+        });
 
         return $this;
     }
@@ -141,7 +146,11 @@ class BatchModification
      */
     public function setType($type = null)
     {
-        if (!is_null($type) && !$this->isValidType($type)) {
+        if (is_null($type)) {
+            return $this;
+        }
+
+        if (!$this->isValidType($type)) {
             throw new InvalidArgumentException('Given batch modification type is invalid.');
         }
 
@@ -179,39 +188,60 @@ class BatchModification
      */
     public function build()
     {
-        $filtered = array_diff(
-            array_map('trim', $this->values),
-            ['']
-        );
-
-        if (is_null($this->original)) {
-            // If the original value is null, we'll assume
-            // that the attribute doesn't exist yet.
-            if (!empty($filtered)) {
-                // If the filtered array is not empty, we can
-                // assume we're looking to add values
-                // to the current attribute.
-                $this->setType(LDAP_MODIFY_BATCH_ADD);
-            }
-
-            // If the filtered array is empty and there is no original
-            // value, then we can ignore this attribute since
-            // we can't push null values to the server.
-        } else {
-            if (empty($filtered)) {
-                // If there's an original value and the array is
-                // empty then we can assume we are looking
-                // to completely remove all values
-                // of the current attribute.
-                $this->setType(LDAP_MODIFY_BATCH_REMOVE_ALL);
-            } else {
-                // If the array isn't empty then we can assume
-                // we're looking to replace all attributes.
-                $this->setType(LDAP_MODIFY_BATCH_REPLACE);
-            }
+        switch(true) {
+            case empty($this->original) && empty($this->values):
+                return $this;
+            case !empty($this->original) && empty($this->values):
+                return $this->setType(LDAP_MODIFY_BATCH_REMOVE_ALL);
+            case empty($this->original) && !empty($this->values):
+                return $this->setType(LDAP_MODIFY_BATCH_ADD);
+            default:
+               return $this->determineBatchTypeFromOriginal();
         }
+    }
 
-        return $this;
+    /**
+     * Determine the batch modification type from the original values.
+     *
+     * @return $this
+     */
+    protected function determineBatchTypeFromOriginal()
+    {
+        $added = $this->getAddedValues();
+        $removed = $this->getRemovedValues();
+
+        switch (true) {
+            case !empty($added) && !empty($removed):
+                return $this->setType(LDAP_MODIFY_BATCH_REPLACE);
+            case !empty($added):
+                return $this->setValues($added)->setType(LDAP_MODIFY_BATCH_ADD);
+            default:
+                return $this->setValues($removed)->setType(LDAP_MODIFY_BATCH_REMOVE);
+        }
+    }
+
+    /**
+     * Get the values that were added to the attribute.
+     *
+     * @return array
+     */
+    protected function getAddedValues()
+    {
+        return array_values(
+            array_diff($this->values, $this->original)
+        );
+    }
+
+    /**
+     * Get the values that were removed from the attribute.
+     *
+     * @return array
+     */
+    protected function getRemovedValues()
+    {
+        return array_values(
+            array_diff($this->original, $this->values)
+        );
     }
 
     /**

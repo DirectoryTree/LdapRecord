@@ -67,10 +67,8 @@ We've all been there -- accidentally deleting a user or group in Active Director
 
 ---
 
-<h3 align="center">LdapRecord is Sponsorware™</h3>
+<h3 align="center">LdapRecord is Supportware™</h3>
 
-<p align="center">If you really enjoy using LdapRecord, a <a href="https://github.com/sponsors/stevebauman">sponsorship</a> would mean the world :pray:</p>
+<p align="center">If you require support using LdapRecord, a <a href="https://github.com/sponsors/stevebauman">sponsorship</a> is required :pray:</p>
 
-<p align="center">If you are unable to sponsor, a star really helps :star:</p>
-
-<p align="center">Thank you for your consideration :heart:</p>
+<p align="center">Thank you for your understanding :heart:</p>

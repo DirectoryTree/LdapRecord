@@ -1,6 +1,6 @@
 ---
 name: Support request
-about: Request support (requires sponsorship)
+about: Request help using LdapRecord (requires sponsorship)
 title: ''
 labels: ''
 assignees: ''

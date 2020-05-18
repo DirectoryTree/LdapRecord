@@ -1,6 +1,6 @@
 ---
 name: Support request
-about: 'Request support '
+about: Request support (requires sponsorship)
 title: ''
 labels: ''
 assignees: ''

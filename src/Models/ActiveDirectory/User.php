@@ -64,7 +64,7 @@ class User extends Entry implements Authenticatable
      */
     public function groups()
     {
-        return $this->hasMany(Group::class, 'member');
+        return $this->hasMany(Group::class, 'member')->with($this->primaryGroup());
     }
 
     /**

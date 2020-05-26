@@ -475,6 +475,15 @@ class ModelTest extends TestCase
         $this->assertEquals(1, $modifications[2]['modtype']);
     }
 
+    public function test_modifications_that_contain_identical_values_are_not_used()
+    {
+        $model = new Entry();
+        $model->setRawAttributes(['useraccountcontrol' => 512]);
+        $model->useraccountcontrol = "512";
+
+        $this->assertEmpty($model->getModifications());
+    }
+
     public function test_modifications_are_not_stacked()
     {
         $model = (new Entry())->setRawAttributes([

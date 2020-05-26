@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Models\Attributes;
 
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\BatchModification;
+use LdapRecord\Models\Attributes\AccountControl;
 
 class BatchModificationTest extends TestCase
 {
@@ -205,5 +206,16 @@ class BatchModificationTest extends TestCase
 
         $this->assertFalse($mod1->isValid());
         $this->assertFalse($mod2->isValid());
+    }
+
+    public function test_modification_values_are_converted_to_string()
+    {
+        $mod = new BatchModification();
+
+        $mod->setOriginal([(new AccountControl())->accountIsNormal()]);
+        $mod->setValues([(new AccountControl())->accountIsNormal()]);
+
+        $this->assertInternalType('string', $mod->getOriginal()[0]);
+        $this->assertInternalType('string', $mod->getValues()[0]);
     }
 }

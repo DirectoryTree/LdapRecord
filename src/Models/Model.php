@@ -1272,11 +1272,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $modifications = [];
 
         foreach ($this->getDirty() as $attribute => $values) {
-            // Make sure values is always an array.
-            $values = (is_array($values) ? $values : [$values]);
-
-            // Create a new modification.
-            $modification = $this->newBatchModification($attribute, null, $values);
+            $modification = $this->newBatchModification($attribute, null, (array) $values);
 
             if (array_key_exists($attribute, $this->original)) {
                 // If the attribute we're modifying has an original value, we will
@@ -1285,12 +1281,33 @@ abstract class Model implements ArrayAccess, JsonSerializable
                 $modification->setOriginal($this->original[$attribute]);
             }
 
-            if ($modification->build()->isValid()) {
-                $modifications[] = $modification;
+            if ($this->modifiedBatchValuesAreIdentical($modification)) {
+                // If the resulting original and modified values are identical,
+                // we will skip adding it into the modified array, since no
+                // actual change took place.
+                continue;
             }
+
+            if (!$modification->build()->isValid()) {
+                continue;
+            }
+
+            $modifications[] = $modification;
         }
 
         return $modifications;
+    }
+
+    /**
+     * Determine if the batch modification original and modified values are identical.
+     *
+     * @param BatchModification $modification
+     *
+     * @return bool
+     */
+    protected function modifiedBatchValuesAreIdentical(BatchModification $modification)
+    {
+        return $modification->getOriginal() === $modification->getValues();
     }
 
     /**

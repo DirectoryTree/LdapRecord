@@ -479,7 +479,7 @@ class ModelTest extends TestCase
     {
         $model = new Entry();
         $model->setRawAttributes(['useraccountcontrol' => 512]);
-        $model->useraccountcontrol = "512";
+        $model->useraccountcontrol = '512';
 
         $this->assertEmpty($model->getModifications());
     }

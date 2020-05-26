@@ -64,7 +64,7 @@ class BatchModification
      */
     public function setOriginal($original = [])
     {
-        $this->original = (array) $original;
+        $this->original = $this->normalizeAttributeValues($original);
 
         return $this;
     }
@@ -72,7 +72,7 @@ class BatchModification
     /**
      * Returns the original value of the attribute before modification.
      *
-     * @return mixed
+     * @return array
      */
     public function getOriginal()
     {
@@ -112,19 +112,29 @@ class BatchModification
      */
     public function setValues(array $values = [])
     {
-        // We must convert all of the values to strings. Only strings can
-        // be used in batch modifications, otherwise we will we will
-        // receive an LDAP exception while attempting to save.
-        $values = array_map('strval', $values);
-
         // Null and empty values must also not be added to a batch
         // modification. Passing null or empty values will result
         // in an exception when trying to save the modification.
-        $this->values = array_filter($values, function ($value) {
+        $this->values = array_filter($this->normalizeAttributeValues($values), function ($value) {
             return !empty($value);
         });
 
         return $this;
+    }
+
+    /**
+     * Normalize all of the attribute values.
+     *
+     * @param array|string $values
+     *
+     * @return array
+     */
+    protected function normalizeAttributeValues($values = [])
+    {
+        // We must convert all of the values to strings. Only strings can
+        // be used in batch modifications, otherwise we will we will
+        // receive an LDAP exception while attempting to save.
+        return array_map('strval', (array) $values);
     }
 
     /**

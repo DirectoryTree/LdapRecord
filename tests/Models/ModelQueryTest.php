@@ -270,7 +270,6 @@ class ModelQueryTest extends TestCase
         Container::getNewInstance()->add(new Connection());
 
         $this->assertEquals(1, ModelDestroyStub::destroy('foo'));
-        $this->assertEquals(2, ModelDestroyStub::destroy('foo', 'bar'));
         $this->assertEquals(2, ModelDestroyStub::destroy(['foo', 'bar']));
         $this->assertEquals(2, ModelDestroyStub::destroy(new Collection(['foo', 'bar'])));
     }

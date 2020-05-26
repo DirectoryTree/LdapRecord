@@ -1063,11 +1063,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $count = 0;
 
-        if ($dns instanceof Collection) {
-            $dns = $dns->all();
-        }
-
-        $dns = is_array($dns) ? $dns : func_get_args();
+        $dns = $dns instanceof Collection
+            ? $dns->all()
+            : is_array($dns) ? $dns : (array) $dns;
 
         $instance = new static();
 

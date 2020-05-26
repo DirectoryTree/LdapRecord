@@ -1277,13 +1277,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
                 $modification->setOriginal($this->original[$attribute]);
             }
 
-            if ($this->modifiedBatchValuesAreIdentical($modification)) {
-                // If the resulting original and modified values are identical,
-                // we will skip adding it into the modified array, since no
-                // actual change took place and no update needs to occur.
-                continue;
-            }
-
             if (!$modification->build()->isValid()) {
                 continue;
             }
@@ -1292,18 +1285,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         return $modifications;
-    }
-
-    /**
-     * Determine if the batch modification original and modified values are identical.
-     *
-     * @param BatchModification $modification
-     *
-     * @return bool
-     */
-    protected function modifiedBatchValuesAreIdentical(BatchModification $modification)
-    {
-        return $modification->getOriginal() === $modification->getValues();
     }
 
     /**

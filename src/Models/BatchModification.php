@@ -180,8 +180,7 @@ class BatchModification
     }
 
     /**
-     * Determines if the batch modification
-     * is valid in its current state.
+     * Determines if the batch modification is valid in its current state.
      *
      * @return bool
      */
@@ -225,8 +224,10 @@ class BatchModification
                 return $this->setType(LDAP_MODIFY_BATCH_REPLACE);
             case !empty($added):
                 return $this->setValues($added)->setType(LDAP_MODIFY_BATCH_ADD);
-            default:
+            case !empty($removed):
                 return $this->setValues($removed)->setType(LDAP_MODIFY_BATCH_REMOVE);
+            default:
+                return $this;
         }
     }
 

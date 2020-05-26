@@ -1282,7 +1282,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             if ($this->modifiedBatchValuesAreIdentical($modification)) {
                 // If the resulting original and modified values are identical,
                 // we will skip adding it into the modified array, since no
-                // actual change took place.
+                // actual change took place and no update needs to occur.
                 continue;
             }
 

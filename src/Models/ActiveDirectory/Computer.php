@@ -30,7 +30,7 @@ class Computer extends Entry
      */
     public function groups()
     {
-        return $this->hasMany(Group::class, 'member');
+        return $this->hasMany(Group::class, 'member')->with($this->primaryGroup());
     }
 
     /**

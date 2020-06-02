@@ -1696,8 +1696,9 @@ class Builder
      */
     public function __call($method, $parameters)
     {
-        // We will check if the beginning of the method being called contains
-        // 'where'. If so, we'll assume it's a dynamic 'where' clause.
+        // If the beginning of the method being called contains
+        // 'where', we will assume a dynamic 'where' clause is
+        // being performed and pass the parameters to it.
         if (substr($method, 0, 5) === 'where') {
             return $this->dynamicWhere($method, $parameters);
         }

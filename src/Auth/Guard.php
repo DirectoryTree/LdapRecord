@@ -63,12 +63,11 @@ class Guard
      */
     public function attempt($username, $password, $bindAsUser = false)
     {
-        if (empty($username)) {
-            throw new UsernameRequiredException('A username must be specified.');
-        }
-
-        if (empty($password)) {
-            throw new PasswordRequiredException('A password must be specified.');
+        switch (true) {
+            case empty($username):
+                throw new UsernameRequiredException('A username must be specified.');
+            case empty($password):
+                throw new PasswordRequiredException('A password must be specified.');
         }
 
         $this->fireAttemptingEvent($username, $password);
@@ -76,23 +75,18 @@ class Guard
         try {
             $this->bind($username, $password);
 
-            $result = true;
+            $authenticated = true;
 
             $this->firePassedEvent($username, $password);
-        }
-        // Catch the bind exception so developers can use a
-        // simple if / else statement for binding users.
-        catch (BindException $e) {
-            $result = false;
-        }
+        } catch (BindException $e) {
+            $authenticated = false;
+        } finally {
+            if (!$bindAsUser) {
+                $this->bindAsConfiguredUser();
+            }
 
-        // If we are not binding as the user, we will rebind the configured
-        // account so LDAP operations can be ran during the same request.
-        if ($bindAsUser === false) {
-            $this->bindAsConfiguredUser();
+            return $authenticated;
         }
-
-        return $result;
     }
 
     /**
@@ -115,16 +109,15 @@ class Guard
         }
 
         try {
-            if ($this->connection->bind($username, $password) === true) {
-                $this->fireBoundEvent($username, $password);
-            } else {
+            if (! $this->connection->bind($username, $password)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
+
+            $this->fireBoundEvent($username, $password);
         } catch (Throwable $e) {
             $this->fireFailedEvent($username, $password);
 
-            throw (new BindException($e->getMessage(), $e->getCode(), $e))
-                ->setDetailedError($this->connection->getDetailedError());
+            throw BindException::withDetailedError($this->connection->getDetailedError(), $e);
         }
     }
 

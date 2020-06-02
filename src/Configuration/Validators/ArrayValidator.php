@@ -4,11 +4,6 @@ namespace LdapRecord\Configuration\Validators;
 
 use LdapRecord\Configuration\ConfigurationException;
 
-/**
- * Class ArrayValidator.
- *
- * Validates that the configuration value is an array.
- */
 class ArrayValidator extends Validator
 {
     /**

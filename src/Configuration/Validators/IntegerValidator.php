@@ -4,11 +4,6 @@ namespace LdapRecord\Configuration\Validators;
 
 use LdapRecord\Configuration\ConfigurationException;
 
-/**
- * Class IntegerValidator.
- *
- * Validates that the configuration value is an integer / number.
- */
 class IntegerValidator extends Validator
 {
     /**

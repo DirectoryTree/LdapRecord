@@ -98,11 +98,11 @@ class DomainConfiguration
      */
     public function get($key)
     {
-        if ($this->has($key)) {
-            return $this->options[$key];
+        if (! $this->has($key)) {
+            throw new ConfigurationException("Option {$key} does not exist.");
         }
 
-        throw new ConfigurationException("Option {$key} does not exist.");
+        return $this->options[$key];
     }
 
     /**

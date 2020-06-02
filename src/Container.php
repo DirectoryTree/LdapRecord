@@ -204,9 +204,7 @@ class Container
      */
     public function get($name = null)
     {
-        $name = $name ?? $this->default;
-
-        if ($this->exists($name)) {
+        if ($this->exists($name = $name ?? $this->default)) {
             return $this->connections[$name];
         }
 

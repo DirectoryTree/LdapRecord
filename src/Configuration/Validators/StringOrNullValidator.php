@@ -4,11 +4,6 @@ namespace LdapRecord\Configuration\Validators;
 
 use LdapRecord\Configuration\ConfigurationException;
 
-/**
- * Class StringOrNullValidator.
- *
- * Validates that the configuration value is a string or null.
- */
 class StringOrNullValidator extends Validator
 {
     /**

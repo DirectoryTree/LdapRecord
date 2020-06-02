@@ -2,11 +2,6 @@
 
 namespace LdapRecord\Configuration\Validators;
 
-/**
- * Class Validator.
- *
- * Validates configuration values.
- */
 abstract class Validator
 {
     /**

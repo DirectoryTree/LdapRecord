@@ -1,8 +1,8 @@
 ---
 name: Support / help request
 about: Request help using LdapRecord (requires sponsorship)
-title: ''
-labels: ''
+title: "[Support]"
+labels: question
 assignees: ''
 
 ---

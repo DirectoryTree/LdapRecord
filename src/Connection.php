@@ -278,18 +278,21 @@ class Connection
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e)
     {
-        switch(true) {
+        switch (true) {
             case $this->errorContainsMessage($e->getMessage(), 'Already exists'):
                 return Exceptions\AlreadyExistsException::withDetailedError(
-                    $e, $this->ldap->getDetailedError()
+                    $e,
+                    $this->ldap->getDetailedError()
                 );
             case $this->errorContainsMessage($e->getMessage(), 'Insufficient access'):
                 return Exceptions\InsufficientAccessException::withDetailedError(
-                    $e, $this->ldap->getDetailedError()
+                    $e,
+                    $this->ldap->getDetailedError()
                 );
             case $this->errorContainsMessage($e->getMessage(), 'Constraint violation'):
                 return Exceptions\ConstraintViolationException::withDetailedError(
-                    $e, $this->ldap->getDetailedError()
+                    $e,
+                    $this->ldap->getDetailedError()
                 );
             default:
                 return;

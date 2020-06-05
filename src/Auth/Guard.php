@@ -118,7 +118,8 @@ class Guard
             $this->fireFailedEvent($username, $password);
 
             throw BindException::withDetailedError(
-                $e, $this->connection->getDetailedError()
+                $e,
+                $this->connection->getDetailedError()
             );
         }
     }

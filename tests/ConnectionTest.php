@@ -264,6 +264,9 @@ class ConnectionTest extends TestCase
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
         $ldap = $this->newConnectedLdapMock();
+
+        $ldap->shouldReceive('getDetailedError')->times(3)->andReturnNull();
+
         $conn = new ReconnectConnectionMock([
             'hosts' => ['foo', 'bar', 'baz'],
         ], $ldap);

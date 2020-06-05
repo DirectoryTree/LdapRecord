@@ -117,7 +117,9 @@ class Guard
         } catch (Throwable $e) {
             $this->fireFailedEvent($username, $password);
 
-            throw BindException::withDetailedError($this->connection->getDetailedError(), $e);
+            throw BindException::withDetailedError(
+                $e, $this->connection->getDetailedError()
+            );
         }
     }
 

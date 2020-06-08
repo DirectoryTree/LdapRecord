@@ -54,11 +54,11 @@ abstract class Relation
     /**
      * Constructor.
      *
-     * @var Builder
-     * @var Model
-     * @var mixed
-     * @var string
-     * @var string
+     * @param Builder $query
+     * @param Model   $parent
+     * @param mixed   $related
+     * @param string  $relationKey
+     * @param string  $foreignKey
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {
@@ -323,14 +323,21 @@ abstract class Relation
     /**
      * Determines the model from the given relations.
      *
-     * @var Model
-     * @var array
+     * @param Model $model
+     * @param array $related
      *
      * @return string|bool
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
         $classes = $model->getAttribute('objectclass') ?? [];
+
+        // We must normalize all the related models object class
+        // names to the same case so we are able to properly
+        // determine the owning model from search results.
+        foreach ($related as $model => $classes) {
+            $related[$model] = array_map('strtolower', $classes);
+        }
 
         return array_search(array_map('strtolower', $classes), $related);
     }

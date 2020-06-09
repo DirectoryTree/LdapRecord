@@ -7,9 +7,9 @@ use Exception;
 class LdapRecordException extends Exception
 {
     /**
-     * The detailed LDAP error.
+     * The detailed LDAP error (if available).
      *
-     * @var DetailedError
+     * @var DetailedError|null
      */
     protected $detailedError;
 

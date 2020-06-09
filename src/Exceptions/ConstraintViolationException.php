@@ -16,7 +16,9 @@ class ConstraintViolationException extends LdapRecordException
      */
     public function causedByPasswordPolicy()
     {
-        return $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '0000052D');
+        return isset($this->detailedError)
+                ? $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '0000052D')
+                : false;
     }
 
     /**
@@ -26,6 +28,8 @@ class ConstraintViolationException extends LdapRecordException
      */
     public function causedByIncorrectPassword()
     {
-        return $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '00000056');
+        return isset($this->detailedError)
+                ? $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '00000056')
+                : false;
     }
 }

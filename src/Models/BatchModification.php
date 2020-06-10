@@ -6,6 +6,8 @@ use InvalidArgumentException;
 
 class BatchModification
 {
+    use DetectsResetIntegers;
+
     /**
      * The array keys to be used in batch modifications.
      */
@@ -116,7 +118,7 @@ class BatchModification
         // modification. Passing null or empty values will result
         // in an exception when trying to save the modification.
         $this->values = array_filter($this->normalizeAttributeValues($values), function ($value) {
-            return !empty($value);
+            return is_numeric($value) && $this->valueIsResetInteger((int) $value) ?: !empty($value);
         });
 
         return $this;

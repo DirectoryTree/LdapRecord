@@ -8,9 +8,12 @@ use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\DetectsResetIntegers;
 
 trait HasAttributes
 {
+    use DetectsResetIntegers;
+
     /**
      * The models original attributes.
      *
@@ -399,22 +402,6 @@ trait HasAttributes
         $this->attributes[$key] = Arr::wrap($value);
 
         return $this;
-    }
-
-    /**
-     * Determine if the given value is an LDAP reset integer.
-     *
-     * The integer values '0' and '-1' can be used on certain
-     * LDAP attributes to instruct the server to reset the
-     * value to an 'unset' or 'cleared' state.
-     *
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    protected function valueIsResetInteger($value)
-    {
-        return in_array($value, [0, -1], $strict = true);
     }
 
     /**

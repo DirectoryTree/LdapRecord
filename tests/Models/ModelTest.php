@@ -270,6 +270,23 @@ class ModelTest extends TestCase
         ], $model->getDirty());
     }
 
+    public function test_reset_integer_is_kept_in_tact_when_batch_modifications_are_generated()
+    {
+        $model = new Entry();
+
+        $model->setRawAttributes(['pwdlastset' => 'value']);
+
+        $model->pwdlastset = 0;
+
+        $this->assertEquals([
+            [
+                'attrib' => 'pwdlastset',
+                'modtype' => LDAP_MODIFY_BATCH_REPLACE,
+                'values' => ['0'],
+            ]
+        ], $model->getModifications());
+    }
+
     public function test_serialization()
     {
         $model = new Entry(['foo' => 'bar']);

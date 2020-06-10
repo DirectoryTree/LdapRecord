@@ -280,10 +280,10 @@ class ModelTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib' => 'pwdlastset',
+                'attrib'  => 'pwdlastset',
                 'modtype' => LDAP_MODIFY_BATCH_REPLACE,
-                'values' => ['0'],
-            ]
+                'values'  => ['0'],
+            ],
         ], $model->getModifications());
     }
 

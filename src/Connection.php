@@ -280,20 +280,11 @@ class Connection
     {
         switch (true) {
             case $this->errorContainsMessage($e->getMessage(), 'Already exists'):
-                return Exceptions\AlreadyExistsException::withDetailedError(
-                    $e,
-                    $this->ldap->getDetailedError()
-                );
+                return Exceptions\AlreadyExistsException::withDetailedError($e, $e->getDetailedError());
             case $this->errorContainsMessage($e->getMessage(), 'Insufficient access'):
-                return Exceptions\InsufficientAccessException::withDetailedError(
-                    $e,
-                    $this->ldap->getDetailedError()
-                );
+                return Exceptions\InsufficientAccessException::withDetailedError($e, $e->getDetailedError());
             case $this->errorContainsMessage($e->getMessage(), 'Constraint violation'):
-                return Exceptions\ConstraintViolationException::withDetailedError(
-                    $e,
-                    $this->ldap->getDetailedError()
-                );
+                return Exceptions\ConstraintViolationException::withDetailedError($e, $e->getDetailedError());
             default:
                 return;
         }
@@ -314,8 +305,7 @@ class Connection
             return $operation($this->ldap);
         } catch (Throwable $e) {
             throw LdapRecordException::withDetailedError(
-                $e,
-                $this->getLdapConnection()->getDetailedError()
+                $e, $this->getLdapConnection()->getDetailedError()
             );
         }
     }

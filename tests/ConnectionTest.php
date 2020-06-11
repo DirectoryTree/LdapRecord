@@ -2,9 +2,6 @@
 
 namespace LdapRecord\Tests;
 
-use LdapRecord\Exceptions\AlreadyExistsException;
-use LdapRecord\Exceptions\ConstraintViolationException;
-use LdapRecord\Exceptions\InsufficientAccessException;
 use Mockery as m;
 use Carbon\Carbon;
 use LdapRecord\Ldap;
@@ -16,6 +13,9 @@ use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Exceptions\AlreadyExistsException;
+use LdapRecord\Exceptions\InsufficientAccessException;
+use LdapRecord\Exceptions\ConstraintViolationException;
 
 class ConnectionTest extends TestCase
 {

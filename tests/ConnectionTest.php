@@ -2,6 +2,9 @@
 
 namespace LdapRecord\Tests;
 
+use LdapRecord\Exceptions\AlreadyExistsException;
+use LdapRecord\Exceptions\ConstraintViolationException;
+use LdapRecord\Exceptions\InsufficientAccessException;
 use Mockery as m;
 use Carbon\Carbon;
 use LdapRecord\Ldap;
@@ -301,6 +304,45 @@ class ConnectionTest extends TestCase
 
         $conn->run(function () {
             throw new \Exception();
+        });
+    }
+
+    public function test_exception_is_transformed_when_already_exists_error_is_returned()
+    {
+        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+
+        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+
+        $this->expectException(AlreadyExistsException::class);
+
+        $conn->run(function () {
+            throw new \Exception('Already exists');
+        });
+    }
+
+    public function test_exception_is_transformed_when_insufficient_access_error_is_returned()
+    {
+        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+
+        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+
+        $this->expectException(InsufficientAccessException::class);
+
+        $conn->run(function () {
+            throw new \Exception('Insufficient access');
+        });
+    }
+
+    public function test_exception_is_transformed_when_constraint_violation_error_is_returned()
+    {
+        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+
+        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+
+        $this->expectException(ConstraintViolationException::class);
+
+        $conn->run(function () {
+            throw new \Exception('Constraint violation');
         });
     }
 }

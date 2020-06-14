@@ -330,7 +330,7 @@ abstract class Relation
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
-        $classes = $model->getAttribute('objectclass') ?? [];
+        $objectClasses = $model->getAttribute('objectclass') ?? [];
 
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
@@ -339,6 +339,6 @@ abstract class Relation
             $related[$model] = array_map('strtolower', $classes);
         }
 
-        return array_search(array_map('strtolower', $classes), $related);
+        return array_search(array_map('strtolower', $objectClasses), $related);
     }
 }

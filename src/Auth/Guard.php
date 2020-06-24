@@ -80,13 +80,13 @@ class Guard
             $this->firePassedEvent($username, $password);
         } catch (BindException $e) {
             $authenticated = false;
-        } finally {
-            if (!$bindAsUser) {
-                $this->bindAsConfiguredUser();
-            }
-
-            return $authenticated;
         }
+
+        if (!$bindAsUser) {
+            $this->bindAsConfiguredUser();
+        }
+
+        return $authenticated;
     }
 
     /**

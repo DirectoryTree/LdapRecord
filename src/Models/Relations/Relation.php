@@ -6,6 +6,7 @@ use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
+use Tightenco\Collect\Support\Arr;
 
 abstract class Relation
 {
@@ -140,21 +141,62 @@ abstract class Relation
     }
 
     /**
-     * Determine if the relationship contains the model or exists.
+     * Determine if the relation contains the model or any models.
      *
-     * @param Model|null $related
+     * @param Model|string|null $model
      *
      * @return bool
      */
-    public function exists(Model $related = null)
+    public function exists($model = null)
     {
-        if ($related) {
-            return $this->get()->filter(function (Model $model) use ($related) {
-                return $model->is($related);
+        $related = $this->get('objectclass');
+
+        if ($model) {
+            return $related->filter(function (Model $related) use ($model) {
+                return $this->compareModelWithRelated($model, $related);
             })->isNotEmpty();
         }
 
-        return $this->get('objectclass')->isNotEmpty();
+        return $related->isNotEmpty();
+    }
+
+    /**
+     * Determine if any of the models are contained in the relation.
+     *
+     * @param Model|string|Collection|array $models
+     * 
+     * @return bool
+     */
+    public function contains($models)
+    {
+        $related = $this->get('objectclass');
+
+        foreach (Arr::wrap($models) as $model) {
+            $exists = $related->contains(function (Model $related) use ($model) {
+                return $this->compareModelWithRelated($model, $related);
+            });
+            
+            if ($exists) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Compare the related model with the given.
+     *
+     * @param Model|string $model
+     * @param Model        $related
+     *
+     * @return bool
+     */
+    protected function compareModelWithRelated($model, $related)
+    {
+        return is_string($model)
+            ? $related->getDn() == $model
+            : $related->is($model);
     }
 
     /**

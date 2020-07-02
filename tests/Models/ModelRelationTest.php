@@ -109,6 +109,40 @@ class ModelRelationTest extends TestCase
         $this->assertEquals(['foo', 'objectclass'], $relation->getQuery()->getSelects());
     }
 
+    public function test_exists()
+    {
+        $relation = (new ModelRelationTestStub())->relation();
+
+        $this->assertFalse($relation->exists());
+
+        $related = new Entry();
+        $related->setDn('foo');
+
+        $relation->setResults([$related]);
+
+        $this->assertTrue($relation->exists());
+        $this->assertTrue($relation->exists('foo'));
+        $this->assertFalse($relation->exists('bar'));
+    }
+
+    public function test_contains()
+    {
+        $relation = (new ModelRelationTestStub())->relation();
+
+        $this->assertFalse($relation->contains('foo'));
+
+        $related = new Entry();
+        $related->setDn('foo');
+
+        $relation->setResults([$related]);
+
+        $this->assertTrue($relation->contains('foo'));
+        $this->assertTrue($relation->contains($related));
+        $this->assertTrue($relation->contains(['foo', 'bar']));
+        $this->assertTrue($relation->contains([$related, 'bar']));
+        $this->assertFalse($relation->contains(['bar', 'baz']));
+    }
+
     public function test_relation_default_model_uses_parent_connection()
     {
         Container::addConnection(new Connection(), 'other');
@@ -173,9 +207,18 @@ class ModelRelationTest extends TestCase
 
 class RelationTestStub extends Relation
 {
+    protected $results = [];
+
     public function getResults()
     {
-        return $this->parent->newCollection();
+        return $this->parent->newCollection($this->results);
+    }
+
+    public function setResults($results)
+    {
+        $this->results = $results;
+
+        return $this;
     }
 }
 

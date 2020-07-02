@@ -24,163 +24,145 @@ class ModelHasManyTest extends TestCase
 
     public function test_relation_name_is_guessed()
     {
-        $this->assertEquals(
-            'relation',
-            (new ModelHasManyStub())->relation(m::mock(Builder::class))->getRelationName()
-        );
+        $this->assertEquals('relation', (new ModelHasManyStub())->relation()->getRelationName());
     }
 
     public function test_get_results()
     {
-        $query = m::mock(Builder::class);
-        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
-        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([new Entry()]));
+        $relation = $this->getRelation();
 
-        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
-        $relation = $model->relation($query);
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+
+        $query = $relation->getQuery();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
+        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related = new Entry()]));
 
         $collection = $relation->getResults();
 
-        $this->assertEquals(new Entry(), $collection->first());
+        $this->assertEquals($related, $collection->first());
         $this->assertInstanceOf(Collection::class, $collection);
     }
 
     public function test_get_recursive_results()
     {
+        $relation = $this->getRelation();
+
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+
         $related = m::mock(ModelHasManyStub::class);
-        $related->shouldReceive('getDn')->once()->andReturn('baz');
-        $related->shouldReceive('relation')->once()->withNoArgs()->andReturnSelf();
-        $related->shouldReceive('get')->once()->andReturn(new Collection());
-        $related->shouldReceive('getAttribute')->once()->withArgs(['objectclass'])->andReturnNull();
+        $related->shouldReceive('getDn')->andReturn('bar');
+        $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
         $related->shouldReceive('convert')->once()->andReturnSelf();
+        $related->shouldReceive('relation')->once()->andReturnSelf();
         $related->shouldReceive('recursive')->once()->andReturnSelf();
+        $related->shouldReceive('get')->once()->andReturn(new Collection([$child = new Entry()]));
 
-        $query = m::mock(Builder::class);
-        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
+        $query = $relation->getQuery();
+        $query->shouldReceive('select')->once();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([$related]));
+        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
-        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
-        $relation = $model->relation($query);
+        $results = $relation->recursive()->get();
 
-        $collection = $relation->recursive()->getResults();
-
-        $this->assertEquals($related, $collection->first());
-        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertEquals($related, $results->first());
+        $this->assertCount(2, $results);
     }
 
     public function test_page_size_can_be_set()
     {
-        $related = m::mock(ModelHasManyStub::class);
-        $related->shouldReceive('getDn')->once()->andReturn('baz');
-        $related->shouldReceive('relation')->once()->withNoArgs()->andReturnSelf();
-        $related->shouldReceive('get')->once()->andReturn(new Collection());
-        $related->shouldReceive('getAttribute')->once()->withArgs(['objectclass'])->andReturnNull();
-        $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('recursive')->once()->andReturnSelf();
+        $relation = $this->getRelation();
 
-        $query = m::mock(Builder::class);
-        $query->shouldReceive('escape')->once()->withArgs(['bar'])->andReturn(new EscapedValue('bar'));
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+
+        $relation->setPageSize(500);
+
+        $query = $relation->getQuery();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withArgs([500])->andReturn(new Collection([$related]));
+        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->with(500)->andReturn(new Collection());
 
-        $model = (new ModelHasManyStub())->setRawAttributes(['dn' => 'bar']);
-        $relation = $model->relation($query);
-
-        $collection = $relation->recursive()->setPageSize(500)->getResults();
-
-        $this->assertEquals($related, $collection->first());
-        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertInstanceOf(Collection::class, $relation->getResults());
     }
 
     public function test_attach()
     {
-        $model = new ModelHasManyStub();
-        $model->setDn('baz');
+        $relation = $this->getRelation();
 
-        $related = m::mock(Entry::class);
-        $related->shouldReceive('getAttribute')->once()->withArgs(['foo'])->andReturnNull();
-        $related->shouldReceive('setAttribute')->once()->withArgs(['foo', ['baz']])->andReturnSelf();
-        $related->shouldReceive('save')->once()->withNoArgs()->andReturnSelf();
+        $parent = $relation->getParent();
+        $parent->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
 
-        $this->assertEquals(
-            $model->relation()->attach($related),
-            $related
-        );
-    }
+        $related = new Entry();
+        $related->setRawAttributes(['dn' => 'foo']);
 
-    public function test_attach_with_already_attached_model()
-    {
-        $model = new ModelHasManyStub();
-        $model->setDn('baz');
-
-        $related = m::mock(Entry::class);
-        $related->shouldReceive('getAttribute')->once()->withArgs(['foo'])->andReturn(['baz']);
-        $related->shouldNotReceive('setAttribute');
-
-        $this->assertEquals(
-            $model->relation()->attach($related),
-            $related
-        );
+        $this->assertEquals($relation->attach($related), $related);
     }
 
     public function test_detach()
     {
-        $model = new ModelHasManyStub();
-        // This DN will be missing from the below setAttribute call
-        // since we are detaching it from the related model.
-        $model->setDn('baz');
+        $relation = $this->getRelation();
 
-        $related = m::mock(Entry::class)->makePartial();
-        $related->foo = ['baz', 'bar'];
-        $related->shouldReceive('setAttribute')->once()->withArgs(['foo', [1 => 'bar']])->andReturnSelf();
-        $related->shouldReceive('save')->once()->withNoArgs()->andReturnSelf();
+        $parent = $relation->getParent();
+        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
 
-        $this->assertEquals(
-            $model->relation()->detach($related),
-            $related
-        );
+        $related = new Entry();
+        $related->setRawAttributes(['dn' => 'foo']);
+
+        $this->assertEquals($relation->detach($related), $related);
     }
 
-    public function test_detaching_all_related_models()
+    public function test_detaching_all()
     {
-        $model = new ModelHasManyStub();
-        $model->setDn('baz');
+        $relation = $this->getRelation();
+
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('getAttribute')->once()->withArgs(['foo'])->andReturn(['baz']);
-        $related->shouldReceive('getAttribute')->once()->withArgs(['objectclass'])->andReturnNull();
+        $related->shouldReceive('getDn')->andReturn('bar');
+        $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
         $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('setAttribute')->once()->withArgs(['foo', []])->andReturnSelf();
-        $related->shouldReceive('save')->once()->withNoArgs()->andReturnSelf();
 
-        $query = m::mock(Builder::class);
-        $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('escape')->once()->withArgs(['baz'])->andReturn(new EscapedValue('baz'));
+        $query = $relation->getQuery();
+        $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->withArgs(['foo', '=', EscapedValue::class])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withArgs([1000])->andReturn(new Collection([$related]));
+        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
-        $this->assertEquals(
-            $model->relation($query)->detachAll(),
-            new Collection([$related])
-        );
+        $this->assertEquals($relation->detachAll(), new Collection([$related]));
+    }
+
+    protected function getRelation()
+    {
+        $mockBuilder = m::mock(Builder::class);
+        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
+
+        $parent = m::mock(ModelHasManyStub::class);
+        $parent->shouldReceive('getConnectionName')->andReturn('default');
+
+        return new HasMany($mockBuilder, $parent, Entry::class, 'foo', 'member', 'relation');
     }
 }
 
 class ModelHasManyStub extends Model
 {
-    public function relation($mockBuilder = null)
+    public function relation()
     {
-        $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
-
-        return new HasMany($mockBuilder, $this, Entry::class, 'foo', 'dn', 'relation');
+        return $this->hasMany(Entry::class, 'foo');
     }
 }

@@ -13,51 +13,49 @@ class ModelHasManyUsingTest extends TestCase
 {
     public function test_attach()
     {
-        $model = new ModelHasManyUsingStub();
-        $model->setDn('baz');
+        $relation = $this->getRelation();
 
-        $related = m::mock(Entry::class);
-        $related->shouldReceive('getDn')->once()->andReturn('foo');
+        $using = $relation->getParent();
+        $using->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
 
-        $this->assertEquals(
-            $model->relation()->attach($related),
-            $related
-        );
-        $this->assertEquals(['member' => ['foo']], $model->getAttributes());
+        $relation->using($relation->getParent(), 'member');
+
+        $related = new Entry();
+        $related->setRawAttributes(['dn' => 'foo']);
+
+        $this->assertEquals($relation->attach($related), $related);
     }
 
     public function test_detach()
     {
-        $model = new ModelHasManyUsingStub();
-        $model->setDn('baz');
-        $model->setAttribute('member', ['foo']);
+        $relation = $this->getRelation();
 
-        $related = m::mock(Entry::class)->makePartial();
-        $related->shouldReceive('getDn')->once()->andReturn('foo');
+        $using = $relation->getParent();
+        $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
 
-        $this->assertEquals(
-            $model->relation()->detach($related),
-            $related
-        );
-        $this->assertEquals(['member' => []], $model->getAttributes());
+        $relation->using($relation->getParent(), 'member');
+
+        $related = new Entry();
+        $related->setRawAttributes(['dn' => 'foo']);
+
+        $this->assertEquals($relation->detach($related), $related);
+    }
+
+    protected function getRelation()
+    {
+        $mockBuilder = m::mock(Builder::class);
+        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
+
+        $parent = m::mock(ModelHasManyUsingStub::class);
+        $parent->shouldReceive('getConnectionName')->andReturn('default');
+
+        return new HasMany($mockBuilder, $parent, Entry::class, 'foo', 'member', 'relation');
     }
 }
 
 class ModelHasManyUsingStub extends Model
 {
-    public function relation($mockBuilder = null)
-    {
-        $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
-
-        return (new HasMany($mockBuilder, $this, Entry::class, 'foo', 'dn', 'relation'))
-            ->using($this, 'member');
-    }
-
-    public function save(array $attributes = [])
-    {
-        return true;
-    }
+    //
 }

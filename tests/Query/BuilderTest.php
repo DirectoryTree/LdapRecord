@@ -976,7 +976,7 @@ class BuilderTest extends TestCase
 
         $ldap = $b->getConnection()->getLdapConnection();
         $ldap->shouldReceive('isBound')->andReturnTrue();
-        $ldap->shouldReceive('setOption')->once()->withArgs([LDAP_OPT_SERVER_CONTROLS, []]);
+        $ldap->shouldReceive('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, []);
         $ldap->shouldReceive('search')->once()->andReturnNull();
 
         $b->get();
@@ -1006,7 +1006,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldReceive('add')->once()->withArgs(['cn=John Doe', ['objectclass' => ['foo']]])->andReturnTrue();
+            ->shouldReceive('add')->once()->with('cn=John Doe', ['objectclass' => ['foo']])->andReturnTrue();
 
         $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));
     }

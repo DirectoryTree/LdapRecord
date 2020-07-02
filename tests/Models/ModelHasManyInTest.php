@@ -24,8 +24,8 @@ class ModelHasManyInTest extends TestCase
     public function test_get()
     {
         $query = m::mock(Builder::class);
-        $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('find')->once()->withArgs(['baz'])->andReturn(new Entry());
+        $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
+        $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry());
 
         $model = new ModelHasManyInStub();
         $model->bar = ['baz'];
@@ -39,8 +39,8 @@ class ModelHasManyInTest extends TestCase
     public function test_get_with_alternate_foreign_key()
     {
         $query = m::mock(Builder::class);
-        $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('findBy')->once()->withArgs(['foreign', 'baz'])->andReturn(new Entry());
+        $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
+        $query->shouldReceive('findBy')->once()->with('foreign', 'baz')->andReturn(new Entry());
 
         $model = new ModelHasManyInStub();
         $model->bar = ['baz'];
@@ -59,7 +59,7 @@ class ModelHasManyInStub extends Model
         $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
+        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 
         return new HasManyIn($mockBuilder, $this, Entry::class, 'bar', $foreignKey, 'relation');
     }

@@ -24,8 +24,8 @@ class ModelHasOneTest extends TestCase
     public function test_get()
     {
         $query = m::mock(Builder::class);
-        $query->shouldReceive('select')->once()->withArgs([['*']])->andReturnSelf();
-        $query->shouldReceive('find')->once()->withArgs(['baz'])->andReturn(new Entry());
+        $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
+        $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry());
 
         $model = new ModelHasOneStub();
         $model->bar = ['baz'];
@@ -69,7 +69,7 @@ class ModelHasOneStub extends Model
         $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('setModel')->once()->withArgs([Entry::class])->andReturnSelf();
+        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 
         return new HasOne($mockBuilder, $this, Entry::class, 'bar', $foreignKey);
     }

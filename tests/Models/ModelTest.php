@@ -675,7 +675,7 @@ class ModelRenameTestStub extends Model
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')
-            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org', true])
+            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org', true)
             ->once()
             ->andReturnTrue();
 
@@ -689,7 +689,7 @@ class ModelRenameWithParentTestStub extends Model
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')
-            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org', true])
+            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org', true)
             ->once()
             ->andReturnTrue();
 
@@ -703,7 +703,7 @@ class ModelMoveTestStub extends Model
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')
-            ->withArgs(['cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org', true])
+            ->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org', true)
             ->once()
             ->andReturnTrue();
 

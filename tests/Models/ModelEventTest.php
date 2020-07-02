@@ -33,10 +33,10 @@ class ModelEventTest extends TestCase
     public function test_save_fires_saving_and_create_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class)->makePartial();
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Creating::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Created::class]);
+        $dispatcher->shouldReceive('fire')->once()->with(Saving::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Creating::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Created::class);
         Container::setEventDispatcher($dispatcher);
 
         $model = new ModelEventSaveStub();
@@ -46,10 +46,10 @@ class ModelEventTest extends TestCase
     public function test_create_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Creating::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Created::class]);
+        $dispatcher->shouldReceive('fire')->once()->with(Saving::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Creating::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Created::class);
         Container::setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();
@@ -70,10 +70,10 @@ class ModelEventTest extends TestCase
     public function test_updating_model_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saving::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Updating::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Saved::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Updated::class]);
+        $dispatcher->shouldReceive('fire')->once()->with(Saving::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Updating::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Updated::class);
         Container::setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();
@@ -93,8 +93,8 @@ class ModelEventTest extends TestCase
     public function test_deleting_model_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Deleting::class]);
-        $dispatcher->shouldReceive('fire')->once()->withArgs([Deleted::class]);
+        $dispatcher->shouldReceive('fire')->once()->with(Deleting::class);
+        $dispatcher->shouldReceive('fire')->once()->with(Deleted::class);
         Container::setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();

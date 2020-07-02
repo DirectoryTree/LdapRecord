@@ -36,8 +36,8 @@ class GuardTest extends TestCase
     public function test_attempt()
     {
         $config = m::mock(DomainConfiguration::class);
-        $config->shouldReceive('get')->withArgs(['username'])->once();
-        $config->shouldReceive('get')->withArgs(['password'])->once();
+        $config->shouldReceive('get')->with('username')->once();
+        $config->shouldReceive('get')->with('password')->once();
 
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->twice()->andReturn(false);
@@ -54,7 +54,7 @@ class GuardTest extends TestCase
 
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(true);
 
         $guard = new Guard($ldap, $config);
 
@@ -67,7 +67,7 @@ class GuardTest extends TestCase
 
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['username', 'password'])->andReturn(false);
+        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(false);
         $ldap->shouldReceive('getLastError')->once()->andReturn('error');
         $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'));
         $ldap->shouldReceive('errNo')->once()->andReturn(1);
@@ -81,12 +81,12 @@ class GuardTest extends TestCase
     public function test_bind_as_administrator()
     {
         $config = m::mock(DomainConfiguration::class);
-        $config->shouldReceive('get')->withArgs(['username'])->once()->andReturn('admin');
-        $config->shouldReceive('get')->withArgs(['password'])->once()->andReturn('password');
+        $config->shouldReceive('get')->with('username')->once()->andReturn('admin');
+        $config->shouldReceive('get')->with('password')->once()->andReturn('password');
 
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['admin', 'password'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->with('admin', 'password')->andReturn(true);
 
         $guard = new Guard($ldap, $config);
 
@@ -97,7 +97,7 @@ class GuardTest extends TestCase
     {
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
 
         $events = new Dispatcher();
 
@@ -132,7 +132,7 @@ class GuardTest extends TestCase
     {
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
 
         $events = new Dispatcher();
 
@@ -185,7 +185,7 @@ class GuardTest extends TestCase
     {
         $ldap = m::mock(Ldap::class);
         $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->withArgs(['johndoe', 'secret'])->andReturn(true);
+        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
 
         $events = new Dispatcher();
 

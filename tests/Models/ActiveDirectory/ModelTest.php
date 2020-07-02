@@ -71,7 +71,7 @@ class TestModelRestoreStub extends Entry
     public function newQuery()
     {
         $query = m::mock(Builder::class);
-        $query->shouldReceive('update')->once()->withArgs([
+        $query->shouldReceive('update')->once()->with(
             'CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com', [
                 [
                     'attrib'  => 'isdeleted',
@@ -82,8 +82,7 @@ class TestModelRestoreStub extends Entry
                     'modtype' => LDAP_MODIFY_BATCH_ADD,
                     'values'  => ['CN=John Doe,DC=local,DC=com'],
                 ],
-            ],
-        ])->andReturnTrue();
+            ])->andReturnTrue();
 
         return $query;
     }

@@ -51,7 +51,7 @@ class ModelHasManyUsingTest extends TestCase
         $parent = m::mock(ModelHasManyUsingStub::class);
         $parent->shouldReceive('getConnectionName')->andReturn('default');
 
-        return new HasMany($mockBuilder, $parent, Entry::class, 'foo', 'member', 'relation');
+        return new HasMany($mockBuilder, $parent, Entry::class, 'member', 'dn', 'relation');
     }
 }
 

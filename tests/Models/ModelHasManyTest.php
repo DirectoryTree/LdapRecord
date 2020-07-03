@@ -32,13 +32,13 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related = new Entry()]));
 
         $collection = $relation->getResults();
@@ -52,7 +52,7 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
         $related = m::mock(ModelHasManyStub::class);
@@ -67,7 +67,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('select')->once();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
         $results = $relation->recursive()->get();
@@ -81,7 +81,7 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
         $relation->setPageSize(500);
@@ -89,7 +89,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(500)->andReturn(new Collection());
 
         $this->assertInstanceOf(Collection::class, $relation->getResults());
@@ -100,10 +100,10 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
+        $parent->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnSelf();
 
         $related = new Entry();
-        $related->setRawAttributes(['dn' => 'foo']);
+        $related->setRawAttributes(['dn' => 'bar']);
 
         $this->assertEquals($relation->attach($related), $related);
     }
@@ -113,10 +113,10 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
+        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
 
         $related = new Entry();
-        $related->setRawAttributes(['dn' => 'foo']);
+        $related->setRawAttributes(['dn' => 'bar']);
 
         $this->assertEquals($relation->detach($related), $related);
     }
@@ -126,7 +126,7 @@ class ModelHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('getFirstAttribute')->with('member')->andReturn('foo');
+        $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
         $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
 
@@ -139,7 +139,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('foo', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
         $this->assertEquals($relation->detachAll(), new Collection([$related]));
@@ -155,7 +155,7 @@ class ModelHasManyTest extends TestCase
         $parent = m::mock(ModelHasManyStub::class);
         $parent->shouldReceive('getConnectionName')->andReturn('default');
 
-        return new HasMany($mockBuilder, $parent, Entry::class, 'foo', 'member', 'relation');
+        return new HasMany($mockBuilder, $parent, Entry::class, 'member', 'dn', 'relation');
     }
 }
 

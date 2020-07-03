@@ -23,59 +23,59 @@ class ModelHasOneTest extends TestCase
 
     public function test_get()
     {
-        $query = m::mock(Builder::class);
+        $relation = $this->getRelation();
+
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getFirstAttribute')->once()->with('manager')->andReturn('foo');
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection([$related = new Entry()]));
+
+        $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
-        $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry());
+        $query->shouldReceive('find')->once()->with('foo')->andReturn(new Entry());
 
-        $model = new ModelHasOneStub();
-        $model->bar = ['baz'];
-
-        $collection = $model->relation($query)->get();
-
-        $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertEquals(new Entry(), $collection->first());
+        $this->assertEquals($related, $relation->get()->first());
     }
 
     public function test_attach()
     {
-        $model = new ModelHasOneStub();
+        $relation = $this->getRelation();
 
         $related = new Entry();
-        $related->setDn('dn');
+        $related->setDn('foo');
 
-        $this->assertEquals(
-            $related,
-            $model->relation()->attach($related)
-        );
-        $this->assertEquals(['bar' => ['dn']], $model->getDirty());
+        $parent = $relation->getParent();
+        $parent->shouldReceive('setAttribute')->once()->with('manager', 'foo')->andReturnSelf();
+        $parent->shouldReceive('save')->once()->andReturnTrue();
+
+        $this->assertEquals($related, $relation->attach($related));
     }
 
     public function test_detach()
     {
-        $model = new ModelHasOneStub();
-        $model->bar = ['dn'];
+        $relation = $this->getRelation();
 
-        $model->relation()->detach();
-        $this->assertEquals([], $model->bar);
+        $parent = $relation->getParent();
+        $parent->shouldReceive('setAttribute')->once()->with('manager', null)->andReturnSelf();
+        $parent->shouldReceive('save')->once()->andReturnTrue();
 
-        $this->assertEquals(['bar' => []], $model->getDirty());
+        $this->assertTrue($relation->detach());
+    }
+
+    protected function getRelation()
+    {
+        $mockBuilder = m::mock(Builder::class);
+        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
+
+        $parent = m::mock(ModelHasOneStub::class);
+        $parent->shouldReceive('getConnectionName')->andReturn('default');
+
+        return new HasOne($mockBuilder, $parent, Entry::class, 'manager', 'dn');
     }
 }
 
 class ModelHasOneStub extends Model
 {
-    public function relation($mockBuilder = null, $foreignKey = 'dn')
-    {
-        $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
-        $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
-
-        return new HasOne($mockBuilder, $this, Entry::class, 'bar', $foreignKey);
-    }
-
-    public function save(array $attributes = [])
-    {
-        return true;
-    }
+    //
 }

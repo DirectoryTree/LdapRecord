@@ -3,10 +3,14 @@
 namespace LdapRecord\Models\Relations;
 
 use LdapRecord\Models\Model;
+use LdapRecord\DetectsErrors;
 use LdapRecord\Query\Collection;
+use LdapRecord\LdapRecordException;
 
 class HasMany extends OneToMany
 {
+    use DetectsErrors;
+
     /**
      * The model to use for attaching / detaching.
      *
@@ -139,13 +143,13 @@ class HasMany extends OneToMany
      */
     public function attach(Model $model)
     {
-        $foreign = $this->getForeignValueFromModel($this->parent);
+        return $this->attemptFailableOperation(function () use ($model) {
+            $foreign = $this->getForeignValueFromModel($this->parent);
 
-        $attached = $this->using
-            ? $this->using->createAttribute($this->usingKey, $foreign)
-            : $model->createAttribute($this->relationKey, $foreign);
-
-        return $attached ? $model : $attached;
+            return $this->using
+                ? $this->using->createAttribute($this->usingKey, $foreign)
+                : $model->createAttribute($this->relationKey, $foreign);
+        }, $bypass = 'Already exists', $model);
     }
 
     /**
@@ -173,13 +177,39 @@ class HasMany extends OneToMany
      */
     public function detach(Model $model)
     {
-        $foreign = $this->getForeignValueFromModel($this->parent);
+        return $this->attemptFailableOperation(function () use ($model) {
+            $foreign = $this->getForeignValueFromModel($this->parent);
 
-        $detached = $this->using
-            ? $this->using->deleteAttribute([$this->usingKey => $foreign])
-            : $model->deleteAttribute([$this->relationKey => $foreign]);
+            return $this->using
+                ? $this->using->deleteAttribute([$this->usingKey => $foreign])
+                : $model->deleteAttribute([$this->relationKey => $foreign]);
+        }, $bypass = 'Server is unwilling to perform', $model);
+    }
 
-        return $detached ? $model : $detached;
+    /**
+     * Attempt a failable operation and return the value if successful.
+     *
+     * If a bypassable exception is encountered, the value will be returned.
+     *
+     * @param callable $operation
+     * @param string   $bypass
+     * @param mixed    $value
+     *
+     * @throws LdapRecordException
+     *
+     * @return mixed
+     */
+    protected function attemptFailableOperation($operation, $bypass, $value)
+    {
+        try {
+            return $operation() ? $value : false;
+        } catch (LdapRecordException $e) {
+            if ($this->errorContainsMessage($e->getMessage(), $bypass)) {
+                return $value;
+            }
+
+            throw $e;
+        }
     }
 
     /**

@@ -99,11 +99,9 @@ class ModelHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $parent = $relation->getParent();
-        $parent->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnSelf();
-
-        $related = new Entry();
-        $related->setRawAttributes(['dn' => 'bar']);
+        $related = m::mock(Entry::class);
+        $related->shouldReceive('getDn')->andReturn('bar');
+        $related->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnTrue();
 
         $this->assertEquals($relation->attach($related), $related);
     }
@@ -112,11 +110,9 @@ class ModelHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $parent = $relation->getParent();
-        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
-
-        $related = new Entry();
-        $related->setRawAttributes(['dn' => 'bar']);
+        $related = m::mock(Entry::class);
+        $related->shouldReceive('getDn')->andReturn('bar');
+        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnTrue();
 
         $this->assertEquals($relation->detach($related), $related);
     }
@@ -128,12 +124,12 @@ class ModelHasManyTest extends TestCase
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
-        $parent->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
 
         $related = m::mock(Entry::class);
         $related->shouldReceive('getDn')->andReturn('bar');
         $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
         $related->shouldReceive('convert')->once()->andReturnSelf();
+        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnTrue();
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();

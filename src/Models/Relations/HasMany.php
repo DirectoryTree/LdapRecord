@@ -133,19 +133,17 @@ class HasMany extends OneToMany
     /**
      * Attach a model to the relation.
      *
-     * @param Model|string $model
+     * @param Model $model
      *
      * @return Model|false
      */
-    public function attach($model)
+    public function attach(Model $model)
     {
-        $foreign = $model instanceof Model
-            ? $this->getForeignValueFromModel($model)
-            : $model;
+        $foreign = $this->getForeignValueFromModel($model);
 
         $attached = $this->using
             ? $this->using->createAttribute($this->usingKey, $foreign)
-            : $this->parent->createAttribute($this->relationKey, $foreign);
+            : $model->createAttribute($this->relationKey, $foreign);
 
         return $attached ? $model : $attached;
     }
@@ -169,19 +167,17 @@ class HasMany extends OneToMany
     /**
      * Detach the model from the relation.
      *
-     * @param Model|string $model
+     * @param Model $model
      *
      * @return Model|false
      */
-    public function detach($model)
+    public function detach(Model $model)
     {
-        $foreign = $model instanceof Model
-            ? $this->getForeignValueFromModel($model)
-            : $model;
+        $foreign = $this->getForeignValueFromModel($model);
 
         $detached = $this->using
             ? $this->using->deleteAttribute([$this->usingKey => $foreign])
-            : $this->parent->deleteAttribute([$this->relationKey => $foreign]);
+            : $model->deleteAttribute([$this->relationKey => $foreign]);
 
         return $detached ? $model : $detached;
     }

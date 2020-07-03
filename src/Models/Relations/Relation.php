@@ -265,7 +265,7 @@ abstract class Relation
     }
 
     /**
-     * Get the class of the default model.
+     * Get the class name of the default model.
      *
      * @return string
      */

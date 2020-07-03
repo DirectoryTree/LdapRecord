@@ -169,11 +169,11 @@ class HasMany extends OneToMany
     /**
      * Detach the model from the relation.
      *
-     * @param Model $model
+     * @param Model|string $model
      *
      * @return Model|false
      */
-    public function detach(Model $model)
+    public function detach($model)
     {
         $foreign = $model instanceof Model
             ? $this->getForeignValueFromModel($model)

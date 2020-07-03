@@ -99,9 +99,11 @@ class ModelHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
 
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getDn')->once()->andReturn('foo');
+
         $related = m::mock(Entry::class);
-        $related->shouldReceive('getDn')->andReturn('bar');
-        $related->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnTrue();
+        $related->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $this->assertEquals($relation->attach($related), $related);
     }
@@ -110,9 +112,11 @@ class ModelHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
 
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getDn')->andReturn('foo');
+
         $related = m::mock(Entry::class);
-        $related->shouldReceive('getDn')->andReturn('bar');
-        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnTrue();
+        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
 
         $this->assertEquals($relation->detach($related), $related);
     }
@@ -126,10 +130,9 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('getDn')->andReturn('bar');
         $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
         $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnTrue();
+        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();

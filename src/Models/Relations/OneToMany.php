@@ -98,6 +98,26 @@ abstract class OneToMany extends Relation
     }
 
     /**
+     * Execute the callback excluding the merged query result.
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    protected function onceWithoutMerging($callback)
+    {
+        $merging = $this->with;
+
+        $this->with = null;
+
+        $result = $callback();
+
+        $this->with = $merging;
+
+        return $result;
+    }
+
+    /**
      * Get the relation name.
      *
      * @return string

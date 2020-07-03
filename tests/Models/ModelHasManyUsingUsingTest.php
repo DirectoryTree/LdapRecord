@@ -16,6 +16,7 @@ class ModelHasManyUsingTest extends TestCase
         $relation = $this->getRelation();
 
         $using = $relation->getParent();
+        $using->shouldReceive('getDn')->once()->andReturn('foo');
         $using->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');
@@ -31,6 +32,7 @@ class ModelHasManyUsingTest extends TestCase
         $relation = $this->getRelation();
 
         $using = $relation->getParent();
+        $using->shouldReceive('getDn')->once()->andReturn('foo');
         $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');

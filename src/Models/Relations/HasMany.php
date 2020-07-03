@@ -139,7 +139,7 @@ class HasMany extends OneToMany
      */
     public function attach(Model $model)
     {
-        $foreign = $this->getForeignValueFromModel($model);
+        $foreign = $this->getForeignValueFromModel($this->parent);
 
         $attached = $this->using
             ? $this->using->createAttribute($this->usingKey, $foreign)
@@ -173,7 +173,7 @@ class HasMany extends OneToMany
      */
     public function detach(Model $model)
     {
-        $foreign = $this->getForeignValueFromModel($model);
+        $foreign = $this->getForeignValueFromModel($this->parent);
 
         $detached = $this->using
             ? $this->using->deleteAttribute([$this->usingKey => $foreign])
@@ -189,8 +189,10 @@ class HasMany extends OneToMany
      */
     public function detachAll()
     {
-        return $this->get()->each(function (Model $model) {
-            $this->detach($model);
+        return $this->onceWithoutMerging(function () {
+            return $this->get()->each(function (Model $model) {
+                $this->detach($model);
+            });
         });
     }
 }

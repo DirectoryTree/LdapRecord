@@ -412,10 +412,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function applyObjectClassScopes(Builder $query)
     {
-        foreach (static::$objectClasses as $key => $objectClass) {
-            $attribute = is_string($key) ? $key : 'objectclass';
-
-            $query->where($attribute, $objectClass);
+        foreach (static::$objectClasses as $objectClass) {
+            $query->where('objectclass', '=', $objectClass);
         }
     }
 

@@ -317,6 +317,16 @@ abstract class Relation
     }
 
     /**
+     * Get the relation parents foreign value.
+     *
+     * @return string
+     */
+    protected function getParentForeignValue()
+    {
+        return $this->getForeignValueFromModel($this->parent);
+    }
+
+    /**
      * Get the foreign key value from the model.
      *
      * @param Model $model

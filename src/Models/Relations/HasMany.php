@@ -137,20 +137,24 @@ class HasMany extends OneToMany
     /**
      * Attach a model to the relation.
      *
-     * @param Model $model
+     * @param Model|string $model
      *
-     * @return Model|false
+     * @return Model|string|false
      */
-    public function attach(Model $model)
+    public function attach($model)
     {
         return $this->attemptFailableOperation(function () use ($model) {
-            $foreign = $this->using
-                ? $this->getForeignValueFromModel($model)
-                : $this->getForeignValueFromModel($this->parent);
+            $foreign = $this->getAttachableForeignValue($model);
 
-            return $this->using
-                ? $this->using->createAttribute($this->usingKey, $foreign)
-                : $model->createAttribute($this->relationKey, $foreign);
+            if ($this->using) {
+                return $this->using->createAttribute($this->usingKey, $foreign);
+            }
+
+            if (! $model instanceof Model) {
+                $model = $this->getForeignModelByValue($model);
+            }
+
+            return $model->createAttribute($this->relationKey, $foreign);
         }, $bypass = 'Already exists', $model);
     }
 
@@ -173,21 +177,43 @@ class HasMany extends OneToMany
     /**
      * Detach the model from the relation.
      *
-     * @param Model $model
+     * @param Model|string $model
      *
-     * @return Model|false
+     * @return Model|string|false
      */
-    public function detach(Model $model)
+    public function detach($model)
     {
         return $this->attemptFailableOperation(function () use ($model) {
-            $foreign = $this->using
-                ? $this->getForeignValueFromModel($model)
-                : $this->getForeignValueFromModel($this->parent);
+            $foreign = $this->getAttachableForeignValue($model);
 
-            return $this->using
-                ? $this->using->deleteAttribute([$this->usingKey => $foreign])
-                : $model->deleteAttribute([$this->relationKey => $foreign]);
+            if ($this->using) {
+                return $this->using->deleteAttribute([$this->usingKey => $foreign]);
+            }
+
+            if (! $model instanceof Model) {
+                $model = $this->getForeignModelByValue($model);
+            }
+
+            return $model->deleteAttribute([$this->relationKey => $foreign]);
         }, $bypass = 'Server is unwilling to perform', $model);
+    }
+
+    /**
+     * Get the attachable foreign value from the model.
+     *
+     * @param Model|string $model
+     *
+     * @return string
+     */
+    protected function getAttachableForeignValue($model)
+    {
+        if ($model instanceof Model) {
+            return $this->using
+                ? $this->getForeignValueFromModel($model)
+                : $this->getParentForeignValue();
+        }
+
+        return $this->using ? $model : $this->getParentForeignValue();
     }
 
     /**

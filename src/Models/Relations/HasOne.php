@@ -27,7 +27,7 @@ class HasOne extends Relation
      *
      * @param Model|string $model
      *
-     * @return Model|false
+     * @return Model|string|false
      */
     public function attach($model)
     {

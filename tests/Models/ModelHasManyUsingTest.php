@@ -17,6 +17,7 @@ class ModelHasManyUsingTest extends TestCase
 
         $using = $relation->getParent();
         $using->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
+        $using->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');
 
@@ -24,6 +25,7 @@ class ModelHasManyUsingTest extends TestCase
         $related->setRawAttributes(['dn' => 'foo']);
 
         $this->assertEquals($relation->attach($related), $related);
+        $this->assertEquals($relation->attach('bar'), 'bar');
     }
 
     public function test_detach()
@@ -32,6 +34,7 @@ class ModelHasManyUsingTest extends TestCase
 
         $using = $relation->getParent();
         $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
+        $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');
 
@@ -39,6 +42,7 @@ class ModelHasManyUsingTest extends TestCase
         $related->setRawAttributes(['dn' => 'foo']);
 
         $this->assertEquals($relation->detach($related), $related);
+        $this->assertEquals($relation->detach('bar'), 'bar');
     }
 
     protected function getRelation()

@@ -13,33 +13,33 @@ class ModelScopeTest extends TestCase
 {
     protected function setUp(): void
     {
-        ModelScopeTestStub::clearBootedModels();
+        ModelGlobalScopeTestStub::clearBootedModels();
     }
 
     public function test_scopes_can_be_added_to_models()
     {
-        $model = new ModelScopeTestStub();
+        $model = new ModelGlobalScopeTestStub();
         $this->assertInstanceOf(\Closure::class, $model->getGlobalScopes()['foo']);
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
     }
 
     public function test_has_scope()
     {
-        $this->assertFalse(ModelScopeTestStub::hasGlobalScope('foo'));
-        $this->assertFalse(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+        $this->assertFalse(ModelGlobalScopeTestStub::hasGlobalScope('foo'));
+        $this->assertFalse(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
-        new ModelScopeTestStub();
-        $this->assertTrue(ModelScopeTestStub::hasGlobalScope('foo'));
-        $this->assertTrue(ModelScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+        new ModelGlobalScopeTestStub();
+        $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope('foo'));
+        $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
-        $this->assertCount(2, (new ModelScopeTestStub())->getGlobalScopes());
+        $this->assertCount(2, (new ModelGlobalScopeTestStub())->getGlobalScopes());
     }
 
     public function test_scopes_are_applied_to_query()
     {
         Container::addConnection(new Connection());
 
-        $query = (new ModelScopeTestStub())->newQuery()->applyScopes();
+        $query = (new ModelGlobalScopeTestStub())->newQuery()->applyScopes();
 
         $this->assertEquals([
             'field'    => 'foo',
@@ -52,7 +52,7 @@ class ModelScopeTest extends TestCase
     {
         Container::addConnection(new Connection());
 
-        $query = (new ModelScopeTestStub())->newQuery();
+        $query = (new ModelGlobalScopeTestStub())->newQuery();
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([
@@ -66,16 +66,37 @@ class ModelScopeTest extends TestCase
     {
         Container::addConnection(new Connection());
 
-        $query = (new ModelScopeTestStub())->newQuery();
+        $query = (new ModelGlobalScopeTestStub())->newQuery();
         $query->getQuery();
         $query->getQuery();
 
         $this->assertCount(1, $query->filters['and']);
         $this->assertEquals('(foo=bar)', $query->getQuery());
     }
+
+    public function test_local_scopes_can_be_called()
+    {
+        Container::addConnection(new Connection());
+
+        $query = ModelLocalScopeTestStub::fooBar();
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $this->assertCount(1, $query->filters['and']);
+        $this->assertEquals('foo', $query->filters['and'][0]['field']);
+        $this->assertEquals('=', $query->filters['and'][0]['operator']);
+        $this->assertEquals('\62\61\72', $query->filters['and'][0]['value']->get());
+    }
 }
 
-class ModelScopeTestStub extends Model
+class ModelLocalScopeTestStub extends Model
+{
+    public function scopeFooBar($query)
+    {
+        return $query->where('foo', '=', 'bar');
+    }
+}
+
+class ModelGlobalScopeTestStub extends Model
 {
     protected static function boot()
     {

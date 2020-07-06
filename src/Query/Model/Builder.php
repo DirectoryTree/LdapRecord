@@ -41,6 +41,38 @@ class Builder extends BaseBuilder
     protected $appliedScopes = [];
 
     /**
+     * Dynamically handle calls into the query instance.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (method_exists($this->model, $scope = 'scope'.ucfirst($method))) {
+            return $this->callScope([$this->model, $scope], $parameters);
+        }
+
+        return parent::__call($method, $parameters);
+    }
+
+    /**
+     * Apply the given scope on the current builder instance.
+     *
+     * @param callable $scope
+     * @param array    $parameters
+     *
+     * @return mixed
+     */
+    protected function callScope(callable $scope, $parameters = [])
+    {
+        array_unshift($parameters, $this);
+
+        return $scope(...array_values($parameters)) ?? $this;
+    }
+
+    /**
      * Sets the model instance for the model being queried.
      *
      * @param Model $model

@@ -6,6 +6,7 @@ use LdapRecord\Models\Model;
 use LdapRecord\DetectsErrors;
 use LdapRecord\Query\Collection;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\ModelNotFoundException;
 
 class HasMany extends OneToMany
 {
@@ -151,7 +152,7 @@ class HasMany extends OneToMany
             }
 
             if (! $model instanceof Model) {
-                $model = $this->getForeignModelByValue($model);
+                $model = $this->getForeignModelByValueOrFail($model);
             }
 
             return $model->createAttribute($this->relationKey, $foreign);
@@ -191,7 +192,7 @@ class HasMany extends OneToMany
             }
 
             if (! $model instanceof Model) {
-                $model = $this->getForeignModelByValue($model);
+                $model = $this->getForeignModelByValueOrFail($model);
             }
 
             return $model->deleteAttribute([$this->relationKey => $foreign]);
@@ -214,6 +215,24 @@ class HasMany extends OneToMany
         }
 
         return $this->using ? $model : $this->getParentForeignValue();
+    }
+
+    /**
+     * Get the foreign model by the given value, or fail.
+     *
+     * @param string $model
+     *
+     * @throws ModelNotFoundException
+     *
+     * @return Model
+     */
+    protected function getForeignModelByValueOrFail($model)
+    {
+        if (! is_null($model = $this->getForeignModelByValue($model))) {
+            return $model;
+        }
+
+        throw ModelNotFoundException::forQuery($this->query);
     }
 
     /**

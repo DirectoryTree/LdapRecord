@@ -142,20 +142,28 @@ abstract class Relation
     }
 
     /**
-     * Determine if the relation contains the model or any models.
+     * Determine if the relation contains all of the given models or any models.
      *
-     * @param Model|string|null $model
+     * @param Model|string|Collection|array|null $models
      *
      * @return bool
      */
-    public function exists($model = null)
+    public function exists($models = null)
     {
         $related = $this->get('objectclass');
 
-        if ($model) {
-            return $related->filter(function (Model $related) use ($model) {
-                return $this->compareModelWithRelated($model, $related);
-            })->isNotEmpty();
+        if ($models) {
+            foreach (Arr::wrap($models) as $model) {
+                $exists = $related->contains(function (Model $related) use ($model) {
+                    return $this->compareModelWithRelated($model, $related);
+                });
+
+                if (! $exists) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         return $related->isNotEmpty();

@@ -6,6 +6,7 @@ use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Models\Attributes\DistinguishedName;
 use Tightenco\Collect\Support\Arr;
 
 abstract class Relation
@@ -194,9 +195,25 @@ abstract class Relation
      */
     protected function compareModelWithRelated($model, $related)
     {
-        return is_string($model)
-            ? $related->getDn() == $model
-            : $related->is($model);
+        if (is_string($model)) {
+            return $this->isValidDn($model)
+                ? $related->getDn() == $model
+                : $related->getName() == $model;
+        }
+
+        return $related->is($model);
+    }
+
+    /**
+     * Determine if the given string is a valid distinguished name.
+     *
+     * @param string $dn
+     *
+     * @return bool
+     */
+    protected function isValidDn($dn)
+    {
+        return ! empty((new DistinguishedName($dn))->components());
     }
 
     /**

@@ -116,12 +116,13 @@ class ModelRelationTest extends TestCase
         $this->assertFalse($relation->exists());
 
         $related = new Entry();
-        $related->setDn('foo');
+        $related->setDn('cn=foo,dc=local,dc=com');
 
         $relation->setResults([$related]);
 
         $this->assertTrue($relation->exists());
         $this->assertTrue($relation->exists('foo'));
+        $this->assertTrue($relation->exists('cn=foo,dc=local,dc=com'));
         $this->assertFalse($relation->exists('bar'));
     }
 
@@ -132,11 +133,12 @@ class ModelRelationTest extends TestCase
         $this->assertFalse($relation->contains('foo'));
 
         $related = new Entry();
-        $related->setDn('foo');
+        $related->setDn('cn=foo,dc=local,dc=com');
 
         $relation->setResults([$related]);
 
         $this->assertTrue($relation->contains('foo'));
+        $this->assertTrue($relation->contains('cn=foo,dc=local,dc=com'));
         $this->assertTrue($relation->contains($related));
         $this->assertTrue($relation->contains(['foo', 'bar']));
         $this->assertTrue($relation->contains([$related, 'bar']));

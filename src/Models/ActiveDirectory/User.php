@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
@@ -89,5 +90,17 @@ class User extends Entry implements Authenticatable
     public function primaryGroup()
     {
         return $this->hasOnePrimaryGroup(Group::class, 'primarygroupid');
+    }
+
+    /**
+     * Scopes the query to exchange mailbox users.
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeWhereHasMailbox(Builder $query)
+    {
+        return $query->whereHas('msExchMailboxGuid');
     }
 }

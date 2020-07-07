@@ -67,6 +67,16 @@ class UserTest extends TestCase
     {
         $this->assertInstanceOf(RejectComputerObjectClass::class, (new User())->getGlobalScopes()[RejectComputerObjectClass::class]);
     }
+
+    public function test_scope_where_has_mailbox_is_applied()
+    {
+        Container::getInstance()->add(new Connection());
+
+        $filters = User::whereHasMailbox()->filters;
+
+        $this->assertEquals($filters['and'][4]['field'], 'msExchMailboxGuid');
+        $this->assertEquals($filters['and'][4]['operator'], '*');
+    }
 }
 
 class UserPasswordTestStub extends User

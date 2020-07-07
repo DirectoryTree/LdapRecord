@@ -231,7 +231,7 @@ class HasMany extends OneToMany
         if (! is_null($model = $this->getForeignModelByValue($model))) {
             return $model;
         }
-        
+
         throw ModelNotFoundException::forQuery(
             $this->query->getUnescapedQuery(), $this->query->getDn()
         );

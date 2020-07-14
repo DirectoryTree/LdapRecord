@@ -1513,7 +1513,7 @@ class Builder
     }
 
     /**
-     * Whether the current query is nested.
+     * Whether to mark the current query as nested.
      *
      * @param bool $nested
      *

@@ -220,6 +220,21 @@ class ModelRelationTest extends TestCase
             $model->relation()->getRelationQuery()->getQuery()
         );
     }
+
+    public function test_related_models_are_determined_with_out_of_order_object_classes()
+    {
+        $relation = (new ModelRelationTestStub())->relation();
+
+        $related = new Entry();
+
+        // Setting the object classes out of order with the related test stub.
+        $related->objectclass = ['bar', 'foo'];
+        $related->setDn('cn=foo,dc=local,dc=com');
+
+        $relation->setResults([$related]);
+
+        $this->assertInstanceOf(RelatedModelTestStub::class, $relation->first());
+    }
 }
 
 class RelationTestStub extends Relation
@@ -228,7 +243,9 @@ class RelationTestStub extends Relation
 
     public function getResults()
     {
-        return $this->parent->newCollection($this->results);
+        return $this->transformResults(
+            $this->parent->newCollection($this->results)
+        );
     }
 
     public function setResults($results)
@@ -239,17 +256,17 @@ class RelationTestStub extends Relation
     }
 }
 
-class RelatedModelTestStub extends Model
-{
-    public static $objectClasses = ['foo', 'bar'];
-}
-
 class ModelRelationTestStub extends Model
 {
     public function relation()
     {
         return new RelationTestStub($this->newQuery(), $this, RelatedModelTestStub::class, 'foo', 'bar');
     }
+}
+
+class RelatedModelTestStub extends Model
+{
+    public static $objectClasses = ['foo', 'bar'];
 }
 
 class ModelRelationWithScopeTestStub extends Model

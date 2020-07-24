@@ -364,7 +364,9 @@ trait HasAttributes
      */
     public function getFirstAttribute($key)
     {
-        return Arr::first($this->getAttribute($key));
+        return Arr::first(
+            Arr::wrap($this->getAttribute($key))
+        );
     }
 
     /**

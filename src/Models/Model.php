@@ -618,7 +618,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function hydrate($records)
     {
         return $this->newCollection($records)->transform(function ($attributes) {
-            return static::newInstance()->setRawAttributes($attributes);
+            return $attributes instanceof static
+                ? $attributes
+                : static::newInstance()->setRawAttributes($attributes);
         });
     }
 

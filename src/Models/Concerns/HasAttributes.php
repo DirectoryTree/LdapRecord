@@ -591,10 +591,7 @@ trait HasAttributes
      */
     public function hasAttribute($key)
     {
-        return array_key_exists(
-            $this->normalizeAttributeKey($key),
-            $this->getNormalizedAttributes()
-        );
+        return ! empty($this->getAttribute($key));
     }
 
     /**

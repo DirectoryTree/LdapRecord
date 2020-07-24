@@ -213,6 +213,27 @@ class ModelTest extends TestCase
         $this->assertEquals(['baz'], $model->getAttribute('foo-bar'));
     }
 
+    public function test_has_attribute()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = null;
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = [];
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = '';
+        $this->assertTrue($model->hasAttribute('foo'));
+
+        $model->foo = [''];
+        $this->assertTrue($model->hasAttribute('foo'));
+
+        $model->foo = ['bar', 'baz'];
+        $this->assertTrue($model->hasAttribute('foo'));
+    }
+
     public function test_setting_first_attribute()
     {
         $model = new Entry();

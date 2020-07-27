@@ -748,7 +748,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getName($dn = null)
     {
-        return (new DistinguishedName($dn ?? $this->dn))->name();
+        return $this->newDn($dn ?? $this->dn)->name();
     }
 
     /**
@@ -760,7 +760,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getRdn($dn = null)
     {
-        return (new DistinguishedName($dn ?? $this->dn))->relative();
+        return $this->newDn($dn ?? $this->dn)->relative();
     }
 
     /**
@@ -772,7 +772,19 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getParentDn($dn = null)
     {
-        return (new DistinguishedName($dn ?? $this->dn))->parent();
+        return $this->newDn($dn ?? $this->dn)->parent();
+    }
+
+    /**
+     * Create a new Distinguished Name object.
+     *
+     * @param string|null $dn
+     *
+     * @return DistinguishedName
+     */
+    public function newDn($dn = null)
+    {
+        return new DistinguishedName($dn);
     }
 
     /**
@@ -810,8 +822,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function isChildOf($parent)
     {
-        return (new DistinguishedName($this->getDn()))->isChildOf(
-            new DistinguishedName((string) $parent)
+        return $this->newDn($this->getDn())->isChildOf(
+            $this->newDn((string) $parent)
         );
     }
 
@@ -824,8 +836,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function isParentOf($child)
     {
-        return (new DistinguishedName($this->getDn()))->isParentOf(
-            new DistinguishedName((string) $child)
+        return $this->newDn($this->getDn())->isParentOf(
+            $this->newDn((string) $child)
         );
     }
 
@@ -863,8 +875,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function dnIsInside($dn, $parentDn)
     {
-        return (new DistinguishedName((string) $dn))->isDescendantOf(
-            new DistinguishedName($parentDn)
+        return $this->newDn((string) $dn)->isDescendantOf(
+            $this->newDn($parentDn)
         );
     }
 
@@ -1215,6 +1227,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
             // its new DN so any further updates to the model
             // can be performed without any issues.
             $this->dn = implode(',', [$rdn, $newParentDn]);
+
+            $map = $this->newDn($this->dn)->assoc();
+
+            // Here we'll populate the models new primary
+            // RDN attribute on the model so we do not
+            // have to re-synchronize with the server.
+            $this->setAttribute($attribute = key($map), reset($map[$attribute]));
 
             $this->fireModelEvent(new Renamed($this));
 

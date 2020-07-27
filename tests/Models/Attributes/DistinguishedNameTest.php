@@ -189,4 +189,34 @@ class DistinguishedNameTest extends TestCase
         $dn = new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz');
         $this->assertEquals('John Doe', $dn->name());
     }
+
+    public function test_assoc()
+    {
+        $dn = new DistinguishedName(null);
+        $this->assertEmpty($dn->assoc());
+        $this->assertInternalType('array', $dn->assoc());
+
+        $dn = new DistinguishedName('foo=bar,baz=zal,bar=baz');
+        $this->assertEquals(
+            ['foo' => ['bar'], 'baz' => ['zal'], 'bar' => ['baz']],
+            $dn->assoc()
+        );
+
+        $dn = new DistinguishedName('foo=bar,foo=bar,foo=bar');
+        $this->assertEquals(
+            ['foo' => ['bar', 'bar', 'bar']],
+            $dn->assoc()
+        );
+
+        // Malformed DN.
+        $dn = new DistinguishedName('foo=bar,fooar,foo=bar');
+        $this->assertEmpty($dn->assoc());
+        $this->assertInternalType('array', $dn->assoc());
+
+        $dn = new DistinguishedName('foo=bar');
+        $this->assertEquals(
+            ['foo' => ['bar']],
+            $dn->assoc()
+        );
+    }
 }

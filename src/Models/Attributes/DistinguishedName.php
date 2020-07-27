@@ -68,6 +68,26 @@ class DistinguishedName
     }
 
     /**
+     * Convert the DN into an associative array.
+     *
+     * @return array
+     */
+    public function assoc()
+    {
+        $map = [];
+
+        foreach ($this->components() as $rdn) {
+            [$attribute, $value] = explode('=', $rdn);
+
+            array_key_exists($attribute, $map)
+                ? $map[$attribute][] = $value
+                : $map[$attribute] = [$value];
+        }
+
+        return $map;
+    }
+
+    /**
      * Get the name value.
      *
      * @return string|null

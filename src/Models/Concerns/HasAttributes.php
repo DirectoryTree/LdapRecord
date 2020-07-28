@@ -593,7 +593,7 @@ trait HasAttributes
      */
     public function hasAttribute($key)
     {
-        return ! empty($this->getAttribute($key));
+        return [] !== ($this->attributes[$this->normalizeAttributeKey($key)] ?? []);
     }
 
     /**

@@ -3,7 +3,6 @@
 
 namespace LdapRecord\Models\ActiveDirectory\Scopes;
 
-use LdapRecord\Exceptions\RootDseNotFoundException;
 use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;

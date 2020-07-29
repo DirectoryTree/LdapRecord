@@ -133,11 +133,11 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param string $attribute
      * @return mixed
-     * @throws RootDseNotFoundException
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public function getRootDseAttribute(string $attribute)
     {
-        return $this->getRootDse()
+        return static::getRootDse()
             ->getFirstAttribute($attribute);
     }
 

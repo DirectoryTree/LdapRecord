@@ -114,9 +114,10 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * Gets the RootDSE (AD schema)
+     * Get the RootDSE (AD schema) record from the directory.
      *
-     * @return \LdapRecord\Models\Model|\LdapRecord\Query\Model\Builder
+     * @return static
+     *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public static function getRootDse()
@@ -132,7 +133,9 @@ class Entry extends BaseEntry implements ActiveDirectory
      * Gets an attribute from the RootDSE
      *
      * @param string $attribute
+     *
      * @return mixed
+     *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public function getRootDseAttribute(string $attribute)

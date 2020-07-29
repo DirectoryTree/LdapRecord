@@ -2,8 +2,6 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\ActiveDirectory\Scopes\InConfigurationContext;
-
 class ExchangeDatabase extends Entry
 {
     /**
@@ -18,6 +16,6 @@ class ExchangeDatabase extends Entry
     {
         parent::boot();
 
-        static::addGlobalScope(new InConfigurationContext);
+        static::addGlobalScope(new Scopes\InConfigurationContext);
     }
 }

@@ -2,9 +2,6 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Models\ActiveDirectory\Scopes\HasServerRoleAttribute;
-use LdapRecord\Models\ActiveDirectory\Scopes\InConfigurationContext;
-
 class ExchangeServer extends Entry
 {
     /**
@@ -19,7 +16,7 @@ class ExchangeServer extends Entry
     {
         parent::boot();
 
-        static::addGlobalScope(new HasServerRoleAttribute);
-        static::addGlobalScope(new InConfigurationContext);
+        static::addGlobalScope(new Scopes\HasServerRoleAttribute);
+        static::addGlobalScope(new Scopes\InConfigurationContext);
     }
 }

@@ -620,6 +620,7 @@ class ModelTest extends TestCase
         $this->assertTrue($model->rename('cn=Jane Doe'));
         $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
+        $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
     }
 
     public function test_rename_with_parent()
@@ -630,6 +631,7 @@ class ModelTest extends TestCase
         $this->assertTrue($model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org'));
         $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
+        $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
     }
 
     public function test_rename_without_existing_model()

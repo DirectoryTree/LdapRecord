@@ -13,7 +13,7 @@ class HasServerRoleAttribute implements Scope
      * Includes condition of having a serverRole attribute
      *
      * @param Builder $query
-     * @param Model $model
+     * @param Model   $model
      *
      * @return void
      */

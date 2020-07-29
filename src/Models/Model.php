@@ -1233,8 +1233,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
             // Here we'll populate the models new primary
             // RDN attribute on the model so we do not
             // have to re-synchronize with the server.
-            $nameKey = key($map);
-            $this->attribute[$nameKey] = $this->original[$nameKey] = [reset($map[$nameKey])];
+            $modelNameAttribute = key($map);
+
+            $this->attributes[$modelNameAttribute]
+                = $this->original[$modelNameAttribute]
+                = [reset($map[$modelNameAttribute])];
 
             $this->fireModelEvent(new Renamed($this));
 

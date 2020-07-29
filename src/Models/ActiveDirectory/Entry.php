@@ -4,7 +4,6 @@ namespace LdapRecord\Models\ActiveDirectory;
 
 use LdapRecord\Connection;
 use InvalidArgumentException;
-use LdapRecord\Exceptions\RootDseNotFoundException;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Entry as BaseEntry;
@@ -31,13 +30,6 @@ class Entry extends BaseEntry implements ActiveDirectory
      * @var string
      */
     protected $sidKey = 'objectsid';
-
-    /**
-     * The entry containing the Root DSE
-     *
-     * @var Entry
-     */
-    protected $rootDse = null;
 
     /**
      * {@inheritdoc}
@@ -124,25 +116,16 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Gets the RootDSE (AD schema)
      *
-     * @throws RootDseNotFoundException
-     * @return Entry
+     * @return \LdapRecord\Models\Model|\LdapRecord\Query\Model\Builder
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public function getRootDse()
+    public static function getRootDse()
     {
-        if ($this->rootDse) {
-            return $this->rootDse;
-        }
-
-        $this->rootDse = Entry::in(null)
+        return static::on((new static)->getConnectionName())
+            ->in(null)
             ->read()
             ->whereHas('objectclass')
-            ->first();
-
-        if (!$this->rootDse) {
-            throw new RootDseNotFoundException('Could not locate AD schema');
-        }
-
-        return $this->rootDse;
+            ->firstOrFail();
     }
 
     /**

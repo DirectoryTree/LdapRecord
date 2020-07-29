@@ -16,14 +16,12 @@ class InConfigurationContext implements Scope
      *
      * @param Builder $query
      * @param Model $model
-     * @throws RootDseNotFoundException
-     *
      * @return void
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public function apply(Builder $query, Model $model)
     {
-        $configurationContext = (new Entry)
-            ->getRootDseAttribute('configurationNamingContext');
+        $configurationContext = Entry::getRootDse();
 
         $query->in($configurationContext);
     }

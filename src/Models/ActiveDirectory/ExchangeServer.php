@@ -19,7 +19,7 @@ class ExchangeServer extends Entry
     {
         parent::boot();
 
-        self::addGlobalScope(new HasServerRoleAttribute);
-        self::addGlobalScope(new InConfigurationContext);
+        static::addGlobalScope(new HasServerRoleAttribute);
+        static::addGlobalScope(new InConfigurationContext);
     }
 }

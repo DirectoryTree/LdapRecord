@@ -11,7 +11,7 @@ class BooleanValidator extends Validator
      */
     public function validate()
     {
-        if (!is_bool($this->value)) {
+        if (! is_bool($this->value)) {
             throw new ConfigurationException("Option {$this->key} must be a boolean.");
         }
 

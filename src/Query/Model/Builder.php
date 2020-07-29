@@ -175,7 +175,7 @@ class Builder extends BaseBuilder
     {
         $this->select($columns);
 
-        if (!$this->model instanceof ActiveDirectory) {
+        if (! $this->modelIsCompatibleWithAnr()) {
             foreach ($values as $value) {
                 $this->prepareAnrEquivalentQuery($value);
             }
@@ -259,12 +259,12 @@ class Builder extends BaseBuilder
      */
     public function applyScopes()
     {
-        if (!$this->scopes) {
+        if (! $this->scopes) {
             return $this;
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (!isset($this->appliedScopes[$identifier])) {
+            if (! isset($this->appliedScopes[$identifier])) {
                 $scope instanceof Scope
                     ? $scope->apply($this, $this->getModel())
                     : $scope($this);
@@ -300,7 +300,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScope($scope)
     {
-        if (!is_string($scope)) {
+        if (! is_string($scope)) {
             $scope = get_class($scope);
         }
 
@@ -320,7 +320,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScopes(array $scopes = null)
     {
-        if (!is_array($scopes)) {
+        if (! is_array($scopes)) {
             $scopes = array_keys($this->scopes);
         }
 
@@ -371,7 +371,7 @@ class Builder extends BaseBuilder
         if ($value instanceof DateTime) {
             $field = $this->model->normalizeAttributeKey($field);
 
-            if (!$this->model->isDateAttribute($field)) {
+            if (! $this->model->isDateAttribute($field)) {
                 throw new \UnexpectedValueException(
                     "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
                     .' Refer to https://ldaprecord.com/docs/model-mutators/#date-mutators'

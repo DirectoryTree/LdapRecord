@@ -117,7 +117,7 @@ trait HasPassword
      */
     protected function getHashedPassword($password)
     {
-        if (!method_exists(Password::class, $this->passwordHashMethod)) {
+        if (! method_exists(Password::class, $this->passwordHashMethod)) {
             throw new LdapRecordException("Password hashing method [{$this->passwordHashMethod}] does not exist.");
         }
 
@@ -133,7 +133,7 @@ trait HasPassword
      */
     protected function validateSecureConnection()
     {
-        if (!$this->getConnection()->getLdapConnection()->canChangePasswords()) {
+        if (! $this->getConnection()->getLdapConnection()->canChangePasswords()) {
             throw new ConnectionException(
                 'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );

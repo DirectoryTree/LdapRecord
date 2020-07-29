@@ -116,7 +116,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function bootIfNotBooted()
     {
-        if (!isset(static::$booted[static::class])) {
+        if (! isset(static::$booted[static::class])) {
             static::$booted[static::class] = true;
 
             static::boot();
@@ -589,7 +589,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function fresh()
     {
-        if (!$this->exists) {
+        if (! $this->exists) {
             return false;
         }
 
@@ -928,7 +928,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // Here we will populate the models object classes if it
         // does not already have any. An LDAP object cannot
         // be successfully created without them set.
-        if (!$this->hasAttribute('objectclass')) {
+        if (! $this->hasAttribute('objectclass')) {
             $this->setAttribute('objectclass', static::$objectClasses);
         }
 
@@ -1302,7 +1302,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
                 $modification->setOriginal($this->original[$attribute]);
             }
 
-            if (!$modification->build()->isValid()) {
+            if (! $modification->build()->isValid()) {
                 continue;
             }
 
@@ -1321,7 +1321,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function validateExistence()
     {
-        if (!$this->exists || is_null($this->dn)) {
+        if (! $this->exists || is_null($this->dn)) {
             throw ModelDoesNotExistException::forModel($this);
         }
     }

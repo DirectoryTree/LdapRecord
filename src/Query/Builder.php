@@ -516,7 +516,7 @@ class Builder
             // We will avoid setting the controls during any pagination
             // requests as it will clear the cookie we need to send
             // to the server upon retrieving every page.
-            if (!$this->paginated) {
+            if (! $this->paginated) {
                 // Before running the query, we will set the LDAP server controls. This
                 // allows the controls to be automatically reset upon each new query
                 // that is conducted on the same connection during each request.
@@ -649,7 +649,7 @@ class Builder
      */
     protected function parse($resource)
     {
-        if (!$resource) {
+        if (! $resource) {
             return [];
         }
 
@@ -716,7 +716,7 @@ class Builder
     {
         $record = $this->first($columns);
 
-        if (!$record) {
+        if (! $record) {
             throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -856,7 +856,7 @@ class Builder
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
-        if (!empty($columns)) {
+        if (! empty($columns)) {
             $this->columns = $columns;
         }
 
@@ -977,7 +977,7 @@ class Builder
             list($value, $operator) = [$operator, '='];
         }
 
-        if (!in_array($operator, $this->grammar->getOperators())) {
+        if (! in_array($operator, $this->grammar->getOperators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -1427,7 +1427,7 @@ class Builder
     public function addFilter($type, array $bindings)
     {
         // Here we will ensure we have been given a proper filter type.
-        if (!array_key_exists($type, $this->filters)) {
+        if (! array_key_exists($type, $this->filters)) {
             throw new InvalidArgumentException("Invalid filter type: {$type}.");
         }
 
@@ -1611,7 +1611,7 @@ class Builder
             throw new LdapRecordException('A new LDAP object must have a distinguished name (dn).');
         }
 
-        if (!array_key_exists('objectclass', $attributes)) {
+        if (! array_key_exists('objectclass', $attributes)) {
             throw new LdapRecordException(
                 'A new LDAP object must contain at least one object class (objectclass) to be created.'
             );

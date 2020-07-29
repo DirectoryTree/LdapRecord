@@ -90,7 +90,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     public function restore($newParentDn = null)
     {
-        if (!$this->isDeleted()) {
+        if (! $this->isDeleted()) {
             return false;
         }
 

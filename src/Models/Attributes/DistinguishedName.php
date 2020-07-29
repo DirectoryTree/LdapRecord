@@ -186,7 +186,7 @@ class DistinguishedName
             return false;
         }
 
-        if (!$length = count($components) - count($ancestorComponents)) {
+        if (! $length = count($components) - count($ancestorComponents)) {
             return false;
         }
 

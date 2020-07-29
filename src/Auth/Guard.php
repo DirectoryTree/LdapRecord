@@ -82,7 +82,7 @@ class Guard
             $authenticated = false;
         }
 
-        if (!$bindAsUser) {
+        if (! $bindAsUser) {
             $this->bindAsConfiguredUser();
         }
 
@@ -109,7 +109,7 @@ class Guard
         }
 
         try {
-            if (!$this->connection->bind($username, $password)) {
+            if (! $this->connection->bind($username, $password)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 

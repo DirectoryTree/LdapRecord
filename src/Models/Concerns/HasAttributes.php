@@ -99,7 +99,7 @@ trait HasAttributes
     protected function addDateAttributesToArray(array $attributes)
     {
         foreach ($this->getDates() as $attribute => $type) {
-            if (!isset($attributes[$attribute])) {
+            if (! isset($attributes[$attribute])) {
                 continue;
             }
 
@@ -168,7 +168,7 @@ trait HasAttributes
             // We want to spin through all the mutated attributes for this model and call
             // the mutator for the attribute. We cache off every mutated attributes so
             // we don't have to constantly check on attributes that actually change.
-            if (!array_key_exists($key, $attributes)) {
+            if (! array_key_exists($key, $attributes)) {
                 continue;
             }
 
@@ -221,7 +221,7 @@ trait HasAttributes
      */
     public function getAttribute($key)
     {
-        if (!$key) {
+        if (! $key) {
             return;
         }
 
@@ -705,7 +705,7 @@ trait HasAttributes
      */
     protected function originalIsEquivalent($key)
     {
-        if (!array_key_exists($key, $this->original)) {
+        if (! array_key_exists($key, $this->original)) {
             return false;
         }
 
@@ -730,7 +730,7 @@ trait HasAttributes
     {
         $class = static::class;
 
-        if (!isset(static::$mutatorCache[$class])) {
+        if (! isset(static::$mutatorCache[$class])) {
             static::cacheMutatedAttributes($class);
         }
 

@@ -162,7 +162,7 @@ class BatchModification
             return $this;
         }
 
-        if (!$this->isValidType($type)) {
+        if (! $this->isValidType($type)) {
             throw new InvalidArgumentException('Given batch modification type is invalid.');
         }
 

@@ -873,7 +873,7 @@ class Ldap
     protected function executeFailableOperation(Closure $operation)
     {
         set_error_handler(function ($severity, $message, $file, $line) {
-            if (!$this->shouldBypassError($message)) {
+            if (! $this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
             }
         });

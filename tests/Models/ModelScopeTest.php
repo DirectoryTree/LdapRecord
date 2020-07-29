@@ -11,7 +11,7 @@ use LdapRecord\Query\Model\Builder;
 
 class ModelScopeTest extends TestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         ModelGlobalScopeTestStub::clearBootedModels();
     }

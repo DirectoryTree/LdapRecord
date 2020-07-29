@@ -10,7 +10,7 @@ use LdapRecord\Models\ActiveDirectory\Group;
 
 class ModelHasOnePrimaryGroupTest extends TestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

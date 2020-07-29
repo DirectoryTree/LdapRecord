@@ -14,7 +14,7 @@ use LdapRecord\Models\Relations\HasManyIn;
 
 class ModelHasManyInTest extends TestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

@@ -18,7 +18,7 @@ use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelTest extends TestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         // Flush container singleton instance.
         Container::getNewInstance();

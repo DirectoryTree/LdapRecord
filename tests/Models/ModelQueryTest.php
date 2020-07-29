@@ -19,7 +19,7 @@ class ModelQueryTest extends TestCase
 {
     use CreatesConnectedLdapMocks;
 
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

@@ -10,7 +10,7 @@ use LdapRecord\Models\OpenLDAP\Scopes\AddEntryUuidToSelects;
 
 class ModelTest extends TestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         Entry::clearBootedModels();
     }

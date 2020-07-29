@@ -24,7 +24,7 @@ class ModelEventTest extends TestCase
 {
     use CreatesConnectedLdapMocks;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         // Flush event dispatcher instance.
         Container::unsetEventDispatcher();

@@ -122,13 +122,24 @@ class Builder extends BaseBuilder
             return $this->findManyByAnr($value, $columns);
         }
 
-        // If we're not using ActiveDirectory, we can't use
-        // ANR. We will make our own equivalent query.
-        if (!$this->model instanceof ActiveDirectory) {
+        // If the model is not compatible with ANR filters,
+        // we must construct an equivalent filter that
+        // the current LDAP server does support.
+        if (! $this->modelIsCompatibleWithAnr()) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
 
         return $this->findBy('anr', $value, $columns);
+    }
+
+    /**
+     * Determine if the current model is compatible with ANR filters.
+     *
+     * @return bool
+     */
+    protected function modelIsCompatibleWithAnr()
+    {
+        return $this->model instanceof ActiveDirectory;
     }
 
     /**

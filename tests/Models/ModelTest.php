@@ -213,6 +213,27 @@ class ModelTest extends TestCase
         $this->assertEquals(['baz'], $model->getAttribute('foo-bar'));
     }
 
+    public function test_has_attribute()
+    {
+        $model = new Entry();
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = null;
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = [];
+        $this->assertFalse($model->hasAttribute('foo'));
+
+        $model->foo = '';
+        $this->assertTrue($model->hasAttribute('foo'));
+
+        $model->foo = [''];
+        $this->assertTrue($model->hasAttribute('foo'));
+
+        $model->foo = ['bar', 'baz'];
+        $this->assertTrue($model->hasAttribute('foo'));
+    }
+
     public function test_setting_first_attribute()
     {
         $model = new Entry();
@@ -598,6 +619,7 @@ class ModelTest extends TestCase
 
         $this->assertTrue($model->rename('cn=Jane Doe'));
         $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
+        $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
     }
 
     public function test_rename_with_parent()
@@ -607,6 +629,7 @@ class ModelTest extends TestCase
 
         $this->assertTrue($model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org'));
         $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
+        $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
     }
 
     public function test_rename_without_existing_model()

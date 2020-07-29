@@ -364,7 +364,9 @@ trait HasAttributes
      */
     public function getFirstAttribute($key)
     {
-        return Arr::first($this->getAttribute($key));
+        return Arr::first(
+            Arr::wrap($this->getAttribute($key))
+        );
     }
 
     /**
@@ -591,10 +593,7 @@ trait HasAttributes
      */
     public function hasAttribute($key)
     {
-        return array_key_exists(
-            $this->normalizeAttributeKey($key),
-            $this->getNormalizedAttributes()
-        );
+        return [] !== ($this->attributes[$this->normalizeAttributeKey($key)] ?? []);
     }
 
     /**

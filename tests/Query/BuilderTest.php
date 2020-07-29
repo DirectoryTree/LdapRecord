@@ -1000,6 +1000,28 @@ class BuilderTest extends TestCase
         $b->insert('cn=John Doe', []);
     }
 
+    public function test_find()
+    {
+        $dn = 'cn=John Doe,dc=local,dc=com';
+
+        $results = [
+            'count' => 1,
+            [
+                'dn' => [$dn],
+            ]
+        ];
+
+        $b = $this->newBuilder();
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->shouldReceive('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])
+            ->shouldReceive('read')->once()->with($dn, '(objectclass=*)', ['*'], false, 1)->andReturn($results)
+            ->shouldReceive('getEntries')->once()->with($results)->andReturn($results);
+
+        $this->assertEquals($dn, $b->find($dn)['dn'][0]);
+    }
+
     public function test_insert()
     {
         $b = $this->newBuilder();

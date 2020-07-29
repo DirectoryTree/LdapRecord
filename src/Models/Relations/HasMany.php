@@ -34,6 +34,20 @@ class HasMany extends OneToMany
     protected $pageSize = 1000;
 
     /**
+     * The exceptions to bypass for each relation operation.
+     *
+     * @var array
+     */
+    protected $bypass = [
+        'attach' => [
+            'Already exists', 'Type or value exists'
+        ],
+        'detach' => [
+            'No such attribute', 'Server is unwilling to perform'
+        ],
+    ];
+
+    /**
      * Set the model and attribute to use for attaching / detaching.
      *
      * @param Model  $using
@@ -156,7 +170,7 @@ class HasMany extends OneToMany
             }
 
             return $model->createAttribute($this->relationKey, $foreign);
-        }, $bypass = 'Already exists', $model);
+        }, $this->bypass['attach'], $model);
     }
 
     /**
@@ -196,7 +210,7 @@ class HasMany extends OneToMany
             }
 
             return $model->deleteAttribute([$this->relationKey => $foreign]);
-        }, $bypass = 'Server is unwilling to perform', $model);
+        }, $this->bypass['detach'], $model);
     }
 
     /**
@@ -242,9 +256,9 @@ class HasMany extends OneToMany
      *
      * If a bypassable exception is encountered, the value will be returned.
      *
-     * @param callable $operation
-     * @param string   $bypass
-     * @param mixed    $value
+     * @param callable       $operation
+     * @param string|array   $bypass
+     * @param mixed          $value
      *
      * @throws LdapRecordException
      *

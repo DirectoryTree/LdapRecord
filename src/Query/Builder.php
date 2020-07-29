@@ -760,6 +760,31 @@ class Builder
     }
 
     /**
+     * Find many records by distinguished name.
+     *
+     * @param array $dns
+     * @param array $columns
+     *
+     * @return array|Collection
+     */
+    public function findMany($dns, $columns = ['*'])
+    {
+        if (empty($dns)) {
+            return $this->process([]);
+        }
+
+        $objects = [];
+
+        foreach ($dns as $dn) {
+            if (! is_null($object = $this->find($dn, $columns))) {
+                $objects[] = $object;
+            }
+        }
+
+        return $this->process($objects);
+    }
+
+    /**
      * Finds many records by the specified attribute.
      *
      * @param string $attribute
@@ -782,13 +807,17 @@ class Builder
     /**
      * Finds a record by its distinguished name.
      *
-     * @param string       $dn
+     * @param string|array $dn
      * @param array|string $columns
      *
-     * @return Model|static|null
+     * @return Model|static|array|Collection|null
      */
     public function find($dn, $columns = ['*'])
     {
+        if (is_array($dn)) {
+            return $this->findMany($dn, $columns);
+        }
+
         try {
             return $this->findOrFail($dn, $columns);
         } catch (ModelNotFoundException $e) {

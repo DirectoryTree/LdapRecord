@@ -412,10 +412,23 @@ abstract class Relation
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
         // determine the owning model from search results.
-        foreach ($related as $model => $classes) {
-            $related[$model] = array_map('strtolower', $classes);
-        }
+        return array_search(
+            $this->normalizeObjectClasses($objectClasses),
+            array_map([$this, 'normalizeObjectClasses'], $related)
+        );
+    }
 
-        return array_search(array_map('strtolower', $objectClasses), $related);
+    /**
+     * Sort and normalize the object classes.
+     *
+     * @param array $classes
+     *
+     * @return array
+     */
+    protected function normalizeObjectClasses($classes)
+    {
+        sort($classes);
+
+        return array_map('strtolower', $classes);
     }
 }

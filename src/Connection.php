@@ -305,8 +305,7 @@ class Connection
             return $operation($this->ldap);
         } catch (Throwable $e) {
             throw LdapRecordException::withDetailedError(
-                $e,
-                $this->getLdapConnection()->getDetailedError()
+                $e, $this->ldap->getDetailedError()
             );
         }
     }

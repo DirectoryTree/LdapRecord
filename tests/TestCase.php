@@ -6,5 +6,8 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class TestCase extends MockeryTestCase
 {
-    //
+    protected function setUp()
+    {
+        ini_set('date.timezone', 'UTC');
+    }
 }

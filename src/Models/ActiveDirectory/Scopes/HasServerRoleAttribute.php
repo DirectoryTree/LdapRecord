@@ -1,6 +1,5 @@
 <?php
 
-
 namespace LdapRecord\Models\ActiveDirectory\Scopes;
 
 use LdapRecord\Models\Model;

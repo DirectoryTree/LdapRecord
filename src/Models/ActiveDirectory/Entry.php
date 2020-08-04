@@ -116,32 +116,19 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Get the RootDSE (AD schema) record from the directory.
      *
+     * @param string|null $connection
+     *
      * @return static
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public static function getRootDse()
+    public static function getRootDse($connection = null)
     {
-        return static::on((new static)->getConnectionName())
+        return static::on($connection ?? (new static)->getConnectionName())
             ->in(null)
             ->read()
             ->whereHas('objectclass')
             ->firstOrFail();
-    }
-
-    /**
-     * Gets an attribute from the RootDSE
-     *
-     * @param string $attribute
-     *
-     * @return mixed
-     *
-     * @throws \LdapRecord\Models\ModelNotFoundException
-     */
-    public function getRootDseAttribute(string $attribute)
-    {
-        return static::getRootDse()
-            ->getFirstAttribute($attribute);
     }
 
     /**

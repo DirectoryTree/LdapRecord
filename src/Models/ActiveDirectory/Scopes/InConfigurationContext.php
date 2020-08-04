@@ -21,6 +21,21 @@ class InConfigurationContext implements Scope
      */
     public function apply(Builder $query, Model $model)
     {
-        $query->in(Entry::getRootDse());
+        $query->in($this->getConfigurationNamingContext($model));
+    }
+
+    /**
+     * Get the LDAP server configuration naming context distinguished name.
+     *
+     * @param Model $model
+     *
+     * @return mixed
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
+     */
+    protected function getConfigurationNamingContext(Model $model)
+    {
+        return Entry::getRootDse($model->getConnectionName())
+            ->getFirstAttribute('configurationNamingContext');
     }
 }

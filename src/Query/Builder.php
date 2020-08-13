@@ -680,7 +680,7 @@ class Builder
             .$this->type
             .$this->getDn()
             .$query
-            .implode('', $this->getSelects())
+            .implode($this->getSelects())
             .$this->limit
             .$this->paginated;
 

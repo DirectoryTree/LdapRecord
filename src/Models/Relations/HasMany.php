@@ -138,7 +138,7 @@ class HasMany extends OneToMany
         // we will add the key to the attributes to select and also
         // validate that the key isn't already being selected
         // to prevent stacking on multiple relation calls.
-        if (! in_array('*', $columns) && !in_array($key, $columns)) {
+        if (! in_array('*', $columns) && ! in_array($key, $columns)) {
             $this->query->addSelect($key);
         }
 
@@ -158,7 +158,21 @@ class HasMany extends OneToMany
      */
     public function attach($model)
     {
-        return $this->attemptFailableOperation(function () use ($model) {
+        return $this->attemptFailableOperation(
+            $this->buildAttachCallback($model), $this->bypass['attach'], $model
+        );
+    }
+
+    /**
+     * Build the attach callback.
+     *
+     * @param Model|string $model
+     *
+     * @return \Closure
+     */
+    protected function buildAttachCallback($model)
+    {
+        return function () use ($model) {
             $foreign = $this->getAttachableForeignValue($model);
 
             if ($this->using) {
@@ -170,7 +184,7 @@ class HasMany extends OneToMany
             }
 
             return $model->createAttribute($this->relationKey, $foreign);
-        }, $this->bypass['attach'], $model);
+        };
     }
 
     /**
@@ -198,7 +212,21 @@ class HasMany extends OneToMany
      */
     public function detach($model)
     {
-        return $this->attemptFailableOperation(function () use ($model) {
+        return $this->attemptFailableOperation(
+            $this->buildDetachCallback($model), $this->bypass['detach'], $model
+        );
+    }
+
+    /**
+     * Build the detach callback.
+     *
+     * @param Model|string $model
+     *
+     * @return \Closure
+     */
+    protected function buildDetachCallback($model)
+    {
+        return function () use ($model) {
             $foreign = $this->getAttachableForeignValue($model);
 
             if ($this->using) {
@@ -210,7 +238,7 @@ class HasMany extends OneToMany
             }
 
             return $model->deleteAttribute([$this->relationKey => $foreign]);
-        }, $this->bypass['detach'], $model);
+        };
     }
 
     /**

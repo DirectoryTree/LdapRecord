@@ -168,11 +168,21 @@ class Grammar
     public function concatenate(array $bindings = [])
     {
         // Filter out empty query segments.
-        $bindings = array_filter($bindings, function ($value) {
-            return (string) $value !== '';
-        });
+        return implode(
+            array_filter($bindings, [$this, 'bindingValueIsNotEmpty'])
+        );
+    }
 
-        return implode('', $bindings);
+    /**
+     * Determine if the binding value is not empty.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function bindingValueIsNotEmpty($value)
+    {
+        return ! empty($value);
     }
 
     /**

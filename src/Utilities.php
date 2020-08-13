@@ -81,7 +81,7 @@ class Utilities
         // The sub-authorities depend on the count, so only get as
         // many as the count, regardless of data beyond it.
         for ($i = 0; $i < $subs; $i++) {
-            $data = implode('', array_reverse(
+            $data = implode(array_reverse(
                 str_split(
                     substr($sidHex, 16 + ($i * 8), 8),
                     2

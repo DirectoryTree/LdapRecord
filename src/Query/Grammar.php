@@ -75,8 +75,8 @@ class Grammar
         }
 
         $filter = $this->concatenate($query->filters['raw'])
-            .$this->compileWheres($query)
-            .$this->compileOrWheres($query);
+            . $this->compileWheres($query)
+            . $this->compileOrWheres($query);
 
         switch ($this->wrapper) {
             case 'and':
@@ -97,7 +97,7 @@ class Grammar
      */
     protected function queryMustBeWrapped(Builder $query)
     {
-        return !$query->isNested() && $this->hasMultipleFilters($query);
+        return ! $query->isNested() && $this->hasMultipleFilters($query);
     }
 
     /**
@@ -480,12 +480,12 @@ class Grammar
      */
     protected function compileWhere(array $where)
     {
-        if (array_key_exists($where['operator'], $this->operators)) {
-            $method = 'compile'.ucfirst($this->operators[$where['operator']]);
-
-            return $this->{$method}($where['field'], $where['value']);
+        if (! array_key_exists($where['operator'], $this->operators)) {
+            throw new UnexpectedValueException('Invalid LDAP filter operator ['.$where['operator'].']');
         }
 
-        throw new UnexpectedValueException('Invalid LDAP filter operator ['.$where['operator'].']');
+        $method = 'compile'.ucfirst($this->operators[$where['operator']]);
+
+        return $this->{$method}($where['field'], $where['value']);
     }
 }

@@ -968,23 +968,23 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $modifications = $this->getModifications();
 
-        if (count($modifications) > 0) {
-            $this->fireModelEvent(new Events\Updating($this));
-
-            if ($this->newQuery()->update($this->dn, $modifications)) {
-                $this->fireModelEvent(new Events\Updated($this));
-
-                // Re-set the models modifications.
-                $this->modifications = [];
-
-                // Re-sync the models attributes.
-                return $this->synchronize();
-            }
-
-            return false;
+        if (! count($modifications)) {
+            return true;
         }
 
-        return true;
+        $this->fireModelEvent(new Events\Updating($this));
+
+        if ($this->newQuery()->update($this->dn, $modifications)) {
+            $this->fireModelEvent(new Events\Updated($this));
+
+            // Re-set the models modifications.
+            $this->modifications = [];
+
+            // Re-sync the models attributes.
+            return $this->synchronize();
+        }
+
+        return false;
     }
 
     /**

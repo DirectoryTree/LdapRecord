@@ -41,5 +41,4 @@ class Group extends Entry
             User::class
         ], 'memberof')->using($this, 'member');
     }
-
 }

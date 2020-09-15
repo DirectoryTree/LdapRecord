@@ -82,7 +82,7 @@ class Guard
             $authenticated = false;
         }
 
-        if (! $bindAsUser) {
+        if ($bindAsUser) {
             $this->bindAsConfiguredUser();
         }
 

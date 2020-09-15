@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Models\Freeipa;
+namespace LdapRecord\Models\FreeIPA;
 
 class Group extends Entry
 {

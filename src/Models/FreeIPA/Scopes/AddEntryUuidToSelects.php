@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Models\Freeipa\Scopes;
+namespace LdapRecord\Models\FreeIPA\Scopes;
 
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;

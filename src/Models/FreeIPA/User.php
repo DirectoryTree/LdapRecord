@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Models\Freeipa;
+namespace LdapRecord\Models\FreeIPA;
 
 class User extends Entry
 {

@@ -53,15 +53,15 @@ class Guard
      *
      * @param string $username
      * @param string $password
-     * @param bool   $bindAsUser
+     * @param bool   $stayBound
      *
-     * @throws PasswordRequiredException
      * @throws UsernameRequiredException
+     * @throws PasswordRequiredException
      * @throws \LdapRecord\ConnectionException
      *
      * @return bool
      */
-    public function attempt($username, $password, $bindAsUser = false)
+    public function attempt($username, $password, $stayBound = false)
     {
         switch (true) {
             case empty($username):
@@ -82,7 +82,7 @@ class Guard
             $authenticated = false;
         }
 
-        if (! $bindAsUser) {
+        if (! $stayBound) {
             $this->bindAsConfiguredUser();
         }
 

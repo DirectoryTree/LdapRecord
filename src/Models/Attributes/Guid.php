@@ -104,15 +104,25 @@ class Guid
      */
     public function getBinary()
     {
+        return hex2bin($this->getHex());
+    }
+
+    /**
+     * Get the hexadecimal representation of the GUID string.
+     *
+     * @return string
+     */
+    public function getHex()
+    {
         $data = '';
 
         $guid = str_replace('-', '', $this->value);
 
         foreach ($this->octetSections as $section) {
-            $data .= $this->parseSection($guid, $section, true);
+            $data .= $this->parseSection($guid, $section, $octet = true);
         }
 
-        return hex2bin($data);
+        return $data;
     }
 
     /**

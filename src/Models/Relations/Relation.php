@@ -150,10 +150,16 @@ abstract class Relation
      */
     public function exists($models = null)
     {
+        $models = $this->getArrayableModels($models);
+
+        if (func_num_args() >= 1 && empty(array_filter($models))) {
+            return false;
+        }
+
         $related = $this->get('objectclass');
 
         if ($models) {
-            foreach (Arr::wrap($models) as $model) {
+            foreach ($models as $model) {
                 $exists = $related->contains(function (Model $related) use ($model) {
                     return $this->compareModelWithRelated($model, $related);
                 });
@@ -180,7 +186,7 @@ abstract class Relation
     {
         $related = $this->get('objectclass');
 
-        foreach (Arr::wrap($models) as $model) {
+        foreach ($this->getArrayableModels($models) as $model) {
             $exists = $related->contains(function (Model $related) use ($model) {
                 return $this->compareModelWithRelated($model, $related);
             });
@@ -191,6 +197,18 @@ abstract class Relation
         }
         
         return false;
+    }
+
+    /**
+     * Get the provided models as an array.
+     *
+     * @param mixed $models
+     *
+     * @return array
+     */
+    protected function getArrayableModels($models = null)
+    {
+        return $models instanceof Collection ? $models->toArray() : Arr::wrap($models);
     }
 
     /**

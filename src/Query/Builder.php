@@ -419,10 +419,6 @@ class Builder
     {
         $this->paginated = true;
 
-        // Our limit must match our page size, otherwise we
-        // will receive size limit exceeded errors.
-        $this->limit = $pageSize;
-
         $start = microtime(true);
 
         $query = $this->getQuery();

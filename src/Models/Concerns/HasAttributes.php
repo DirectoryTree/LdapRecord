@@ -36,6 +36,13 @@ trait HasAttributes
     protected $dates = [];
 
     /**
+     * The attributes that should be cast to their native types.
+     *
+     * @var array
+     */
+    protected $casts = [];
+
+    /**
      * The format that dates must be output to for serialization.
      *
      * @var string
@@ -248,7 +255,252 @@ trait HasAttributes
             return $this->asDateTime($this->getDates()[$key], Arr::first($value));
         }
 
+        if ($this->isCastedAttribute($key) && !is_null($value)) {
+            return $this->castAttribute($key, Arr::first($value));
+        }
+
         return $value;
+    }
+
+    /**
+     * Determine if the given attribute is a date.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function isDateAttribute($key)
+    {
+        return array_key_exists($key, $this->getDates());
+    }
+
+    /**
+     * Get the attributes that should be mutated to dates.
+     *
+     * @return array
+     */
+    public function getDates()
+    {
+        // Since array string keys can be unique depending
+        // on casing differences, we need to normalize the
+        // array key case so they are merged properly.
+        return array_merge(
+            array_change_key_case($this->defaultDates, CASE_LOWER),
+            array_change_key_case($this->dates, CASE_LOWER)
+        );
+    }
+
+    /**
+     * Convert the given date value to an LDAP compatible value.
+     *
+     * @param string $type
+     * @param mixed  $value
+     *
+     * @throws LdapRecordException
+     *
+     * @return float|string
+     */
+    public function fromDateTime($type, $value)
+    {
+        return (new Timestamp($type))->fromDateTime($value);
+    }
+
+    /**
+     * Convert the given LDAP date value to a Carbon instance.
+     *
+     * TODO: Parameter arrangement will be swapped in v2.0.0.
+     *
+     * @param string $type
+     * @param mixed  $value
+     *
+     * @throws LdapRecordException
+     *
+     * @return Carbon|false
+     */
+    public function asDateTime($type, $value)
+    {
+        return (new Timestamp($type))->toDateTime($value);
+    }
+
+    /**
+     * Get the attributes that should be cast to their native types.
+     *
+     * @return array
+     */
+    protected function getCasts()
+    {
+        return array_change_key_case($this->casts, CASE_LOWER);
+    }
+
+    /**
+     * Get the type of cast for a model attribute.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    protected function getCastType($key)
+    {
+        if ($this->isDecimalCast($this->getCasts()[$key])) {
+            return 'decimal';
+        }
+
+        if ($this->isDateTimeCast($this->getCasts()[$key])) {
+            return 'datetime';
+        }
+
+        return trim(strtolower($this->getCasts()[$key]));
+    }
+
+    /**
+     * Determine if the cast is a decimal.
+     *
+     * @param string $cast
+     *
+     * @return bool
+     */
+    protected function isDecimalCast($cast)
+    {
+        return strncmp($cast, 'decimal:', 8) === 0;
+    }
+
+    /**
+     * Determine if the cast is a datetime.
+     *
+     * @param string $cast
+     *
+     * @return bool
+     */
+    protected function isDateTimeCast($cast)
+    {
+        return strncmp($cast, 'datetime:', 8) === 0;
+    }
+
+    /**
+     * Determine if the given attribute must be casted.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    protected function isCastedAttribute($key)
+    {
+        return array_key_exists($key, array_change_key_case($this->casts, CASE_LOWER));
+    }
+
+    /**
+     * Cast an attribute to a native PHP type.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return mixed
+     */
+    protected function castAttribute($key, $value)
+    {
+        if (is_null($value)) {
+            return $value;
+        }
+
+        switch ($this->getCastType($key)) {
+            case 'int':
+            case 'integer':
+                return (int) $value;
+            case 'real':
+            case 'float':
+            case 'double':
+                return $this->fromFloat($value);
+            case 'decimal':
+                return $this->asDecimal($value, explode(':', $this->getCasts()[$key], 2)[1]);
+            case 'string':
+                return (string) $value;
+            case 'bool':
+            case 'boolean':
+                return $this->asBoolean($value);
+            case 'object':
+                return $this->fromJson($value, $asObject = true);
+            case 'array':
+            case 'json':
+                return $this->fromJson($value);
+            case 'collection':
+                return $this->newCollection($this->fromJson($value));
+            case 'datetime':
+                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], $value);
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * Encode the given value as JSON.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    protected function asJson($value)
+    {
+        return json_encode($value);
+    }
+
+    /**
+     * Decode the given JSON back into an array or object.
+     *
+     * @param string $value
+     * @param bool   $asObject
+     *
+     * @return mixed
+     */
+    public function fromJson($value, $asObject = false)
+    {
+        return json_decode($value, ! $asObject);
+    }
+
+    /**
+     * Decode the given float.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function fromFloat($value)
+    {
+        switch ((string) $value) {
+            case 'Infinity':
+                return INF;
+            case '-Infinity':
+                return -INF;
+            case 'NaN':
+                return NAN;
+            default:
+                return (float) $value;
+        }
+    }
+
+    /**
+     * Cast the value to a boolean.
+     *
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    protected function asBoolean($value)
+    {
+        $map = ['true' => true, 'false' => false];
+
+        return $map[strtolower($value)] ?? (bool) $value;
+    }
+
+    /**
+     * Cast a decimal value as a string.
+     *
+     * @param float $value
+     * @param int   $decimals
+     *
+     * @return string
+     */
+    protected function asDecimal($value, $decimals)
+    {
+        return number_format($value, $decimals, '.', '');
     }
 
     /**
@@ -279,34 +531,6 @@ trait HasAttributes
         }
 
         return $values;
-    }
-
-    /**
-     * Determine if the given attribute is a date.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function isDateAttribute($key)
-    {
-        return array_key_exists($key, $this->getDates());
-    }
-
-    /**
-     * Get the attributes that should be mutated to dates.
-     *
-     * @return array
-     */
-    public function getDates()
-    {
-        // Since array string keys can be unique depending
-        // on casing differences, we need to normalize the
-        // array key case so they are merged properly.
-        return array_merge(
-            array_change_key_case($this->defaultDates, CASE_LOWER),
-            array_change_key_case($this->dates, CASE_LOWER)
-        );
     }
 
     /**
@@ -647,36 +871,6 @@ trait HasAttributes
     public function isDirty($key)
     {
         return !$this->originalIsEquivalent($key);
-    }
-
-    /**
-     * Convert the given date value to an LDAP compatible value.
-     *
-     * @param string $type
-     * @param mixed  $value
-     *
-     * @throws LdapRecordException
-     *
-     * @return float|string
-     */
-    public function fromDateTime($type, $value)
-    {
-        return (new Timestamp($type))->fromDateTime($value);
-    }
-
-    /**
-     * Convert the given LDAP date value to a Carbon instance.
-     *
-     * @param string $type
-     * @param mixed  $value
-     *
-     * @throws LdapRecordException
-     *
-     * @return Carbon|false
-     */
-    public function asDateTime($type, $value)
-    {
-        return (new Timestamp($type))->toDateTime($value);
     }
 
     /**

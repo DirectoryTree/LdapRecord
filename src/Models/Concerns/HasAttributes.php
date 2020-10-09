@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use Exception;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Tightenco\Collect\Support\Arr;
@@ -323,6 +324,23 @@ trait HasAttributes
     }
 
     /**
+     * Determine whether an attribute should be cast to a native type.
+     *
+     * @param string             $key
+     * @param array|string|null  $types
+     *
+     * @return bool
+     */
+    public function hasCast($key, $types = null)
+    {
+        if (array_key_exists($key, $this->getCasts())) {
+            return $types ? in_array($this->getCastType($key), (array) $types, true) : true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get the attributes that should be cast to their native types.
      *
      * @return array
@@ -330,6 +348,18 @@ trait HasAttributes
     protected function getCasts()
     {
         return array_change_key_case($this->casts, CASE_LOWER);
+    }
+
+    /**
+     * Determine whether a value is JSON castable for inbound manipulation.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    protected function isJsonCastable($key)
+    {
+        return $this->hasCast($key, ['array', 'json', 'object', 'collection']);
     }
 
     /**
@@ -432,6 +462,28 @@ trait HasAttributes
     }
 
     /**
+     * Cast the given attribute to JSON.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return string
+     */
+    protected function castAttributeAsJson($key, $value)
+    {
+        $value = $this->asJson($value);
+
+        if ($value === false) {
+            $class = get_class($this);
+            $message = json_last_error_msg();
+
+            throw new Exception("Unable to encode attribute [{$key}] for model [{$class}] to JSON: {$message}.");
+        }
+
+        return $value;
+    }
+
+    /**
      * Encode the given value as JSON.
      *
      * @param mixed $value
@@ -459,7 +511,8 @@ trait HasAttributes
     /**
      * Decode the given float.
      *
-     * @param  mixed  $value
+     * @param mixed $value
+     *
      * @return mixed
      */
     public function fromFloat($value)
@@ -623,6 +676,10 @@ trait HasAttributes
             !$this->valueIsResetInteger($value)
         ) {
             $value = $this->fromDateTime($this->getDates()[$key], $value);
+        }
+
+        if ($this->isJsonCastable($key) && ! is_null($value)) {
+            $value = $this->castAttributeAsJson($key, $value);
         }
 
         $this->attributes[$key] = Arr::wrap($value);

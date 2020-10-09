@@ -56,15 +56,31 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_object_attributes_are_casted()
     {
-        $model = new ModelCastStub(['objectAttribute' => '{"integer":1, "string":"two"}']);
+        $model = new ModelCastStub(['objectAttribute' => ['foo' => 1, 'bar' => 'two']]);
+
+        $this->assertEquals(['{"foo":1,"bar":"two"}'], $model->getAttributes()['objectattribute']);
 
         $this->assertInternalType('object', $value = $model->objectAttribute);
 
         $object = (new \stdClass);
-        $object->integer = 1;
-        $object->string = 'two';
+        $object->foo = 1;
+        $object->bar = 'two';
 
         $this->assertEquals($object, $value);
+    }
+
+    public function test_integer_attributes_are_casted()
+    {
+        $model = new ModelCastStub([
+            'intAttribute' => '1234.5678',
+            'integerAttribute' => '1234.5678',
+        ]);
+
+        $this->assertInternalType('int', $model->intAttribute);
+        $this->assertInternalType('int', $model->integerAttribute);
+
+        $this->assertEquals(1234, $model->intAttribute);
+        $this->assertEquals(1234, $model->integerAttribute);
     }
 
     public function test_decimal_attributes_are_casted()
@@ -73,7 +89,7 @@ class ModelAttributeCastTest extends TestCase
 
         $this->assertInternalType('string', $value = $model->decimalAttribute);
 
-        $this->assertEquals('1234.568', $value);
+        $this->assertEquals(1234.568, $value);
     }
 
     public function test_ldap_datetime_attributes_are_casted()
@@ -87,6 +103,9 @@ class ModelAttributeCastTest extends TestCase
 class ModelCastStub extends Model
 {
     protected $casts = [
+        'intAttribute' => 'int',
+        'integerAttribute' => 'integer',
+
         'boolAttribute' => 'bool',
         'booleanAttribute' => 'boolean',
 

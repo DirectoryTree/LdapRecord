@@ -107,7 +107,7 @@ class ModelAttributeCastTest extends TestCase
 
         $this->assertInternalType('string', $value = $model->decimalAttribute);
 
-        $this->assertEquals(1234.56, $value);
+        $this->assertEquals(1234.57, $value);
     }
 
     public function test_ldap_datetime_attributes_are_casted()

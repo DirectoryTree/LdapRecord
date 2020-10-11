@@ -88,11 +88,6 @@ class Timestamp
             $value = Carbon::instance($value);
         }
 
-        // Here we'll set the dates time zone to UTC. LDAP uses UTC
-        // as its timezone for all dates. We will also set the
-        // microseconds to 0 as LDAP does not support them.
-        $value->setTimezone('UTC')->micro(0);
-
         switch ($this->type) {
             case 'ldap':
                 $value = $this->convertDateTimeToLdapTime($value);
@@ -104,7 +99,7 @@ class Timestamp
                 $value = $this->convertDateTimeToWindowsInteger($value);
                 break;
             default:
-                throw new LdapRecordException("Unrecognized date type '{$this->type}'");
+                throw new LdapRecordException("Unrecognized date type [{$this->type}]");
         }
 
         return $value;
@@ -153,9 +148,7 @@ class Timestamp
                 throw new LdapRecordException("Unrecognized date type [{$this->type}]");
         }
 
-        return $value instanceof DateTime
-            ? Carbon::instance($value)
-            : $value;
+        return $value instanceof DateTime ? Carbon::instance($value) : $value;
     }
 
     /**
@@ -167,7 +160,9 @@ class Timestamp
      */
     protected function convertLdapTimeToDateTime($value)
     {
-        return DateTime::createFromFormat('YmdHisZ', $value);
+        return DateTime::createFromFormat(
+            strpos($value, 'Z') !== false ? 'YmdHis\Z' : 'YmdHisT', $value
+        );
     }
 
     /**
@@ -179,7 +174,9 @@ class Timestamp
      */
     protected function convertDateTimeToLdapTime(DateTime $date)
     {
-        return $date->format('YmdHis\Z');
+        return $date->format(
+            $date->getOffset() == 0 ? 'YmdHis\Z' : 'YmdHisO'
+        );
     }
 
     /**
@@ -191,7 +188,9 @@ class Timestamp
      */
     protected function convertWindowsTimeToDateTime($value)
     {
-        return DateTime::createFromFormat('YmdHis.0Z', $value);
+        return DateTime::createFromFormat(
+            strpos($value, '0Z') !== false ? 'YmdHis.0\Z' : 'YmdHis.0T', $value
+        );
     }
 
     /**
@@ -203,7 +202,9 @@ class Timestamp
      */
     protected function convertDateTimeToWindows(DateTime $date)
     {
-        return $date->format('YmdHis.0\Z');
+        return $date->format(
+            $date->getOffset() == 0 ?  'YmdHis.0\Z' : 'YmdHis.0O'
+        );
     }
 
     /**

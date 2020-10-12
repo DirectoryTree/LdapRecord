@@ -80,7 +80,7 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_collection_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['collectionAttribute' => ['{"foo": 1, "bar": "two"}']]);
+        $model = (new ModelCastStub)->setRawAttributes(['collectionAttribute' => ['foo' => 1, 'bar' => 'two']]);
 
         $this->assertInstanceOf(Collection::class, $collection = $model->collectionAttribute);
 

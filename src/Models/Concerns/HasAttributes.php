@@ -257,7 +257,7 @@ trait HasAttributes
         }
 
         if ($this->isCastedAttribute($key) && !is_null($value)) {
-            return $this->castAttribute($key, Arr::first($value));
+            return $this->castAttribute($key, $value);
         }
 
         return $value;
@@ -421,8 +421,8 @@ trait HasAttributes
     /**
      * Cast an attribute to a native PHP type.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param string     $key
+     * @param array|null $value
      *
      * @return mixed
      */
@@ -435,27 +435,27 @@ trait HasAttributes
         switch ($this->getCastType($key)) {
             case 'int':
             case 'integer':
-                return (int) $value;
+                return (int) Arr::first($value);
             case 'real':
             case 'float':
             case 'double':
-                return $this->fromFloat($value);
+                return $this->fromFloat(Arr::first($value));
             case 'decimal':
-                return $this->asDecimal($value, explode(':', $this->getCasts()[$key], 2)[1]);
+                return $this->asDecimal(Arr::first($value), explode(':', $this->getCasts()[$key], 2)[1]);
             case 'string':
-                return (string) $value;
+                return (string) Arr::first($value);
             case 'bool':
             case 'boolean':
-                return $this->asBoolean($value);
+                return $this->asBoolean(Arr::first($value));
             case 'object':
-                return $this->fromJson($value, $asObject = true);
+                return $this->fromJson(Arr::first($value), $asObject = true);
             case 'array':
             case 'json':
-                return $this->fromJson($value);
+                return $this->fromJson(Arr::first($value));
             case 'collection':
-                return $this->newCollection($this->fromJson($value));
+                return $this->newCollection($value);
             case 'datetime':
-                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], $value);
+                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], Arr::first($value));
             default:
                 return $value;
         }

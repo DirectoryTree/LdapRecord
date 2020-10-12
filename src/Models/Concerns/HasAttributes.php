@@ -257,7 +257,7 @@ trait HasAttributes
         }
 
         if ($this->isCastedAttribute($key) && !is_null($value)) {
-            return $this->castAttribute($key, Arr::first($value));
+            return $this->castAttribute($key, $value);
         }
 
         return $value;
@@ -421,13 +421,15 @@ trait HasAttributes
     /**
      * Cast an attribute to a native PHP type.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param string     $key
+     * @param array|null $value
      *
      * @return mixed
      */
     protected function castAttribute($key, $value)
     {
+        $value = $this->castRequiresArrayValue($key) ? $value : Arr::first($value);
+
         if (is_null($value)) {
             return $value;
         }
@@ -453,12 +455,22 @@ trait HasAttributes
             case 'json':
                 return $this->fromJson($value);
             case 'collection':
-                return $this->newCollection($this->fromJson($value));
+                return $this->newCollection($value);
             case 'datetime':
                 return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], $value);
             default:
                 return $value;
         }
+    }
+
+    /**
+     * Determine if the cast type requires the first attribute value.
+     * 
+     * @return bool
+     */
+    protected function castRequiresArrayValue($key)
+    {
+        return in_array($this->getCastType($key), ['collection']);
     }
 
     /**

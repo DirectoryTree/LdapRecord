@@ -40,6 +40,9 @@ class ModelAttributeCastTest extends TestCase
 
         $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => []]);
         $this->assertNull($model->boolAttribute);
+
+        $model = (new ModelCastStub);
+        $this->assertNull($model->boolAttribute);
     }
 
     public function test_float_attributes_are_casted()
@@ -80,7 +83,7 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_collection_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['collectionAttribute' => ['{"foo": 1, "bar": "two"}']]);
+        $model = (new ModelCastStub)->setRawAttributes(['collectionAttribute' => ['foo' => 1, 'bar' => 'two']]);
 
         $this->assertInstanceOf(Collection::class, $collection = $model->collectionAttribute);
 

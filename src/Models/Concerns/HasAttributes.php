@@ -428,6 +428,8 @@ trait HasAttributes
      */
     protected function castAttribute($key, $value)
     {
+        $value = $this->castRequiresArrayValue($key) ? $value : Arr::first($value);
+
         if (is_null($value)) {
             return $value;
         }
@@ -435,30 +437,40 @@ trait HasAttributes
         switch ($this->getCastType($key)) {
             case 'int':
             case 'integer':
-                return (int) Arr::first($value);
+                return (int) $value;
             case 'real':
             case 'float':
             case 'double':
-                return $this->fromFloat(Arr::first($value));
+                return $this->fromFloat($value);
             case 'decimal':
-                return $this->asDecimal(Arr::first($value), explode(':', $this->getCasts()[$key], 2)[1]);
+                return $this->asDecimal($value, explode(':', $this->getCasts()[$key], 2)[1]);
             case 'string':
-                return (string) Arr::first($value);
+                return (string) $value;
             case 'bool':
             case 'boolean':
-                return $this->asBoolean(Arr::first($value));
+                return $this->asBoolean($value);
             case 'object':
-                return $this->fromJson(Arr::first($value), $asObject = true);
+                return $this->fromJson($value, $asObject = true);
             case 'array':
             case 'json':
-                return $this->fromJson(Arr::first($value));
+                return $this->fromJson($value);
             case 'collection':
                 return $this->newCollection($value);
             case 'datetime':
-                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], Arr::first($value));
+                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], $value);
             default:
                 return $value;
         }
+    }
+
+    /**
+     * Determine if the cast type requires the first attribute value.
+     * 
+     * @return bool
+     */
+    protected function castRequiresArrayValue($key)
+    {
+        return in_array($this->getCastType($key), ['collection']);
     }
 
     /**

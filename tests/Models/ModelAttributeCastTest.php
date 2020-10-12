@@ -40,6 +40,9 @@ class ModelAttributeCastTest extends TestCase
 
         $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => []]);
         $this->assertNull($model->boolAttribute);
+
+        $model = (new ModelCastStub);
+        $this->assertNull($model->boolAttribute);
     }
 
     public function test_float_attributes_are_casted()

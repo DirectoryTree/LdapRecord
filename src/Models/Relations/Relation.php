@@ -379,8 +379,21 @@ abstract class Relation
     protected function getForeignValueFromModel(Model $model)
     {
         return $this->foreignKeyIsDistinguishedName()
-            ? $model->getDn()
-            : $model->getFirstAttribute($this->foreignKey);
+                ? $model->getDn()
+                : $this->getFirstAttributeValue($model, $this->foreignKey);
+    }
+
+    /**
+     * Get the first attribute value from the model.
+     * 
+     * @return string|null
+     */
+    protected function getFirstAttributeValue(Model $model, $attribute)
+    {
+        // Here we will avoid accessing the model attribute in the
+        // traditional way to retrieve the actual raw value of
+        // the attribute and avoid triggering custom casts.
+        return Arr::first($model->getAttributes()[$attribute] ?? null);
     }
 
     /**

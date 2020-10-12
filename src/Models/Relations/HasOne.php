@@ -14,7 +14,7 @@ class HasOne extends Relation
     public function getResults()
     {
         $model = $this->getForeignModelByValue(
-            $this->parent->getFirstAttribute($this->relationKey)
+            $this->getFirstAttributeValue($this->parent, $this->relationKey)
         );
 
         return $this->transformResults(

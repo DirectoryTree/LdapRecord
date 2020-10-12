@@ -26,7 +26,7 @@ class ModelHasOneTest extends TestCase
         $relation = $this->getRelation();
 
         $parent = $relation->getParent();
-        $parent->shouldReceive('getFirstAttribute')->once()->with('manager')->andReturn('foo');
+        $parent->shouldReceive('getAttributes')->once()->andReturn(['manager' => ['foo']]);
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection([$related = new Entry()]));
 
         $query = $relation->getQuery();

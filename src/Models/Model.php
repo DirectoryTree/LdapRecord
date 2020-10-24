@@ -1154,7 +1154,21 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
-        array_map([$this, 'offsetUnset'], array_keys($attributes));
+        foreach ($attributes as $attribute => $value) {
+            // If the attribute value is empty, we will remove
+            // the attribute from the model and continue on.
+            if (empty($value)) {
+                unset($this->attributes[$attribute]);
+            }
+            // Otherwise, only specific attribute values have been
+            // removed. We will determine which ones have been
+            // removed and update the attributes value.
+            else {
+                $this->attributes[$attribute] = array_values(
+                    array_diff($this->attributes[$attribute], $value)
+                );
+            }
+        }
 
         $this->syncOriginal();
     }

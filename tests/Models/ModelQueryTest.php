@@ -235,23 +235,29 @@ class ModelQueryTest extends TestCase
     public function test_delete_attribute()
     {
         $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modDelete')->once()->with('dn', ['foo' => []])->andReturnTrue();
+        $ldap->shouldReceive('modDelete')->once()->with('dn', ['foo' => []]);
+        $ldap->shouldReceive('modDelete')->once()->with('dn', ['bar' => ['zal']]);
 
         $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
-        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('newQuery')->twice()->andReturn($query);
 
         $model->setRawAttributes([
             'dn' => 'dn',
             'foo' => ['bar'],
-            'bar' => ['baz'],
+            'bar' => ['baz', 'zal', 'zar'],
         ]);
 
         $model->deleteAttribute('foo');
 
-        $this->assertEquals(['bar' => ['baz']], $model->getAttributes());
-        $this->assertEquals(['bar' => ['baz']], $model->getOriginal());
+        $this->assertEquals(['bar' => ['baz', 'zal', 'zar']], $model->getAttributes());
+        $this->assertEquals(['bar' => ['baz', 'zal', 'zar']], $model->getOriginal());
+
+        $model->deleteAttribute(['bar' => ['zal']]);
+
+        $this->assertEquals(['bar' => ['baz', 'zar']], $model->getAttributes());
+        $this->assertEquals(['bar' => ['baz', 'zar']], $model->getOriginal());
     }
 
     public function test_delete_attribute_without_existing_model()

@@ -728,7 +728,7 @@ class Builder
      */
     protected function throwNotFoundException($query, $dn)
     {
-        throw ObjectNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
+        throw ObjectNotFoundException::forQuery($query, $dn);
     }
 
     /**

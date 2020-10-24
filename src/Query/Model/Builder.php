@@ -164,11 +164,16 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritDoc}
+     * Throws a new not found exception.
+     *
+     * @param string $query
+     * @param string $dn
+     *
+     * @throws ModelNotFoundException
      */
     protected function throwNotFoundException($query, $dn)
     {
-        throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
+        throw ModelNotFoundException::forQuery($query, $dn);
     }
 
     /**

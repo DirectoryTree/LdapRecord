@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests;
 
+use Psr\Log\NullLogger;
 use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Events\Dispatcher;
@@ -9,11 +10,20 @@ use LdapRecord\ContainerException;
 
 class ContainerTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Container::unsetLogger();
+    }
+
     public function test_get_instance()
     {
+        Container::setLogger($logger = new NullLogger());
+
         $container = Container::getNewInstance();
         $this->assertInstanceOf(Container::class, $container);
-        $this->assertNull($container->getLogger());
+        $this->assertSame($logger, $container::getLogger());
 
         $dispatcher = Container::getEventDispatcher();
 

@@ -7,7 +7,7 @@ use LdapRecord\Ldap;
 use LdapRecord\Connection;
 use Psr\Log\LoggerInterface;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Log\EventLogger;
+use LdapRecord\Events\Logger;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Event as AuthEvent;
 
@@ -30,7 +30,7 @@ class EventLoggerTest extends TestCase
             ->shouldReceive('getConnection')->once()->andReturn($connection)
             ->shouldReceive('getUsername')->once()->andReturn('jdoe@acme.org');
 
-        $eLogger = new EventLogger($logger);
+        $eLogger = new Logger($logger);
 
         $eLogger->auth($event);
     }
@@ -50,7 +50,7 @@ class EventLoggerTest extends TestCase
             ->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1')
             ->shouldReceive('getLastError')->once()->andReturn('Invalid Credentials');
 
-        $eLogger = new EventLogger($logger);
+        $eLogger = new Logger($logger);
 
         $eLogger->auth($event);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Log;
+namespace LdapRecord\Events;
 
 use ReflectionClass;
 use Psr\Log\LoggerInterface;
@@ -9,7 +9,7 @@ use LdapRecord\Auth\Events\Event as AuthEvent;
 use LdapRecord\Models\Events\Event as ModelEvent;
 use LdapRecord\Query\Events\QueryExecuted as QueryEvent;
 
-class EventLogger
+class Logger
 {
     /**
      * The logger instance.
@@ -21,7 +21,7 @@ class EventLogger
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(LoggerInterface $logger = null)
     {

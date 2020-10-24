@@ -237,7 +237,7 @@ trait HasAttributes
     }
 
     /**
-     * Get an attribute value.
+     * Get an attributes value.
      *
      * @param string $key
      *
@@ -309,16 +309,14 @@ trait HasAttributes
     /**
      * Convert the given LDAP date value to a Carbon instance.
      *
-     * TODO: Parameter arrangement will be swapped in v2.0.0.
-     *
-     * @param string $type
      * @param mixed  $value
+     * @param string $type
      *
      * @throws LdapRecordException
      *
      * @return Carbon|false
      */
-    public function asDateTime($type, $value)
+    public function asDateTime($value, $type)
     {
         return (new Timestamp($type))->toDateTime($value);
     }
@@ -457,7 +455,7 @@ trait HasAttributes
             case 'collection':
                 return $this->newCollection($value);
             case 'datetime':
-                return $this->asDateTime(explode(':', $this->getCasts()[$key], 2)[1], $value);
+                return $this->asDateTime($value, explode(':', $this->getCasts()[$key], 2)[1]);
             default:
                 return $value;
         }

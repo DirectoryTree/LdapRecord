@@ -156,10 +156,18 @@ class Builder extends BaseBuilder
      */
     public function findByAnrOrFail($value, $columns = ['*'])
     {
-        if ($entry = $this->findByAnr($value, $columns)) {
-            return $entry;
+        if (! $entry = $this->findByAnr($value, $columns)) {
+            $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
+        return $entry;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function throwNotFoundException($query, $dn)
+    {
         throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
     }
 

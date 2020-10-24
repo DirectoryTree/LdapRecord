@@ -15,7 +15,6 @@ use LdapRecord\EscapesValues;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Events\QueryExecuted;
-use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 
 class Builder
@@ -704,7 +703,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
+     * @throws ObjectNotFoundException
      *
      * @return Model|static
      */
@@ -713,10 +712,23 @@ class Builder
         $record = $this->first($columns);
 
         if (! $record) {
-            throw ModelNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
+            $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
         return $record;
+    }
+
+    /**
+     * Throws a new not found exception.
+     *
+     * @param string $query
+     * @param string $dn
+     *
+     * @throws ObjectNotFoundException
+     */
+    protected function throwNotFoundException($query, $dn)
+    {
+        throw ObjectNotFoundException::forQuery($this->getUnescapedQuery(), $this->dn);
     }
 
     /**
@@ -732,7 +744,7 @@ class Builder
     {
         try {
             return $this->findByOrFail($attribute, $value, $columns);
-        } catch (ModelNotFoundException $e) {
+        } catch (ObjectNotFoundException $e) {
             return;
         }
     }
@@ -746,7 +758,7 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
+     * @throws ObjectNotFoundException
      *
      * @return Model
      */
@@ -816,7 +828,7 @@ class Builder
 
         try {
             return $this->findOrFail($dn, $columns);
-        } catch (ModelNotFoundException $e) {
+        } catch (ObjectNotFoundException $e) {
             return;
         }
     }
@@ -829,7 +841,7 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
+     * @throws ObjectNotFoundException
      *
      * @return Model|static
      */

@@ -1120,18 +1120,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $this->deleteLeafNodes();
         }
 
-        if ($this->newQuery()->delete($this->dn)) {
+        $deleted = $this->newQuery()->delete($this->dn);
+
+        if ($deleted) {
             // If the deletion is successful, we will mark the model
             // as non-existing, and then fire the deleted event so
             // developers can hook in and run further operations.
             $this->exists = false;
 
             $this->fireModelEvent(new Events\Deleted($this));
-
-            return true;
         }
 
-        return false;
+        return $deleted;
     }
 
     /**
@@ -1142,7 +1142,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected function deleteLeafNodes()
     {
         return $this->newQuery()->listing()->in($this->dn)->get()->each(function (self $model) {
-            $model->delete(true);
+            $model->delete($recursive = true);
         });
     }
 

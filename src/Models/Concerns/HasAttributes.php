@@ -111,7 +111,7 @@ trait HasAttributes
                 continue;
             }
 
-            $date = $this->asDateTime($type, $attributes[$attribute]);
+            $date = $this->asDateTime($attributes[$attribute], $type);
 
             $attributes[$attribute] = $date instanceof Carbon
                 ? Arr::wrap($this->serializeDate($date))
@@ -253,7 +253,7 @@ trait HasAttributes
         }
 
         if ($this->isDateAttribute($key) && !is_null($value)) {
-            return $this->asDateTime($this->getDates()[$key], Arr::first($value));
+            return $this->asDateTime(Arr::first($value), $this->getDates()[$key]);
         }
 
         if ($this->isCastedAttribute($key) && !is_null($value)) {

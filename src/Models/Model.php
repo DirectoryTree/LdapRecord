@@ -899,7 +899,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array $attributes The attributes to update or create for the current entry.
      *
-     * @return bool
+     * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function save(array $attributes = [])
     {
@@ -907,23 +909,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Saving($this));
 
-        $saved = $this->exists
-            ? $this->performUpdate()
-            : $this->performInsert();
+        $this->exists ? $this->performUpdate() : $this->performInsert();
 
-        if ($saved) {
-            $this->fireModelEvent(new Events\Saved($this));
-        }
-
-        return $saved;
+        $this->fireModelEvent(new Events\Saved($this));
     }
 
     /**
      * Inserts the model into the directory.
      *
-     * @throws \Exception
+     * @throws \LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     protected function performInsert()
     {
@@ -948,47 +944,37 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // Here we perform the insert of the object in the directory.
         // We will also filter out any empty attribute values here,
         // otherwise the LDAP server will return an error message.
-        $saved = $query->insert($this->getDn(), array_filter($this->getAttributes()));
+        $query->insert($this->getDn(), array_filter($this->getAttributes()));
 
-        if ($saved) {
-            $this->fireModelEvent(new Events\Created($this));
+        $this->fireModelEvent(new Events\Created($this));
 
-            $this->syncOriginal();
+        $this->syncOriginal();
 
-            $this->exists = true;
-        }
-
-        return $saved;
+        $this->exists = true;
     }
 
     /**
      * Updates the model in the directory.
      *
-     * @throws \Exception
+     * @throws \LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     protected function performUpdate()
     {
-        $modifications = $this->getModifications();
-
-        if (! count($modifications)) {
-            return true;
+        if (! count($modifications = $this->getModifications())) {
+            return;
         }
 
         $this->fireModelEvent(new Events\Updating($this));
 
-        $saved = $this->newQuery()->update($this->dn, $modifications);
+        $this->newQuery()->update($this->dn, $modifications);
 
-        if ($saved) {
-            $this->fireModelEvent(new Events\Updated($this));
+        $this->fireModelEvent(new Events\Updated($this));
 
-            $this->syncOriginal();
+        $this->syncOriginal();
 
-            $this->modifications = [];
-        }
-
-        return $saved;
+        $this->modifications = [];
     }
 
     /**
@@ -996,7 +982,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array $attributes The attributes for the new entry.
      *
-     * @throws \Exception
+     * @throws \LdapRecord\LdapRecordException
      *
      * @return Model
      */
@@ -1015,21 +1001,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param string $attribute The attribute to create
      * @param mixed  $value     The value of the new attribute
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function createAttribute($attribute, $value)
     {
         $this->validateExistence();
 
-        $inserted = $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
+        $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
 
-        if ($inserted) {
-            $this->addAttributeValue($attribute, $value);
-        }
-
-        return $inserted;
+        $this->addAttributeValue($attribute, $value);
     }
 
     /**
@@ -1037,15 +1019,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array $attributes The attributes to update for the current entry.
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function update(array $attributes = [])
     {
         $this->validateExistence();
 
-        return $this->save($attributes);
+        $this->save($attributes);
     }
 
     /**
@@ -1054,7 +1036,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param string $attribute The attribute to modify
      * @param mixed  $value     The new value for the attribute
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
      * @return bool
      */
@@ -1062,13 +1044,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        $updated = $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
+        $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
 
-        if ($updated) {
-            $this->addAttributeValue($attribute, $value);
-        }
-
-        return $updated;
+        $this->addAttributeValue($attribute, $value);
     }
 
     /**
@@ -1076,6 +1054,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param Collection|array|string $dns
      * @param bool                    $recursive
+     *
+     * @throws \LdapRecord\LdapRecordException
      *
      * @return int
      */
@@ -1088,11 +1068,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $instance = new static();
 
         foreach ($dns as $dn) {
-            $model = $instance->find($dn);
-
-            if ($model && $model->delete($recursive)) {
-                $count++;
+            if (! $model = $instance->find($dn)) {
+                continue;
             }
+
+            $model->delete($recursive);
+
+            $count++;
         }
 
         return $count;
@@ -1106,9 +1088,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param bool $recursive Whether to recursively delete leaf nodes (models that are children).
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function delete($recursive = false)
     {
@@ -1120,22 +1102,20 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $this->deleteLeafNodes();
         }
 
-        $deleted = $this->newQuery()->delete($this->dn);
+        $this->newQuery()->delete($this->dn);
 
-        if ($deleted) {
-            // If the deletion is successful, we will mark the model
-            // as non-existing, and then fire the deleted event so
-            // developers can hook in and run further operations.
-            $this->exists = false;
+        // If the deletion is successful, we will mark the model
+        // as non-existing, and then fire the deleted event so
+        // developers can hook in and run further operations.
+        $this->exists = false;
 
-            $this->fireModelEvent(new Events\Deleted($this));
-        }
-
-        return $deleted;
+        $this->fireModelEvent(new Events\Deleted($this));
     }
 
     /**
      * Deletes leaf nodes that are attached to the model.
+     *
+     * @throws \LdapRecord\LdapRecordException
      *
      * @return Collection
      */
@@ -1159,9 +1139,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      *     ["memberuid" => []]
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function deleteAttribute($attributes)
     {
@@ -1172,15 +1152,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // assume it's an array of attributes to remove.
         $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
 
-        $deleted = $this->newQuery()->deleteAttributes($this->dn, $attributes);
+        $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
-        if ($deleted) {
-            array_map([$this, 'offsetUnset'], array_keys($attributes));
+        array_map([$this, 'offsetUnset'], array_keys($attributes));
 
-            $this->syncOriginal();
-        }
-
-        return $deleted;
+        $this->syncOriginal();
     }
 
     /**
@@ -1191,9 +1167,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param static|string $newParentDn  The new parent of the current model.
      * @param bool          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function move($newParentDn, $deleteOldRdn = true)
     {
@@ -1213,9 +1189,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param static|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
      * @param bool|true          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
-     * @throws ModelDoesNotExistException
+     * @throws ModelDoesNotExistException|\LdapRecord\LdapRecordException
      *
-     * @return bool
+     * @return void
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
@@ -1231,29 +1207,24 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
 
-        $renamed = $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
+        $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
+        // If the model was successfully renamed, we will set
+        // its new DN so any further updates to the model
+        // can be performed without any issues.
+        $this->dn = implode(',', [$rdn, $newParentDn]);
 
-        if ($renamed) {
-            // If the model was successfully renamed, we will set
-            // its new DN so any further updates to the model
-            // can be performed without any issues.
-            $this->dn = implode(',', [$rdn, $newParentDn]);
+        $map = $this->newDn($this->dn)->assoc();
 
-            $map = $this->newDn($this->dn)->assoc();
+        // Here we'll populate the models new primary
+        // RDN attribute on the model so we do not
+        // have to re-synchronize with the server.
+        $modelNameAttribute = key($map);
 
-            // Here we'll populate the models new primary
-            // RDN attribute on the model so we do not
-            // have to re-synchronize with the server.
-            $modelNameAttribute = key($map);
+        $this->attributes[$modelNameAttribute]
+            = $this->original[$modelNameAttribute]
+            = [reset($map[$modelNameAttribute])];
 
-            $this->attributes[$modelNameAttribute]
-                = $this->original[$modelNameAttribute]
-                = [reset($map[$modelNameAttribute])];
-
-            $this->fireModelEvent(new Renamed($this));
-        }
-
-        return $renamed;
+        $this->fireModelEvent(new Renamed($this));
     }
 
     /**

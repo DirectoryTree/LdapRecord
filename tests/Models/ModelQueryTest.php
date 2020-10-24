@@ -109,7 +109,8 @@ class ModelQueryTest extends TestCase
         $model->setDn('cn=foo,dc=bar,dc=baz');
         $model->fill($attributes = ['cn' => 'foo', 'objectclass' => 'bar']);
 
-        $this->assertTrue($model->save());
+        $model->save();
+
         $this->assertEquals($model->getOriginal(), $model->getAttributes());
     }
 
@@ -137,7 +138,7 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($model->createAttribute('bar', 'baz'));
+        $model->createAttribute('bar', 'baz');
     }
 
     public function test_create_attribute_without_existing_model()
@@ -159,10 +160,12 @@ class ModelQueryTest extends TestCase
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
-        $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
-        $model->cn = 'baz';
+        $model->setRawAttributes([
+            'dn' => 'foo',
+            'cn' => 'bar',
+        ]);
 
-        $this->assertTrue($model->update());
+        $model->update(['cn' => 'baz']);
     }
 
     public function test_update_without_existing_model()
@@ -173,10 +176,14 @@ class ModelQueryTest extends TestCase
         $model->update();
     }
 
-    public function test_update_without_changes()
+    public function test_update_without_changes_does_not_attempt_update()
     {
-        $model = (new Entry())->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($model->update());
+        $model = m::mock(Entry::class)->makePartial();
+        $model->shouldNotReceive('newQuery');
+
+        $model->setRawAttributes(['dn' => 'foo']);
+
+        $model->update();
     }
 
     public function test_update_attribute()
@@ -190,7 +197,8 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($model->updateAttribute('bar', 'baz'));
+
+        $model->updateAttribute('bar', 'baz');
     }
 
     public function test_update_attribute_without_existing_model()
@@ -211,7 +219,9 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo', 'foo' => ['bar']]);
-        $this->assertTrue($model->delete());
+
+        $model->delete();
+
         $this->assertEquals(['foo' => ['bar']], $model->getAttributes());
     }
 
@@ -238,7 +248,8 @@ class ModelQueryTest extends TestCase
             'bar' => ['baz'],
         ]);
 
-        $this->assertTrue($model->deleteAttribute('foo'));
+        $model->deleteAttribute('foo');
+
         $this->assertEquals(['bar' => ['baz']], $model->getAttributes());
         $this->assertEquals(['bar' => ['baz']], $model->getOriginal());
     }

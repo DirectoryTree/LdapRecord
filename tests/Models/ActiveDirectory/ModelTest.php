@@ -56,7 +56,8 @@ class ModelTest extends TestCase
             'dn'        => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
         ]);
 
-        $this->assertTrue($m->restore());
+        $m->restore();
+
         $this->assertEquals('CN=John Doe,DC=local,DC=com', $m->getDn());
     }
 }

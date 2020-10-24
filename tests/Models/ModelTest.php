@@ -617,7 +617,8 @@ class ModelTest extends TestCase
         $model = new ModelRenameTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
-        $this->assertTrue($model->rename('cn=Jane Doe'));
+        $model->rename('cn=Jane Doe');
+
         $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
@@ -628,7 +629,8 @@ class ModelTest extends TestCase
         $model = new ModelRenameWithParentTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
-        $this->assertTrue($model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org'));
+        $model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org');
+
         $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
@@ -648,7 +650,8 @@ class ModelTest extends TestCase
         $model = new ModelMoveTestStub();
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
-        $this->assertTrue($model->move('ou=Users,dc=acme,dc=org'));
+        $model->move('ou=Users,dc=acme,dc=org');
+
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
     }
 

@@ -39,8 +39,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
         Container::setEventDispatcher($dispatcher);
 
-        $model = new ModelEventSaveStub();
-        $this->assertTrue($model->save());
+        (new ModelEventSaveStub())->save();
     }
 
     public function test_create_fires_events()
@@ -61,10 +60,10 @@ class ModelEventTest extends TestCase
         $model->shouldReceive('getConnectionContainer')->andReturn(Container::getInstance());
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
-        $model->setDn('cn=foo,dc=bar,dc=baz');
-        $model->cn = 'foo';
-        $model->objectclass = 'bar';
-        $this->assertTrue($model->save());
+        $model->setDn('cn=foo,dc=bar,dc=baz')->fill([
+            'cn' => 'foo',
+            'objectclass' => 'bar',
+        ])->save();
     }
 
     public function test_updating_model_fires_events()
@@ -87,7 +86,7 @@ class ModelEventTest extends TestCase
 
         $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
         $model->cn = 'foo';
-        $this->assertTrue($model->update());
+        $model->update();
     }
 
     public function test_deleting_model_fires_events()
@@ -107,7 +106,7 @@ class ModelEventTest extends TestCase
 
         $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
         $model->cn = 'foo';
-        $this->assertTrue($model->delete());
+        $model->delete();
     }
 }
 

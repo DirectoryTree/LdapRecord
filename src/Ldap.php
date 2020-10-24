@@ -3,6 +3,7 @@
 namespace LdapRecord;
 
 use Closure;
+use Exception;
 use ErrorException;
 
 class Ldap
@@ -290,10 +291,14 @@ class Ldap
      *
      * @link http://php.net/manual/en/function.ldap-error.php
      *
-     * @return string
+     * @return string|null
      */
     public function getLastError()
     {
+        if (! $this->connection) {
+            return;
+        }
+
         return ldap_error($this->connection);
     }
 
@@ -399,7 +404,7 @@ class Ldap
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @throws \ErrorException If starting TLS fails.
+     * @throws LdapRecordException
      *
      * @return bool
      */
@@ -566,7 +571,7 @@ class Ldap
      * @param string $username
      * @param string $password
      *
-     * @throws ConnectionException If starting TLS fails.
+     * @throws LdapRecordException
      *
      * @return bool
      */
@@ -585,6 +590,8 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
+     * @throws LdapRecordException
+     *
      * @return bool
      */
     public function add($dn, array $entry)
@@ -600,6 +607,8 @@ class Ldap
      * @link http://php.net/manual/en/function.ldap-delete.php
      *
      * @param string $dn
+     *
+     * @throws LdapRecordException
      *
      * @return bool
      */
@@ -620,6 +629,8 @@ class Ldap
      * @param string $newParent
      * @param bool   $deleteOldRdn
      *
+     * @throws LdapRecordException
+     *
      * @return bool
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
@@ -639,6 +650,8 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
+     * @throws LdapRecordException
+     *
      * @return bool
      */
     public function modify($dn, array $entry)
@@ -655,6 +668,8 @@ class Ldap
      *
      * @param string $dn
      * @param array  $values
+     *
+     * @throws LdapRecordException
      *
      * @return bool
      */
@@ -673,6 +688,8 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
+     * @throws LdapRecordException
+     *
      * @return bool
      */
     public function modAdd($dn, array $entry)
@@ -690,6 +707,8 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
+     * @throws LdapRecordException
+     *
      * @return bool
      */
     public function modReplace($dn, array $entry)
@@ -706,6 +725,8 @@ class Ldap
      *
      * @param string $dn
      * @param array  $entry
+     *
+     * @throws LdapRecordException
      *
      * @return bool
      */
@@ -771,10 +792,14 @@ class Ldap
      *
      * @link http://php.net/manual/en/function.ldap-errno.php
      *
-     * @return int
+     * @return int|null
      */
     public function errNo()
     {
+        if (! $this->connection) {
+            return;
+        }
+
         return ldap_errno($this->connection);
     }
 
@@ -811,8 +836,7 @@ class Ldap
     }
 
     /**
-     * Returns the error string of the specified
-     * error number.
+     * Returns the error string of the specified error number.
      *
      * @link http://php.net/manual/en/function.ldap-err2str.php
      *
@@ -866,7 +890,7 @@ class Ldap
      *
      * @param Closure $operation
      *
-     * @throws ErrorException
+     * @throws LdapRecordException
      *
      * @return mixed
      */
@@ -879,12 +903,32 @@ class Ldap
         });
 
         try {
-            return $operation();
+            if (($result = $operation()) !== false) {
+                return $result;
+            }
+
+            if ($this->shouldBypassFailure($method = debug_backtrace()[1]['function'])) {
+                return $result;
+            }
+
+            throw new Exception("LDAP operation [$method] failed.");
         } catch (ErrorException $e) {
-            throw $e;
+            throw LdapRecordException::withDetailedError($e, $this->getDetailedError());
         } finally {
             restore_error_handler();
         }
+    }
+
+    /**
+     * Determine if the failed operation should be bypassed.
+     *
+     * @param string $method
+     *
+     * @return bool
+     */
+    protected function shouldBypassFailure($method)
+    {
+        return in_array($method, ['search', 'read', 'listing']);
     }
 
     /**

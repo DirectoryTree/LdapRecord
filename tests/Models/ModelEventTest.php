@@ -58,8 +58,8 @@ class ModelEventTest extends TestCase
         $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
+        $model->shouldReceive('getConnectionContainer')->andReturn(Container::getInstance());
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setDn('cn=foo,dc=bar,dc=baz');
         $model->cn = 'foo';
@@ -82,8 +82,8 @@ class ModelEventTest extends TestCase
         $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
+        $model->shouldReceive('getConnectionContainer')->andReturn(Container::getInstance());
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
         $model->cn = 'foo';
@@ -104,7 +104,6 @@ class ModelEventTest extends TestCase
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldNotReceive('synchronize');
 
         $model->setRawAttributes(['dn' => 'cn=foo,dc=bar,dc=baz']);
         $model->cn = 'foo';
@@ -119,7 +118,7 @@ class ModelEventSaveStub extends Model
         return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
     }
 
-    public function synchronize()
+    public function refresh()
     {
         return true;
     }

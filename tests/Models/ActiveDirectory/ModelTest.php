@@ -63,7 +63,7 @@ class ModelTest extends TestCase
 
 class TestModelRestoreStub extends Entry
 {
-    public function synchronize()
+    public function refresh()
     {
         return true;
     }

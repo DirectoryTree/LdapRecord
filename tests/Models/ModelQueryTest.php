@@ -105,11 +105,12 @@ class ModelQueryTest extends TestCase
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setDn('cn=foo,dc=bar,dc=baz');
-        $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
+        $model->fill($attributes = ['cn' => 'foo', 'objectclass' => 'bar']);
+
         $this->assertTrue($model->save());
+        $this->assertEquals($model->getOriginal(), $model->getAttributes());
     }
 
     public function test_create_without_connection()
@@ -134,7 +135,6 @@ class ModelQueryTest extends TestCase
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setRawAttributes(['dn' => 'foo']);
         $this->assertTrue($model->createAttribute('bar', 'baz'));
@@ -158,7 +158,6 @@ class ModelQueryTest extends TestCase
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
         $model->cn = 'baz';
@@ -189,7 +188,6 @@ class ModelQueryTest extends TestCase
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
         $model->setRawAttributes(['dn' => 'foo']);
         $this->assertTrue($model->updateAttribute('bar', 'baz'));
@@ -212,8 +210,9 @@ class ModelQueryTest extends TestCase
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
-        $model->setRawAttributes(['dn' => 'foo']);
+        $model->setRawAttributes(['dn' => 'foo', 'foo' => ['bar']]);
         $this->assertTrue($model->delete());
+        $this->assertEquals(['foo' => ['bar']], $model->getAttributes());
     }
 
     public function test_delete_without_existing_model()
@@ -226,16 +225,22 @@ class ModelQueryTest extends TestCase
     public function test_delete_attribute()
     {
         $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modDelete')->once()->with('foo', ['bar' => []])->andReturnTrue();
+        $ldap->shouldReceive('modDelete')->once()->with('dn', ['foo' => []])->andReturnTrue();
 
         $query = new Builder(new Connection([], $ldap));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQuery')->once()->andReturn($query);
-        $model->shouldReceive('synchronize')->once()->andReturnTrue();
 
-        $model->setRawAttributes(['dn' => 'foo']);
-        $this->assertTrue($model->deleteAttribute('bar'));
+        $model->setRawAttributes([
+            'dn' => 'dn',
+            'foo' => ['bar'],
+            'bar' => ['baz'],
+        ]);
+
+        $this->assertTrue($model->deleteAttribute('foo'));
+        $this->assertEquals(['bar' => ['baz']], $model->getAttributes());
+        $this->assertEquals(['bar' => ['baz']], $model->getOriginal());
     }
 
     public function test_delete_attribute_without_existing_model()

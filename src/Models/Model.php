@@ -644,11 +644,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Synchronizes the current models attributes with the directory values.
+     * Refreshes the current models attributes with the directory values.
      *
      * @return bool
      */
-    public function synchronize()
+    public function refresh()
     {
         if ($model = $this->fresh()) {
             $this->setRawAttributes($model->getAttributes());
@@ -907,7 +907,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Saving($this));
 
-        $saved = $this->exists ? $this->performUpdate() : $this->performInsert();
+        $saved = $this->exists
+            ? $this->performUpdate()
+            : $this->performInsert();
 
         if ($saved) {
             $this->fireModelEvent(new Events\Saved($this));
@@ -946,15 +948,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // Here we perform the insert of the object in the directory.
         // We will also filter out any empty attribute values here,
         // otherwise the LDAP server will return an error message.
-        if ($query->insert($this->getDn(), array_filter($this->getAttributes()))) {
+        $saved = $query->insert($this->getDn(), array_filter($this->getAttributes()));
+
+        if ($saved) {
             $this->fireModelEvent(new Events\Created($this));
 
-            $this->exists = true;
+            $this->syncOriginal();
 
-            return $this->synchronize();
+            $this->exists = true;
         }
 
-        return false;
+        return $saved;
     }
 
     /**
@@ -974,17 +978,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Updating($this));
 
-        if ($this->newQuery()->update($this->dn, $modifications)) {
+        $saved = $this->newQuery()->update($this->dn, $modifications);
+
+        if ($saved) {
             $this->fireModelEvent(new Events\Updated($this));
 
-            // Re-set the models modifications.
-            $this->modifications = [];
+            $this->syncOriginal();
 
-            // Re-sync the models attributes.
-            return $this->synchronize();
+            $this->modifications = [];
         }
 
-        return false;
+        return $saved;
     }
 
     /**
@@ -1010,21 +1014,22 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param string $attribute The attribute to create
      * @param mixed  $value     The value of the new attribute
-     * @param bool   $sync      Whether to re-sync all attributes
      *
      * @throws ModelDoesNotExistException
      *
      * @return bool
      */
-    public function createAttribute($attribute, $value, $sync = true)
+    public function createAttribute($attribute, $value)
     {
         $this->validateExistence();
 
-        if ($this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value])) {
-            return $sync ? $this->synchronize() : true;
+        $inserted = $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
+
+        if ($inserted) {
+            $this->addAttributeValue($attribute, $value);
         }
 
-        return false;
+        return $inserted;
     }
 
     /**
@@ -1048,21 +1053,22 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param string $attribute The attribute to modify
      * @param mixed  $value     The new value for the attribute
-     * @param bool   $sync      Whether to re-sync all attributes
      *
      * @throws ModelDoesNotExistException
      *
      * @return bool
      */
-    public function updateAttribute($attribute, $value, $sync = true)
+    public function updateAttribute($attribute, $value)
     {
         $this->validateExistence();
 
-        if ($this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value])) {
-            return $sync ? $this->synchronize() : true;
+        $updated = $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
+
+        if ($updated) {
+            $this->addAttributeValue($attribute, $value);
         }
 
-        return false;
+        return $updated;
     }
 
     /**
@@ -1144,7 +1150,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Delete an attribute on the model.
      *
      * @param string|array $attributes The attribute(s) to delete
-     * @param bool         $sync       Whether to re-sync all attributes
      *
      * Delete specific values in attributes:
      *
@@ -1158,7 +1163,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return bool
      */
-    public function deleteAttribute($attributes, $sync = true)
+    public function deleteAttribute($attributes)
     {
         $this->validateExistence();
 
@@ -1167,11 +1172,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // assume it's an array of attributes to remove.
         $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
 
-        if ($this->newQuery()->deleteAttributes($this->dn, $attributes)) {
-            return $sync ? $this->synchronize() : true;
+        $deleted = $this->newQuery()->deleteAttributes($this->dn, $attributes);
+
+        if ($deleted) {
+            array_map([$this, 'offsetUnset'], array_keys($attributes));
+
+            $this->syncOriginal();
         }
 
-        return false;
+        return $deleted;
     }
 
     /**
@@ -1222,7 +1231,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
 
-        if ($this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn)) {
+        $renamed = $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
+
+        if ($renamed) {
             // If the model was successfully renamed, we will set
             // its new DN so any further updates to the model
             // can be performed without any issues.
@@ -1240,11 +1251,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
                 = [reset($map[$modelNameAttribute])];
 
             $this->fireModelEvent(new Renamed($this));
-
-            return true;
         }
 
-        return false;
+        return $renamed;
     }
 
     /**

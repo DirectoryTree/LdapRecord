@@ -164,7 +164,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Throws a new not found exception.
+     * Throws a not found exception.
      *
      * @param string $query
      * @param string $dn

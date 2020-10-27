@@ -3,6 +3,7 @@
 namespace LdapRecord\Query\Model;
 
 use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Models\Attributes\AccountControl;
 
 class ActiveDirectoryBuilder extends Builder
 {
@@ -47,7 +48,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereEnabled()
     {
-        return $this->rawFilter('(!(UserAccountControl:1.2.840.113556.1.4.803:=2))');
+        return $this->notFilter(function ($query) {
+            return $query->whereDisabled();
+        });
     }
 
     /**
@@ -57,7 +60,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereDisabled()
     {
-        return $this->rawFilter('(UserAccountControl:1.2.840.113556.1.4.803:=2)');
+        return $this->rawFilter($this->grammar->wrap(
+            (new AccountControl())->accountIsDisabled()->filter()
+        ));
     }
 
     /**

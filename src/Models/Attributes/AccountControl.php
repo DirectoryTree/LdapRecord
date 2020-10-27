@@ -158,6 +158,16 @@ class AccountControl
     }
 
     /**
+     * Generate an LDAP filter based on the current value.
+     *
+     * @return string
+     */
+    public function filter()
+    {
+        return sprintf('UserAccountControl:1.2.840.113556.1.4.803:=%s', $this->getValue());
+    }
+
+    /**
      * The logon script will be run.
      *
      * @return $this

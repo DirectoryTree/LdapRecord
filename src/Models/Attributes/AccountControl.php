@@ -164,7 +164,7 @@ class AccountControl
      */
     public function filter()
     {
-        return sprintf('UserAccountControl:1.2.840.113556.1.4.803:=%s', $this->getValue());
+        return sprintf('(UserAccountControl:1.2.840.113556.1.4.803:=%s)', $this->getValue());
     }
 
     /**

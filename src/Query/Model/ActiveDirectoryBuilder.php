@@ -60,9 +60,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereDisabled()
     {
-        return $this->rawFilter($this->grammar->wrap(
+        return $this->rawFilter(
             (new AccountControl())->accountIsDisabled()->filter()
-        ));
+        );
     }
 
     /**

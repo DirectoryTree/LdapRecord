@@ -8,6 +8,13 @@ use LdapRecord\Configuration\ConfigurationException;
 
 class DomainConfigurationTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setup();
+
+        DomainConfiguration::flushExtended();
+    }
+
     public function test_getting_options()
     {
         $config = new DomainConfiguration();
@@ -84,6 +91,26 @@ class DomainConfigurationTest extends TestCase
             'follow_referrals' => false,
             'options'          => [],
         ], $config->all());
+    }
+
+    public function test_extend()
+    {
+        DomainConfiguration::extend('name', '');
+
+        $config = new DomainConfiguration(['name' => 'Domain 1']);
+
+        $this->assertEquals('Domain 1', $config->get('name'));
+    }
+
+    public function test_extend_can_override_defaults()
+    {
+        DomainConfiguration::extend('port', 'default');
+
+        $config = new DomainConfiguration(['port' => 'invalid']);
+        $this->assertEquals('invalid', $config->get('port'));
+
+        $this->expectException(ConfigurationException::class);
+        $config->set('port', 123);
     }
 
     public function test_invalid_port()

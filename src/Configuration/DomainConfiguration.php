@@ -7,6 +7,13 @@ use LdapRecord\Ldap;
 class DomainConfiguration
 {
     /**
+     * The extended configuration options.
+     *
+     * @var array
+     */
+    protected static $extended = [];
+
+    /**
      * The configuration options array.
      *
      * The default values for each key indicate the type of value it requires.
@@ -57,9 +64,34 @@ class DomainConfiguration
      */
     public function __construct(array $options = [])
     {
+        $this->options = array_merge($this->options, static::$extended);
+        
         foreach ($options as $key => $value) {
             $this->set($key, $value);
         }
+    }
+
+    /**
+     * Extend the configuration with a custom option, or override an existing.
+     *
+     * @param string $option
+     * @param mixed  $default
+     *
+     * @return void
+     */
+    public static function extend($option, $default)
+    {
+        static::$extended[$option] = $default;
+    }
+
+    /**
+     * Flush the extended configuration options.
+     *
+     * @return void
+     */
+    public static function flushExtended()
+    {
+        static::$extended = [];
     }
 
     /**

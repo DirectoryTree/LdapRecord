@@ -79,7 +79,7 @@ class DomainConfiguration
      *
      * @return void
      */
-    public static function extend($option, $default)
+    public static function extend($option, $default = null)
     {
         static::$extended[$option] = $default;
     }

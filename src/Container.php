@@ -177,6 +177,16 @@ class Container
     }
 
     /**
+     * Flush all of the added connections.
+     *
+     * @return $this
+     */
+    public static function flushConnections()
+    {
+        return static::getInstance()->flush();
+    }
+
+    /**
      * Add a new connection into the container.
      *
      * @param Connection  $connection
@@ -215,6 +225,18 @@ class Container
     public function all()
     {
         return $this->connections;
+    }
+
+    /**
+     * Remove all of the connections.
+     *
+     * @return $this
+     */
+    public function flush()
+    {
+        $this->connections = [];
+
+        return $this;
     }
 
     /**

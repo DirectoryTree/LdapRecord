@@ -13,7 +13,17 @@ class ModelScopeTest extends TestCase
 {
     protected function setUp() : void
     {
+        parent::setUp();
+
+        Container::addConnection(new Connection());
         ModelGlobalScopeTestStub::clearBootedModels();
+    }
+
+    protected function tearDown(): void
+    {
+        Container::flushConnections();
+
+        parent::tearDown();
     }
 
     public function test_scopes_can_be_added_to_models()
@@ -37,8 +47,6 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_query()
     {
-        Container::addConnection(new Connection());
-
         $query = (new ModelGlobalScopeTestStub())->newQuery()->applyScopes();
 
         $this->assertEquals([
@@ -50,8 +58,6 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_pagination_request()
     {
-        Container::addConnection(new Connection());
-
         $query = (new ModelGlobalScopeTestStub())->newQuery();
         $this->assertEmpty($query->paginate());
 
@@ -64,8 +70,6 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_not_stacked_multiple_times()
     {
-        Container::addConnection(new Connection());
-
         $query = (new ModelGlobalScopeTestStub())->newQuery();
         $query->getQuery();
         $query->getQuery();
@@ -76,8 +80,6 @@ class ModelScopeTest extends TestCase
 
     public function test_local_scopes_can_be_called()
     {
-        Container::addConnection(new Connection());
-
         $query = ModelLocalScopeTestStub::fooBar();
 
         $this->assertInstanceOf(Builder::class, $query);
@@ -86,6 +88,17 @@ class ModelScopeTest extends TestCase
         $this->assertEquals('=', $query->filters['and'][0]['operator']);
         $this->assertEquals('\62\61\72', $query->filters['and'][0]['value']->get());
     }
+
+    public function test_local_scopes_accept_arguments()
+    {
+        $query = ModelLocalScopeTestStub::barBaz('zal');
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $this->assertCount(1, $query->filters['and']);
+        $this->assertEquals('bar', $query->filters['and'][0]['field']);
+        $this->assertEquals('=', $query->filters['and'][0]['operator']);
+        $this->assertEquals('\7a\61\6c', $query->filters['and'][0]['value']->get());
+    }
 }
 
 class ModelLocalScopeTestStub extends Model
@@ -93,6 +106,11 @@ class ModelLocalScopeTestStub extends Model
     public function scopeFooBar($query)
     {
         return $query->where('foo', '=', 'bar');
+    }
+
+    public function scopeBarBaz($query, $parameter)
+    {
+        return $query->where('bar', '=', $parameter);
     }
 }
 

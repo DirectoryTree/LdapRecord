@@ -404,9 +404,9 @@ class Ldap
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function startTLS()
     {
@@ -571,9 +571,9 @@ class Ldap
      * @param string $username
      * @param string $password
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function bind($username, $password)
     {
@@ -590,9 +590,9 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function add($dn, array $entry)
     {
@@ -608,9 +608,9 @@ class Ldap
      *
      * @param string $dn
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function delete($dn)
     {
@@ -629,9 +629,9 @@ class Ldap
      * @param string $newParent
      * @param bool   $deleteOldRdn
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
@@ -650,9 +650,9 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function modify($dn, array $entry)
     {
@@ -669,9 +669,9 @@ class Ldap
      * @param string $dn
      * @param array  $values
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function modifyBatch($dn, array $values)
     {
@@ -688,9 +688,9 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function modAdd($dn, array $entry)
     {
@@ -707,9 +707,9 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function modReplace($dn, array $entry)
     {
@@ -726,9 +726,9 @@ class Ldap
      * @param string $dn
      * @param array  $entry
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function modDelete($dn, array $entry)
     {
@@ -890,9 +890,9 @@ class Ldap
      *
      * @param Closure $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function executeFailableOperation(Closure $operation)
     {

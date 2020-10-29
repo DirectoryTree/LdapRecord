@@ -111,9 +111,9 @@ trait HasPassword
      *
      * @param string $password
      *
-     * @throws LdapRecordException
-     *
      * @return string
+     *
+     * @throws LdapRecordException
      */
     protected function getHashedPassword($password)
     {
@@ -127,9 +127,9 @@ trait HasPassword
     /**
      * Validates that the current LDAP connection is secure.
      *
-     * @throws ConnectionException
-     *
      * @return void
+     *
+     * @throws ConnectionException
      */
     protected function validateSecureConnection()
     {

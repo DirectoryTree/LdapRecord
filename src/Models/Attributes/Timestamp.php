@@ -61,9 +61,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @throws LdapRecordException
-     *
      * @return float|string
+     *
+     * @throws LdapRecordException
      */
     public function fromDateTime($value)
     {
@@ -122,9 +122,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @throws LdapRecordException
-     *
      * @return Carbon|false
+     *
+     * @throws LdapRecordException
      */
     public function toDateTime($value)
     {
@@ -212,9 +212,9 @@ class Timestamp
      *
      * @param int $value
      *
-     * @throws \Exception
-     *
      * @return DateTime|bool
+     *
+     * @throws \Exception
      */
     protected function convertWindowsIntegerTimeToDateTime($value)
     {

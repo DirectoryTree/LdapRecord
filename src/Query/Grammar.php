@@ -496,9 +496,9 @@ class Grammar
      *
      * @param array $where
      *
-     * @throws UnexpectedValueException
-     *
      * @return string
+     *
+     * @throws UnexpectedValueException
      */
     protected function compileWhere(array $where)
     {

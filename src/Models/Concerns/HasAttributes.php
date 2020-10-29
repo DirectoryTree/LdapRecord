@@ -297,9 +297,9 @@ trait HasAttributes
      * @param string $type
      * @param mixed  $value
      *
-     * @throws LdapRecordException
-     *
      * @return float|string
+     *
+     * @throws LdapRecordException
      */
     public function fromDateTime($type, $value)
     {
@@ -312,9 +312,9 @@ trait HasAttributes
      * @param mixed  $value
      * @param string $type
      *
-     * @throws LdapRecordException
-     *
      * @return Carbon|false
+     *
+     * @throws LdapRecordException
      */
     public function asDateTime($value, $type)
     {

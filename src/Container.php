@@ -145,9 +145,9 @@ class Container
      *
      * @param string|null $name
      *
-     * @throws ContainerException If the given connection does not exist.
-     *
      * @return Connection
+     *
+     * @throws ContainerException If the given connection does not exist.
      */
     public static function getConnection($name = null)
     {
@@ -222,9 +222,9 @@ class Container
      *
      * @param string|null $name
      *
-     * @throws ContainerException If the given connection does not exist.
-     *
      * @return Connection
+     *
+     * @throws ContainerException If the given connection does not exist.
      */
     public function get($name = null)
     {

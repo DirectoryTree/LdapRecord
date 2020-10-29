@@ -703,9 +703,9 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
-     *
      * @return Model|static
+     *
+     * @throws ObjectNotFoundException
      */
     public function firstOrFail($columns = ['*'])
     {
@@ -758,9 +758,9 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
-     *
      * @return Model
+     *
+     * @throws ObjectNotFoundException
      */
     public function findByOrFail($attribute, $value, $columns = ['*'])
     {
@@ -841,9 +841,9 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
-     *
      * @return Model|static
+     *
+     * @throws ObjectNotFoundException
      */
     public function findOrFail($dn, $columns = ['*'])
     {
@@ -962,9 +962,9 @@ class Builder
      * @param string       $boolean
      * @param bool         $raw
      *
-     * @throws InvalidArgumentException
-     *
      * @return $this
+     *
+     * @throws InvalidArgumentException
      */
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
@@ -1428,9 +1428,9 @@ class Builder
      * @param string $type     The type of filter to add.
      * @param array  $bindings The bindings of the filter.
      *
-     * @throws InvalidArgumentException
-     *
      * @return $this
+     *
+     * @throws InvalidArgumentException
      */
     public function addFilter($type, array $bindings)
     {
@@ -1609,9 +1609,9 @@ class Builder
      * @param string $dn
      * @param array  $attributes
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function insert($dn, array $attributes)
     {
@@ -1727,9 +1727,9 @@ class Builder
      * @param string $method
      * @param array  $parameters
      *
-     * @throws BadMethodCallException
-     *
      * @return mixed
+     *
+     * @throws BadMethodCallException
      */
     public function __call($method, $parameters)
     {

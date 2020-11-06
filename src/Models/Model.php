@@ -9,7 +9,6 @@ use LdapRecord\Connection;
 use InvalidArgumentException;
 use LdapRecord\EscapesValues;
 use UnexpectedValueException;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Attributes\Guid;
@@ -1066,7 +1065,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $count = 0;
 
-        $dns = $dns instanceof Collection ? $dns->all() : (array) $dns;
+        $dns = is_string($dns) ? (array) $dns : $dns;
 
         $instance = new static();
 

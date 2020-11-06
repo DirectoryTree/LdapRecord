@@ -20,4 +20,16 @@ class User extends Entry implements Authenticatable
         'organizationalperson',
         'inetorgperson',
     ];
+
+    /**
+     * The groups relationship.
+     *
+     * Retrieves groups that the user is apart of.
+     *
+     * @return \LdapRecord\Models\Relations\HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(Group::class, 'memberuid', 'uid');
+    }
 }

@@ -30,7 +30,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: ldap
+                  extensions: ldap, json
                   coverage: none
 
             - name: Install dependencies

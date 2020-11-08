@@ -59,7 +59,7 @@ class User extends Entry implements Authenticatable
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the current user is apart of.
+     * Retrieves groups that the user is apart of.
      *
      * @return \LdapRecord\Models\Relations\HasMany
      */
@@ -71,7 +71,7 @@ class User extends Entry implements Authenticatable
     /**
      * The manager relationship.
      *
-     * Retrieves the manager of the current user.
+     * Retrieves the manager of the user.
      *
      * @return \LdapRecord\Models\Relations\HasOne
      */

@@ -49,7 +49,7 @@ class ModelAttributeCastTest extends TestCase
     {
         $model = (new ModelCastStub)->setRawAttributes(['floatAttribute' => ['12345.6789']]);
 
-        $this->assertInternalType('float', $value = $model->floatAttribute);
+        $this->assertIsFloat($value = $model->floatAttribute);
         $this->assertEquals(12345.6789, $value);
     }
 
@@ -57,7 +57,7 @@ class ModelAttributeCastTest extends TestCase
     {
         $model = (new ModelCastStub)->setRawAttributes(['doubleAttribute' => ['1234.567']]);
 
-        $this->assertInternalType('double', $value = $model->doubleAttribute);
+        $this->assertIsFloat($value = $model->doubleAttribute);
         $this->assertEquals(1234.567, $value);
     }
 
@@ -65,7 +65,7 @@ class ModelAttributeCastTest extends TestCase
     {
         $model = (new ModelCastStub)->setRawAttributes(['objectAttribute' => ['{"foo": 1, "bar": "two"}']]);
         
-        $this->assertInternalType('object', $value = $model->objectAttribute);
+        $this->assertIsObject($value = $model->objectAttribute);
 
         $object = (new \stdClass);
         $object->foo = 1;
@@ -97,8 +97,8 @@ class ModelAttributeCastTest extends TestCase
             'integerAttribute' => ['1234.5678'],
         ]);
 
-        $this->assertInternalType('int', $model->intAttribute);
-        $this->assertInternalType('int', $model->integerAttribute);
+        $this->assertIsInt($model->intAttribute);
+        $this->assertIsInt($model->integerAttribute);
 
         $this->assertEquals(1234, $model->intAttribute);
         $this->assertEquals(1234, $model->integerAttribute);
@@ -108,7 +108,7 @@ class ModelAttributeCastTest extends TestCase
     {
         $model = (new ModelCastStub)->setRawAttributes(['decimalAttribute' => ['1234.5678']]);
 
-        $this->assertInternalType('string', $value = $model->decimalAttribute);
+        $this->assertIsString($value = $model->decimalAttribute);
 
         $this->assertEquals(1234.57, $value);
     }

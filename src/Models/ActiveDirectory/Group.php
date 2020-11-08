@@ -49,7 +49,7 @@ class Group extends Entry
      *
      * @return \LdapRecord\Models\Relations\HasMany
      */
-    protected function primaryGroupMembers()
+    public function primaryGroupMembers()
     {
         return $this->hasMany([
             static::class, User::class, Contact::class, Computer::class,

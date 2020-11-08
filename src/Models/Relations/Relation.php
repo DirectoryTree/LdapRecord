@@ -385,15 +385,15 @@ abstract class Relation
 
     /**
      * Get the first attribute value from the model.
+     *
+     * @param Model  $model
+     * @param string $attribute
      * 
      * @return string|null
      */
     protected function getFirstAttributeValue(Model $model, $attribute)
     {
-        // Here we will avoid accessing the model attribute in the
-        // traditional way to retrieve the actual raw value of
-        // the attribute and avoid triggering custom casts.
-        return Arr::first($model->getAttributes()[$attribute] ?? null);
+        return $model->getFirstAttribute($attribute);
     }
 
     /**

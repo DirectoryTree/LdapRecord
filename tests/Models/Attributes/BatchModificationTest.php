@@ -177,9 +177,9 @@ class BatchModificationTest extends TestCase
             (new $class()),
         ]);
 
-        $this->assertInternalType('string', $modification->getValues()[0]);
-        $this->assertInternalType('string', $modification->getValues()[1]);
-        $this->assertInternalType('string', $modification->getValues()[2]);
+        $this->assertIsString($modification->getValues()[0]);
+        $this->assertIsString($modification->getValues()[1]);
+        $this->assertIsString($modification->getValues()[2]);
     }
 
     public function test_is_valid()
@@ -215,7 +215,7 @@ class BatchModificationTest extends TestCase
         $mod->setOriginal([(new AccountControl())->accountIsNormal()]);
         $mod->setValues([(new AccountControl())->accountIsNormal()]);
 
-        $this->assertInternalType('string', $mod->getOriginal()[0]);
-        $this->assertInternalType('string', $mod->getValues()[0]);
+        $this->assertIsString($mod->getOriginal()[0]);
+        $this->assertIsString($mod->getValues()[0]);
     }
 }

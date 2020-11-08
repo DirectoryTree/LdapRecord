@@ -6,7 +6,6 @@ use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use Tightenco\Collect\Support\Arr;
 
 /**
  * @method bool exists($models = null) Determine if the relation contains all of the given models, or any models

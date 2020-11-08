@@ -149,13 +149,13 @@ class ModelRelationTest extends TestCase
         $unrelated->setDn('cn=bar,dc=local,dc=com');
 
         $relation->setResults([$related]);
+        $this->assertTrue($relation->contains([$related, 'bar']));
 
         $this->assertTrue($relation->contains('foo'));
         $this->assertTrue($relation->contains('cn=foo,dc=local,dc=com'));
         $this->assertTrue($relation->contains($related));
         $this->assertTrue($relation->contains(['foo', 'bar']));
-        $this->assertTrue($relation->contains([$related, 'bar']));
-
+        
         $this->assertFalse($relation->contains(null));
         $this->assertFalse($relation->contains(['']));
         $this->assertFalse($relation->contains($unrelated));

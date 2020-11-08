@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models;
 
+use Closure;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Query\Collection as QueryCollection;
@@ -51,7 +52,7 @@ class Collection extends QueryCollection
      */
     public function contains($models, $operator = null, $value = null)
     {
-        if (func_num_args() > 1 || $this->useAsCallable($models)) {
+        if (func_num_args() > 1 || $models instanceof Closure) {
             // If we are supplied with more than one argument, or
             // we were passed a closure, we will utilize the
             // parents contains method, for compatibility.

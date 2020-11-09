@@ -32,9 +32,9 @@
 </p>
 
 <h4 align="center">
-    <a href="https://ldaprecord.com/docs/quickstart/">Quickstart</a>
+    <a href="https://ldaprecord.com/docs/core/v1/quickstart/">Quickstart</a>
     <span> · </span>
-    <a href="https://ldaprecord.com/docs/">Documentation</a>
+    <a href="https://ldaprecord.com/docs/core/v1/">Documentation</a>
     <span> · </span>
     <a href="https://github.com/DirectoryTree/LdapRecord-Laravel">Laravel Integration</a>
     <span> · </span>

@@ -27,6 +27,7 @@ class BuilderCacheTest extends TestCase
     public function test_cache_is_set_onto_new_model_query_builders()
     {
         $store = new ArrayCacheStore();
+
         $conn = new Connection();
         $conn->setCache($store);
 

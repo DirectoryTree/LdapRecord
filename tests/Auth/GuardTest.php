@@ -22,14 +22,18 @@ class GuardTest extends TestCase
     public function test_validate_username()
     {
         $this->expectException(UsernameRequiredException::class);
+
         $guard = new Guard(new Ldap(), new DomainConfiguration());
+
         $guard->attempt('', 'password');
     }
 
     public function test_validate_password()
     {
         $this->expectException(PasswordRequiredException::class);
+
         $guard = new Guard(new Ldap(), new DomainConfiguration());
+
         $guard->attempt('username', '');
     }
 

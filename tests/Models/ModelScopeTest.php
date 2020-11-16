@@ -16,6 +16,7 @@ class ModelScopeTest extends TestCase
         parent::setUp();
 
         Container::addConnection(new Connection());
+
         ModelGlobalScopeTestStub::clearBootedModels();
     }
 
@@ -29,6 +30,7 @@ class ModelScopeTest extends TestCase
     public function test_scopes_can_be_added_to_models()
     {
         $model = new ModelGlobalScopeTestStub();
+
         $this->assertInstanceOf(\Closure::class, $model->getGlobalScopes()['foo']);
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
     }
@@ -39,9 +41,9 @@ class ModelScopeTest extends TestCase
         $this->assertFalse(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
         new ModelGlobalScopeTestStub();
+
         $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope('foo'));
         $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
-
         $this->assertCount(2, (new ModelGlobalScopeTestStub())->getGlobalScopes());
     }
 

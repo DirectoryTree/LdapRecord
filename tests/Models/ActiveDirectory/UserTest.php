@@ -28,25 +28,30 @@ class UserTest extends TestCase
         $this->expectException(ConnectionException::class);
 
         $user = (new User())->setRawAttributes(['dn' => 'foo']);
+
         $user->unicodepwd = ['old', 'new'];
     }
 
     public function test_set_password_on_new_user()
     {
         $user = new UserPasswordTestStub();
+
         $user->unicodepwd = 'foo';
+
         $this->assertEquals([Password::encode('foo')], $user->getModifications()[0]['values']);
     }
 
     public function test_password_mutator_alias_works()
     {
         $user = new UserPasswordTestStub(['password' => 'secret']);
+
         $this->assertEquals([Password::encode('secret')], $user->getModifications()[0]['values']);
     }
 
     public function test_changing_passwords()
     {
         $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
+        
         $user->unicodepwd = ['bar', 'baz'];
 
         $this->assertEquals([

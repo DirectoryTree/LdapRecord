@@ -2,18 +2,19 @@
 
 namespace LdapRecord\Tests\Models;
 
+use DateTime;
 use Carbon\Carbon;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 
-class ModelAccessorTest extends TestCase
+class ModelAccessorMutatorTest extends TestCase
 {
     public function test_model_uses_accessor()
     {
         $model = new ModelAccessorStub();
 
-        $date = new \DateTime();
+        $date = new DateTime();
 
         $model->createtimestamp = $date;
 
@@ -29,6 +30,7 @@ class ModelAccessorTest extends TestCase
     public function test_accessor_is_used_when_attribute_is_null()
     {
         $model = new ModelAccessorStub();
+
         $this->assertEquals('zax', $model->zax);
     }
 

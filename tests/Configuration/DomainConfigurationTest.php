@@ -107,70 +107,83 @@ class DomainConfigurationTest extends TestCase
         DomainConfiguration::extend('port', 'default');
 
         $config = new DomainConfiguration(['port' => 'invalid']);
+
         $this->assertEquals('invalid', $config->get('port'));
 
         $this->expectException(ConfigurationException::class);
+
         $config->set('port', 123);
     }
 
     public function test_invalid_port()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['port' => 'invalid']);
     }
 
     public function test_invalid_base_dn()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['base_dn' => ['invalid']]);
     }
 
     public function test_invalid_domain_controllers()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['hosts' => 'invalid']);
     }
 
     public function test_invalid_admin_username()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['username' => ['invalid']]);
     }
 
     public function test_invalid_password()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['password' => ['invalid']]);
     }
 
     public function test_invalid_follow_referrals()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['follow_referrals' => 'invalid']);
     }
 
     public function test_invalid_use_ssl()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['use_ssl' => 'invalid']);
     }
 
     public function test_invalid_use_tls()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['use_tls' => 'invalid']);
     }
 
     public function test_invalid_options()
     {
         $this->expectException(ConfigurationException::class);
+
         new DomainConfiguration(['options' => 'invalid']);
     }
 
     public function test_options_can_be_overridden()
     {
         $config = new DomainConfiguration(['hosts' => ['one', 'two']]);
+
         $config->set('hosts', ['three', 'four']);
+
         $this->assertEquals(['three', 'four'], $config->get('hosts'));
     }
 }

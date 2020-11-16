@@ -1037,7 +1037,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param string $attribute The attribute to modify
      * @param mixed  $value     The new value for the attribute
      *
-     * @return bool
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException

@@ -71,7 +71,7 @@ Detect and assign User Account Control values on accounts with the fluent [Accou
 
 🔑 **Reset / Change Passwords**
 
-Built-in support for [changing](https://ldaprecord.com/docs/active-directory/users/#changing-passwords) and [resetting](https://ldaprecord.com/docs/core/v1/active-directory/users/#resetting-passwords) passwords on Active Directory accounts.
+Built-in support for [changing](https://ldaprecord.com/docs/core/v1/active-directory/users/#changing-passwords) and [resetting](https://ldaprecord.com/docs/core/v1/active-directory/users/#resetting-passwords) passwords on Active Directory accounts.
 
 🗑 **Restore Deleted Objects**
 

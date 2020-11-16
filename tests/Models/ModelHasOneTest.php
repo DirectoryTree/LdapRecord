@@ -58,7 +58,7 @@ class ModelHasOneTest extends TestCase
         $parent->shouldReceive('setAttribute')->once()->with('manager', null)->andReturnSelf();
         $parent->shouldReceive('save')->once()->andReturnTrue();
 
-        $this->assertTrue($relation->detach());
+        $this->assertNull($relation->detach());
     }
 
     protected function getRelation()

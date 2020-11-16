@@ -33,7 +33,7 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
         $this->assertEquals('513', $user->getFirstAttribute('primarygroupid'));
 
-        $this->assertTrue($user->primaryGroup()->detach());
+        $this->assertNull($user->primaryGroup()->detach());
         $this->assertNull($user->getFirstAttribute('primarygroupid'));
     }
 }

@@ -27,7 +27,7 @@ trait HasPassword
      *
      * @param string|array $password
      *
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     public function setPasswordAttribute($password)
     {
@@ -52,7 +52,7 @@ trait HasPassword
      *
      * @param string|array $password
      *
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     public function setUnicodepwdAttribute($password)
     {

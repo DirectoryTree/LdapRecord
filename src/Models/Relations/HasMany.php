@@ -295,7 +295,9 @@ class HasMany extends OneToMany
     protected function attemptFailableOperation($operation, $bypass, $value)
     {
         try {
-            return $operation() ? $value : false;
+            $operation();
+
+            return $value;
         } catch (LdapRecordException $e) {
             if ($this->errorContainsMessage($e->getMessage(), $bypass)) {
                 return $value;

@@ -285,7 +285,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get a new query builder that doesn't have any global scopes.
      *
-     * @return \LdapRecord\Query\Model\Builder
+     * @return Builder
      */
     public function newQueryWithoutScopes()
     {
@@ -321,7 +321,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param string|null $connection
      *
-     * @return \LdapRecord\Connection
+     * @return Connection
      */
     public static function resolveConnection($connection = null)
     {
@@ -1187,6 +1187,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return void
      *
+     * @throws UnexpectedValueException
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
@@ -1194,11 +1195,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        if ($rdn = $this->getRdn()) {
-            return $this->rename($rdn, $newParentDn, $deleteOldRdn);
+        if (! ($rdn = $this->getRdn())) {
+            throw new UnexpectedValueException('Current model does not contain an RDN to move.');
         }
 
-        throw new UnexpectedValueException('Current model does not contain an RDN to move.');
+        $this->rename($rdn, $newParentDn, $deleteOldRdn);
     }
 
     /**

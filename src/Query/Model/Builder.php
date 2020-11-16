@@ -293,7 +293,7 @@ class Builder extends BaseBuilder
      * Register a new global scope.
      *
      * @param string                            $identifier
-     * @param \LdapRecord\Models\Scope|\Closure $scope
+     * @param Scope|\Closure $scope
      *
      * @return $this
      */
@@ -307,7 +307,7 @@ class Builder extends BaseBuilder
     /**
      * Remove a registered global scope.
      *
-     * @param \LdapRecord\Models\Scope|string $scope
+     * @param Scope|string $scope
      *
      * @return $this
      */

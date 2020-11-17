@@ -32,15 +32,18 @@ class Logger
      * Logs the given event.
      *
      * @param mixed $event
+     *
+     * @return void
      */
     public function log($event)
     {
-        if ($event instanceof AuthEvent) {
-            $this->auth($event);
-        } elseif ($event instanceof ModelEvent) {
-            $this->model($event);
-        } elseif ($event instanceof QueryEvent) {
-            $this->query($event);
+        switch (true) {
+            case $event instanceof AuthEvent:
+                return $this->auth($event);
+            case $event instanceof ModelEvent:
+                return $this->model($event);
+            case $event instanceof QueryEvent:
+                return $this->query($event);
         }
     }
 

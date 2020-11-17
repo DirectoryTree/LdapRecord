@@ -820,7 +820,7 @@ class Ldap
      */
     public function getExtendedErrorHex()
     {
-        if (preg_match("/(?<=data\s).*?(?=\,)/", $this->getExtendedError(), $code)) {
+        if (preg_match("/(?<=data\s).*?(?=,)/", $this->getExtendedError(), $code)) {
             return $code[0];
         }
     }

@@ -41,7 +41,8 @@ trait HasPassword
                 $this->getHashedPassword($password[1])
             );
         }
-        // Otherwise, we will set the password normally.
+        // Otherwise, we will assume the password is being
+        // reset, overwriting the one currently in place.
         else {
             $this->setPassword($this->getHashedPassword($password));
         }

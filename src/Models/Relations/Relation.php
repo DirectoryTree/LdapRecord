@@ -118,7 +118,7 @@ abstract class Relation
     }
 
     /**
-     * Get the results if the relationship while selecting the given columns.
+     * Get the results of the relationship while selecting the given columns.
      *
      * If the query columns are empty, the given columns are applied.
      *

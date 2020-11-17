@@ -74,9 +74,8 @@ class Timestamp
         if ($this->type == 'windows-int' && $this->valueIsWindowsIntegerType($value)) {
             return $value;
         }
-
         // If the value is numeric, we will assume it's a UNIX timestamp.
-        if (is_numeric($value)) {
+        elseif (is_numeric($value)) {
             $value = Carbon::createFromTimestamp($value);
         }
         // If a string is given, we will pass it into a new carbon instance.
@@ -220,9 +219,13 @@ class Timestamp
     {
         // ActiveDirectory dates that contain integers may return
         // "0" when they are not set. We will validate that here.
-        return $value ? (new DateTime())->setTimestamp(
+        if (! $value) {
+            return false;
+        }
+
+        return (new DateTime())->setTimestamp(
             Utilities::convertWindowsTimeToUnixTime($value)
-        ) : false;
+        );
     }
 
     /**

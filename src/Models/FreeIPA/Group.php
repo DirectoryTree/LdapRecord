@@ -36,8 +36,6 @@ class Group extends Entry
      */
     public function members()
     {
-        return $this->hasMany([
-            User::class
-        ], 'memberof')->using($this, 'member');
+        return $this->hasMany(User::class, 'memberof')->using($this, 'member');
     }
 }

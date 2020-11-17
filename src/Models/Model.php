@@ -1195,7 +1195,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        if (! ($rdn = $this->getRdn())) {
+        if (! $rdn = $this->getRdn()) {
             throw new UnexpectedValueException('Current model does not contain an RDN to move.');
         }
 

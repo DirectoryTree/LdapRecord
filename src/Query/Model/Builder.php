@@ -277,13 +277,15 @@ class Builder extends BaseBuilder
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (! isset($this->appliedScopes[$identifier])) {
-                $scope instanceof Scope
-                    ? $scope->apply($this, $this->getModel())
-                    : $scope($this);
-
-                $this->appliedScopes[$identifier] = $scope;
+            if (isset($this->appliedScopes[$identifier])) {
+                continue;
             }
+
+            $scope instanceof Scope
+                ? $scope->apply($this, $this->getModel())
+                : $scope($this);
+
+            $this->appliedScopes[$identifier] = $scope;
         }
 
         return $this;

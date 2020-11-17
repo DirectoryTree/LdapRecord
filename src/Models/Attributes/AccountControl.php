@@ -123,6 +123,8 @@ class AccountControl
      * Extract and apply the flag.
      *
      * @param int $flag
+     *
+     * @return void
      */
     public function apply($flag)
     {

@@ -32,7 +32,7 @@ class EventLoggerTest extends TestCase
 
         $eLogger = new Logger($logger);
 
-        $eLogger->auth($event);
+        $eLogger->log($event);
     }
 
     public function test_failed_auth_event_reports_result()
@@ -52,6 +52,6 @@ class EventLoggerTest extends TestCase
 
         $eLogger = new Logger($logger);
 
-        $eLogger->auth($event);
+        $eLogger->log($event);
     }
 }

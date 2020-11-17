@@ -20,7 +20,10 @@ class Collection extends QueryCollection
     {
         $models = $this->getArrayableModels($models);
 
-        if (func_num_args() >= 1 && empty(array_filter($models))) {
+        // If any arguments were given and the result set is
+        // empty, we can simply return false here. We can't
+        // verify the existence of models without results.
+        if (func_num_args() > 0 && empty(array_filter($models))) {
             return false;
         }
 

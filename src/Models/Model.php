@@ -1135,9 +1135,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function deleteLeafNodes()
     {
-        return $this->newQuery()->listing()->in($this->dn)->get()->each(function (self $model) {
-            $model->delete(true);
-        });
+        return $this->newQueryWithoutScopes()
+            ->in($this->dn)
+            ->listing()
+            ->paginate()
+            ->each(function (self $model) {
+                $model->delete($recursive = true);
+            });
     }
 
     /**

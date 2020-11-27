@@ -277,10 +277,10 @@ class ModelQueryTest extends TestCase
         $query = m::mock(Builder::class);
         $query->shouldReceive('listing')->once()->andReturnSelf();
         $query->shouldReceive('in')->once()->with('foo')->andReturnSelf();
-        $query->shouldReceive('get')->once()->andReturn($shouldBeDeleted);
+        $query->shouldReceive('paginate')->once()->andReturn($shouldBeDeleted);
 
         $model = m::mock(Entry::class)->makePartial();
-        $model->shouldReceive('newQuery')->once()->andReturn($query);
+        $model->shouldReceive('newQueryWithoutScopes')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
         $this->assertEquals($shouldBeDeleted, $model->deleteLeafNodes());

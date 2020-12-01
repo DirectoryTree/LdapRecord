@@ -1173,7 +1173,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
             // removed and update the attributes value.
             else {
                 $this->attributes[$attribute] = array_values(
-                    array_diff($this->attributes[$attribute], $value)
+                    array_diff($this->attributes[$attribute], (array) $value)
                 );
             }
         }

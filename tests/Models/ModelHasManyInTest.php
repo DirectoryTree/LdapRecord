@@ -18,7 +18,7 @@ class ModelHasManyInTest extends TestCase
     {
         parent::setUp();
 
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
     }
 
     public function test_get()

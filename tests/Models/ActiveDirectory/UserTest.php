@@ -14,7 +14,7 @@ class UserTest extends TestCase
 {
     public function test_setting_password_requires_secure_connection()
     {
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
 
         $this->expectException(ConnectionException::class);
 
@@ -23,7 +23,7 @@ class UserTest extends TestCase
 
     public function test_changing_password_requires_secure_connection()
     {
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
 
         $this->expectException(ConnectionException::class);
 
@@ -75,7 +75,7 @@ class UserTest extends TestCase
 
     public function test_scope_where_has_mailbox_is_applied()
     {
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
 
         $filters = User::whereHasMailbox()->filters;
 

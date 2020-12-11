@@ -19,7 +19,7 @@ class ModelHasManyTest extends TestCase
     {
         parent::setUp();
 
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
     }
 
     public function test_relation_name_is_guessed()

@@ -24,12 +24,6 @@ class ModelEventTest extends TestCase
 {
     use CreatesConnectedLdapMocks;
 
-    protected function setUp() : void
-    {
-        // Flush event dispatcher instance.
-        Container::unsetEventDispatcher();
-    }
-
     public function test_save_fires_saving_and_create_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class)->makePartial();

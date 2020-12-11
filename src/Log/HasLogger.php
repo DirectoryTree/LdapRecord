@@ -11,16 +11,16 @@ trait HasLogger
      *
      * @var LoggerInterface|null
      */
-    protected $logger;
+    protected static $logger;
 
     /**
      * Get the logger instance.
      *
      * @return LoggerInterface|null
      */
-    public function getLogger()
+    public static function getLogger()
     {
-        return $this->logger;
+        return static::$logger;
     }
 
     /**
@@ -30,9 +30,11 @@ trait HasLogger
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public static function setLogger(LoggerInterface $logger)
     {
-        $this->logger = $logger;
+        static::$logger = $logger;
+
+        static::initEventLogger();
     }
 
     /**
@@ -40,8 +42,8 @@ trait HasLogger
      *
      * @return void
      */
-    public function unsetLogger()
+    public static function unsetLogger()
     {
-        $this->logger = null;
+        static::$logger = null;
     }
 }

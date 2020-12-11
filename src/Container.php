@@ -37,39 +37,11 @@ class Container
      *
      * @var array
      */
-    protected $listen = [
+    protected static $listen = [
         'LdapRecord\Auth\Events\*',
         'LdapRecord\Query\Events\*',
         'LdapRecord\Models\Events\*',
     ];
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        $this->initEventLogger();
-    }
-
-    /**
-     * Initializes the event logger.
-     *
-     * @return void
-     */
-    public function initEventLogger()
-    {
-        $dispatcher = static::getEventDispatcher();
-
-        $logger = $this->newEventLogger();
-
-        foreach ($this->listen as $event) {
-            $dispatcher->listen($event, function ($eventName, $events) use ($logger) {
-                foreach ($events as $event) {
-                    $logger->log($event);
-                }
-            });
-        }
-    }
 
     /**
      * Get or set the current instance of the container.
@@ -82,13 +54,25 @@ class Container
     }
 
     /**
+     * Set the container instance.
+     *
+     * @param Container|null $container
+     *
+     * @return Container|null
+     */
+    public static function setInstance(Container $container = null)
+    {
+        return static::$instance = $container;
+    }
+
+    /**
      * Set and get a new instance of the container.
      *
      * @return Container
      */
     public static function getNewInstance()
     {
-        return static::$instance = new static();
+        return static::setInstance(new static);
     }
 
     /**
@@ -150,6 +134,48 @@ class Container
     public static function getDefaultConnection()
     {
         return static::getInstance()->getDefault();
+    }
+    
+    /**
+     * Initializes the event logger.
+     *
+     * @return void
+     */
+    public static function initEventLogger()
+    {
+        $dispatcher = static::getEventDispatcher();
+
+        $logger = static::newEventLogger();
+
+        foreach (static::$listen as $event) {
+            $dispatcher->listen($event, function ($eventName, $events) use ($logger) {
+                foreach ($events as $event) {
+                    $logger->log($event);
+                }
+            });
+        }
+    }
+
+    /**
+     * Returns a new event logger instance.
+     *
+     * @return EventLogger
+     */
+    protected static function newEventLogger()
+    {
+        return new EventLogger(static::$logger);
+    }
+
+    /**
+     * Reset the container.
+     *
+     * @return void
+     */
+    public static function reset()
+    {
+        Container::unsetEventDispatcher();
+        Container::unsetLogger();
+        Container::setInstance();
     }
 
     /**
@@ -255,15 +281,5 @@ class Container
         $this->default = $name;
 
         return $this;
-    }
-
-    /**
-     * Returns a new event logger instance.
-     *
-     * @return EventLogger
-     */
-    protected function newEventLogger()
-    {
-        return new EventLogger($this->getLogger());
     }
 }

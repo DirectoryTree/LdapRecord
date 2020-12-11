@@ -19,17 +19,6 @@ class ModelQueryTest extends TestCase
 {
     use CreatesConnectedLdapMocks;
 
-    protected function setUp() : void
-    {
-        parent::setUp();
-
-        // Flush container instance.
-        Container::unsetEventDispatcher();
-
-        // Flush static instance.
-        Container::getNewInstance();
-    }
-
     public function test_resolving_connections()
     {
         Container::getNewInstance()->add(new Connection());

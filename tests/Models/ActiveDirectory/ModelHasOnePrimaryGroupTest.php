@@ -14,7 +14,7 @@ class ModelHasOnePrimaryGroupTest extends TestCase
     {
         parent::setUp();
 
-        Container::getInstance()->add(new Connection());
+        Container::addConnection(new Connection());
     }
 
     public function test_attach_sets_users_primary_group_id()

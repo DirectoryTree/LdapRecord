@@ -20,8 +20,7 @@ class ModelTest extends TestCase
 {
     protected function setUp() : void
     {
-        // Flush container singleton instance.
-        Container::getNewInstance();
+        parent::setUp();
 
         Model::clearBootedModels();
     }

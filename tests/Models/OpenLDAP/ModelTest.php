@@ -12,6 +12,8 @@ class ModelTest extends TestCase
 {
     protected function setUp() : void
     {
+        parent::setUp();
+
         Entry::clearBootedModels();
     }
 

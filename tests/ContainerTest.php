@@ -2,18 +2,25 @@
 
 namespace LdapRecord\Tests;
 
+use Mockery as m;
+use LdapRecord\Ldap;
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use LdapRecord\Container;
 use LdapRecord\Connection;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\ContainerException;
+use LdapRecord\Auth\Events\Binding;
 
 class ContainerTest extends TestCase
 {
     public function test_get_instance()
     {
-        $container = Container::getNewInstance();
+        Container::setLogger($logger = new NullLogger());
+
+        $container = Container::getInstance();
         $this->assertInstanceOf(Container::class, $container);
-        $this->assertNull($container->getLogger());
+        $this->assertSame($logger, $container->getLogger());
 
         $dispatcher = Container::getEventDispatcher();
 
@@ -26,7 +33,7 @@ class ContainerTest extends TestCase
 
     public function test_adding_connections()
     {
-        $container = Container::getNewInstance();
+        $container = Container::getInstance();
         $container->add(new Connection());
         $this->assertInstanceOf(Container::class, $container->add(new Connection(), 'other'));
 
@@ -37,7 +44,7 @@ class ContainerTest extends TestCase
 
     public function test_getting_connections()
     {
-        $container = Container::getNewInstance();
+        $container = Container::getInstance();
         $container->add(new Connection());
         $container->add(new Connection(), 'other');
 
@@ -53,7 +60,7 @@ class ContainerTest extends TestCase
 
     public function test_getting_default_connections()
     {
-        $container = Container::getNewInstance();
+        $container = Container::getInstance();
         $container->add(new Connection());
         $this->assertInstanceOf(Connection::class, $container->getDefault());
         $this->assertInstanceOf(Connection::class, Container::getConnection('default'));
@@ -127,5 +134,22 @@ class ContainerTest extends TestCase
         $container->add($connections['other'], 'other');
 
         $this->assertEquals($connections, $container->all());
+    }
+
+    public function test_logging_takes_place_after_instance_is_created()
+    {
+        Container::getInstance();
+
+        $event = new Binding(new Ldap, 'username', 'password');
+
+        $dispatcher = Container::getEventDispatcher();
+
+        $logger = m::mock(LoggerInterface::class);
+
+        $logger->shouldReceive('info')->once()->with('LDAP () - Operation: Binding - Username: username');
+
+        Container::setLogger($logger);
+
+        $dispatcher->fire($event);
     }
 }

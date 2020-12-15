@@ -1880,7 +1880,7 @@ class Builder
      */
     protected function fireQueryEvent(QueryExecuted $event)
     {
-        Container::getEventDispatcher()->fire($event);
+        Container::getInstance()->getEventDispatcher()->fire($event);
     }
 
     /**

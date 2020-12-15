@@ -52,7 +52,9 @@ class ConnectionFake extends Connection
     {
         $guard = new AuthGuardFake($this->ldap, $this->configuration);
 
-        $guard->setDispatcher(Container::getEventDispatcher());
+        $guard->setDispatcher(
+            Container::getInstance()->getEventDispatcher()
+        );
 
         return $guard;
     }

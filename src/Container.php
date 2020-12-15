@@ -21,14 +21,14 @@ class Container
      *
      * @var LoggerInterface|null
      */
-    protected static $logger;
+    protected $logger;
 
     /**
      * The event dispatcher instance.
      *
      * @var DispatcherInterface
      */
-    protected static $dispatcher;
+    protected $dispatcher;
 
     /**
      * The added connections in the container instance.
@@ -49,7 +49,7 @@ class Container
      *
      * @var array
      */
-    protected static $listen = [
+    protected $listen = [
         'LdapRecord\Auth\Events\*',
         'LdapRecord\Query\Events\*',
         'LdapRecord\Models\Events\*',
@@ -149,13 +149,73 @@ class Container
     }
 
     /**
-     * Flush all of the added connections.
+     * Flush all of the added connections and reset the container.
      *
      * @return $this
      */
-    public static function flushConnections()
+    public static function reset()
     {
         return static::getInstance()->flush();
+    }
+
+    /**
+     * Get the event dispatcher instance.
+     *
+     * @return DispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        if (! isset($this->dispatcher)) {
+            $this->setEventDispatcher(new Dispatcher());
+        }
+
+        return $this->dispatcher;
+    }
+
+    /**
+     * Set the event dispatcher instance.
+     *
+     * @param DispatcherInterface $dispatcher
+     *
+     * @return void
+     */
+    public function setEventDispatcher(DispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * Unset the event dispatcher instance.
+     *
+     * @return void
+     */
+    public function unsetEventDispatcher()
+    {
+        $this->dispatcher = null;
+    }
+
+    /**
+     * Get the logger instance.
+     *
+     * @return LoggerInterface|null
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * Set the event logger to use.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        $this->initEventLogger();
     }
 
     /**
@@ -163,13 +223,13 @@ class Container
      *
      * @return void
      */
-    public static function initEventLogger()
+    public function initEventLogger()
     {
-        $dispatcher = static::getEventDispatcher();
+        $dispatcher = $this->getEventDispatcher();
 
-        $logger = static::newEventLogger();
+        $logger = $this->newEventLogger();
 
-        foreach (static::$listen as $event) {
+        foreach ($this->listen as $event) {
             $dispatcher->listen($event, function ($eventName, $events) use ($logger) {
                 foreach ($events as $event) {
                     $logger->log($event);
@@ -183,69 +243,9 @@ class Container
      *
      * @return Logger
      */
-    protected static function newEventLogger()
+    protected function newEventLogger()
     {
-        return new Logger(static::$logger);
-    }
-
-    /**
-     * Get the event dispatcher instance.
-     *
-     * @return DispatcherInterface
-     */
-    public static function getEventDispatcher()
-    {
-        if (! isset(static::$dispatcher)) {
-            static::setEventDispatcher(new Dispatcher());
-        }
-
-        return static::$dispatcher;
-    }
-
-    /**
-     * Set the event dispatcher instance.
-     *
-     * @param DispatcherInterface $dispatcher
-     *
-     * @return void
-     */
-    public static function setEventDispatcher(DispatcherInterface $dispatcher)
-    {
-        static::$dispatcher = $dispatcher;
-    }
-
-    /**
-     * Unset the event dispatcher instance.
-     *
-     * @return void
-     */
-    public static function unsetEventDispatcher()
-    {
-        static::$dispatcher = null;
-    }
-
-    /**
-     * Get the logger instance.
-     *
-     * @return LoggerInterface|null
-     */
-    public static function getLogger()
-    {
-        return static::$logger;
-    }
-
-    /**
-     * Set the event logger to use.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public static function setLogger(LoggerInterface $logger)
-    {
-        static::$logger = $logger;
-
-        static::initEventLogger();
+        return new Logger($this->logger);
     }
 
     /**
@@ -253,21 +253,9 @@ class Container
      *
      * @return void
      */
-    public static function unsetLogger()
+    public function unsetLogger()
     {
-        static::$logger = null;
-    }
-
-    /**
-     * Reset the container.
-     *
-     * @return void
-     */
-    public static function reset()
-    {
-        Container::unsetEventDispatcher();
-        Container::unsetLogger();
-        Container::setInstance();
+        $this->logger = null;
     }
 
     /**
@@ -309,18 +297,6 @@ class Container
     public function all()
     {
         return $this->connections;
-    }
-
-    /**
-     * Remove all of the connections.
-     *
-     * @return $this
-     */
-    public function flush()
-    {
-        $this->connections = [];
-
-        return $this;
     }
 
     /**
@@ -383,6 +359,20 @@ class Container
     public function setDefault($name = null)
     {
         $this->default = $name;
+
+        return $this;
+    }
+
+    /**
+     * Flush the container of all instances and connections.
+     *
+     * @return $this
+     */
+    public function flush()
+    {
+        $this->connections = [];
+        $this->dispatcher = null;
+        $this->logger = null;
 
         return $this;
     }

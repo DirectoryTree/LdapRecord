@@ -16,13 +16,15 @@ class ContainerTest extends TestCase
 {
     public function test_get_instance()
     {
-        Container::setLogger($logger = new NullLogger());
+        $container = Container::getInstance();
+
+        $container->setLogger($logger = new NullLogger());
 
         $container = Container::getInstance();
         $this->assertInstanceOf(Container::class, $container);
-        $this->assertSame($logger, $container::getLogger());
+        $this->assertSame($logger, $container->getLogger());
 
-        $dispatcher = Container::getEventDispatcher();
+        $dispatcher = $container->getEventDispatcher();
 
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
@@ -138,17 +140,17 @@ class ContainerTest extends TestCase
 
     public function test_logging_takes_place_after_instance_is_created()
     {
-        Container::getInstance();
+        $container = Container::getInstance();
 
         $event = new Binding(new Ldap, 'username', 'password');
 
-        $dispatcher = Container::getEventDispatcher();
+        $dispatcher = $container->getEventDispatcher();
 
         $logger = m::mock(LoggerInterface::class);
 
         $logger->shouldReceive('info')->once()->with('LDAP () - Operation: Binding - Username: username');
 
-        Container::setLogger($logger);
+        $container->setLogger($logger);
 
         $dispatcher->fire($event);
     }

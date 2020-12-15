@@ -22,7 +22,7 @@ class ModelScopeTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::flushConnections();
+        Container::reset();
 
         parent::tearDown();
     }

@@ -319,7 +319,9 @@ class Connection
     {
         $guard = new Guard($this->ldap, $this->configuration);
 
-        $guard->setDispatcher(Container::getEventDispatcher());
+        $guard->setDispatcher(
+            Container::getInstance()->getEventDispatcher()
+        );
 
         return $guard;
     }

@@ -8,40 +8,29 @@ use LdapRecord\Events\DispatchesEvents;
 
 class Container
 {
-    use DispatchesEvents;
     use HasLogger;
+    use DispatchesEvents;
 
     /**
-     * Current instance of the container.
+     * The container instance.
      *
      * @var Container
      */
     protected static $instance;
 
     /**
-     * Connections in the container.
+     * The LDAP connections.
      *
      * @var Connection[]
      */
     protected $connections = [];
 
     /**
-     * The name of the default connection.
+     * The name of the default LDAP connection.
      *
      * @var string
      */
     protected $default = 'default';
-
-    /**
-     * The events to register listeners for during initialization.
-     *
-     * @var array
-     */
-    protected static $listen = [
-        'LdapRecord\Auth\Events\*',
-        'LdapRecord\Query\Events\*',
-        'LdapRecord\Models\Events\*',
-    ];
 
     /**
      * Get or set the current instance of the container.
@@ -135,36 +124,6 @@ class Container
     {
         return static::getInstance()->getDefault();
     }
-    
-    /**
-     * Initializes the event logger.
-     *
-     * @return void
-     */
-    public static function initEventLogger()
-    {
-        $dispatcher = static::getEventDispatcher();
-
-        $logger = static::newEventLogger();
-
-        foreach (static::$listen as $event) {
-            $dispatcher->listen($event, function ($eventName, $events) use ($logger) {
-                foreach ($events as $event) {
-                    $logger->log($event);
-                }
-            });
-        }
-    }
-
-    /**
-     * Returns a new event logger instance.
-     *
-     * @return EventLogger
-     */
-    protected static function newEventLogger()
-    {
-        return new EventLogger(static::$logger);
-    }
 
     /**
      * Reset the container.
@@ -173,9 +132,17 @@ class Container
      */
     public static function reset()
     {
-        Container::unsetEventDispatcher();
-        Container::unsetLogger();
-        Container::setInstance();
+        static::getInstance()->flush();
+    }
+
+    /**
+     * Returns a new event logger instance.
+     *
+     * @return EventLogger
+     */
+    protected function newEventLogger()
+    {
+        return new EventLogger($this->logger);
     }
 
     /**
@@ -281,5 +248,17 @@ class Container
         $this->default = $name;
 
         return $this;
+    }
+
+    /**
+     * Flush the container of all instances and connections.
+     *
+     * @return void
+     */
+    public function flush()
+    {
+        $this->connections = [];
+        $this->dispatcher = null;
+        $this->logger = null;
     }
 }

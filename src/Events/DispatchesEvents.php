@@ -7,24 +7,22 @@ trait DispatchesEvents
     /**
      * The event dispatcher instance.
      *
-     * @var DispatcherInterface
+     * @var DispatcherInterface|null
      */
-    protected static $dispatcher;
+    protected $dispatcher;
 
     /**
      * Get the event dispatcher instance.
      *
      * @return DispatcherInterface
      */
-    public static function getEventDispatcher()
+    public function getEventDispatcher()
     {
-        // If no event dispatcher has been set, well instantiate and
-        // set one here. This will be our singleton instance.
-        if (! isset(static::$dispatcher)) {
-            static::setEventDispatcher(new Dispatcher());
+        if (! isset($this->dispatcher)) {
+            $this->setEventDispatcher(new Dispatcher());
         }
 
-        return static::$dispatcher;
+        return $this->dispatcher;
     }
 
     /**
@@ -34,9 +32,9 @@ trait DispatchesEvents
      *
      * @return void
      */
-    public static function setEventDispatcher(DispatcherInterface $dispatcher)
+    public function setEventDispatcher(DispatcherInterface $dispatcher)
     {
-        static::$dispatcher = $dispatcher;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -44,8 +42,8 @@ trait DispatchesEvents
      *
      * @return void
      */
-    public static function unsetEventDispatcher()
+    public function unsetEventDispatcher()
     {
-        static::$dispatcher = null;
+        $this->dispatcher = null;
     }
 }

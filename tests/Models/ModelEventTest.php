@@ -31,7 +31,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Creating::class);
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
-        Container::setEventDispatcher($dispatcher);
+        Container::getInstance()->setEventDispatcher($dispatcher);
 
         $model = new ModelEventSaveStub();
         $this->assertTrue($model->save());
@@ -44,7 +44,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Creating::class);
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
-        Container::setEventDispatcher($dispatcher);
+        Container::getInstance()->setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('add')->once()->andReturnTrue();
@@ -68,7 +68,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Updating::class);
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Updated::class);
-        Container::setEventDispatcher($dispatcher);
+        Container::getInstance()->setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('modifyBatch')->once()->andReturnTrue();
@@ -89,7 +89,7 @@ class ModelEventTest extends TestCase
         $dispatcher = m::mock(DispatcherInterface::class);
         $dispatcher->shouldReceive('fire')->once()->with(Deleting::class);
         $dispatcher->shouldReceive('fire')->once()->with(Deleted::class);
-        Container::setEventDispatcher($dispatcher);
+        Container::getInstance()->setEventDispatcher($dispatcher);
 
         $ldap = $this->newConnectedLdapMock();
         $ldap->shouldReceive('delete')->once()->andReturnTrue();

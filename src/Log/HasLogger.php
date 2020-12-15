@@ -11,16 +11,27 @@ trait HasLogger
      *
      * @var LoggerInterface|null
      */
-    protected static $logger;
+    protected $logger;
+
+    /**
+     * The events to register listeners for during initialization.
+     *
+     * @var array
+     */
+    protected $listen = [
+        'LdapRecord\Auth\Events\*',
+        'LdapRecord\Query\Events\*',
+        'LdapRecord\Models\Events\*',
+    ];
 
     /**
      * Get the logger instance.
      *
      * @return LoggerInterface|null
      */
-    public static function getLogger()
+    public function getLogger()
     {
-        return static::$logger;
+        return $this->logger;
     }
 
     /**
@@ -30,11 +41,31 @@ trait HasLogger
      *
      * @return void
      */
-    public static function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
-        static::$logger = $logger;
+        $this->logger = $logger;
 
-        static::initEventLogger();
+        $this->initEventLogger();
+    }
+
+    /**
+     * Initializes the event logger.
+     *
+     * @return void
+     */
+    public function initEventLogger()
+    {
+        $dispatcher = $this->getEventDispatcher();
+
+        $logger = $this->newEventLogger();
+
+        foreach ($this->listen as $event) {
+            $dispatcher->listen($event, function ($eventName, $events) use ($logger) {
+                foreach ($events as $event) {
+                    $logger->log($event);
+                }
+            });
+        }
     }
 
     /**
@@ -42,8 +73,8 @@ trait HasLogger
      *
      * @return void
      */
-    public static function unsetLogger()
+    public function unsetLogger()
     {
-        static::$logger = null;
+        $this->logger = null;
     }
 }

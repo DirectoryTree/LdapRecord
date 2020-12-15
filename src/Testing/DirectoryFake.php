@@ -32,7 +32,7 @@ class DirectoryFake
      *
      * @return void
      */
-    public static function teardown()
+    public static function tearDown()
     {
         Container::reset();
     }

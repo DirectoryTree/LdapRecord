@@ -911,6 +911,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         if ($saved) {
             $this->fireModelEvent(new Events\Saved($this));
+
+            $this->in = null;
         }
 
         return $saved;

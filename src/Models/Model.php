@@ -911,6 +911,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->exists ? $this->performUpdate() : $this->performInsert();
 
         $this->fireModelEvent(new Events\Saved($this));
+
+        $this->in = null;
     }
 
     /**

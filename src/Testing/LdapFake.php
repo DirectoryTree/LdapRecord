@@ -15,10 +15,25 @@ class LdapFake extends Ldap
      */
     protected $dn;
 
+    /**
+     * The default fake error number.
+     *
+     * @var int
+     */
     protected $errNo = 1;
 
+    /**
+     * The default fake last error string.
+     *
+     * @var int
+     */
     protected $lastError = '';
 
+    /**
+     * The default fake diagnostic message string.
+     *
+     * @var int
+     */
     protected $diagnosticMessage = '';
 
     /**
@@ -120,6 +135,13 @@ class LdapFake extends Ldap
         return new DetailedError($this->errNo, $this->lastError, $this->diagnosticMessage);
     }
 
+    /**
+     * Prevent executing real LDAP operations in the fake.
+     *
+     * @param Closure $operation
+     *
+     * @return void
+     */
     protected function executeFailableOperation(Closure $operation)
     {
         // Do nothing.

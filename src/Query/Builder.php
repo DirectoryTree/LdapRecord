@@ -566,8 +566,7 @@ class Builder
 
             do {
                 $ldap->controlPagedResult($perPage, $isCritical, $cookie);
-
-                // Run the search.
+                
                 $resource = $this->run($filter);
 
                 if ($resource) {
@@ -612,7 +611,6 @@ class Builder
                 // Update the server controls.
                 $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
 
-                // Run the search.
                 $resource = $this->run($filter);
 
                 if ($resource) {
@@ -623,10 +621,9 @@ class Builder
 
                     $pages[] = $this->parse($resource);
 
-                    // Reset paged result on the current connection. We won't pass in the current $perPage
-                    // parameter since we want to reset the page size to the default '1000'. Sending '0'
-                    // eliminates any further opportunity for running queries in the same request,
-                    // even though that is supposed to be the correct usage.
+                    // Here we will update the query's server controls array with the servers
+                    // response by passing the array as a reference. The cookie string will
+                    // be empty once the pagination request has successfully completed.
                     $this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $perPage;
                 }
             } while (!empty($this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie']));

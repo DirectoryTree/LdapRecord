@@ -966,7 +966,7 @@ class Ldap
     {
         // If we are using SSL and using the default port, we
         // will override it to use the default SSL port.
-        if ($this->isUsingSSL() && $port == 389) {
+        if ($this->isUsingSSL() && $port == static::PORT) {
             $port = static::PORT_SSL;
         }
 

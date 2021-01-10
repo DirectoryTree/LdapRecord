@@ -688,9 +688,7 @@ class Builder
      */
     public function first($columns = ['*'])
     {
-        $results = $this->limit(1)->get($columns);
-
-        return Arr::get($results, 0);
+        return Arr::get($this->limit(1)->get($columns), 0);
     }
 
     /**
@@ -706,9 +704,7 @@ class Builder
      */
     public function firstOrFail($columns = ['*'])
     {
-        $record = $this->first($columns);
-
-        if (! $record) {
+        if (! $record = $this->first($columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -1431,9 +1427,8 @@ class Builder
      */
     public function addFilter($type, array $bindings)
     {
-        // Here we will ensure we have been given a proper filter type.
         if (! array_key_exists($type, $this->filters)) {
-            throw new InvalidArgumentException("Invalid filter type: {$type}.");
+            throw new InvalidArgumentException("Filter type [$type] is invalid.");
         }
 
         // The required filter key bindings.
@@ -1444,7 +1439,7 @@ class Builder
             // Retrieve the keys that are missing in the bindings array.
             $missing = implode(', ', array_diff($required, array_flip($bindings)));
 
-            throw new InvalidArgumentException("Invalid filter bindings. Missing: [{$missing}] keys.");
+            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$missing] keys.");
         }
 
         $this->filters[$type][] = $bindings;
@@ -1580,7 +1575,7 @@ class Builder
     }
 
     /**
-     * Returns true / false if the current query is nested.
+     * Determine if the query is nested.
      *
      * @return bool
      */
@@ -1590,8 +1585,7 @@ class Builder
     }
 
     /**
-     * Returns bool that determines whether the current
-     * query builder will return paginated results.
+     * Determine whether the query is paginated.
      *
      * @return bool
      */
@@ -1601,7 +1595,7 @@ class Builder
     }
 
     /**
-     * Insert the entry in the directory.
+     * Insert an entry into the directory.
      *
      * @param string $dn
      * @param array  $attributes
@@ -1845,6 +1839,8 @@ class Builder
      * @param Builder    $query
      * @param string     $type
      * @param null|float $time
+     *
+     * @return void
      */
     protected function logQuery($query, $type, $time = null)
     {

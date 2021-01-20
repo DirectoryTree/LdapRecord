@@ -59,7 +59,6 @@ class Guard
      *
      * @throws UsernameRequiredException
      * @throws PasswordRequiredException
-     * @throws \LdapRecord\ConnectionException
      */
     public function attempt($username, $password, $stayBound = false)
     {

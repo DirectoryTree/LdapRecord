@@ -193,15 +193,21 @@ class Connection
      *
      * @return Connection
      *
-     * @throws ConnectionException If upgrading the connection to TLS fails
-     * @throws Auth\BindException  If binding to the LDAP server fails.
+     * @throws Auth\BindException
+     * @throws LdapRecordException
      */
     public function connect($username = null, $password = null)
     {
-        if (is_null($username) && is_null($password)) {
-            $this->auth()->bindAsConfiguredUser();
-        } else {
-            $this->auth()->bind($username, $password);
+        $attempt = function () use ($username, $password) {
+            is_null($username) && is_null($password)
+                ? $this->auth()->bindAsConfiguredUser()
+                : $this->auth()->bind($username, $password);
+        };
+
+        try {
+            $this->runOperationCallback($attempt);
+        } catch (LdapRecordException $e) {
+            $this->retryOnNextHost($e, $attempt);
         }
 
         return $this;
@@ -304,6 +310,10 @@ class Connection
         try {
             return $operation($this->ldap);
         } catch (Throwable $e) {
+            if ($e instanceof LdapRecordException) {
+                throw $e;
+            }
+
             throw LdapRecordException::withDetailedError(
                 $e, $this->ldap->getDetailedError()
             );

@@ -9,6 +9,7 @@ use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
 use LdapRecord\Query\Builder;
 use Psr\SimpleCache\CacheInterface;
+use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
 
 class Connection
@@ -35,6 +36,13 @@ class Connection
      * @var Cache|null
      */
     protected $cache;
+
+    /**
+     * The event dispatcher;
+     *
+     * @var DispatcherInterface|null
+     */
+    protected $dispatcher;
 
     /**
      * The current host connected to.
@@ -100,6 +108,20 @@ class Connection
         $this->ldap = $ldap;
 
         $this->initialize();
+
+        return $this;
+    }
+
+    /**
+     * Set the event dispatcher.
+     *
+     * @param DispatcherInterface $dispatcher
+     *
+     * @return $this
+     */
+    public function setDispatcher(DispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
 
         return $this;
     }
@@ -204,10 +226,16 @@ class Connection
                 : $this->auth()->bind($username, $password);
         };
 
+        $this->dispatch(new Events\Connecting($this));
+
         try {
             $this->runOperationCallback($attempt);
+
+            $this->dispatch(new Events\Connected($this));
         } catch (LdapRecordException $e) {
-            $this->retryOnNextHost($e, $attempt);
+            $this->retryOnNextHost($e, $attempt, $failed = function () {
+                $this->dispatch(new Events\ConnectionFailed($this));
+            });
         }
 
         return $this;
@@ -236,6 +264,20 @@ class Connection
     public function disconnect()
     {
         $this->ldap->close();
+    }
+
+    /**
+     * Dispatch an event.
+     *
+     * @param object $event
+     *
+     * @return void
+     */
+    public function dispatch($event)
+    {
+        if (isset($this->dispatcher)) {
+            $this->dispatcher->dispatch($event);
+        }
     }
 
     /**
@@ -407,23 +449,28 @@ class Connection
      *
      * @param LdapRecordException $e
      * @param Closure             $operation
+     * @param Closure|null        $failed
      *
      * @return mixed
      *
      * @throws LdapRecordException
      */
-    protected function retryOnNextHost(LdapRecordException $e, Closure $operation)
+    protected function retryOnNextHost(LdapRecordException $e, Closure $operation, Closure $failed = null)
     {
         if (($key = array_search($this->host, $this->hosts)) !== false) {
             unset($this->hosts[$key]);
         }
 
-        if (! $next = reset($this->hosts)) {
-            throw $e;
+        if ($next = reset($this->hosts)) {
+            $this->host = $next;
+
+            return $this->tryAgainIfCausedByLostConnection($e, $operation);
         }
 
-        $this->host = $next;
+        if ($failed) {
+            $failed($this->ldap);
+        }
 
-        return $this->tryAgainIfCausedByLostConnection($e, $operation);
+        throw $e;
     }
 }

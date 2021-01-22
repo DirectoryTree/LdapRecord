@@ -270,6 +270,10 @@ class Container
     {
         $this->connections[$name ?? $this->default] = $connection;
 
+        if ($this->dispatcher) {
+            $connection->setDispatcher($this->dispatcher);
+        }
+
         return $this;
     }
 

@@ -24,18 +24,18 @@ class Connection
     protected $ldap;
 
     /**
-     * The domain configuration.
-     *
-     * @var DomainConfiguration
-     */
-    protected $configuration;
-
-    /**
      * The cache driver.
      *
      * @var Cache|null
      */
     protected $cache;
+
+    /**
+     * The domain configuration.
+     *
+     * @var DomainConfiguration
+     */
+    protected $configuration;
 
     /**
      * The event dispatcher;
@@ -66,20 +66,34 @@ class Connection
     protected $attempted = [];
 
     /**
+     * The callback to execute upon total connection failure.
+     *
+     * @var Closure
+     */
+    protected $failed;
+
+    /**
+     * Whether the connection is retrying the initial connection attempt.
+     *
+     * @var bool
+     */
+    protected $retryingInitialConnection = false;
+
+    /**
      * Constructor.
      *
-     * @param array     $config
-     * @param Ldap|null $ldap
+     * @param array              $config
+     * @param LdapInterface|null $ldap
      */
-    public function __construct($config = [], Ldap $ldap = null)
+    public function __construct($config = [], LdapInterface $ldap = null)
     {
-        $this->configuration = new DomainConfiguration($config);
-
-        $this->hosts = $this->configuration->get('hosts');
-
-        $this->host = reset($this->hosts);
+        $this->setConfiguration($config);
 
         $this->setLdapConnection($ldap ?? new Ldap());
+
+        $this->failed = function () {
+            $this->dispatch(new Events\ConnectionFailed($this));
+        };
     }
 
     /**
@@ -87,11 +101,17 @@ class Connection
      *
      * @param array $config
      *
+     * @return $this
+     *
      * @throws Configuration\ConfigurationException
      */
     public function setConfiguration($config = [])
     {
         $this->configuration = new DomainConfiguration($config);
+
+        $this->hosts = $this->configuration->get('hosts');
+
+        $this->host = reset($this->hosts);
 
         return $this;
     }
@@ -99,11 +119,11 @@ class Connection
     /**
      * Set the LDAP connection.
      *
-     * @param Ldap $ldap
+     * @param LdapInterface $ldap
      *
      * @return $this
      */
-    public function setLdapConnection(Ldap $ldap)
+    public function setLdapConnection(LdapInterface $ldap)
     {
         $this->ldap = $ldap;
 
@@ -221,21 +241,23 @@ class Connection
     public function connect($username = null, $password = null)
     {
         $attempt = function () use ($username, $password) {
+            $this->dispatch(new Events\Connecting($this));
+
             is_null($username) && is_null($password)
                 ? $this->auth()->bindAsConfiguredUser()
                 : $this->auth()->bind($username, $password);
-        };
 
-        $this->dispatch(new Events\Connecting($this));
+            $this->dispatch(new Events\Connected($this));
+        };
 
         try {
             $this->runOperationCallback($attempt);
 
-            $this->dispatch(new Events\Connected($this));
+            $this->retryingInitialConnection = false;
         } catch (LdapRecordException $e) {
-            $this->retryOnNextHost($e, $attempt, $failed = function () {
-                $this->dispatch(new Events\ConnectionFailed($this));
-            });
+            $this->retryingInitialConnection = true;
+
+            $this->retryOnNextHost($e, $attempt);
         }
 
         return $this;
@@ -244,16 +266,28 @@ class Connection
     /**
      * Reconnect to the LDAP server.
      *
+     * @return void
+     *
      * @throws Auth\BindException
      * @throws ConnectionException
      */
     public function reconnect()
     {
+        $this->reinitialize();
+
+        $this->connect();
+    }
+
+    /**
+     * Reinitialize the connection.
+     *
+     * @return void
+     */
+    protected function reinitialize()
+    {
         $this->disconnect();
 
         $this->initialize();
-
-        $this->connect();
     }
 
     /**
@@ -434,12 +468,12 @@ class Connection
     protected function retry(Closure $operation)
     {
         try {
-            $this->reconnect();
+            $this->retryingInitialConnection
+                ? $this->reinitialize()
+                : $this->reconnect();
 
             return $this->runOperationCallback($operation);
         } catch (LdapRecordException $e) {
-            $this->attempted[$this->host] = Carbon::now();
-
             return $this->retryOnNextHost($e, $operation);
         }
     }
@@ -449,14 +483,15 @@ class Connection
      *
      * @param LdapRecordException $e
      * @param Closure             $operation
-     * @param Closure|null        $failed
      *
      * @return mixed
      *
      * @throws LdapRecordException
      */
-    protected function retryOnNextHost(LdapRecordException $e, Closure $operation, Closure $failed = null)
+    protected function retryOnNextHost(LdapRecordException $e, Closure $operation)
     {
+        $this->attempted[$this->host] = Carbon::now();
+
         if (($key = array_search($this->host, $this->hosts)) !== false) {
             unset($this->hosts[$key]);
         }
@@ -467,9 +502,7 @@ class Connection
             return $this->tryAgainIfCausedByLostConnection($e, $operation);
         }
 
-        if ($failed) {
-            $failed($this->ldap);
-        }
+        call_user_func($this->failed, $this->ldap);
 
         throw $e;
     }

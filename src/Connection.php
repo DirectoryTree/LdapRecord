@@ -248,12 +248,12 @@ class Connection
                 : $this->auth()->bind($username, $password);
 
             $this->dispatch(new Events\Connected($this));
+
+            $this->retryingInitialConnection = false;
         };
 
         try {
             $this->runOperationCallback($attempt);
-
-            $this->retryingInitialConnection = false;
         } catch (LdapRecordException $e) {
             $this->retryingInitialConnection = true;
 

@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Configuration;
 
-use LdapRecord\Ldap;
+use LdapRecord\LdapInterface;
 
 class DomainConfiguration
 {
@@ -31,7 +31,7 @@ class DomainConfiguration
         'version' => 3,
 
         // The port to use for connecting to your hosts.
-        'port' => Ldap::PORT,
+        'port' => LdapInterface::PORT,
 
         // The base distinguished name of your domain.
         'base_dn' => '',

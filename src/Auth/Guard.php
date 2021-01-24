@@ -4,7 +4,7 @@ namespace LdapRecord\Auth;
 
 use Exception;
 use Throwable;
-use LdapRecord\Ldap;
+use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
@@ -18,7 +18,7 @@ class Guard
     /**
      * The connection to bind to.
      *
-     * @var Ldap
+     * @var LdapInterface
      */
     protected $connection;
 
@@ -39,10 +39,10 @@ class Guard
     /**
      * Constructor.
      *
-     * @param Ldap                $connection
+     * @param LdapInterface       $connection
      * @param DomainConfiguration $configuration
      */
-    public function __construct(Ldap $connection, DomainConfiguration $configuration)
+    public function __construct(LdapInterface $connection, DomainConfiguration $configuration)
     {
         $this->connection = $connection;
         $this->configuration = $configuration;

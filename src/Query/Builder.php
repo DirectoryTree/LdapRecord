@@ -3,7 +3,6 @@
 namespace LdapRecord\Query;
 
 use Closure;
-use LdapRecord\Ldap;
 use DateTimeInterface;
 use LdapRecord\Container;
 use LdapRecord\Utilities;
@@ -12,6 +11,7 @@ use BadMethodCallException;
 use LdapRecord\Models\Model;
 use InvalidArgumentException;
 use LdapRecord\EscapesValues;
+use LdapRecord\LdapInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Events\QueryExecuted;
@@ -507,7 +507,7 @@ class Builder
      */
     protected function run($filter)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($filter) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter) {
             // We will avoid setting the controls during any pagination
             // requests as it will clear the cookie we need to send
             // to the server upon retrieving every page.
@@ -539,7 +539,7 @@ class Builder
      */
     protected function runPaginate($filter, $perPage, $isCritical)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             $callback = $ldap->supportsServerControlsInMethods()
                 ? $this->compatiblePaginationCallback($filter, $perPage, $isCritical)
                 : $this->deprecatedPaginationCallback($filter, $perPage, $isCritical);
@@ -559,7 +559,7 @@ class Builder
      */
     protected function deprecatedPaginationCallback($filter, $perPage, $isCritical)
     {
-        return function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
+        return function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             $pages = [];
 
             $cookie = '';
@@ -599,7 +599,7 @@ class Builder
      */
     protected function compatiblePaginationCallback($filter, $perPage, $isCritical)
     {
-        return function (Ldap $ldap) use ($filter, $perPage, $isCritical) {
+        return function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             $pages = [];
 
             // Add our paged results control.
@@ -645,7 +645,7 @@ class Builder
             return [];
         }
 
-        return $this->connection->run(function (Ldap $ldap) use ($resource) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
             $entries = $ldap->getEntries($resource);
 
             // Free up memory.
@@ -1213,7 +1213,7 @@ class Builder
      */
     public function withDeleted()
     {
-        return $this->addControl(Ldap::OID_SERVER_SHOW_DELETED, $isCritical = true);
+        return $this->addControl(LdapInterface::OID_SERVER_SHOW_DELETED, $isCritical = true);
     }
 
     /**
@@ -1616,7 +1616,7 @@ class Builder
             );
         }
 
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->add($dn, $attributes);
         });
     }
@@ -1631,7 +1631,7 @@ class Builder
      */
     public function insertAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modAdd($dn, $attributes);
         });
     }
@@ -1646,7 +1646,7 @@ class Builder
      */
     public function update($dn, array $modifications)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $modifications) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $modifications) {
             return $ldap->modifyBatch($dn, $modifications);
         });
     }
@@ -1661,7 +1661,7 @@ class Builder
      */
     public function updateAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modReplace($dn, $attributes);
         });
     }
@@ -1675,7 +1675,7 @@ class Builder
      */
     public function delete($dn)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn) {
             return $ldap->delete($dn);
         });
     }
@@ -1690,7 +1690,7 @@ class Builder
      */
     public function deleteAttributes($dn, array $attributes)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $attributes) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modDelete($dn, $attributes);
         });
     }
@@ -1707,7 +1707,7 @@ class Builder
      */
     public function rename($dn, $rdn, $newParentDn, $deleteOldRdn = true)
     {
-        return $this->connection->run(function (Ldap $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
             return $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn);
         });
     }

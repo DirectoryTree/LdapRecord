@@ -3,17 +3,21 @@
 namespace LdapRecord\Testing;
 
 use Closure;
-use LdapRecord\Ldap;
+use LdapRecord\LdapBase;
 use LdapRecord\DetailedError;
+use LdapRecord\Testing\Expectations\BindExpectation;
+use LdapRecord\Testing\Expectations\LdapExpectation;
 
-class LdapFake extends Ldap
+class LdapFake extends LdapBase
 {
     /**
-     * The distinguished name of the user that should pass authentication.
+     * The expectations of the LDAP fake.
      *
-     * @var string|null
+     * @var array
      */
-    protected $dn;
+    protected $expectations = [
+        'bind' => [],
+    ];
 
     /**
      * The default fake error number.
@@ -37,7 +41,14 @@ class LdapFake extends Ldap
     protected $diagnosticMessage = '';
 
     /**
-     * Set the distinguished name of a user that will pass binding.
+     * Whether the fake is set to be bound indefinitely.
+     *
+     * @var bool
+     */
+    protected $bindingIndefinitely = false;
+
+    /**
+     * Set the user that will pass binding.
      *
      * @param string $dn
      *
@@ -45,9 +56,85 @@ class LdapFake extends Ldap
      */
     public function shouldAuthenticateWith($dn)
     {
-        $this->dn = $dn;
+        return $this->shouldBindIndefinitelyWith($dn);
+    }
+
+    /**
+     * Set the user that will always successfully bind.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function shouldBindIndefinitelyWith($dn)
+    {
+        $this->bindingIndefinitely = true;
+
+        $this->shouldBindOnceWith($dn);
 
         return $this;
+    }
+
+    /**
+     * Add a user that will successfully bind once.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function shouldBindOnceWith($dn)
+    {
+        $expectation = new Expectations\BindExpectation($dn);
+
+        $expectation->shouldPass();
+
+        $this->addExpectation('bind', $expectation);
+
+        return $this;
+    }
+
+    /**
+     * Add a user that will fail binding once.
+     *
+     * @param string $dn
+     *
+     * @return $this
+     */
+    public function shouldFailBindOnceWith($dn)
+    {
+        $expectation = new Expectations\BindExpectation($dn);
+
+        $expectation->shouldFail();
+
+        $this->addExpectation('bind', $expectation);
+
+        return $this;
+    }
+
+    /**
+     * Add an LDAP method expectation.
+     *
+     * @param string          $method
+     * @param LdapExpectation $expectation
+     *
+     * @return void
+     */
+    public function addExpectation($method, LdapExpectation $expectation)
+    {
+        $this->expectations[$method][] = $expectation;
+    }
+
+    /**
+     * Remove an expectation by method and key.
+     *
+     * @param string $method
+     * @param int    $key
+     *
+     * @return void
+     */
+    protected function removeExpectation($method, $key)
+    {
+        unset($this->expectations[$method][$key]);
     }
 
     /**
@@ -102,7 +189,85 @@ class LdapFake extends Ldap
      */
     public function bind($username, $password)
     {
-        return $this->bound = $username == $this->dn;
+        if (($key = $this->findFailureBindExpectationKey($username)) !== false) {
+            $this->removeExpectation('bind', $key);
+
+            return $this->bound = false;
+        }
+
+        if (($key = $this->findSuccessfulBindExpectationKey($username)) === false) {
+            return $this->bound = false;
+        }
+
+        if (! $this->bindingIndefinitely) {
+            $this->removeExpectation('bind', $key);
+        }
+
+        return $this->bound = true;
+    }
+
+    /**
+     * Determine if the user is expected to fail binding.
+     *
+     * @param string $username
+     *
+     * @return bool
+     */
+    protected function findFailureBindExpectationKey($username)
+    {
+        return $this->findBindExpectationKey($username, function (BindExpectation $expectation) {
+            return $expectation->resolve() === false;
+        });
+    }
+
+    /**
+     * Determine if the user is expected to pass binding.
+     *
+     * @param string $username
+     *
+     * @return bool
+     */
+    protected function findSuccessfulBindExpectationKey($username)
+    {
+        return $this->findBindExpectationKey($username, function (BindExpectation $expectation) {
+            return $expectation->resolve() === true;
+        });
+    }
+
+    /**
+     * Find a bind expectation by username and result.
+     *
+     * @param string  $username
+     * @param Closure $result
+     *
+     * @return int|false
+     */
+    protected function findBindExpectationKey($username, Closure $result)
+    {
+        $callback = function (BindExpectation $expectation) use ($username, $result) {
+            return $expectation->user() === $username && $result($expectation);
+        };
+
+        return $this->findExpectationKeyByCallback('bind', $callback);
+    }
+
+    /**
+     * Attempt to find a method expectation by callback.
+     *
+     * @param string  $method
+     * @param Closure $callback
+     *
+     * @return false|int|string
+     */
+    protected function findExpectationKeyByCallback($method, Closure $callback)
+    {
+        foreach ($this->expectations[$method] as $key => $expectation) {
+            if ($callback($expectation)) {
+                return $key;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -126,24 +291,208 @@ class LdapFake extends Ldap
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getDiagnosticMessage()
+    {
+        return $this->diagnosticMessage;
+    }
+
+    /**
      * Return a fake detailed error.
      *
      * @return DetailedError
      */
     public function getDetailedError()
     {
-        return new DetailedError($this->errNo, $this->lastError, $this->diagnosticMessage);
+        return new DetailedError(
+            $this->errNo(),
+            $this->getLastError(),
+            $this->getDiagnosticMessage()
+        );
     }
 
     /**
-     * Prevent executing real LDAP operations in the fake.
-     *
-     * @param Closure $operation
-     *
-     * @return void
+     * {@inheritDoc}
      */
-    protected function executeFailableOperation(Closure $operation)
+    public function getEntries($searchResults)
     {
-        // Do nothing.
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOption($option, $value)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptions(array $options = [])
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOption($option, &$value = null)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function startTLS()
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function connect($hosts = [], $port = 389)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function close()
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function add($dn, array $entry)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function delete($dn)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function modify($dn, array $entry)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function modifyBatch($dn, array $values)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function modAdd($dn, array $entry)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function modReplace($dn, array $entry)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function modDelete($dn, array $entry)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function controlPagedResultResponse($result, &$cookie)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function freeResult($result)
+    {
+        //
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function err2Str($number)
+    {
+        //
     }
 }

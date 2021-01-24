@@ -245,7 +245,7 @@ class LdapFake extends LdapBase
     protected function findBindExpectationKey($username, Closure $result)
     {
         $callback = function (BindExpectation $expectation) use ($username, $result) {
-            return $expectation->user() === $username && $result($expectation);
+            return strtolower($expectation->user()) === strtolower($username) && $result($expectation);
         };
 
         return $this->findExpectationKeyByCallback('bind', $callback);

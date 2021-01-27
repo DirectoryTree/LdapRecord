@@ -1235,6 +1235,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
 
         $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
+        
         // If the model was successfully renamed, we will set
         // its new DN so any further updates to the model
         // can be performed without any issues.

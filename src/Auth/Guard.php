@@ -3,7 +3,6 @@
 namespace LdapRecord\Auth;
 
 use Exception;
-use Throwable;
 use LdapRecord\LdapInterface;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
@@ -114,7 +113,7 @@ class Guard
             }
 
             $this->fireBoundEvent($username, $password);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $this->fireFailedEvent($username, $password);
 
             throw BindException::withDetailedError($e, $this->connection->getDetailedError());

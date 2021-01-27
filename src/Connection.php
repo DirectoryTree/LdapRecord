@@ -3,7 +3,7 @@
 namespace LdapRecord;
 
 use Closure;
-use Throwable;
+use Exception;
 use Carbon\Carbon;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Query\Cache;
@@ -385,7 +385,7 @@ class Connection
     {
         try {
             return $operation($this->ldap);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             if ($e instanceof LdapRecordException) {
                 throw $e;
             }

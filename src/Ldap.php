@@ -196,9 +196,9 @@ class Ldap extends LdapBase
      */
     public function connect($hosts = [], $port = 389)
     {
-        $this->host = $this->getConnectionString($hosts, $this->getProtocol(), $port);
-
         $this->bound = false;
+
+        $this->host = $this->getConnectionString($hosts, $port);
 
         return $this->connection = $this->executeFailableOperation(function () {
             return ldap_connect($this->host);

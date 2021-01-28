@@ -114,9 +114,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * Returns the LDAP protocol to utilize for the current connection.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function getProtocol()
     {
@@ -203,12 +201,11 @@ abstract class LdapBase implements LdapInterface
      * Generates an LDAP connection string for each host given.
      *
      * @param string|array $hosts
-     * @param string       $protocol
      * @param string       $port
      *
      * @return string
      */
-    protected function getConnectionString($hosts, $protocol, $port)
+    protected function getConnectionString($hosts, $port)
     {
         // If we are using SSL and using the default port, we
         // will override it to use the default SSL port.
@@ -216,8 +213,8 @@ abstract class LdapBase implements LdapInterface
             $port = static::PORT_SSL;
         }
 
-        $hosts = array_map(function ($host) use ($protocol, $port) {
-            return "{$protocol}{$host}:{$port}";
+        $hosts = array_map(function ($host) use ($port) {
+            return "{$this->getProtocol()}{$host}:{$port}";
         }, (array) $hosts);
 
         return implode(' ', $hosts);

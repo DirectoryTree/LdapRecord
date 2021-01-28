@@ -473,6 +473,13 @@ interface LdapInterface
     public function err2Str($number);
 
     /**
+     * Returns the LDAP protocol to utilize for the current connection.
+     *
+     * @return string
+     */
+    public function getProtocol();
+
+    /**
      * Returns the extended error code of the last command.
      *
      * @return string

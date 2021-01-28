@@ -23,10 +23,7 @@ class LdapTest extends TestCase
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
 
-        $connections = $ldap->getConnectionString([
-            'dc01',
-            'dc02',
-        ], 'ldap://', '389');
+        $connections = $ldap->getConnectionString(['dc01', 'dc02'], '389');
 
         $this->assertEquals('ldap://dc01:389 ldap://dc02:389', $connections);
     }
@@ -37,7 +34,7 @@ class LdapTest extends TestCase
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
 
-        $connection = $ldap->getConnectionString('dc01', 'ldap://', '389');
+        $connection = $ldap->getConnectionString('dc01', '389');
 
         $this->assertEquals('ldap://dc01:389', $connection);
     }

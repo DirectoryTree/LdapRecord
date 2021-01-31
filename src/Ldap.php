@@ -150,16 +150,6 @@ class Ldap extends LdapBase
     /**
      * {@inheritDoc}
      */
-    public function setOptions(array $options = [])
-    {
-        foreach ($options as $option => $value) {
-            $this->setOption($option, $value);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getOption($option, &$value = null)
     {
         ldap_get_option($this->connection, $option, $value);

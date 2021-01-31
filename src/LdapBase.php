@@ -100,6 +100,16 @@ abstract class LdapBase implements LdapInterface
     /**
      * {@inheritDoc}
      */
+    public function setOptions(array $options = [])
+    {
+        foreach ($options as $option => $value) {
+            $this->setOption($option, $value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getHost()
     {
         return $this->host;

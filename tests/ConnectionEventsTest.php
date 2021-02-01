@@ -15,7 +15,8 @@ class ConnectionEventsTest extends TestCase
 {
     public function test_successful_connection_dispatches_proper_events()
     {
-        $ldap = (new LdapFake)->shouldBindOnceWith('user');
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->with('user', $this->anything())->andReturn(true));
 
         $conn = new Connection([
             'hosts' => ['one'],
@@ -53,9 +54,8 @@ class ConnectionEventsTest extends TestCase
     public function test_connection_retries_subsequent_hosts_until_successful()
     {
         $ldap = (new LdapFake)
-            ->shouldFailBindOnceWith('user')
-            ->shouldFailBindOnceWith('user')
-            ->shouldBindOnceWith('user')
+            ->expect(LdapFake::operation('bind')->with('user')->twice()->andReturn(false))
+            ->expect(LdapFake::operation('bind')->with('user')->once()->andReturn(true))
             ->shouldReturnError("Can't contact LDAP server");
 
         $conn = new Connection([

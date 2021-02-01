@@ -64,15 +64,21 @@ class FakeDirectoryTest extends TestCase
     public function test_auth_fails_without_proper_username()
     {
         $conn = Container::getConnection('default');
+
+        $conn->getLdapConnection()->expect(['add']);
+
         $conn->actingAs(User::create(['cn' => 'John']));
+
         $this->assertFalse($conn->auth()->attempt('user', 'secret'));
     }
 
     public function test_auth_passes()
     {
-        $user = User::create(['cn' => 'John']);
-
         $conn = Container::getConnection('default');
+
+        $conn->getLdapConnection()->expect(['add']);
+
+        $user = User::create(['cn' => 'John']);
 
         $this->assertFalse($conn->auth()->attempt($user->getDn(), 'secret'));
 
@@ -110,15 +116,15 @@ class FakeDirectoryTest extends TestCase
         Container::addConnection(new Connection(['hosts' => ['bravo']]), 'bravo');
 
         $alpha = DirectoryFake::setup('alpha');
+        $alpha->getLdapConnection()->expect(['bind' => true]);
+
         $bravo = DirectoryFake::setup('bravo');
+        $bravo->getLdapConnection()->expect(['bind' => false]);
 
         $this->assertEquals(['alpha'], $alpha->getConfiguration()->get('hosts'));
         $this->assertEquals(['bravo'], $bravo->getConfiguration()->get('hosts'));
 
-        $user = User::create(['cn'=> 'John Doe']);
-        $alpha->actingAs($user);
-        $this->assertTrue($alpha->auth()->attempt($user->getDn(), 'secret'));
-
-        $this->assertFalse($bravo->auth()->attempt($user->getDn(), 'secret'));
+        $this->assertTrue($alpha->auth()->attempt('johndoe', 'secret'));
+        $this->assertFalse($bravo->auth()->attempt('johndoe', 'secret'));
     }
 }

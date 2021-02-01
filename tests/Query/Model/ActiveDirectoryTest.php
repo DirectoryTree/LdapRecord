@@ -4,19 +4,15 @@ namespace LdapRecord\Tests\Query\Model;
 
 use LdapRecord\Connection;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Models\ActiveDirectory\Entry;
-use LdapRecord\Tests\CreatesConnectedLdapMocks;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 
 class ActiveDirectoryTest extends TestCase
 {
-    use CreatesConnectedLdapMocks;
-
     protected function newBuilder()
     {
-        $ldap = $this->newConnectedLdapMock();
-
-        return (new ActiveDirectoryBuilder(new Connection([], $ldap)))->setModel(new Entry);
+        return (new ActiveDirectoryBuilder(new Connection([], (new LdapFake))))->setModel(new Entry);
     }
 
     public function test_where_member_of()

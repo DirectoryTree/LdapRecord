@@ -2,13 +2,12 @@
 
 namespace LdapRecord\Tests;
 
-use Mockery as m;
 use Carbon\Carbon;
 use LdapRecord\Ldap;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Connection;
-use LdapRecord\DetailedError;
 use LdapRecord\Query\Builder;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
@@ -19,8 +18,6 @@ use LdapRecord\Exceptions\ConstraintViolationException;
 
 class ConnectionTest extends TestCase
 {
-    use CreatesConnectedLdapMocks;
-
     public function test_connection_defaults()
     {
         $conn = new Connection();
@@ -32,9 +29,10 @@ class ConnectionTest extends TestCase
 
     public function test_ldap_connection_can_be_set()
     {
-        $conn = new Connection();
-        $ldap = $this->newConnectedLdapMock();
-        $conn->setLdapConnection($ldap);
+        $conn = new Connection([]);
+
+        $conn->setLdapConnection($ldap = new LdapFake);
+
         $this->assertEquals($ldap, $conn->getLdapConnection());
     }
 
@@ -97,24 +95,34 @@ class ConnectionTest extends TestCase
 
     public function test_is_connected()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $conn = new Connection([], $ldap);
-        $this->assertTrue($conn->isConnected());
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('isBound')->once()->andReturn(true));
+
+        $this->assertTrue((new Connection([], $ldap))->isConnected());
+
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('isBound')->once()->andReturn(false));
+
+        $this->assertFalse((new Connection([], $ldap))->isConnected());
     }
 
     public function test_reconnect_initializes_connection()
     {
-        $ldap = m::mock(Ldap::class);
-        $ldap->makePartial();
-        $ldap->shouldAllowMockingProtectedMethods();
-        $ldap->shouldReceive('close')->once()->withNoArgs();
-        $ldap->shouldReceive('setOptions')->twice()->withAnyArgs();
-        $ldap->shouldReceive('ssl')->twice()->withNoArgs();
-        $ldap->shouldReceive('bind')->once()->with('foo', 'bar')->andReturnTrue();
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('close')->once())
+            ->expect(LdapFake::operation('ssl')->twice()->andReturn(true))
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
-        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => true, 'username' => 'foo', 'password' => 'bar'], $ldap);
+        $conn = new Connection([
+            'hosts' => ['127.0.0.1'],
+            'use_ssl' => true,
+            'username' => 'foo',
+            'password' => 'bar',
+        ], $ldap);
+
         $conn->reconnect();
-        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
+
+        $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
     }
 
     public function test_auth_username_failure()
@@ -133,39 +141,24 @@ class ConnectionTest extends TestCase
 
     public function test_auth_failure()
     {
-        $ldap = $this->newConnectedLdapMock();
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(false))
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
-        // Binding as the user.
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(false);
-
-        $error = new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A');
-
-        // Binding fails, retrieves last error.
-        $ldap->shouldReceive('getLastError')->once()->andReturn('error');
-        $ldap->shouldReceive('getDetailedError')->once()->andReturn($error);
-        $ldap->shouldReceive('errNo')->once()->andReturn(1);
-
-        // Rebinds as the administrator.
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with(null, null)->andReturn(true);
-
-        $conn = new Connection([], $ldap);
+        $conn = new Connection([
+            'username' => 'foo',
+            'password' => 'bar',
+        ], $ldap);
 
         $this->assertFalse($conn->auth()->attempt('username', 'password'));
+        $this->assertTrue($conn->isConnected());
     }
 
     public function test_auth_passes_with_rebind()
     {
-        $ldap = $this->newConnectedLdapMock();
-
-        // Authenticates as the user
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(true);
-
-        // Re-binds as the administrator
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('foo', 'bar')->andReturn(true);
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true))
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
         $conn = new Connection([
             'username' => 'foo',
@@ -173,36 +166,29 @@ class ConnectionTest extends TestCase
         ], $ldap);
 
         $this->assertTrue($conn->auth()->attempt('username', 'password'));
+        $this->assertTrue($conn->isConnected());
     }
 
     public function test_auth_rebind_failure()
     {
-        $ldap = $this->newConnectedLdapMock();
-
-        // Re-binds as the administrator (fails)
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->with('test', 'test')->andReturn(false);
-        $ldap->shouldReceive('getLastError')->once()->andReturn('');
-        $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(null, null, null));
-        $ldap->shouldReceive('errNo')->once()->andReturn(1);
-
         $this->expectException(BindException::class);
 
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true))
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(false));
+
         $conn = new Connection([
-            'username' => 'test',
-            'password' => 'test',
+            'username' => 'foo',
+            'password' => 'bar',
         ], $ldap);
 
-        $conn->connect();
-
-        $this->assertTrue($conn->auth()->attempt('username', 'password'));
+        $conn->auth()->attempt('username', 'password');
     }
 
     public function test_auth_passes_without_rebind()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(true);
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true));
 
         $conn = new Connection([
             'username' => 'test',
@@ -210,34 +196,25 @@ class ConnectionTest extends TestCase
         ], $ldap);
 
         $this->assertTrue($conn->auth()->attempt('username', 'password', true));
+        $this->assertTrue($conn->isConnected());
     }
 
     public function test_connections_are_setup()
     {
-        $ldap = m::mock(Ldap::class);
-
-        $ldap->shouldReceive('setOptions')->once()->with([
-            LDAP_OPT_PROTOCOL_VERSION => 3,
-            LDAP_OPT_NETWORK_TIMEOUT  => 5,
-            LDAP_OPT_REFERRALS        => false,
-        ]);
-
-        $ldap->shouldReceive('connect')->once()->with('foo', '389');
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_PROTOCOL_VERSION, 3))
+            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_NETWORK_TIMEOUT, 5))
+            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_REFERRALS, false));
 
         new Connection(['hosts' => ['foo', 'bar']], $ldap);
     }
 
     public function test_reconnect()
     {
-        $ldap = m::mock(Ldap::class);
-        // Initial connection.
-        $ldap->shouldReceive('connect')->twice()->andReturn(true);
-        $ldap->shouldReceive('setOptions')->twice();
-
-        // Reconnection.
-        $ldap->shouldReceive('close')->once();
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('foo', 'bar')->andReturn(true);
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('close')->once())
+            ->expect(LdapFake::operation('connect')->twice())
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
         $conn = new Connection([
             'username' => 'foo',
@@ -247,15 +224,17 @@ class ConnectionTest extends TestCase
         $conn->reconnect();
     }
 
-    public function test_ldap_operations_can_be_ran_with_connections()
+    public function test_ldap_operations_can_be_executed_with_connections()
     {
-        $ldap = $this->newConnectedLdapMock();
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->andReturn(true));
+
         $conn = new Connection([], $ldap);
 
         $executed = false;
 
-        $returned = $conn->run(function (Ldap $ldap) use (&$executed) {
-            $this->assertInstanceOf(Ldap::class, $ldap);
+        $returned = $conn->run(function ($ldap) use (&$executed) {
+            $this->assertInstanceOf(LdapFake::class, $ldap);
 
             return $executed = true;
         });
@@ -266,11 +245,12 @@ class ConnectionTest extends TestCase
 
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
-        $ldap = $this->newConnectedLdapMock();
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('close')->times(3))
+            ->expect(LdapFake::operation('connect')->times(4))
+            ->expect(LdapFake::operation('bind')->andReturn(true));
 
-        $ldap->shouldReceive('getDetailedError')->times(3)->andReturnNull();
-
-        $conn = new ReconnectConnectionMock([
+        $conn = new Connection([
             'hosts' => ['foo', 'bar', 'baz'],
         ], $ldap);
 
@@ -289,7 +269,7 @@ class ConnectionTest extends TestCase
         $attempted = $conn->attempted();
 
         $this->assertTrue($executed);
-        $this->assertTrue($conn->reconnected);
+        $this->assertTrue($conn->isConnected());
         $this->assertCount(2, $attempted);
         $this->assertArrayNotHasKey('baz', $attempted);
         $this->assertInstanceOf(Carbon::class, $attempted['foo']);
@@ -309,9 +289,9 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_already_exists_error_is_returned()
     {
-        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+        $ldap = (new LdapFake)->expect(['bind' => true]);
 
-        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+        $conn = new Connection([], $ldap);
 
         $this->expectException(AlreadyExistsException::class);
 
@@ -322,9 +302,9 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_insufficient_access_error_is_returned()
     {
-        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+        $ldap = (new LdapFake)->expect(['bind' => true]);
 
-        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+        $conn = new Connection([], $ldap);
 
         $this->expectException(InsufficientAccessException::class);
 
@@ -335,24 +315,14 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_constraint_violation_error_is_returned()
     {
-        $conn = new Connection([], $ldapMock = $this->newConnectedLdapMock());
+        $ldap = (new LdapFake)->expect(['bind' => true]);
 
-        $ldapMock->shouldReceive('getDetailedError')->once()->andReturnNull();
+        $conn = new Connection([], $ldap);
 
         $this->expectException(ConstraintViolationException::class);
 
         $conn->run(function () {
             throw new \Exception('Constraint violation');
         });
-    }
-}
-
-class ReconnectConnectionMock extends Connection
-{
-    public $reconnected = false;
-
-    public function reconnect()
-    {
-        $this->reconnected = true;
     }
 }

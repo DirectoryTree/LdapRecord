@@ -6,19 +6,14 @@ use DateTime;
 use LdapRecord\Connection;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Tests\CreatesConnectedLdapMocks;
 
 class BuilderTest extends TestCase
 {
-    use CreatesConnectedLdapMocks;
-
-    /** @return Builder */
     protected function newBuilder()
     {
-        $ldap = $this->newConnectedLdapMock();
-
-        return new Builder(new Connection([], $ldap));
+        return new Builder(new Connection([], (new LdapFake)));
     }
 
     public function test_builder_always_has_default_filter()
@@ -975,9 +970,11 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $ldap = $b->getConnection()->getLdapConnection();
-        $ldap->shouldReceive('isBound')->andReturnTrue();
-        $ldap->shouldReceive('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, []);
-        $ldap->shouldReceive('search')->once()->andReturnNull();
+
+        $ldap->expect([
+            'bind' => true,
+            'search' => null,
+        ])->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []));
 
         $b->get();
     }
@@ -1015,9 +1012,9 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldReceive('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])
-            ->shouldReceive('read')->once()->with($dn, '(objectclass=*)', ['*'], false, 1)->andReturn($results)
-            ->shouldReceive('getEntries')->once()->with($results)->andReturn($results);
+            ->expect(['bind' => true])
+            ->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []))
+            ->expect(LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'], false, 1)->andReturn($results));
 
         $this->assertEquals($dn, $b->find($dn)['dn'][0]);
     }
@@ -1028,7 +1025,9 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldReceive('add')->once()->with('cn=John Doe', ['objectclass' => ['foo']])->andReturnTrue();
+            ->expect(['bind' => true])
+            ->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []))
+            ->expect(LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturn(true));
 
         $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));
     }

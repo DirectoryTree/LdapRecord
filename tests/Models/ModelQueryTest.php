@@ -8,25 +8,27 @@ use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Query\Collection;
 use LdapRecord\ContainerException;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Attributes\Timestamp;
-use LdapRecord\Tests\CreatesConnectedLdapMocks;
 use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelQueryTest extends TestCase
 {
-    use CreatesConnectedLdapMocks;
-
     public function test_resolving_connections()
     {
         Container::getNewInstance()->add(new Connection());
+
         $this->assertInstanceOf(Connection::class, Entry::resolveConnection());
 
         Container::getNewInstance()->add(new Connection(), 'other');
+
         $model = new Entry();
+
         $model->setConnection('other');
+
         $this->assertInstanceOf(Connection::class, $model::resolveConnection('other'));
         $this->assertInstanceOf(Connection::class, $model->getConnection());
     }
@@ -36,6 +38,7 @@ class ModelQueryTest extends TestCase
         Container::getNewInstance()->add(new Connection());
 
         $model = new Entry();
+
         $this->assertEquals($model, Entry::query()->getModel());
         $this->assertEquals($model, $model->newQuery()->getModel());
     }
@@ -43,21 +46,27 @@ class ModelQueryTest extends TestCase
     public function test_new_query_without_scopes()
     {
         Container::getNewInstance()->add(new Connection());
+
         $model = new Entry();
+
         $query = $model->newQueryWithoutScopes();
+
         $this->assertEquals($model, $query->getModel());
         $this->assertEquals(['and' => [], 'or' => [], 'raw' => []], $query->filters);
     }
 
     public function test_new_query_has_connection_base_dn()
     {
-        Container::getNewInstance()->add(new Connection(['base_dn' => 'foo']));
+        Container::getNewInstance()
+            ->add(new Connection(['base_dn' => 'foo']));
+
         $this->assertEquals('foo', Entry::query()->getDn());
     }
 
     public function test_creating_new_query_without_connection_fails()
     {
         $this->expectException(ContainerException::class);
+
         Entry::query();
     }
 
@@ -76,19 +85,28 @@ class ModelQueryTest extends TestCase
         Container::getNewInstance()->add(new Connection(), 'other');
 
         $query = Entry::on('other');
+
         $this->assertInstanceOf(Builder::class, $query);
     }
 
     public function test_on_without_connection()
     {
         $this->expectException(ContainerException::class);
+
         Entry::on('other');
     }
 
     public function test_create()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('add')->once()->with('cn=foo,dc=bar,dc=baz', ['cn' => ['foo'], 'objectclass' => ['bar']])->andReturnTrue();
+        $expectation = LdapFake::operation('add')
+            ->once()
+            ->with(
+                'cn=foo,dc=bar,dc=baz',
+                ['cn' => ['foo'], 'objectclass' => ['bar']]
+            )
+            ->andReturn(true);
+
+        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -106,20 +124,27 @@ class ModelQueryTest extends TestCase
     public function test_create_without_connection()
     {
         $this->expectException(ContainerException::class);
+
         (new Entry())->create();
     }
 
     public function test_create_without_dn()
     {
         $this->expectException(\Exception::class);
+
         Container::getNewInstance()->add(new Connection());
+
         (new Entry())->create();
     }
 
     public function test_create_attribute()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modAdd')->once()->with('foo', ['bar' => ['baz']])->andReturnTrue();
+        $expectation = LdapFake::operation('modAdd')
+            ->once()
+            ->with('foo', ['bar' => ['baz']])
+            ->andReturn(true);
+
+        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -133,16 +158,26 @@ class ModelQueryTest extends TestCase
     public function test_create_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
+
         $model = new Entry();
+
         $model->createAttribute('foo', 'bar');
     }
 
     public function test_update()
     {
-        $mod = ['attrib' => 'cn', 'modtype' => 3, 'values' => [0 => 'baz']];
+        $mod = [
+            'attrib' => 'cn',
+            'modtype' => 3,
+            'values' => [0 => 'baz']
+        ];
 
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modifyBatch')->once()->with('foo', [$mod])->andReturnTrue();
+        $expectation = LdapFake::operation('modifyBatch')
+            ->once()
+            ->with('foo', [$mod])
+            ->andReturn(true);
+
+        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -160,14 +195,16 @@ class ModelQueryTest extends TestCase
     public function test_update_without_existing_model()
     {
         Container::addConnection(new Connection());
+
         $this->expectException(ModelDoesNotExistException::class);
-        $model = new Entry(['objectclass' => 'foo', 'bar', 'cn' => 'baz']);
-        $model->update();
+
+        (new Entry)->update();
     }
 
     public function test_update_without_changes_does_not_attempt_update()
     {
         $model = m::mock(Entry::class)->makePartial();
+
         $model->shouldNotReceive('newQuery');
 
         $model->setRawAttributes(['dn' => 'foo']);
@@ -177,8 +214,12 @@ class ModelQueryTest extends TestCase
 
     public function test_update_attribute()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modReplace')->once()->with('foo', ['bar' => ['baz']])->andReturnTrue();
+        $expectation = LdapFake::operation('modReplace')
+            ->once()
+            ->with(['foo', ['bar' => ['baz']]])
+            ->andReturn(true);
+
+        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -193,14 +234,20 @@ class ModelQueryTest extends TestCase
     public function test_update_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
+
         $model = new Entry();
+
         $model->updateAttribute('foo', 'bar');
     }
 
     public function test_delete()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('delete')->once()->with('foo')->andReturnTrue();
+        $expectation = LdapFake::operation('delete')
+            ->once()
+            ->with('foo')
+            ->andReturn(true);
+
+        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -217,15 +264,20 @@ class ModelQueryTest extends TestCase
     public function test_delete_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
+
         $model = new Entry();
+
         $model->delete();
     }
 
     public function test_delete_attribute()
     {
-        $ldap = $this->newConnectedLdapMock();
-        $ldap->shouldReceive('modDelete')->once()->with('dn', ['foo' => []]);
-        $ldap->shouldReceive('modDelete')->once()->with('dn', ['bar' => ['zal']]);
+        $expectations = [
+            LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturn(true),
+            LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true)
+        ];
+
+        $ldap = (new LdapFake)->expect(array_merge(['bind' => true], $expectations));
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -252,13 +304,16 @@ class ModelQueryTest extends TestCase
     public function test_delete_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
+
         $model = new Entry();
+
         $model->delete();
     }
 
     public function test_delete_leaf_nodes()
     {
         $leaf = m::mock(Entry::class);
+
         $leaf->shouldReceive('delete')->once()->andReturnTrue();
 
         $shouldBeDeleted = new Collection([$leaf]);

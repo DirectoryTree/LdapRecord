@@ -7,14 +7,9 @@ use LdapRecord\Tests\TestCase;
 
 class GrammarTest extends TestCase
 {
-    public function newGrammar()
-    {
-        return new Grammar();
-    }
-
     public function test_wrap()
     {
-        $g = $this->newGrammar();
+        $g = new Grammar();
 
         $wrapped = $g->wrap('test');
 
@@ -25,7 +20,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_prefix()
     {
-        $g = $this->newGrammar();
+        $g = new Grammar();
 
         $wrapped = $g->wrap('test', '(!');
 
@@ -36,7 +31,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_suffix()
     {
-        $g = $this->newGrammar();
+        $g = new Grammar();
 
         $wrapped = $g->wrap('test', null, '=)');
 
@@ -47,7 +42,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_both()
     {
-        $g = $this->newGrammar();
+        $g = new Grammar();
 
         $wrapped = $g->wrap('test', '(!prefix', 'suffix)');
 
@@ -64,6 +59,6 @@ class GrammarTest extends TestCase
             'ends_with', 'not_ends_with', 'contains', 'not_contains',
         ];
 
-        $this->assertEquals($expected, $this->newGrammar()->getOperators());
+        $this->assertEquals($expected, (new Grammar)->getOperators());
     }
 }

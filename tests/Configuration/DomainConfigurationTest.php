@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\tests\Configuration;
+namespace LdapRecord\Tests\Configuration;
 
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Configuration\DomainConfiguration;
@@ -18,13 +18,16 @@ class DomainConfigurationTest extends TestCase
     public function test_getting_options()
     {
         $config = new DomainConfiguration();
+
         $this->assertEmpty($config->get('username'));
     }
 
     public function test_setting_options()
     {
         $config = new DomainConfiguration();
+
         $config->set('username', 'foo');
+
         $this->assertEquals('foo', $config->get('username'));
     }
 

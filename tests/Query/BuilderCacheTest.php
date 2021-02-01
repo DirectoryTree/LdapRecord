@@ -13,10 +13,9 @@ class BuilderCacheTest extends TestCase
 {
     public function test_cache_is_set_from_connection_onto_new_query_builders()
     {
-        $store = new ArrayCacheStore();
-
         $conn = new Connection();
-        $conn->setCache($store);
+
+        $conn->setCache(new ArrayCacheStore());
 
         $query = $conn->query();
 
@@ -26,10 +25,9 @@ class BuilderCacheTest extends TestCase
 
     public function test_cache_is_set_onto_new_model_query_builders()
     {
-        $store = new ArrayCacheStore();
-
         $conn = new Connection();
-        $conn->setCache($store);
+
+        $conn->setCache(new ArrayCacheStore());
 
         $container = Container::getInstance();
         $container->setDefault('default');
@@ -39,8 +37,5 @@ class BuilderCacheTest extends TestCase
 
         $this->assertInstanceOf(Cache::class, $query->getCache());
         $this->assertInstanceOf(ArrayCacheStore::class, $query->getCache()->store());
-
-        // Reset the container.
-        $container->remove('default');
     }
 }

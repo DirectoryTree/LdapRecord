@@ -4,6 +4,7 @@ namespace LdapRecord\Tests;
 
 use Mockery as m;
 use LdapRecord\Ldap;
+use LdapRecord\Testing\LdapFake;
 
 class LdapTest extends TestCase
 {
@@ -17,26 +18,22 @@ class LdapTest extends TestCase
         $this->assertNull($ldap->getConnection());
     }
 
-    public function test_connections_string_with_array()
+    public function test_host_arrays_are_properly_processed()
     {
-        $ldap = m::mock(Ldap::class)
-            ->shouldAllowMockingProtectedMethods()
-            ->makePartial();
+        $ldap = new LdapFake;
 
-        $connections = $ldap->getConnectionString(['dc01', 'dc02'], '389');
+        $ldap->connect(['dc01', 'dc02'], $port = 500);
 
-        $this->assertEquals('ldap://dc01:389 ldap://dc02:389', $connections);
+        $this->assertEquals('ldap://dc01:500 ldap://dc02:500', $ldap->getHost());
     }
 
-    public function test_connections_string_with_string()
+    public function test_host_strings_are_properly_processed()
     {
-        $ldap = m::mock(Ldap::class)
-            ->shouldAllowMockingProtectedMethods()
-            ->makePartial();
+        $ldap = new LdapFake;
 
-        $connection = $ldap->getConnectionString('dc01', '389');
+        $ldap->connect('dc01', $port = 500);
 
-        $this->assertEquals('ldap://dc01:389', $connection);
+        $this->assertEquals('ldap://dc01:500', $ldap->getHost());
     }
 
     public function test_get_default_protocol()
@@ -90,11 +87,11 @@ class LdapTest extends TestCase
 
     public function test_set_options()
     {
-        $ldap = m::mock(Ldap::class)->makePartial();
-
-        $ldap->shouldReceive('setOption')
-            ->once()->with(1, 'value')
-            ->once()->with(2, 'value');
+        $ldap = (new LdapFake)
+            ->expect([
+                LdapFake::operation('setOption')->once()->with(1, 'value'),
+                LdapFake::operation('setOption')->once()->with(2, 'value'),
+            ]);
 
         $ldap->setOptions([1 => 'value', 2 => 'value']);
     }

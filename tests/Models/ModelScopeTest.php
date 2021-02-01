@@ -20,13 +20,6 @@ class ModelScopeTest extends TestCase
         ModelGlobalScopeTestStub::clearBootedModels();
     }
 
-    protected function tearDown(): void
-    {
-        Container::reset();
-
-        parent::tearDown();
-    }
-
     public function test_scopes_can_be_added_to_models()
     {
         $model = new ModelGlobalScopeTestStub();

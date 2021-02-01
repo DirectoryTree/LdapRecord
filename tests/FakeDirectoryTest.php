@@ -58,6 +58,7 @@ class FakeDirectoryTest extends TestCase
     public function test_auth_fails()
     {
         $conn = Container::getConnection('default');
+
         $this->assertFalse($conn->auth()->attempt('user', 'secret'));
     }
 

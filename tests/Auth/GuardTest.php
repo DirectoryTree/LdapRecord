@@ -2,11 +2,10 @@
 
 namespace LdapRecord\Tests\Auth;
 
-use Mockery as m;
 use LdapRecord\Ldap;
 use LdapRecord\Auth\Guard;
-use LdapRecord\DetailedError;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Auth\BindException;
@@ -19,90 +18,85 @@ use LdapRecord\Configuration\DomainConfiguration;
 
 class GuardTest extends TestCase
 {
-    public function test_validate_username()
+    public function test_attempt_throws_exception_with_an_empty_username()
     {
-        $this->expectException(UsernameRequiredException::class);
-
         $guard = new Guard(new Ldap(), new DomainConfiguration());
+
+        $this->expectException(UsernameRequiredException::class);
 
         $guard->attempt('', 'password');
     }
 
-    public function test_validate_password()
+    public function test_attempt_throws_exception_with_an_empty_password()
     {
-        $this->expectException(PasswordRequiredException::class);
-
         $guard = new Guard(new Ldap(), new DomainConfiguration());
+
+        $this->expectException(PasswordRequiredException::class);
 
         $guard->attempt('username', '');
     }
 
-    public function test_attempt()
+    public function test_attempt_binds_the_given_credentials_and_rebinds_with_configured_user()
     {
-        $config = m::mock(DomainConfiguration::class);
-        $config->shouldReceive('get')->with('username')->once();
-        $config->shouldReceive('get')->with('password')->once();
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(true))
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->twice()->andReturn(false);
-        $ldap->shouldReceive('bind')->twice()->andReturn(true);
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'username' => 'foo',
+            'password' => 'bar',
+        ]));
 
-        $guard = new Guard($ldap, $config);
-
-        $this->assertTrue($guard->attempt('username', 'password'));
+        $this->assertTrue($guard->attempt('user', 'pass'));
     }
 
-    public function test_bind_using_credentials()
+    public function test_bind_does_not_rebind_with_configured_user()
     {
-        $config = m::mock(DomainConfiguration::class);
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(true));
 
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(true);
+        $guard = new Guard($ldap, new DomainConfiguration);
 
-        $guard = new Guard($ldap, $config);
+        $this->assertNull($guard->bind('user', 'pass'));
+    }
 
-        $this->assertNull($guard->bind('username', 'password'));
+    public function test_bind_allows_null_username_and_password()
+    {
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with(null, null)->andReturn(true));
+
+        $guard = new Guard($ldap, new DomainConfiguration);
+
+        $this->assertNull($guard->bind(null, null));
     }
 
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $config = m::mock(DomainConfiguration::class);
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(false));
 
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('username', 'password')->andReturn(false);
-        $ldap->shouldReceive('getLastError')->once()->andReturn('error');
-        $ldap->shouldReceive('getDetailedError')->once()->andReturn(new DetailedError(42, 'Invalid credentials', '80090308: LdapErr: DSID-0C09042A'));
-        $ldap->shouldReceive('errNo')->once()->andReturn(1);
-
-        $guard = new Guard($ldap, $config);
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $this->expectException(BindException::class);
-        $guard->bind('username', 'password');
+
+        $guard->bind('user', 'pass');
     }
 
     public function test_bind_as_administrator()
     {
-        $config = m::mock(DomainConfiguration::class);
-        $config->shouldReceive('get')->with('username')->once()->andReturn('admin');
-        $config->shouldReceive('get')->with('password')->once()->andReturn('password');
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('admin', 'password')->andReturn(true);
-
-        $guard = new Guard($ldap, $config);
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'username' => 'foo',
+            'password' => 'bar',
+        ]));
 
         $this->assertNull($guard->bindAsConfiguredUser());
     }
 
     public function test_binding_events_are_fired_during_bind()
     {
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
-
         $events = new Dispatcher();
 
         $firedBinding = false;
@@ -122,7 +116,10 @@ class GuardTest extends TestCase
             $firedBound = true;
         });
 
-        $guard = new Guard($ldap, new DomainConfiguration([]));
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
+
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 
@@ -134,10 +131,6 @@ class GuardTest extends TestCase
 
     public function test_auth_events_are_fired_during_attempt()
     {
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
-
         $events = new Dispatcher();
 
         $firedBinding = false;
@@ -173,7 +166,10 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
+
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 
@@ -187,19 +183,19 @@ class GuardTest extends TestCase
 
     public function test_all_auth_events_can_be_listened_to_with_wildcard()
     {
-        $ldap = m::mock(Ldap::class);
-        $ldap->shouldReceive('isUsingTLS')->once()->andReturn(false);
-        $ldap->shouldReceive('bind')->once()->with('johndoe', 'secret')->andReturn(true);
-
         $events = new Dispatcher();
 
         $totalFired = 0;
 
-        $events->listen('LdapRecord\Auth\Events\*', function ($eventName) use (&$totalFired) {
+        $events->listen('LdapRecord\Auth\Events\*', function () use (&$totalFired) {
             $totalFired++;
         });
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
+
+        $guard = new Guard($ldap, new DomainConfiguration);
+
         $guard->setDispatcher($events);
 
         $this->assertTrue($guard->attempt('johndoe', 'secret', $bindAsUser = true));

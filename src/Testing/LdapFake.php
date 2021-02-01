@@ -307,67 +307,11 @@ class LdapFake extends LdapBase
     }
 
     /**
-     * Fake a bind attempt.
-     *
-     * @param string $username
-     * @param string $password
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function bind($username, $password)
     {
         return $this->bound = $this->resolveExpectation('bind', func_get_args());
-    }
-
-    /**
-     * Resolve the methods expectations.
-     *
-     * @param string $method
-     * @param array  $args
-     *
-     * @return mixed
-     *
-     * @throws Exception
-     */
-    protected function resolveExpectation($method, $args = [])
-    {
-        foreach ($this->getExpectations($method) as $key => $expectation) {
-            $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
-
-            $expectation->decrementCallCount();
-
-            if ($expectation->getExpectedCount() === 0) {
-                $this->removeExpectation($method, $key);
-            }
-
-            return $expectation->getExpectedValue();
-        }
-
-        throw new Exception("LDAP method [$method] was unexpected.");
-    }
-
-    /**
-     * Assert that the expected arguments match the operations arguments.
-     *
-     * @param string        $method
-     * @param Constraint[]  $expectedArgs
-     * @param array         $methodArgs
-     *
-     * @return void
-     */
-    protected function assertMethodArgumentsMatch($method, $expectedArgs = [], $methodArgs = [])
-    {
-        foreach ($expectedArgs as $key => $constraint) {
-            $argNumber =  $key + 1;
-
-            PHPUnit::assertArrayHasKey(
-                $key, $methodArgs, "LDAP method [$method] argument #{$argNumber} does not exist."
-            );
-
-            $constraint->evaluate(
-                $methodArgs[$key], "LDAP method [$method] expectation failed."
-            );
-        }
     }
 
     /**
@@ -496,5 +440,56 @@ class LdapFake extends LdapBase
     public function err2Str($number)
     {
         return $this->resolveExpectation('err2Str', func_get_args());
+    }
+
+    /**
+     * Resolve the methods expectations.
+     *
+     * @param string $method
+     * @param array  $args
+     *
+     * @return mixed
+     *
+     * @throws Exception
+     */
+    protected function resolveExpectation($method, $args = [])
+    {
+        foreach ($this->getExpectations($method) as $key => $expectation) {
+            $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
+
+            $expectation->decrementCallCount();
+
+            if ($expectation->getExpectedCount() === 0) {
+                $this->removeExpectation($method, $key);
+            }
+
+            return $expectation->getExpectedValue();
+        }
+
+        throw new Exception("LDAP method [$method] was unexpected.");
+    }
+
+    /**
+     * Assert that the expected arguments match the operations arguments.
+     *
+     * @param string        $method
+     * @param Constraint[]  $expectedArgs
+     * @param array         $methodArgs
+     *
+     * @return void
+     */
+    protected function assertMethodArgumentsMatch($method, $expectedArgs = [], $methodArgs = [])
+    {
+        foreach ($expectedArgs as $key => $constraint) {
+            $argNumber =  $key + 1;
+
+            PHPUnit::assertArrayHasKey(
+                $key, $methodArgs, "LDAP method [$method] argument #{$argNumber} does not exist."
+            );
+
+            $constraint->evaluate(
+                $methodArgs[$key], "LDAP method [$method] expectation failed."
+            );
+        }
     }
 }

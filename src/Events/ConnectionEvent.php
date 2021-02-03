@@ -11,7 +11,7 @@ abstract class ConnectionEvent
      *
      * @var Connection
      */
-    public $connection;
+    protected $connection;
 
     /**
      * Constructor.
@@ -21,5 +21,15 @@ abstract class ConnectionEvent
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    /**
+     * Get the connection pertaining to the event.
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 }

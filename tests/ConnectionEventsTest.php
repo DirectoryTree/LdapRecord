@@ -67,7 +67,7 @@ class ConnectionEventsTest extends TestCase
 
         $dispatcher->shouldReceive('dispatch')->with(Connecting::class)->times(3);
         $dispatcher->shouldReceive('dispatch')->withArgs(function (Connected $event) {
-            return array_keys($event->connection->attempted()) === ['one', 'two'];
+            return array_keys($event->getConnection()->attempted()) === ['one', 'two'];
         })->once();
         $dispatcher->shouldNotReceive('dispatch')->with(ConnectionFailed::class);
 

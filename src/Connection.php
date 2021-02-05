@@ -383,17 +383,7 @@ class Connection
      */
     protected function runOperationCallback(Closure $operation)
     {
-        try {
-            return $operation($this->ldap);
-        } catch (Exception $e) {
-            if ($e instanceof LdapRecordException) {
-                throw $e;
-            }
-
-            throw LdapRecordException::withDetailedError(
-                $e, $this->ldap->getDetailedError()
-            );
-        }
+        return $operation($this->ldap);
     }
 
     /**

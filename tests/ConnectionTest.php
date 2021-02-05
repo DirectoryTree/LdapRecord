@@ -9,6 +9,7 @@ use LdapRecord\Connection;
 use LdapRecord\Query\Builder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Auth\BindException;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
@@ -260,7 +261,7 @@ class ConnectionTest extends TestCase
             $called++;
 
             if ($called <= 3) {
-                throw new \Exception("Can't contact LDAP server");
+                throw new LdapRecordException("Can't contact LDAP server");
             }
 
             return $called === 4;
@@ -296,7 +297,7 @@ class ConnectionTest extends TestCase
         $this->expectException(AlreadyExistsException::class);
 
         $conn->run(function () {
-            throw new \Exception('Already exists');
+            throw new LdapRecordException('Already exists');
         });
     }
 
@@ -309,7 +310,7 @@ class ConnectionTest extends TestCase
         $this->expectException(InsufficientAccessException::class);
 
         $conn->run(function () {
-            throw new \Exception('Insufficient access');
+            throw new LdapRecordException('Insufficient access');
         });
     }
 
@@ -322,7 +323,7 @@ class ConnectionTest extends TestCase
         $this->expectException(ConstraintViolationException::class);
 
         $conn->run(function () {
-            throw new \Exception('Constraint violation');
+            throw new LdapRecordException('Constraint violation');
         });
     }
 }

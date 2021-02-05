@@ -19,12 +19,18 @@ class Utilities
     {
         $dn = ldap_explode_dn($dn, ($removeAttributePrefixes ? 1 : 0));
 
-        if (is_array($dn) && array_key_exists('count', $dn)) {
-            unset($dn['count']);
+        if (! is_array($dn)) {
+            return false;
+        }
 
-            foreach ($dn as $rdn => $value) {
-                $dn[$rdn] = static::unescape($value);
-            }
+        if (! array_key_exists('count', $dn)) {
+            return false;
+        }
+
+        unset($dn['count']);
+
+        foreach ($dn as $rdn => $value) {
+            $dn[$rdn] = static::unescape($value);
         }
 
         return $dn;

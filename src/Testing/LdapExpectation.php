@@ -3,6 +3,7 @@
 namespace LdapRecord\Testing;
 
 use UnexpectedValueException;
+use LdapRecord\LdapRecordException;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\Constraint\Constraint;
 
@@ -14,6 +15,13 @@ class LdapExpectation
      * @var mixed
      */
     protected $value;
+
+    /**
+     * The exception to throw from the expectation.
+     *
+     * @var null|LdapRecordException|\Exception
+     */
+    protected $exception;
 
     /**
      * The amount of times the expectation should be called.
@@ -37,11 +45,39 @@ class LdapExpectation
     protected $args = [];
 
     /**
-     * Return the same expectation indefinitely.
+     * Whether the same expectation should be returned indefinitely.
      *
      * @var bool
      */
     protected $indefinitely = true;
+
+    /**
+     * Whether the expectation should return errors.
+     *
+     * @var bool
+     */
+    protected $errors = false;
+
+    /**
+     * The error number to return.
+     *
+     * @var int
+     */
+    protected $errorCode = 1;
+
+    /**
+     * The last error string to return.
+     *
+     * @var string
+     */
+    protected $errorMessage = '';
+
+    /**
+     * The diagnostic message string to return.
+     *
+     * @var string
+     */
+    protected $errorDiagnosticMessage = '';
 
     /**
      * Constructor.
@@ -85,6 +121,44 @@ class LdapExpectation
     public function andReturn($value)
     {
         $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * The error message to return from the expectation.
+     *
+     * @param int $code
+     * @param string $error
+     * @param string $diagnosticMessage
+     *
+     * @return $this
+     */
+    public function andReturnError($code = 1, $error = '', $diagnosticMessage = '')
+    {
+        $this->errors = true;
+
+        $this->errorCode = $code;
+        $this->errorMessage = $error;
+        $this->errorDiagnosticMessage = $diagnosticMessage;
+
+        return $this;
+    }
+
+    /**
+     * Set the expected exception to throw.
+     *
+     * @param string|\Exception|LdapRecordException $exception
+     *
+     * @return $this
+     */
+    public function andThrow($exception)
+    {
+        if (is_string($exception)) {
+            $exception = new LdapRecordException($exception);
+        }
+
+        $this->exception = $exception;
 
         return $this;
     }
@@ -160,6 +234,16 @@ class LdapExpectation
     }
 
     /**
+     * Get the expected exception.
+     *
+     * @return null|\Exception|LdapRecordException
+     */
+    public function getExpectedException()
+    {
+        return $this->exception;
+    }
+
+    /**
      * Get the expected value.
      *
      * @return mixed
@@ -167,6 +251,40 @@ class LdapExpectation
     public function getExpectedValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Determine whether the expectation is returning an error.
+     *
+     * @return bool
+     */
+    public function isReturningError()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExpectedErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExpectedErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExpectedErrorDiagnosticMessage()
+    {
+        return $this->errorDiagnosticMessage;
     }
 
     /**

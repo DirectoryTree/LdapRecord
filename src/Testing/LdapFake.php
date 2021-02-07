@@ -27,14 +27,14 @@ class LdapFake extends LdapBase
     /**
      * The default fake last error string.
      *
-     * @var int
+     * @var string
      */
     protected $lastError = '';
 
     /**
      * The default fake diagnostic message string.
      *
-     * @var int
+     * @var string
      */
     protected $diagnosticMessage = '';
 
@@ -463,10 +463,32 @@ class LdapFake extends LdapBase
                 $this->removeExpectation($method, $key);
             }
 
+            if (! is_null($exception = $expectation->getExpectedException())) {
+                throw $exception;
+            }
+
+            if ($expectation->isReturningError()) {
+                $this->applyExpectationError($expectation);
+            }
+
             return $expectation->getExpectedValue();
         }
 
         throw new Exception("LDAP method [$method] was unexpected.");
+    }
+
+    /**
+     * Apply the expectation error to the fake.
+     *
+     * @param LdapExpectation $expectation
+     *
+     * @return void
+     */
+    protected function applyExpectationError(LdapExpectation $expectation)
+    {
+        $this->shouldReturnError($expectation->getExpectedErrorMessage());
+        $this->shouldReturnErrorNumber($expectation->getExpectedErrorCode());
+        $this->shouldReturnDiagnosticMessage($expectation->getExpectedErrorDiagnosticMessage());
     }
 
     /**

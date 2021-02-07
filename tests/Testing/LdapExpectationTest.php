@@ -2,7 +2,9 @@
 
 namespace LdapRecord\Tests\Testing;
 
+use Exception;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Testing\LdapExpectation;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -56,5 +58,44 @@ class LdapExpectationTest extends TestCase
         $expectation->decrementCallCount();
 
         $this->assertEquals(1, $expectation->getExpectedCount());
+    }
+
+    public function test_exception_can_be_applied_with_string()
+    {
+        $expectation = (new LdapExpectation('method'));
+
+        $expectation->andThrow('exception');
+
+        $this->assertInstanceOf(LdapRecordException::class, $expectation->getExpectedException());
+    }
+
+    public function test_exception_can_be_applied_with_plain_exception()
+    {
+        $expectation = (new LdapExpectation('method'));
+
+        $expectation->andThrow(new Exception);
+
+        $this->assertInstanceOf(Exception::class, $expectation->getExpectedException());
+    }
+
+    public function test_exception_can_be_applied_with_other_exception()
+    {
+        $expectation = (new LdapExpectation('method'));
+
+        $expectation->andThrow(new LdapRecordException);
+
+        $this->assertInstanceOf(LdapRecordException::class, $expectation->getExpectedException());
+    }
+
+    public function test_error_can_be_applied()
+    {
+        $expectation = (new LdapExpectation('method'));
+
+        $expectation->andReturnError(-1, 'Error message', 'Diagnostic message');
+
+        $this->assertTrue($expectation->isReturningError());
+        $this->assertEquals(-1, $expectation->getExpectedErrorCode());
+        $this->assertEquals('Error message', $expectation->getExpectedErrorMessage());
+        $this->assertEquals('Diagnostic message', $expectation->getExpectedErrorDiagnosticMessage());
     }
 }

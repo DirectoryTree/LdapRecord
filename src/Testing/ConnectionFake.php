@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Testing;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Auth\Guard;
 use LdapRecord\Models\Model;
 
 class ConnectionFake extends Connection
@@ -16,15 +16,23 @@ class ConnectionFake extends Connection
     protected $ldap;
 
     /**
+     * Whether the fake is connected or not.
+     *
+     * @var bool
+     */
+    protected $connected = false;
+
+    /**
      * Make a new fake LDAP connection instance.
      *
-     * @param array $config
+     * @param array  $config
+     * @param string $fake
      *
      * @return static
      */
-    public static function make(array $config = [])
+    public static function make(array $config = [], $fake = LdapFake::class)
     {
-        return new static($config, new LdapFake());
+        return new static($config, new $fake);
     }
 
     /**
@@ -44,19 +52,35 @@ class ConnectionFake extends Connection
     }
 
     /**
-     * Create a new fake auth guard.
+     * Set the connection to bypass bind attempts as the configured user.
      *
-     * @return AuthGuardFake
+     * @return $this
      */
-    public function auth()
+    public function shouldBeConnected()
     {
-        $guard = new AuthGuardFake($this->ldap, $this->configuration);
+        $this->connected = true;
 
-        $guard->setDispatcher(
-            Container::getInstance()->getEventDispatcher()
-        );
+        $this->authGuardResolver = function () {
+            return new AuthGuardFake($this->ldap, $this->configuration);
+        };
 
-        return $guard;
+        return $this;
+    }
+
+    /**
+     * Set the connection to attempt binding as the configured user.
+     *
+     * @return $this
+     */
+    public function shouldNotBeConnected()
+    {
+        $this->connected = false;
+
+        $this->authGuardResolver = function () {
+            return new Guard($this->ldap, $this->configuration);
+        };
+
+        return $this;
     }
 
     /**
@@ -64,6 +88,6 @@ class ConnectionFake extends Connection
      */
     public function isConnected()
     {
-        return true;
+        return $this->connected;
     }
 }

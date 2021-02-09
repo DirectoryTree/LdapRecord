@@ -73,6 +73,13 @@ class Connection
     protected $failed;
 
     /**
+     * The authentication guard resolver.
+     *
+     * @var \Closure
+     */
+    protected $authGuardResolver;
+
+    /**
      * Whether the connection is retrying the initial connection attempt.
      *
      * @var bool
@@ -93,6 +100,10 @@ class Connection
 
         $this->failed = function () {
             $this->dispatch(new Events\ConnectionFailed($this));
+        };
+
+        $this->authGuardResolver = function () {
+            return new Guard($this->ldap, $this->configuration);
         };
     }
 
@@ -393,7 +404,7 @@ class Connection
      */
     public function auth()
     {
-        $guard = new Guard($this->ldap, $this->configuration);
+        $guard = call_user_func($this->authGuardResolver);
 
         $guard->setDispatcher(
             Container::getInstance()->getEventDispatcher()

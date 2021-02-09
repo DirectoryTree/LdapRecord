@@ -88,6 +88,6 @@ class ConnectionFake extends Connection
      */
     public function isConnected()
     {
-        return $this->connected;
+        return $this->connected ?: parent::isConnected();
     }
 }

@@ -16,7 +16,7 @@ class ConnectionFake extends Connection
     protected $ldap;
 
     /**
-     * Whether the fake is connected or not.
+     * Whether the fake is connected.
      *
      * @var bool
      */
@@ -26,13 +26,13 @@ class ConnectionFake extends Connection
      * Make a new fake LDAP connection instance.
      *
      * @param array  $config
-     * @param string $fake
+     * @param string $ldap
      *
      * @return static
      */
-    public static function make(array $config = [], $fake = LdapFake::class)
+    public static function make(array $config = [], $ldap = LdapFake::class)
     {
-        return new static($config, new $fake);
+        return new static($config, new $ldap);
     }
 
     /**

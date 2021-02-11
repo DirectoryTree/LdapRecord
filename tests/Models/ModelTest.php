@@ -635,6 +635,17 @@ class ModelTest extends TestCase
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
     }
 
+    public function test_rename_does_not_occur_when_given_the_same_rdn_and_parent_dn()
+    {
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=acme,dc=org',
+        ]);
+
+        $model->rename('cn=John Doe');
+
+        $this->assertFalse($model->wasRecentlyRenamed);
+    }
+
     public function test_rename_without_existing_model()
     {
         $model = new Entry();

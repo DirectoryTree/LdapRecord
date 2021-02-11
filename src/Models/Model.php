@@ -27,11 +27,25 @@ abstract class Model implements ArrayAccess, JsonSerializable
     use Concerns\HasRelationships;
 
     /**
-     * Indicates if the model exists.
+     * Indicates if the model exists in the LDAP directory.
      *
      * @var bool
      */
     public $exists = false;
+
+    /**
+     * Indicates whether the model was created during the current request lifecycle.
+     *
+     * @var bool
+     */
+    public $wasRecentlyCreated = false;
+
+    /**
+     * Indicates whether the model was renamed during the current request lifecycle.
+     *
+     * @var bool
+     */
+    public $wasRecentlyRenamed = false;
 
     /**
      * The models distinguished name.
@@ -952,6 +966,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->syncOriginal();
 
         $this->exists = true;
+
+        $this->wasRecentlyCreated = true;
     }
 
     /**
@@ -1232,6 +1248,16 @@ abstract class Model implements ArrayAccess, JsonSerializable
             $newParentDn = $this->getParentDn($this->dn);
         }
 
+        // If the RDN and the new parent DN are the same as the current,
+        // we will simply return here to prevent a rename operation
+        // being sent, which would fail anyway in such case.
+        if (
+            $rdn === $this->getRdn()
+         && $newParentDn === $this->getParentDn()
+        ) {
+            return;
+        }
+
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
 
         $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
@@ -1253,6 +1279,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
             = [reset($map[$modelNameAttribute])];
 
         $this->fireModelEvent(new Renamed($this));
+
+        $this->wasRecentlyRenamed = true;
     }
 
     /**

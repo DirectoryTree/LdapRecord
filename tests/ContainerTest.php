@@ -16,22 +16,7 @@ class ContainerTest extends TestCase
 {
     public function test_get_instance()
     {
-        $container = Container::getInstance();
-
-        $container->setLogger($logger = new NullLogger());
-
-        $container = Container::getInstance();
-
-        $this->assertInstanceOf(Container::class, $container);
-        $this->assertSame($logger, $container->getLogger());
-
-        $dispatcher = $container->getEventDispatcher();
-
-        $this->assertInstanceOf(Dispatcher::class, $dispatcher);
-
-        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
-        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
-        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
+        $this->assertInstanceOf(Container::class, Container::getInstance());
     }
 
     public function test_adding_connections()
@@ -172,5 +157,34 @@ class ContainerTest extends TestCase
         $container->setLogger($logger);
 
         $dispatcher->fire($event);
+    }
+
+    public function test_event_dispatcher_can_be_retrieved_normally()
+    {
+        $container = Container::getInstance();
+
+        $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
+    }
+
+    public function test_event_dispatcher_can_be_retrieved_statically()
+    {
+        $this->assertInstanceOf(Dispatcher::class, Container::getEventDispatcher());
+    }
+
+    public function test_setting_container_logger_registers_event_listeners()
+    {
+        $container = Container::getInstance();
+
+        $dispatcher = $container->getEventDispatcher();
+
+        $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
+        $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
+        $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
+
+        $container->setLogger($logger = new NullLogger());
+
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
+        $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
     }
 }

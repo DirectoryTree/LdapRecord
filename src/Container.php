@@ -26,7 +26,7 @@ class Container
     /**
      * The event dispatcher instance.
      *
-     * @var DispatcherInterface
+     * @var DispatcherInterface|null
      */
     protected $dispatcher;
 
@@ -159,27 +159,51 @@ class Container
     }
 
     /**
-     * Get the event dispatcher instance.
+     * Get the container dispatcher instance.
      *
      * @return DispatcherInterface
      */
-    public function getEventDispatcher()
+    public static function getEventDispatcher()
     {
-        if (! isset($this->dispatcher)) {
-            $this->setEventDispatcher(new Dispatcher());
+        $instance = static::getInstance();
+
+        if (! ($dispatcher = $instance->dispatcher())) {
+            $instance->setDispatcher($dispatcher = new Dispatcher());
         }
 
-        return $this->dispatcher;
+        return $dispatcher;
     }
 
     /**
-     * Set the event dispatcher instance.
+     * Set the container dispatcher instance.
      *
      * @param DispatcherInterface $dispatcher
      *
      * @return void
      */
-    public function setEventDispatcher(DispatcherInterface $dispatcher)
+    public static function setEventDispatcher(DispatcherInterface $dispatcher)
+    {
+        static::getInstance()->setDispatcher($dispatcher);
+    }
+
+    /**
+     * Get the container dispatcher instance.
+     *
+     * @return DispatcherInterface
+     */
+    public function dispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * Set the container dispatcher instance.
+     *
+     * @param DispatcherInterface $dispatcher
+     *
+     * @return void
+     */
+    public function setDispatcher(DispatcherInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }

@@ -159,16 +159,17 @@ class ContainerTest extends TestCase
         $dispatcher->fire($event);
     }
 
+    public function test_event_dispatcher_can_be_retrieved_statically()
+    {
+        $this->assertInstanceOf(Dispatcher::class, Container::getEventDispatcher());
+    }
+
     public function test_event_dispatcher_can_be_retrieved_normally()
     {
         $container = Container::getInstance();
 
+        $this->assertInstanceOf(Dispatcher::class, $container->dispatcher());
         $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
-    }
-
-    public function test_event_dispatcher_can_be_retrieved_statically()
-    {
-        $this->assertInstanceOf(Dispatcher::class, Container::getEventDispatcher());
     }
 
     public function test_setting_container_logger_registers_event_listeners()

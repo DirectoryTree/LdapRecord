@@ -16,13 +16,15 @@ trait DispatchesEvents
      *
      * @return DispatcherInterface
      */
-    public function getEventDispatcher()
+    public static function getEventDispatcher()
     {
-        if (! isset($this->dispatcher)) {
-            $this->setEventDispatcher(new Dispatcher());
+        $instance = static::getInstance();
+
+        if (! ($dispatcher = $instance->dispatcher())) {
+            $instance->setEventDispatcher($dispatcher = new Dispatcher());
         }
 
-        return $this->dispatcher;
+        return $dispatcher;
     }
 
     /**
@@ -32,7 +34,29 @@ trait DispatchesEvents
      *
      * @return void
      */
-    public function setEventDispatcher(DispatcherInterface $dispatcher)
+    public static function setEventDispatcher(DispatcherInterface $dispatcher)
+    {
+        static::getInstance()->setDispatcher($dispatcher);
+    }
+
+    /**
+     * Get the event dispatcher instance.
+     *
+     * @return DispatcherInterface|null
+     */
+    public function dispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * Set the event dispatcher.
+     *
+     * @param DispatcherInterface $dispatcher
+     *
+     * @return void
+     */
+    public function setDispatcher(DispatcherInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }

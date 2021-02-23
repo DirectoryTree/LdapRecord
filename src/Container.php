@@ -189,7 +189,7 @@ class Container
     /**
      * Get the container dispatcher instance.
      *
-     * @return DispatcherInterface
+     * @return DispatcherInterface|null
      */
     public function dispatcher()
     {

@@ -168,8 +168,18 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $this->assertInstanceOf(Dispatcher::class, $container->dispatcher());
         $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
+    }
+
+    public function test_event_dispatcher_is_set_with_static_call()
+    {
+        $container = Container::getInstance();
+
+        $this->assertNull($container->dispatcher());
+
+        $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
+
+        $this->assertInstanceOf(Dispatcher::class, $container->dispatcher());
     }
 
     public function test_setting_container_logger_registers_event_listeners()

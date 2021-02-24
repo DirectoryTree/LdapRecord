@@ -32,12 +32,13 @@ trait HasPassword
     public function setPasswordAttribute($password)
     {
         $this->validateSecureConnection();
+        $this->setCurrentPasswordHashMethod();
 
         // If the password given is an array, we can assume we
         // are changing the password for the current user.
         if (is_array($password)) {
             $this->setChangedPassword(
-                $this->getHashedPassword($password[0]),
+                $this->getHashedPassword($password[0], $this->getPasswordSalt()),
                 $this->getHashedPassword($password[1])
             );
         }
@@ -111,16 +112,21 @@ trait HasPassword
      * Encode / hash the given password.
      *
      * @param string $password
+     * @param string $salt
      *
      * @return string
      *
      * @throws LdapRecordException
      */
-    protected function getHashedPassword($password)
+    protected function getHashedPassword($password, $salt = null)
     {
         if (! method_exists(Password::class, $this->passwordHashMethod)) {
             throw new LdapRecordException("Password hashing method [{$this->passwordHashMethod}] does not exist.");
         }
+
+        if(Password::isSalted($this->passwordHashMethod)) {
+            return Password::{$this->passwordHashMethod}($password, $salt);
+        }       
 
         return Password::{$this->passwordHashMethod}($password);
     }
@@ -139,5 +145,70 @@ trait HasPassword
                 'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );
         }
+    }
+
+    /**
+     * If user password is salted method return the salt.
+     *
+     * @return null|string
+     */
+    public function getPasswordSalt() {
+        if(Password::isSalted($this->passwordHashMethod))
+            return Password::getSalt($this->getAttributes()[$this->passwordAttribute][0]);
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCurrentPasswordHashMethod() 
+    { 
+        if(count($this->getAttributes($this->passwordAttribute)) <= 0) return;
+
+        if (preg_match( '/^\{(\w+)\}/', $this->getAttributes()[$this->passwordAttribute][0], $matches)) {
+
+            if($matches[1] == "CRYPT") {
+
+                if(preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $this->getAttributes()[$this->passwordAttribute][0], $mc)) {
+                   
+                    switch($mc[2]) {
+                        case "1":
+                            $this->passwordHashMethod = "MD5" . $mc[1];
+                            return $this;
+                        break;
+                        case "5": 
+                            $this->passwordHashMethod = "SHA256" . $mc[1];
+                            return $this;
+                        break;
+                        case "6":
+                            $this->passwordHashMethod = "SHA512" . $mc[1];
+                            return $this;
+                        break;
+                        default:
+                            throw new LdapRecordException("Crypt algorithm not supported");
+                        break;    
+                    }
+                }
+
+                $this->passwordHashMethod = $matches[1];
+
+            } else {
+
+                $this->passwordHashMethod = $matches[1];
+            }
+
+            if (! method_exists(Password::class, $this->passwordHashMethod)) {
+                throw new LdapRecordException("Password hashing method [{$this->passwordHashMethod}] does not exist.");
+            }
+
+            return $this;          
+        }
+
+        throw new LdapRecordException("Unable to automatically detect password hash method");       
+    }
+
+    public function getPasswordHashMethod()
+    {
+        return $this->passwordHashMethod;
     }
 }

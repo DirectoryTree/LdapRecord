@@ -16,6 +16,20 @@ class User extends Entry implements Authenticatable
     use CanAuthenticate;
 
     /**
+     * The password's attribute name.
+     *
+     * @var string
+     */
+    protected $passwordAttribute = 'unicodepwd';
+
+    /**
+     * The password's hash method.
+     *
+     * @var string
+     */
+    protected $passwordHashMethod = 'encode';
+
+    /**
      * The object classes of the LDAP model.
      *
      * @var array

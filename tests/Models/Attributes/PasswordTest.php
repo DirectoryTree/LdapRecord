@@ -22,132 +22,74 @@ class PasswordTest extends TestCase
 
     public function test_ssha()
     {
-        $password1 = Password::ssha('password');
-        $password2 = Password::ssha('password');
+        $password = Password::ssha('password');
 
         $this->assertNotEquals(
-            $password1,
-            $password2
+            $password,
+            Password::ssha('password')
         );
 
         $this->assertEquals(
-            $password1, 
-            Password::ssha('password', Password::getSalt($password1))
+            $password,
+            Password::ssha('password', Password::getSalt($password))
         );
     }
 
     public function test_ssha256()
     {
-        $password1 = Password::ssha256('password');
-        $password2 = Password::ssha256('password');
+        $password = Password::ssha256('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
+        $this->assertNotEquals($password, Password::ssha256('password'));
 
-        $this->assertEquals(
-            $password1, 
-            Password::ssha256('password', Password::getSalt($password1))
-        );        
+        $this->assertEquals($password, Password::ssha256('password', Password::getSalt($password)));
     }
 
     public function test_ssha384()
     {
-        $password1 = Password::ssha384('password');
-        $password2 = Password::ssha384('password');
+        $password = Password::ssha384('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::ssha384('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::ssha384('password'));
+        $this->assertEquals($password, Password::ssha384('password', Password::getSalt($password)));
     }
 
     public function test_ssha512()
     {
-        $password1 = Password::ssha512('password');
-        $password2 = Password::ssha512('password');
+        $password = Password::ssha512('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::ssha512('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::ssha512('password'));
+        $this->assertEquals($password, Password::ssha512('password', Password::getSalt($password)));
     }
 
     public function test_smd5()
     {
-        $password1 = Password::smd5('password');
-        $password2 = Password::smd5('password');
+        $password = Password::smd5('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::smd5('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::smd5('password'));
+        $this->assertEquals($password, Password::smd5('password', Password::getSalt($password)));
     }
-
-
 
     public function test_md5crypt()
     {
-        $password1 = Password::md5crypt('password');
-        $password2 = Password::md5crypt('password');
+        $password = Password::md5crypt('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::md5crypt('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::md5crypt('password'));
+        $this->assertEquals($password, Password::md5crypt('password', Password::getSalt($password)));
     }
 
     public function test_sha256crypt()
     {
-        $password1 = Password::sha256crypt('password');
-        $password2 = Password::sha256crypt('password');
+        $password = Password::sha256crypt('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::sha256crypt('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::sha256crypt('password'));
+        $this->assertEquals($password, Password::sha256crypt('password', Password::getSalt($password)));
     }
 
     public function test_sha512crypt()
     {
-        $password1 = Password::sha512crypt('password');
-        $password2 = Password::sha512crypt('password');
+        $password = Password::sha512crypt('password');
 
-        $this->assertNotEquals(
-            $password1,
-            $password2
-        );
-
-        $this->assertEquals(
-            $password1, 
-            Password::sha512crypt('password', Password::getSalt($password1))
-        );
+        $this->assertNotEquals($password, Password::sha512crypt('password'));
+        $this->assertEquals($password, Password::sha512crypt('password', Password::getSalt($password)));
     }
 
     // Unsalted Hash Tests. //

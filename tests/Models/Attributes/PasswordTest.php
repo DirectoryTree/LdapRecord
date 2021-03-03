@@ -22,42 +22,74 @@ class PasswordTest extends TestCase
 
     public function test_ssha()
     {
+        $password = Password::ssha('password');
+
         $this->assertNotEquals(
-            Password::ssha('password'),
+            $password,
             Password::ssha('password')
+        );
+
+        $this->assertEquals(
+            $password,
+            Password::ssha('password', Password::getSalt($password))
         );
     }
 
     public function test_ssha256()
     {
-        $this->assertNotEquals(
-            Password::ssha256('password'),
-            Password::ssha256('password')
-        );
+        $password = Password::ssha256('password');
+
+        $this->assertNotEquals($password, Password::ssha256('password'));
+
+        $this->assertEquals($password, Password::ssha256('password', Password::getSalt($password)));
     }
 
     public function test_ssha384()
     {
-        $this->assertNotEquals(
-            Password::ssha384('password'),
-            Password::ssha384('password')
-        );
+        $password = Password::ssha384('password');
+
+        $this->assertNotEquals($password, Password::ssha384('password'));
+        $this->assertEquals($password, Password::ssha384('password', Password::getSalt($password)));
     }
 
     public function test_ssha512()
     {
-        $this->assertNotEquals(
-            Password::ssha512('password'),
-            Password::ssha512('password')
-        );
+        $password = Password::ssha512('password');
+
+        $this->assertNotEquals($password, Password::ssha512('password'));
+        $this->assertEquals($password, Password::ssha512('password', Password::getSalt($password)));
     }
 
     public function test_smd5()
     {
-        $this->assertNotEquals(
-            Password::smd5('password'),
-            Password::smd5('password')
-        );
+        $password = Password::smd5('password');
+
+        $this->assertNotEquals($password, Password::smd5('password'));
+        $this->assertEquals($password, Password::smd5('password', Password::getSalt($password)));
+    }
+
+    public function test_md5crypt()
+    {
+        $password = Password::md5crypt('password');
+
+        $this->assertNotEquals($password, Password::md5crypt('password'));
+        $this->assertEquals($password, Password::md5crypt('password', Password::getSalt($password)));
+    }
+
+    public function test_sha256crypt()
+    {
+        $password = Password::sha256crypt('password');
+
+        $this->assertNotEquals($password, Password::sha256crypt('password'));
+        $this->assertEquals($password, Password::sha256crypt('password', Password::getSalt($password)));
+    }
+
+    public function test_sha512crypt()
+    {
+        $password = Password::sha512crypt('password');
+
+        $this->assertNotEquals($password, Password::sha512crypt('password'));
+        $this->assertEquals($password, Password::sha512crypt('password', Password::getSalt($password)));
     }
 
     // Unsalted Hash Tests. //
@@ -100,5 +132,27 @@ class PasswordTest extends TestCase
             '{MD5}X03MO1qnZdYdgyfeuILPmQ==',
             Password::md5('password')
         );
+    }
+
+    // Utility tests. //
+
+    public function test_get_hash_method()
+    {
+        $password = '{CRYPT}$6$77JasHs4YajlH$882VlypqZqKXT0d1vQsdBoCLHjYTzqRnxwy3qKiBCARaHvXhhQPv80JBIsfv25pm/fTLAc0dxdW1DTHA7e5QU1';
+
+        $this->assertEquals('CRYPT', Password::getHashMethod($password));
+        $this->assertNull(Password::getHashMethod('invalid'));
+    }
+
+    public function test_get_hash_method_and_algo()
+    {
+        $password = '{CRYPT}$6$77JasHs4YajlH$882VlypqZqKXT0d1vQsdBoCLHjYTzqRnxwy3qKiBCARaHvXhhQPv80JBIsfv25pm/fTLAc0dxdW1DTHA7e5QU1';
+
+        [$method, $algo] = Password::getHashMethodAndAlgo($password);
+
+        $this->assertEquals('CRYPT', $method);
+        $this->assertEquals('6', $algo);
+
+        $this->assertNull(Password::getHashMethodAndAlgo('invalid'));
     }
 }

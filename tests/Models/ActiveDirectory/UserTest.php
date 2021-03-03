@@ -12,10 +12,22 @@ use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 
 class UserTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Container::addConnection(new Connection());
+    }
+
+    protected function tearDown(): void
+    {
+        Container::reset();
+
+        parent::tearDown();
+    }
+
     public function test_setting_password_requires_secure_connection()
     {
-        Container::addConnection(new Connection());
-
         $this->expectException(ConnectionException::class);
 
         new User(['unicodepwd' => 'password']);
@@ -23,11 +35,9 @@ class UserTest extends TestCase
 
     public function test_changing_password_requires_secure_connection()
     {
-        Container::addConnection(new Connection());
+        $user = (new User())->setRawAttributes(['dn' => 'foo']);
 
         $this->expectException(ConnectionException::class);
-
-        $user = (new User())->setRawAttributes(['dn' => 'foo']);
 
         $user->unicodepwd = ['old', 'new'];
     }
@@ -75,8 +85,6 @@ class UserTest extends TestCase
 
     public function test_scope_where_has_mailbox_is_applied()
     {
-        Container::addConnection(new Connection());
-
         $filters = User::whereHasMailbox()->filters;
 
         $this->assertEquals($filters['and'][4]['field'], 'msExchMailboxGuid');

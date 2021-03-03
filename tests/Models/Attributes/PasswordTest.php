@@ -191,4 +191,26 @@ class PasswordTest extends TestCase
             Password::md5('password')
         );
     }
+
+    // Utility tests. //
+
+    public function test_get_hash_method()
+    {
+        $password = '{CRYPT}$6$77JasHs4YajlH$882VlypqZqKXT0d1vQsdBoCLHjYTzqRnxwy3qKiBCARaHvXhhQPv80JBIsfv25pm/fTLAc0dxdW1DTHA7e5QU1';
+
+        $this->assertEquals('CRYPT', Password::getHashMethod($password));
+        $this->assertNull(Password::getHashMethod('invalid'));
+    }
+
+    public function test_get_hash_method_and_algo()
+    {
+        $password = '{CRYPT}$6$77JasHs4YajlH$882VlypqZqKXT0d1vQsdBoCLHjYTzqRnxwy3qKiBCARaHvXhhQPv80JBIsfv25pm/fTLAc0dxdW1DTHA7e5QU1';
+
+        [$method, $algo] = Password::getHashMethodAndAlgo($password);
+
+        $this->assertEquals('CRYPT', $method);
+        $this->assertEquals('6', $algo);
+
+        $this->assertNull(Password::getHashMethodAndAlgo('invalid'));
+    }
 }

@@ -258,7 +258,7 @@ class Password
             case static::CRYPT_SALT_TYPE_SHA512:
                 return ['$6$', 16];
             default:
-                throw new InvalidArgumentException("Invalid crypt type");
+                throw new InvalidArgumentException("Invalid crypt type [$type].");
         }
     }
 

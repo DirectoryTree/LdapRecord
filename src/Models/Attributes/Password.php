@@ -263,7 +263,7 @@ class Password
     }
 
     /**
-     * Attempt to retrieve the password hash method used for the password.
+     * Attempt to retrieve the hash method used for the password.
      *
      * @param string $password
      *
@@ -278,6 +278,13 @@ class Password
         return $matches[1];
     }
 
+    /**
+     * Attempt to retrieve the hash method and algorithm used for the password.
+     *
+     * @param string $password
+     *
+     * @return array|void
+     */
     public static function getHashMethodAndAlgo($password)
     {
         if (! preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {

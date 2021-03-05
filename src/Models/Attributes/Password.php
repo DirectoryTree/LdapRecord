@@ -232,7 +232,7 @@ class Password
 
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-        while(strlen($prefix) <  $length) {
+        while(strlen($prefix) < $length) {
             $prefix .= substr($chars, random_int(0, strlen($chars) - 1), 1);
         }
 

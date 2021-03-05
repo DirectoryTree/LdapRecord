@@ -1,7 +1,7 @@
 <!-- readme.md -->
 
 <p align="center">
-    <img src="https://ldaprecord.com/assets/img/logo.png" width="400">
+    <img src="https://ldaprecord.com/logo.svg" width="400">
 </p>
 
 <p align="center">

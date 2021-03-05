@@ -1039,6 +1039,9 @@ class BuilderTest extends TestCase
         $this->assertEquals('(\28foo\29=\62\61\72)', $b->getQuery());
     }
 
+    /**
+     * @requires PHP >= 7.4
+     */
     public function test_pagination()
     {
         $b = $this->newBuilder();

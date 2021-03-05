@@ -15,6 +15,8 @@ use LdapRecord\LdapInterface;
 use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Events\QueryExecuted;
+use LdapRecord\Query\Pagination\Paginator;
+use LdapRecord\Query\Pagination\DeprecatedPaginator;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 
 class Builder
@@ -505,7 +507,7 @@ class Builder
      *
      * @return resource
      */
-    protected function run($filter)
+    public function run($filter)
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($filter) {
             // We will avoid setting the controls during any pagination
@@ -540,96 +542,12 @@ class Builder
     protected function runPaginate($filter, $perPage, $isCritical)
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
-            $callback = $ldap->supportsServerControlsInMethods()
-                ? $this->compatiblePaginationCallback($filter, $perPage, $isCritical)
-                : $this->deprecatedPaginationCallback($filter, $perPage, $isCritical);
+            $paginator = $ldap->supportsServerControlsInMethods()
+                ? new Paginator($this, $filter, $perPage, $isCritical)
+                : new DeprecatedPaginator($this, $filter, $perPage, $isCritical);
 
-            return $callback($ldap);
+            return $paginator->execute($ldap);
         });
-    }
-
-    /**
-     * Create a deprecated pagination callback compatible with PHP 7.2.
-     *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
-     * @return Closure
-     */
-    protected function deprecatedPaginationCallback($filter, $perPage, $isCritical)
-    {
-        return function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
-            $pages = [];
-
-            $cookie = '';
-
-            do {
-                $ldap->controlPagedResult($perPage, $isCritical, $cookie);
-                
-                $resource = $this->run($filter);
-
-                if ($resource) {
-                    // If we have been given a valid resource, we will retrieve the next
-                    // pagination cookie to send for our next pagination request.
-                    $ldap->controlPagedResultResponse($resource, $cookie);
-
-                    $pages[] = $this->parse($resource);
-                }
-            } while (!empty($cookie));
-
-            // Reset paged result on the current connection. We won't pass in the current $perPage
-            // parameter since we want to reset the page size to the default '1000'. Sending '0'
-            // eliminates any further opportunity for running queries in the same request,
-            // even though that is supposed to be the correct usage.
-            $ldap->controlPagedResult();
-
-            return $pages;
-        };
-    }
-
-    /**
-     * Create a compatible pagination callback compatible with PHP 7.3 and greater.
-     *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
-     * @return Closure
-     */
-    protected function compatiblePaginationCallback($filter, $perPage, $isCritical)
-    {
-        return function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
-            $pages = [];
-
-            // Add our paged results control.
-            $this->addControl(LDAP_CONTROL_PAGEDRESULTS, $isCritical = false, [
-                'size' => $perPage, 'cookie' => '',
-            ]);
-
-            do {
-                // Update the server controls.
-                $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $this->controls);
-
-                $resource = $this->run($filter);
-
-                if ($resource) {
-                    $errorCode = $dn = $errorMessage = $refs = null;
-
-                    // Update the server controls with the servers response.
-                    $ldap->parseResult($resource, $errorCode, $dn, $errorMessage, $refs, $this->controls);
-
-                    $pages[] = $this->parse($resource);
-
-                    // Here we will update the query's server controls array with the servers
-                    // response by passing the array as a reference. The cookie string will
-                    // be empty once the pagination request has successfully completed.
-                    $this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $perPage;
-                }
-            } while (!empty($this->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie']));
-
-            return $pages;
-        };
     }
 
     /**
@@ -639,7 +557,7 @@ class Builder
      *
      * @return array
      */
-    protected function parse($resource)
+    public function parse($resource)
     {
         if (! $resource) {
             return [];

@@ -1038,4 +1038,43 @@ class BuilderTest extends TestCase
 
         $this->assertEquals('(\28foo\29=\62\61\72)', $b->getQuery());
     }
+
+    public function test_pagination()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            'count' => 1,
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ]
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $this->assertEquals([
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ]
+        ], $b->paginate(500));
+
+        $this->assertEquals([
+            LDAP_CONTROL_PAGEDRESULTS => [
+                'oid' => LDAP_CONTROL_PAGEDRESULTS,
+                'isCritical' => false,
+                'value' => [
+                    'size' => 500,
+                    'cookie' => '',
+                ]
+            ]
+        ], $b->controls);
+    }
 }

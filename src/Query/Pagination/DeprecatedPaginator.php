@@ -4,10 +4,17 @@ namespace LdapRecord\Query\Pagination;
 
 use LdapRecord\LdapInterface;
 
-class DeprecatedPaginator extends Paginator
+class DeprecatedPaginator extends AbstractPaginator
 {
     /**
-     * Execute the pagination request (for PHP <= 7.4).
+     * The pagination cookie.
+     *
+     * @var string
+     */
+    protected $cookie = '';
+
+    /**
+     * Execute the pagination request (for PHP <= 7.).
      *
      * @param LdapInterface $ldap
      *
@@ -15,23 +22,7 @@ class DeprecatedPaginator extends Paginator
      */
     public function execute(LdapInterface $ldap)
     {
-        $pages = [];
-
-        $cookie = '';
-
-        do {
-            $ldap->controlPagedResult($this->perPage, $this->isCritical, $cookie);
-
-            $resource = $this->query->run($this->filter);
-
-            if ($resource) {
-                // If we have been given a valid resource, we will retrieve the next
-                // pagination cookie to send for our next pagination request.
-                $ldap->controlPagedResultResponse($resource, $cookie);
-
-                $pages[] = $this->query->parse($resource);
-            }
-        } while (!empty($cookie));
+        $pages = parent::execute($ldap);
 
         // Reset paged result on the current connection. We won't pass in the current $perPage
         // parameter since we want to reset the page size to the default '1000'. Sending '0'
@@ -40,5 +31,37 @@ class DeprecatedPaginator extends Paginator
         $ldap->controlPagedResult();
 
         return $pages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function fetchCookie()
+    {
+        return $this->cookie;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function prepareServerControls()
+    {
+        $this->cookie = '';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function applyServerControls(LdapInterface $ldap)
+    {
+        $ldap->controlPagedResult($this->perPage, $this->isCritical, $this->cookie);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function updateServerControls(LdapInterface $ldap, $resource)
+    {
+        $ldap->controlPagedResult($this->perPage, $this->isCritical, $this->cookie);
     }
 }

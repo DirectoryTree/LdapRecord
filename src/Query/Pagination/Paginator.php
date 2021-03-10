@@ -51,4 +51,12 @@ class Paginator extends AbstractPaginator
             $this->query->controls
         );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function resetServerControls(LdapInterface $ldap)
+    {
+        $this->query->controls = [];
+    }
 }

@@ -1068,16 +1068,5 @@ class BuilderTest extends TestCase
                 'objectclass' => ['foo'],
             ]
         ], $b->paginate(500));
-
-        $this->assertEquals([
-            LDAP_CONTROL_PAGEDRESULTS => [
-                'oid' => LDAP_CONTROL_PAGEDRESULTS,
-                'isCritical' => false,
-                'value' => [
-                    'size' => 500,
-                    'cookie' => '',
-                ]
-            ]
-        ], $b->controls);
     }
 }

@@ -51,6 +51,11 @@ class Paginator extends AbstractPaginator
         $this->resetPageSize();
     }
 
+    /**
+     * Reset the page control page size.
+     *
+     * @return void
+     */
     protected function resetPageSize()
     {
         $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $this->perPage;

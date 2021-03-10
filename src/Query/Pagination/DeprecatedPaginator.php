@@ -42,7 +42,7 @@ class DeprecatedPaginator extends AbstractPaginator
      */
     protected function updateServerControls(LdapInterface $ldap, $resource)
     {
-        $ldap->controlPagedResult($this->perPage, $this->isCritical, $this->cookie);
+        $ldap->controlPagedResultResponse($resource, $this->cookie);
     }
 
     /**

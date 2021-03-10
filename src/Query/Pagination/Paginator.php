@@ -39,9 +39,6 @@ class Paginator extends AbstractPaginator
     {
         $errorCode = $dn = $errorMessage = $refs = null;
 
-        // Here we will update the query's server controls array with the servers
-        // response by passing the array as a reference. The cookie string will
-        // be empty once the pagination request has successfully completed.
         $ldap->parseResult(
             $resource,
             $errorCode,
@@ -50,6 +47,13 @@ class Paginator extends AbstractPaginator
             $refs,
             $this->query->controls
         );
+
+        $this->resetPageSize();
+    }
+
+    protected function resetPageSize()
+    {
+        $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $this->perPage;
     }
 
     /**

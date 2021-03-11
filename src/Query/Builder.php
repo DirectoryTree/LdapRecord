@@ -377,6 +377,7 @@ class Builder
     public function model(Model $model)
     {
         return $model->newQueryBuilder($this->connection)
+            ->setCache($this->connection->getCache())
             ->setModel($model)
             ->in($this->dn);
     }
@@ -521,7 +522,7 @@ class Builder
             }
 
             return $ldap->{$this->type}(
-                $this->getDn(),
+                $this->dn,
                 $filter,
                 $this->getSelects(),
                 $onlyAttributes = false,

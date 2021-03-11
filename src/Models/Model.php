@@ -315,7 +315,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newQueryBuilder(Connection $connection)
     {
-        return (new Builder($connection))->setCache($connection->getCache());
+        return new Builder($connection);
     }
 
     /**

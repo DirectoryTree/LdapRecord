@@ -115,7 +115,7 @@ class Builder extends BaseBuilder
      * @param array|string          $dn
      * @param array|string|string[] $columns
      *
-     * @return Model|null
+     * @return Model|\LdapRecord\Query\Collection|static|null
      */
     public function find($dn, $columns = ['*'])
     {

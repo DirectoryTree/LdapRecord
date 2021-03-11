@@ -7,7 +7,9 @@ use LdapRecord\Connection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Testing\DirectoryFake;
 
 class ModelScopeTest extends TestCase
 {
@@ -94,6 +96,35 @@ class ModelScopeTest extends TestCase
         $this->assertEquals('=', $query->filters['and'][0]['operator']);
         $this->assertEquals('\7a\61\6c', $query->filters['and'][0]['value']->get());
     }
+
+    public function test_scopes_do_not_impact_model_refresh()
+    {
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                ['dn' => 'cn=John Doe,dc=local,dc=com']
+            ])
+        );
+
+        $model = (new ModelScopeWithDnScopeTestStub())
+            ->setRawAttributes(['dn' => 'cn=John Doe,dc=local,dc=com']);
+
+        $model->fresh();
+
+        $this->assertEquals('cn=John Doe,dc=local,dc=com', $model->getDn());
+    }
+
+    public function test_scopes_do_not_impact_model_find()
+    {
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                ['dn' => 'cn=John Doe,dc=local,dc=com']
+            ])
+        );
+
+        $model = ModelScopeWithDnScopeTestStub::find('cn=John Doe,dc=local,dc=com');
+
+        $this->assertEquals('cn=John Doe,dc=local,dc=com', $model->getDn());
+    }
 }
 
 class ModelLocalScopeTestStub extends Model
@@ -123,6 +154,18 @@ class ModelGlobalScopeTestStub extends Model
     public function newQueryBuilder(Connection $connection)
     {
         return new ModelBuilderTestStub($connection);
+    }
+}
+
+class ModelScopeWithDnScopeTestStub extends Model
+{
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(function ($query) {
+            $query->in('global-scope');
+        });
     }
 }
 

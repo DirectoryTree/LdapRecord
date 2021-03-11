@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Query\Model;
 
+use Closure;
 use DateTime;
 use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
@@ -106,6 +107,21 @@ class Builder extends BaseBuilder
     public function newInstance($baseDn = null)
     {
         return parent::newInstance($baseDn)->model($this->model);
+    }
+
+    /**
+     * Finds a model by its distinguished name.
+     *
+     * @param array|string          $dn
+     * @param array|string|string[] $columns
+     *
+     * @return Model|null
+     */
+    public function find($dn, $columns = ['*'])
+    {
+        return $this->afterScopes(function () use ($dn, $columns) {
+            return parent::find($dn, $columns);
+        });
     }
 
     /**
@@ -260,9 +276,23 @@ class Builder extends BaseBuilder
      */
     public function getQuery()
     {
+        return $this->afterScopes(function () {
+            return parent::getQuery();
+        });
+    }
+
+    /**
+     * Apply the query scopes and execute the callback.
+     *
+     * @param Closure $callback
+     *
+     * @return mixed
+     */
+    protected function afterScopes(Closure $callback)
+    {
         $this->applyScopes();
 
-        return parent::getQuery();
+        return $callback();
     }
 
     /**
@@ -294,7 +324,7 @@ class Builder extends BaseBuilder
     /**
      * Register a new global scope.
      *
-     * @param string                            $identifier
+     * @param string         $identifier
      * @param Scope|\Closure $scope
      *
      * @return $this

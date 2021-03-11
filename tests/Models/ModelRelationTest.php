@@ -106,7 +106,7 @@ class ModelRelationTest extends TestCase
 
         $this->assertEmpty($collection);
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertEquals(['foo', 'objectclass'], $relation->getQuery()->getSelects());
+        $this->assertEquals(['objectguid', 'foo', 'objectclass'], $relation->getQuery()->getSelects());
     }
 
     public function test_exists()

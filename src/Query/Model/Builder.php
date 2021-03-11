@@ -73,6 +73,21 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * Get the attributes to select on the search.
+     *
+     * @return array
+     */
+    public function getSelects()
+    {
+        // Here we will ensure the models GUID attribute is always
+        // selected. In some LDAP directories, the attribute is
+        // virtual and must be requested for specifically.
+        return array_values(array_unique(
+            array_merge([$this->model->getGuidKey()], parent::getSelects())
+        ));
+    }
+
+    /**
      * Sets the model instance for the model being queried.
      *
      * @param Model $model

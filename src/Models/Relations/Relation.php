@@ -319,7 +319,7 @@ abstract class Relation
         return $results->transform(function (Model $entry) use ($related) {
             $model = $this->determineModelFromRelated($entry, $related);
 
-            return $model ? $entry->convert(new $model()) : $entry;
+            return class_exists($model) ? $entry->convert(new $model()) : $entry;
         });
     }
 

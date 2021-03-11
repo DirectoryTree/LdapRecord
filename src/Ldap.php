@@ -370,10 +370,10 @@ class Ldap extends LdapBase
     /**
      * {@inheritDoc}
      */
-    public function controlPagedResultResponse($result, &$cookie)
+    public function controlPagedResultResponse($result, &$cookie, &$estimated = null)
     {
-        return $this->executeFailableOperation(function () use ($result, &$cookie) {
-            return ldap_control_paged_result_response($this->connection, $result, $cookie);
+        return $this->executeFailableOperation(function () use ($result, &$cookie, &$estimated) {
+            return ldap_control_paged_result_response($this->connection, $result, $cookie,$estimated);
         });
     }
 

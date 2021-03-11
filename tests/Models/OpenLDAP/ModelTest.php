@@ -27,7 +27,7 @@ class ModelTest extends TestCase
 
         $query->getQuery();
 
-        $this->assertEquals(['*', $model->getGuidKey()], $query->getSelects());
+        $this->assertEquals([$model->getGuidKey(), '*'], $query->getSelects());
         $this->assertInstanceOf(AddEntryUuidToSelects::class, $query->appliedScopes()[AddEntryUuidToSelects::class]);
     }
 
@@ -41,7 +41,7 @@ class ModelTest extends TestCase
 
         $query->getQuery();
 
-        $this->assertEquals(['foo', $model->getGuidKey(), 'objectclass'], $query->getSelects());
+        $this->assertEquals([$model->getGuidKey(), 'foo', 'objectclass'], $query->getSelects());
         $this->assertInstanceOf(AddEntryUuidToSelects::class, $query->appliedScopes()[AddEntryUuidToSelects::class]);
     }
 }

@@ -60,7 +60,7 @@ class ModelQueryTest extends TestCase
         Container::getNewInstance()
             ->add(new Connection(['base_dn' => 'foo']));
 
-        $this->assertEquals('foo', Entry::query()->getDn());
+        $this->assertEquals('foo', Entry::query()->getBaseDn());
     }
 
     public function test_creating_new_query_without_connection_fails()

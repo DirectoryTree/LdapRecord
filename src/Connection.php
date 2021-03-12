@@ -422,7 +422,7 @@ class Connection
     {
         return (new Builder($this))
             ->setCache($this->cache)
-            ->in($this->configuration->get('base_dn'));
+            ->setBaseDn($this->configuration->get('base_dn'));
     }
 
     /**

@@ -1069,4 +1069,13 @@ class BuilderTest extends TestCase
             ]
         ], $b->paginate(500));
     }
+
+    public function test_setting_dn_with_base_substitutes_query_base()
+    {
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setDn('ou=users,{base}');
+
+        $this->assertEquals('ou=users,dc=base,dc=com', $b->getDn());
+    }
 }

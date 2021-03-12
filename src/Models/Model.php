@@ -1290,7 +1290,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCreatableDn()
     {
-        return implode(',', [$this->getCreatableRdn(), $this->in ?? $this->newQuery()->getDn()]);
+        return implode(',', [
+            $this->getCreatableRdn(),
+            $this->in ?? $this->newQuery()->getbaseDn()
+        ]);
     }
 
     /**

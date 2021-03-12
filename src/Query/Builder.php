@@ -70,6 +70,13 @@ class Builder
     protected $dn;
 
     /**
+     * The base distinguished name to perform searches inside.
+     *
+     * @var string|null
+     */
+    protected $baseDn;
+
+    /**
      * The default query type.
      *
      * @var string
@@ -318,7 +325,31 @@ class Builder
     }
 
     /**
-     * Returns the builders DN to perform searches upon.
+     * Set the base distinguished name of the query.
+     *
+     * @param Model|string $dn
+     * 
+     * @return $this
+     */
+    public function setBaseDn($dn)
+    {
+        $this->baseDn = $dn instanceof Model ? $dn->getDn() : $dn;
+
+        return $this;
+    }
+
+    /**
+     * Get the base distinguished name of the query.
+     *
+     * @return string|null
+     */
+    public function getBaseDn()
+    {
+        return $this->baseDn;
+    }
+
+    /**
+     * Get the distinguished name of the query.
      *
      * @return string
      */
@@ -328,7 +359,7 @@ class Builder
     }
 
     /**
-     * Sets the DN to perform searches upon.
+     * Set the distinguished name for the query.
      *
      * @param string|Model|null $dn
      *
@@ -336,13 +367,15 @@ class Builder
      */
     public function setDn($dn = null)
     {
-        $this->dn = $dn instanceof Model ? $dn->getDn() : $dn;
+        $this->dn = str_replace(
+            '{base}', $this->baseDn, $dn instanceof Model ? $dn->getDn() : $dn
+        );
 
         return $this;
     }
 
     /**
-     * Alias for setting the base DN of the query.
+     * Alias for setting the distinguished name for the query.
      *
      * @param string|Model|null $dn
      *
@@ -378,8 +411,8 @@ class Builder
     {
         return $model->newQueryBuilder($this->connection)
             ->setCache($this->connection->getCache())
-            ->setModel($model)
-            ->in($this->dn);
+            ->setBaseDn($this->baseDn)
+            ->setModel($model);
     }
 
     /**
@@ -518,7 +551,7 @@ class Builder
             }
 
             return $ldap->{$this->type}(
-                $this->dn,
+                $this->dn ?? $this->baseDn,
                 $filter,
                 $this->getSelects(),
                 $onlyAttributes = false,
@@ -1448,7 +1481,7 @@ class Builder
     }
 
     /**
-     * Sets the query to search the entire directory on the base distinguished name.
+     * Set the query to search the entire directory on the base distinguished name.
      *
      * @return $this
      */

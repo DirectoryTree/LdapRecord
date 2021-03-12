@@ -1070,12 +1070,22 @@ class BuilderTest extends TestCase
         ], $b->paginate(500));
     }
 
-    public function test_setting_dn_with_base_substitutes_query_base()
+    public function test_setting_dn_with_base_substitutes_with_current_query_base()
     {
         $b = $this->newBuilder()
             ->setBaseDn('dc=base,dc=com')
             ->setDn('ou=users,{base}');
 
         $this->assertEquals('ou=users,dc=base,dc=com', $b->getDn());
+    }
+
+    public function test_setting_base_dn_with_base_substitutes_with_current_query_base()
+    {
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setBaseDn('ou=office,{base}')
+            ->setDn('ou=users,{base}');
+
+        $this->assertEquals('ou=users,ou=office,dc=base,dc=com', $b->getDn());
     }
 }

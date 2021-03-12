@@ -333,7 +333,7 @@ class Builder
      */
     public function setBaseDn($dn)
     {
-        $this->baseDn = $dn instanceof Model ? $dn->getDn() : $dn;
+        $this->baseDn = $this->substituteBaseInDn($dn);
 
         return $this;
     }
@@ -367,11 +367,23 @@ class Builder
      */
     public function setDn($dn = null)
     {
-        $this->dn = str_replace(
-            '{base}', $this->baseDn, $dn instanceof Model ? $dn->getDn() : $dn
-        );
+        $this->dn = $this->substituteBaseInDn($dn);
 
         return $this;
+    }
+
+    /**
+     * Substitute the base DN string template for the current base.
+     *
+     * @param Model|string $dn
+     * 
+     * @return string
+     */
+    protected function substituteBaseInDn($dn)
+    {
+        return str_replace(
+            '{base}', $this->baseDn, $dn instanceof Model ? $dn->getDn() : $dn
+        );
     }
 
     /**

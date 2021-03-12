@@ -146,7 +146,7 @@ class Guard
     }
 
     /**
-     * Sets the event dispatcher instance.
+     * Set the event dispatcher instance.
      *
      * @param DispatcherInterface $dispatcher
      *

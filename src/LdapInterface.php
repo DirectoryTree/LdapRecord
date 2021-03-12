@@ -58,7 +58,7 @@ interface LdapInterface
     const OID_SERVER_CONTROL_VLVREQUEST = '2.16.840.1.113730.3.4.9';
 
     /**
-     * Sets the current connection to use SSL.
+     * Set the current connection to use SSL.
      *
      * @param bool $enabled
      *
@@ -74,7 +74,7 @@ interface LdapInterface
     public function isUsingSSL();
 
     /**
-     * Sets the current connection to use TLS.
+     * Set the current connection to use TLS.
      *
      * @param bool $enabled
      *
@@ -151,7 +151,7 @@ interface LdapInterface
     public function getDetailedError();
 
     /**
-     * Sets an option on the current connection.
+     * Set an option on the current connection.
      *
      * @link http://php.net/manual/en/function.ldap-set-option.php
      *
@@ -163,7 +163,7 @@ interface LdapInterface
     public function setOption($option, $value);
 
     /**
-     * Sets options on the current connection.
+     * Set options on the current connection.
      *
      * @param array $options
      *

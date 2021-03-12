@@ -667,7 +667,7 @@ trait HasAttributes
     }
 
     /**
-     * Sets an attributes value by the specified key and sub-key.
+     * Set an attribute value by the specified key and sub-key.
      *
      * @param mixed $key
      * @param mixed $value
@@ -810,7 +810,7 @@ trait HasAttributes
     }
 
     /**
-     * Sets the attributes property.
+     * Set the attributes property.
      *
      * Used when constructing an existing LDAP record.
      *

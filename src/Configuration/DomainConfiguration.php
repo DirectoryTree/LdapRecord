@@ -105,7 +105,7 @@ class DomainConfiguration
     }
 
     /**
-     * Sets a configuration option.
+     * Set a configuration option.
      *
      * @param string $key
      * @param mixed  $value

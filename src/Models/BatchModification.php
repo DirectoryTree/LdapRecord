@@ -58,7 +58,7 @@ class BatchModification
     }
 
     /**
-     * Sets the original value of the attribute before modification.
+     * Set the original value of the attribute before modification.
      *
      * @param array|string $original
      *
@@ -82,7 +82,7 @@ class BatchModification
     }
 
     /**
-     * Sets the attribute of the modification.
+     * Set the attribute of the modification.
      *
      * @param string $attribute
      *
@@ -106,7 +106,7 @@ class BatchModification
     }
 
     /**
-     * Sets the values of the modification.
+     * Set the values of the modification.
      *
      * @param array $values
      *
@@ -150,7 +150,7 @@ class BatchModification
     }
 
     /**
-     * Sets the type of the modification.
+     * Set the type of the modification.
      *
      * @param int|null $type
      *

@@ -144,7 +144,7 @@ class Builder
     }
 
     /**
-     * Sets the current connection.
+     * Set the current connection.
      *
      * @param Connection $connection
      *
@@ -158,7 +158,7 @@ class Builder
     }
 
     /**
-     * Sets the current filter grammar.
+     * Set the current filter grammar.
      *
      * @param Grammar $grammar
      *
@@ -172,7 +172,7 @@ class Builder
     }
 
     /**
-     * Sets the cache to store query results.
+     * Set the cache to store query results.
      *
      * @param Cache|null $cache
      *
@@ -399,7 +399,7 @@ class Builder
     }
 
     /**
-     * Sets the size limit of the current query.
+     * Set the size limit of the current query.
      *
      * @param int $limit
      *

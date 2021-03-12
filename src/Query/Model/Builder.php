@@ -89,7 +89,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Sets the model instance for the model being queried.
+     * Set the model instance for the model being queried.
      *
      * @param Model $model
      *

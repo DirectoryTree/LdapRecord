@@ -193,7 +193,7 @@ class Connection
     }
 
     /**
-     * Sets the cache store.
+     * Set the cache store.
      *
      * @param CacheInterface $store
      *

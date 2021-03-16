@@ -1088,4 +1088,19 @@ class BuilderTest extends TestCase
 
         $this->assertEquals('ou=users,ou=office,dc=base,dc=com', $b->getDn());
     }
+
+    public function test_setting_dn_with_malformed_base_does_nothing()
+    {
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setDn('ou=users,{bse}');
+
+        $this->assertEquals('ou=users,{bse}', $b->getDn());
+
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setDn('ou=users,base}');
+
+        $this->assertEquals('ou=users,base}', $b->getDn());
+    }
 }

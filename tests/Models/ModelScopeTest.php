@@ -19,12 +19,12 @@ class ModelScopeTest extends TestCase
 
         Container::addConnection(new Connection());
 
-        ModelGlobalScopeTestStub::clearBootedModels();
+        ModelWithGlobalScopeTestStub::clearBootedModels();
     }
 
     public function test_scopes_can_be_added_to_models()
     {
-        $model = new ModelGlobalScopeTestStub();
+        $model = new ModelWithGlobalScopeTestStub();
 
         $this->assertInstanceOf(\Closure::class, $model->getGlobalScopes()['foo']);
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
@@ -32,19 +32,19 @@ class ModelScopeTest extends TestCase
 
     public function test_has_scope()
     {
-        $this->assertFalse(ModelGlobalScopeTestStub::hasGlobalScope('foo'));
-        $this->assertFalse(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+        $this->assertFalse(ModelWithGlobalScopeTestStub::hasGlobalScope('foo'));
+        $this->assertFalse(ModelWithGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
-        new ModelGlobalScopeTestStub();
+        new ModelWithGlobalScopeTestStub();
 
-        $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope('foo'));
-        $this->assertTrue(ModelGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
-        $this->assertCount(2, (new ModelGlobalScopeTestStub())->getGlobalScopes());
+        $this->assertTrue(ModelWithGlobalScopeTestStub::hasGlobalScope('foo'));
+        $this->assertTrue(ModelWithGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
+        $this->assertCount(2, (new ModelWithGlobalScopeTestStub())->getGlobalScopes());
     }
 
     public function test_scopes_are_applied_to_query()
     {
-        $query = (new ModelGlobalScopeTestStub())->newQuery()->applyScopes();
+        $query = (new ModelWithGlobalScopeTestStub())->newQuery()->applyScopes();
 
         $this->assertEquals([
             'field'    => 'foo',
@@ -55,7 +55,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_pagination_request()
     {
-        $query = (new ModelGlobalScopeTestStub())->newQuery();
+        $query = (new ModelWithGlobalScopeTestStub())->newQuery();
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([
@@ -67,7 +67,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_not_stacked_multiple_times()
     {
-        $query = (new ModelGlobalScopeTestStub())->newQuery();
+        $query = (new ModelWithGlobalScopeTestStub())->newQuery();
         $query->getQuery();
         $query->getQuery();
 
@@ -77,7 +77,7 @@ class ModelScopeTest extends TestCase
 
     public function test_local_scopes_can_be_called()
     {
-        $query = ModelLocalScopeTestStub::fooBar();
+        $query = ModelWithLocalScopeTestStub::fooBar();
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertCount(1, $query->filters['and']);
@@ -88,7 +88,7 @@ class ModelScopeTest extends TestCase
 
     public function test_local_scopes_accept_arguments()
     {
-        $query = ModelLocalScopeTestStub::barBaz('zal');
+        $query = ModelWithLocalScopeTestStub::barBaz('zal');
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertCount(1, $query->filters['and']);
@@ -105,7 +105,7 @@ class ModelScopeTest extends TestCase
             ])
         );
 
-        $model = (new ModelScopeWithDnScopeTestStub())
+        $model = (new ModelWithDnScopeTestStub())
             ->setRawAttributes(['dn' => 'cn=John Doe,dc=local,dc=com']);
 
         $model->fresh();
@@ -121,13 +121,13 @@ class ModelScopeTest extends TestCase
             ])
         );
 
-        $model = ModelScopeWithDnScopeTestStub::find('cn=John Doe,dc=local,dc=com');
+        $model = ModelWithDnScopeTestStub::find('cn=John Doe,dc=local,dc=com');
 
         $this->assertEquals('cn=John Doe,dc=local,dc=com', $model->getDn());
     }
 }
 
-class ModelLocalScopeTestStub extends Model
+class ModelWithLocalScopeTestStub extends Model
 {
     public function scopeFooBar($query)
     {
@@ -140,7 +140,7 @@ class ModelLocalScopeTestStub extends Model
     }
 }
 
-class ModelGlobalScopeTestStub extends Model
+class ModelWithGlobalScopeTestStub extends Model
 {
     protected static function boot()
     {
@@ -157,7 +157,7 @@ class ModelGlobalScopeTestStub extends Model
     }
 }
 
-class ModelScopeWithDnScopeTestStub extends Model
+class ModelWithDnScopeTestStub extends Model
 {
     protected static function boot()
     {

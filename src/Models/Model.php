@@ -219,7 +219,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getConnection()
     {
-        return static::resolveConnection($this->connection);
+        return static::resolveConnection($this->getConnectionName());
     }
 
     /**
@@ -303,7 +303,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newQueryWithoutScopes()
     {
-        return static::resolveConnection($this->connection)->query()->model($this);
+        return static::resolveConnection(
+            $this->getConnectionName()
+        )->query()->model($this);
     }
 
     /**
@@ -618,7 +620,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function is(self $model)
     {
-        return $this->dn == $model->getDn() && $this->connection == $model->getConnectionName();
+        return $this->dn == $model->getDn() && $this->getConnectionName() == $model->getConnectionName();
     }
 
     /**

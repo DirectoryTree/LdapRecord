@@ -58,6 +58,13 @@ interface LdapInterface
     const OID_SERVER_CONTROL_VLVREQUEST = '2.16.840.1.113730.3.4.9';
 
     /**
+     * Query OID's.
+     * 
+     * @see https://ldapwiki.com/wiki/LDAP_MATCHING_RULE_IN_CHAIN
+     */
+    const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';
+
+    /**
      * Set the current connection to use SSL.
      *
      * @param bool $enabled

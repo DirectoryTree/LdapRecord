@@ -1014,7 +1014,7 @@ class BuilderTest extends TestCase
             ->getLdapConnection()
             ->expect(['bind' => true])
             ->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []))
-            ->expect(LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'], false, 1)->andReturn($results));
+            ->expect(LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results));
 
         $this->assertEquals($dn, $b->find($dn)['dn'][0]);
     }

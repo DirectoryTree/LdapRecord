@@ -192,31 +192,54 @@ class DistinguishedNameTest extends TestCase
 
     public function test_assoc()
     {
-        $dn = new DistinguishedName(null);
-        $this->assertEmpty($dn->assoc());
-        $this->assertIsArray($dn->assoc());
-
         $dn = new DistinguishedName('foo=bar,baz=zal,bar=baz');
+        
         $this->assertEquals(
             ['foo' => ['bar'], 'baz' => ['zal'], 'bar' => ['baz']],
             $dn->assoc()
         );
 
         $dn = new DistinguishedName('foo=bar,foo=bar,foo=bar');
+
         $this->assertEquals(
             ['foo' => ['bar', 'bar', 'bar']],
             $dn->assoc()
         );
+    }
 
-        // Malformed DN.
-        $dn = new DistinguishedName('foo=bar,fooar,foo=bar');
+    public function test_assoc_with_empty_dn()
+    {
+        $dn = new DistinguishedName(null);
+
         $this->assertEmpty($dn->assoc());
         $this->assertIsArray($dn->assoc());
+    }
 
-        $dn = new DistinguishedName('foo=bar');
-        $this->assertEquals(
-            ['foo' => ['bar']],
-            $dn->assoc()
-        );
+    public function test_assoc_with_malformed_dn()
+    {
+       $dn = new DistinguishedName('foo=bar,fooar,foo=bar');
+
+       $this->assertEmpty($dn->assoc());
+       $this->assertIsArray($dn->assoc());
+
+       $dn = new DistinguishedName('foo=bar');
+
+       $this->assertEquals(
+           ['foo' => ['bar']],
+           $dn->assoc()
+       );
+    }
+
+    public function test_assoc_with_alternate_casing()
+    {
+        $dn = new DistinguishedName('cn=foo,dc=bar,DC=baz');
+
+        $this->assertEquals([
+            'cn' => ['foo'],
+            'dc' => [
+                'bar',
+                'baz',
+            ]
+        ], $dn->assoc());
     }
 }

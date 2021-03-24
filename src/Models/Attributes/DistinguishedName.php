@@ -79,6 +79,8 @@ class DistinguishedName
         foreach ($this->components() as $rdn) {
             [$attribute, $value] = explode('=', $rdn);
 
+            $attribute = strtolower($attribute);
+
             array_key_exists($attribute, $map)
                 ? $map[$attribute][] = $value
                 : $map[$attribute] = [$value];

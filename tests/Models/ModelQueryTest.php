@@ -114,7 +114,7 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setDn('cn=foo,dc=bar,dc=baz');
-        $model->fill($attributes = ['cn' => 'foo', 'objectclass' => 'bar']);
+        $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
 
         $model->save();
 

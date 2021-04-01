@@ -117,7 +117,7 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @param string  $dn
      * @param boolean $nested
-     * 
+     *
      * @return $this
      */
     public function whereNotMemberof($dn, $nested = false)
@@ -147,7 +147,7 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @param string  $dn
      * @param boolean $nested
-     * 
+     *
      * @return $this
      */
     public function orWhereNotMemberof($dn, $nested = false)
@@ -220,10 +220,10 @@ class ActiveDirectoryBuilder extends Builder
     /**
      * Execute the callback with a nested match attribute.
      *
-     * @param Clousre $callback
+     * @param Closure $callback
      * @param string  $attribute
      * @param boolean $nested
-     * 
+     *
      * @return $this
      */
     protected function nestedMatchQuery(Closure $callback, $attribute, $nested = false)
@@ -232,12 +232,12 @@ class ActiveDirectoryBuilder extends Builder
             $nested ? $this->makeNestedMatchAttribute($attribute) : $attribute
         );
     }
-    
+
     /**
      * Make a "nested match" filter attribute for querying descendants.
      *
      * @param string $attribute
-     * 
+     *
      * @return string
      */
     protected function makeNestedMatchAttribute($attribute)

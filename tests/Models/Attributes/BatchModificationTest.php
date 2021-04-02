@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Tests\Models\Attributes;
 
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\BatchModification;
+use LdapRecord\Tests\TestCase;
 
 class BatchModificationTest extends TestCase
 {

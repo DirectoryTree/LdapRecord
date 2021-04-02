@@ -3,9 +3,9 @@
 namespace LdapRecord\Tests\Testing;
 
 use Exception;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Testing\LdapExpectation;
+use LdapRecord\Tests\TestCase;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 

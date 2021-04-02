@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Group;
+use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Tests\TestCase;
 
 class ModelHasOnePrimaryGroupTest extends TestCase
 {

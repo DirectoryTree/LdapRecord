@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Tests\Models;
 
-use DateTime;
 use Carbon\Carbon;
-use LdapRecord\Utilities;
+use DateTime;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
+use LdapRecord\Utilities;
 
 class ModelAccessorMutatorTest extends TestCase
 {

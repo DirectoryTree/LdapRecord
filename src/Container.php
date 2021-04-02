@@ -2,10 +2,10 @@
 
 namespace LdapRecord;
 
-use Psr\Log\LoggerInterface;
-use LdapRecord\Events\Logger;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Events\DispatcherInterface;
+use LdapRecord\Events\Logger;
+use Psr\Log\LoggerInterface;
 
 class Container
 {
@@ -72,7 +72,7 @@ class Container
      *
      * @return Container|null
      */
-    public static function setInstance(Container $container = null)
+    public static function setInstance(self $container = null)
     {
         return static::$instance = $container;
     }

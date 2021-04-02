@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Tests\Models;
 
-use Mockery as m;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Query\Model\Builder;
+use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class ModelHasManyUsingTest extends TestCase
 {

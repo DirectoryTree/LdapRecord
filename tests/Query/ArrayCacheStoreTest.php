@@ -3,8 +3,8 @@
 namespace LdapRecord\Tests\Query;
 
 use Carbon\Carbon;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\ArrayCacheStore;
+use LdapRecord\Tests\TestCase;
 
 class ArrayCacheStoreTest extends TestCase
 {

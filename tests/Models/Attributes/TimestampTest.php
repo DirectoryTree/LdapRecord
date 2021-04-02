@@ -3,10 +3,10 @@
 namespace LdapRecord\Tests\Models\Attributes;
 
 use DateTime;
-use LdapRecord\Utilities;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Tests\TestCase;
+use LdapRecord\Utilities;
 
 class TimestampTest extends TestCase
 {
@@ -71,7 +71,7 @@ class TimestampTest extends TestCase
 
         $datetime = $timestamp->toDateTime($this->utcLdapTimestamp);
 
-        $this->assertInstanceOf(DateTime::class,$datetime);
+        $this->assertInstanceOf(DateTime::class, $datetime);
         $this->assertEquals('UTC', $datetime->timezone->getName());
         $this->assertEquals('Fri Oct 02 2020 02:12:44 GMT+0000', $datetime->toString());
 

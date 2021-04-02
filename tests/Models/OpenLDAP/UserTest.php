@@ -4,9 +4,9 @@ namespace LdapRecord\Tests\Models\OpenLDAP;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Models\OpenLDAP\User;
 use LdapRecord\Models\Attributes\Password;
+use LdapRecord\Models\OpenLDAP\User;
+use LdapRecord\Tests\TestCase;
 
 class UserTest extends TestCase
 {
@@ -39,8 +39,8 @@ class UserTest extends TestCase
     {
         $user = (new OpenLDAPUserTestStub)->setRawAttributes([
             'userpassword' => [
-                '{MD5}Xr4ilOzQ4PCOq3aQ0qbuaQ=='
-            ]
+                '{MD5}Xr4ilOzQ4PCOq3aQ0qbuaQ==',
+            ],
         ]);
 
         $user->password = ['secret', 'new-secret'];
@@ -60,7 +60,7 @@ class UserTest extends TestCase
         $user = (new OpenLDAPUserTestStub)->setRawAttributes([
             'userpassword' => [
                 $pass,
-            ]
+            ],
         ]);
 
         $user->password = ['secret', 'new-secret'];
@@ -72,7 +72,6 @@ class UserTest extends TestCase
 
         [, $oldAlgo] = Password::getHashMethodAndAlgo($old['values'][0]);
         $this->assertEquals(Password::CRYPT_SALT_TYPE_SHA512, $oldAlgo);
-
 
         [, $newAlgo] = Password::getHashMethodAndAlgo($new['values'][0]);
         $this->assertEquals(Password::CRYPT_SALT_TYPE_SHA512, $newAlgo);

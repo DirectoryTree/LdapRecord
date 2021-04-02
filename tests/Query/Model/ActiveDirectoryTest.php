@@ -3,10 +3,10 @@
 namespace LdapRecord\Tests\Query\Model;
 
 use LdapRecord\Connection;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\LdapFake;
 use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
+use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class ActiveDirectoryTest extends TestCase
 {

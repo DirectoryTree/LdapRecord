@@ -3,8 +3,8 @@
 namespace LdapRecord\Tests\Events;
 
 use Exception;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Events\Dispatcher;
+use LdapRecord\Tests\TestCase;
 
 /**
  * Class DispatcherTest.

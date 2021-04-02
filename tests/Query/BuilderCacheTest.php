@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Tests\Query;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Query\Cache;
+use LdapRecord\Container;
 use LdapRecord\Models\Entry;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\ArrayCacheStore;
+use LdapRecord\Query\Cache;
+use LdapRecord\Tests\TestCase;
 
 class BuilderCacheTest extends TestCase
 {

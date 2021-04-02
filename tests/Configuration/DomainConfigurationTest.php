@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Tests\Configuration;
 
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Configuration\ConfigurationException;
+use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Tests\TestCase;
 
 class DomainConfigurationTest extends TestCase
 {

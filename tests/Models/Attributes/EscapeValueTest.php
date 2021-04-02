@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Tests\Models\Attributes;
 
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Tests\TestCase;
 
 class EscapeValueTest extends TestCase
 {

@@ -2,12 +2,12 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
-use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Concerns\HasPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
-use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
+use LdapRecord\Models\Concerns\CanAuthenticate;
+use LdapRecord\Models\Concerns\HasPassword;
+use LdapRecord\Query\Model\Builder;
 
 class User extends Entry implements Authenticatable
 {

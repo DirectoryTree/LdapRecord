@@ -2,14 +2,14 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\LdapFake;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class ModelScopeTest extends TestCase
 {
@@ -101,7 +101,7 @@ class ModelScopeTest extends TestCase
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
             LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
-                ['dn' => 'cn=John Doe,dc=local,dc=com']
+                ['dn' => 'cn=John Doe,dc=local,dc=com'],
             ])
         );
 
@@ -117,7 +117,7 @@ class ModelScopeTest extends TestCase
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
             LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
-                ['dn' => 'cn=John Doe,dc=local,dc=com']
+                ['dn' => 'cn=John Doe,dc=local,dc=com'],
             ])
         );
 

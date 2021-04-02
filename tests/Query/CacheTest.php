@@ -3,9 +3,9 @@
 namespace LdapRecord\Tests\Query;
 
 use Carbon\Carbon;
+use LdapRecord\Query\ArrayCacheStore;
 use LdapRecord\Query\Cache;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Query\ArrayCacheStore;
 
 class CacheTest extends TestCase
 {

@@ -2,13 +2,13 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\ConnectionException;
-use LdapRecord\Models\Attributes\Password;
-use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
+use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Models\Attributes\Password;
+use LdapRecord\Tests\TestCase;
 
 class UserTest extends TestCase
 {
@@ -61,7 +61,7 @@ class UserTest extends TestCase
     public function test_changing_passwords()
     {
         $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
-        
+
         $user->unicodepwd = ['bar', 'baz'];
 
         $this->assertEquals([

@@ -38,7 +38,7 @@ class DirectoryFake
     {
         Container::reset();
     }
-    
+
     /**
      * Make a connection fake.
      *

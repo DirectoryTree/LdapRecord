@@ -2,22 +2,22 @@
 
 namespace LdapRecord\Query;
 
+use BadMethodCallException;
 use Closure;
 use DateTimeInterface;
-use LdapRecord\Container;
-use LdapRecord\Utilities;
-use LdapRecord\Connection;
-use BadMethodCallException;
-use LdapRecord\Models\Model;
 use InvalidArgumentException;
+use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\LdapInterface;
-use Tightenco\Collect\Support\Arr;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
-use LdapRecord\Query\Pagination\Paginator;
-use LdapRecord\Query\Pagination\DeprecatedPaginator;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
+use LdapRecord\Query\Pagination\DeprecatedPaginator;
+use LdapRecord\Query\Pagination\Paginator;
+use LdapRecord\Utilities;
+use Tightenco\Collect\Support\Arr;
 
 class Builder
 {
@@ -328,7 +328,7 @@ class Builder
      * Set the base distinguished name of the query.
      *
      * @param Model|string $dn
-     * 
+     *
      * @return $this
      */
     public function setBaseDn($dn)
@@ -376,7 +376,7 @@ class Builder
      * Substitute the base DN string template for the current base.
      *
      * @param Model|string $dn
-     * 
+     *
      * @return string
      */
     protected function substituteBaseInDn($dn)

@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Models\Attributes;
 
-use ReflectionMethod;
 use InvalidArgumentException;
 use LdapRecord\LdapRecordException;
+use ReflectionMethod;
 
 class Password
 {
@@ -148,13 +148,13 @@ class Password
     {
         return '{MD5}'.static::makeHash($password, 'md5');
     }
-    
+
     /**
      * Crypt password with an MD5 salt.
      *
      * @param string $password
      * @param string $salt
-     * 
+     *
      * @return string
      */
     public static function md5Crypt($password, $salt = null)
@@ -167,7 +167,7 @@ class Password
      *
      * @param string $password
      * @param string $salt
-     * 
+     *
      * @return string
      */
     public static function sha256Crypt($password, $salt = null)
@@ -180,7 +180,7 @@ class Password
      *
      * @param string $password
      * @param string $salt
-     * 
+     *
      * @return string
      */
     public static function sha512Crypt($password, $salt = null)
@@ -223,7 +223,7 @@ class Password
      * Make a salt for the crypt() method using the given type.
      *
      * @param int $type
-     * 
+     *
      * @return string
      */
     protected static function makeCryptSalt($type)
@@ -232,7 +232,7 @@ class Password
 
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-        while(strlen($prefix) < $length) {
+        while (strlen($prefix) < $length) {
             $prefix .= substr($chars, random_int(0, strlen($chars) - 1), 1);
         }
 
@@ -250,7 +250,7 @@ class Password
      */
     protected static function makeCryptPrefixAndLength($type)
     {
-        switch($type) {
+        switch ($type) {
             case static::CRYPT_SALT_TYPE_MD5:
                 return ['$1$', 12];
             case static::CRYPT_SALT_TYPE_SHA256:
@@ -271,7 +271,7 @@ class Password
      */
     public static function getHashMethod($password)
     {
-        if (! preg_match( '/^\{(\w+)\}/', $password, $matches)) {
+        if (! preg_match('/^\{(\w+)\}/', $password, $matches)) {
             return;
         }
 
@@ -304,7 +304,7 @@ class Password
     public static function getSalt($encryptedPassword)
     {
         // crypt() methods.
-        if (preg_match('/^\{(\w+)\}(\$.*\$).*$/', $encryptedPassword, $matches)){
+        if (preg_match('/^\{(\w+)\}(\$.*\$).*$/', $encryptedPassword, $matches)) {
             return $matches[2];
         }
 
@@ -313,15 +313,15 @@ class Password
             return substr(base64_decode($matches[2]), -4);
         }
 
-        throw new LdapRecordException("Could not extract salt from encrypted password.");
+        throw new LdapRecordException('Could not extract salt from encrypted password.');
     }
 
     /**
      * Determine if the hash method requires a salt to be given.
      *
      * @param string $method
-     * 
-     * @return boolean
+     *
+     * @return bool
      *
      * @throws \ReflectionException
      */
@@ -329,8 +329,8 @@ class Password
     {
         $parameters = (new ReflectionMethod(static::class, $method))->getParameters();
 
-        foreach($parameters as $parameter){
-            if ($parameter->name === "salt") {
+        foreach ($parameters as $parameter) {
+            if ($parameter->name === 'salt') {
                 return true;
             }
         }

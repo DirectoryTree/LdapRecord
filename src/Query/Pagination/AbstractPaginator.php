@@ -71,7 +71,7 @@ abstract class AbstractPaginator
             $this->updateServerControls($ldap, $resource);
 
             $pages[] = $this->query->parse($resource);
-        } while (!empty($this->fetchCookie()));
+        } while (! empty($this->fetchCookie()));
 
         $this->resetServerControls($ldap);
 
@@ -102,7 +102,7 @@ abstract class AbstractPaginator
     abstract protected function applyServerControls(LdapInterface $ldap);
 
     /**
-     * Reset the server controls
+     * Reset the server controls.
      *
      * @param LdapInterface $ldap
      *

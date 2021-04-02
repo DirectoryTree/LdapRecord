@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Tests;
 
-use Mockery as m;
 use LdapRecord\Ldap;
 use LdapRecord\Testing\LdapFake;
+use Mockery as m;
 
 class LdapTest extends TestCase
 {

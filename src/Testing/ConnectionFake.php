@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Testing;
 
-use LdapRecord\Connection;
 use LdapRecord\Auth\Guard;
+use LdapRecord\Connection;
 use LdapRecord\Models\Model;
 
 class ConnectionFake extends Connection

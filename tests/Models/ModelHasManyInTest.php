@@ -2,15 +2,15 @@
 
 namespace LdapRecord\Tests\Models;
 
-use Mockery as m;
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Tests\TestCase;
+use LdapRecord\Models\Relations\HasManyIn;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Relations\HasManyIn;
+use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class ModelHasManyInTest extends TestCase
 {

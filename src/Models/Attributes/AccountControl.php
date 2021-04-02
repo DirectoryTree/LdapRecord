@@ -156,7 +156,7 @@ class AccountControl
      */
     public function doesntHave($flag)
     {
-        return !$this->has($flag);
+        return ! $this->has($flag);
     }
 
     /**

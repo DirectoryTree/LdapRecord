@@ -3,14 +3,14 @@
 namespace LdapRecord\Auth;
 
 use Exception;
-use LdapRecord\LdapInterface;
+use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
-use LdapRecord\Auth\Events\Binding;
-use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Events\DispatcherInterface;
+use LdapRecord\LdapInterface;
 
 class Guard
 {
@@ -103,7 +103,7 @@ class Guard
         // Prior to binding, we will upgrade our connectivity to TLS on our current
         // connection and ensure we are not already bound before upgrading.
         // This is to prevent subsequent upgrading on several binds.
-        if ($this->connection->isUsingTLS() && !$this->connection->isBound()) {
+        if ($this->connection->isUsingTLS() && ! $this->connection->isBound()) {
             $this->connection->startTLS();
         }
 

@@ -3,19 +3,19 @@
 namespace LdapRecord\Tests;
 
 use Carbon\Carbon;
-use LdapRecord\Ldap;
-use LdapRecord\Auth\Guard;
-use LdapRecord\Connection;
-use LdapRecord\Query\Builder;
-use LdapRecord\Testing\LdapFake;
 use LdapRecord\Auth\BindException;
-use LdapRecord\LdapRecordException;
+use LdapRecord\Auth\Guard;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Connection;
 use LdapRecord\Exceptions\AlreadyExistsException;
-use LdapRecord\Exceptions\InsufficientAccessException;
 use LdapRecord\Exceptions\ConstraintViolationException;
+use LdapRecord\Exceptions\InsufficientAccessException;
+use LdapRecord\Ldap;
+use LdapRecord\LdapRecordException;
+use LdapRecord\Query\Builder;
+use LdapRecord\Testing\LdapFake;
 
 class ConnectionTest extends TestCase
 {

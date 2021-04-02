@@ -2,19 +2,19 @@
 
 namespace LdapRecord\Tests\Auth;
 
-use LdapRecord\Ldap;
-use LdapRecord\Auth\Guard;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\LdapFake;
-use LdapRecord\Auth\Events\Bound;
-use LdapRecord\Events\Dispatcher;
 use LdapRecord\Auth\BindException;
-use LdapRecord\Auth\Events\Passed;
-use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Attempting;
+use LdapRecord\Auth\Events\Binding;
+use LdapRecord\Auth\Events\Bound;
+use LdapRecord\Auth\Events\Passed;
+use LdapRecord\Auth\Guard;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Events\Dispatcher;
+use LdapRecord\Ldap;
+use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class GuardTest extends TestCase
 {

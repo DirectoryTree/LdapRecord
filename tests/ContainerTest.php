@@ -2,15 +2,15 @@
 
 namespace LdapRecord\Tests;
 
-use Mockery as m;
-use LdapRecord\Ldap;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
-use LdapRecord\Container;
-use LdapRecord\Connection;
-use LdapRecord\Events\Dispatcher;
-use LdapRecord\ContainerException;
 use LdapRecord\Auth\Events\Binding;
+use LdapRecord\Connection;
+use LdapRecord\Container;
+use LdapRecord\ContainerException;
+use LdapRecord\Events\Dispatcher;
+use LdapRecord\Ldap;
+use Mockery as m;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class ContainerTest extends TestCase
 {

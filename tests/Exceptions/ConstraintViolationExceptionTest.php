@@ -3,8 +3,8 @@
 namespace LdapRecord\Tests\Exceptions;
 
 use LdapRecord\DetailedError;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Exceptions\ConstraintViolationException;
+use LdapRecord\Tests\TestCase;
 
 class ConstraintViolationExceptionTest extends TestCase
 {

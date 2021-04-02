@@ -2,14 +2,14 @@
 
 namespace LdapRecord\Tests\Query\Model;
 
-use Mockery as m;
-use ReflectionFunction;
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Tests\TestCase;
+use Mockery as m;
+use ReflectionFunction;
 
 class BuilderScopeTest extends TestCase
 {

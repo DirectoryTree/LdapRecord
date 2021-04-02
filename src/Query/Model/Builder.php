@@ -4,12 +4,12 @@ namespace LdapRecord\Query\Model;
 
 use Closure;
 use DateTime;
-use LdapRecord\Utilities;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
-use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Utilities;
 
 class Builder extends BaseBuilder
 {

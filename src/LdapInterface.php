@@ -59,7 +59,7 @@ interface LdapInterface
 
     /**
      * Query OID's.
-     * 
+     *
      * @see https://ldapwiki.com/wiki/LDAP_MATCHING_RULE_IN_CHAIN
      */
     const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';

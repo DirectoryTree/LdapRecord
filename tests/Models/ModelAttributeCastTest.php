@@ -64,7 +64,7 @@ class ModelAttributeCastTest extends TestCase
     public function test_object_attributes_are_casted()
     {
         $model = (new ModelCastStub)->setRawAttributes(['objectAttribute' => ['{"foo": 1, "bar": "two"}']]);
-        
+
         $this->assertIsObject($value = $model->objectAttribute);
 
         $object = (new \stdClass);

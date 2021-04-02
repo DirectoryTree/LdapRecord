@@ -2,15 +2,15 @@
 
 namespace LdapRecord;
 
+use Carbon\Carbon;
 use Closure;
 use Exception;
-use Carbon\Carbon;
 use LdapRecord\Auth\Guard;
-use LdapRecord\Query\Cache;
-use LdapRecord\Query\Builder;
-use Psr\SimpleCache\CacheInterface;
-use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\Events\DispatcherInterface;
+use LdapRecord\Query\Builder;
+use LdapRecord\Query\Cache;
+use Psr\SimpleCache\CacheInterface;
 
 class Connection
 {
@@ -38,7 +38,7 @@ class Connection
     protected $configuration;
 
     /**
-     * The event dispatcher;
+     * The event dispatcher;.
      *
      * @var DispatcherInterface|null
      */

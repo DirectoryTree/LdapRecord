@@ -3,9 +3,9 @@
 namespace LdapRecord\Models;
 
 use Closure;
-use Tightenco\Collect\Support\Arr;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Query\Collection as QueryCollection;
+use Tightenco\Collect\Support\Arr;
 
 class Collection extends QueryCollection
 {

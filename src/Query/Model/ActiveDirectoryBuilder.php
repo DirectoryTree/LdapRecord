@@ -4,8 +4,8 @@ namespace LdapRecord\Query\Model;
 
 use Closure;
 use LdapRecord\LdapInterface;
-use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\ModelNotFoundException;
 
 class ActiveDirectoryBuilder extends Builder
 {
@@ -116,7 +116,7 @@ class ActiveDirectoryBuilder extends Builder
      * Adds a 'where not member of' filter to the current query.
      *
      * @param string  $dn
-     * @param boolean $nested
+     * @param bool $nested
      *
      * @return $this
      */
@@ -146,7 +146,7 @@ class ActiveDirectoryBuilder extends Builder
      * Adds a 'or where not member of' filter to the current query.
      *
      * @param string  $dn
-     * @param boolean $nested
+     * @param bool $nested
      *
      * @return $this
      */
@@ -222,7 +222,7 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @param Closure $callback
      * @param string  $attribute
-     * @param boolean $nested
+     * @param bool $nested
      *
      * @return $this
      */

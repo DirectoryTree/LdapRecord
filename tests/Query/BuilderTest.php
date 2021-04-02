@@ -4,10 +4,10 @@ namespace LdapRecord\Tests\Query;
 
 use DateTime;
 use LdapRecord\Connection;
-use LdapRecord\Query\Builder;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\LdapFake;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Query\Builder;
+use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class BuilderTest extends TestCase
 {
@@ -1005,7 +1005,7 @@ class BuilderTest extends TestCase
             'count' => 1,
             [
                 'dn' => [$dn],
-            ]
+            ],
         ];
 
         $b = $this->newBuilder();
@@ -1051,7 +1051,7 @@ class BuilderTest extends TestCase
             [
                 'count' => 1,
                 'objectclass' => ['foo'],
-            ]
+            ],
         ];
 
         $b->getConnection()
@@ -1066,7 +1066,7 @@ class BuilderTest extends TestCase
             [
                 'count' => 1,
                 'objectclass' => ['foo'],
-            ]
+            ],
         ], $b->paginate(500));
     }
 

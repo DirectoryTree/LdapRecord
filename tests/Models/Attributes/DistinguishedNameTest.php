@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Tests\Models\Attributes;
 
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Models\Attributes\DistinguishedName;
+use LdapRecord\Tests\TestCase;
 
 class DistinguishedNameTest extends TestCase
 {
@@ -193,7 +193,7 @@ class DistinguishedNameTest extends TestCase
     public function test_assoc()
     {
         $dn = new DistinguishedName('foo=bar,baz=zal,bar=baz');
-        
+
         $this->assertEquals(
             ['foo' => ['bar'], 'baz' => ['zal'], 'bar' => ['baz']],
             $dn->assoc()
@@ -217,14 +217,14 @@ class DistinguishedNameTest extends TestCase
 
     public function test_assoc_with_malformed_dn()
     {
-       $dn = new DistinguishedName('foo=bar,fooar,foo=bar');
+        $dn = new DistinguishedName('foo=bar,fooar,foo=bar');
 
-       $this->assertEmpty($dn->assoc());
-       $this->assertIsArray($dn->assoc());
+        $this->assertEmpty($dn->assoc());
+        $this->assertIsArray($dn->assoc());
 
-       $dn = new DistinguishedName('foo=bar');
+        $dn = new DistinguishedName('foo=bar');
 
-       $this->assertEquals(
+        $this->assertEquals(
            ['foo' => ['bar']],
            $dn->assoc()
        );
@@ -239,7 +239,7 @@ class DistinguishedNameTest extends TestCase
             'dc' => [
                 'bar',
                 'baz',
-            ]
+            ],
         ], $dn->assoc());
     }
 }

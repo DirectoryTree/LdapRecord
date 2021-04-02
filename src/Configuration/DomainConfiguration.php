@@ -65,7 +65,7 @@ class DomainConfiguration
     public function __construct(array $options = [])
     {
         $this->options = array_merge($this->options, static::$extended);
-        
+
         foreach ($options as $key => $value) {
             $this->set($key, $value);
         }

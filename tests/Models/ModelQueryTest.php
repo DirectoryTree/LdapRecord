@@ -2,18 +2,18 @@
 
 namespace LdapRecord\Tests\Models;
 
-use Mockery as m;
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Container;
+use LdapRecord\ContainerException;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\LdapFake;
-use LdapRecord\Query\Collection;
-use LdapRecord\ContainerException;
-use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\ModelDoesNotExistException;
+use LdapRecord\Query\Collection;
+use LdapRecord\Query\Model\Builder;
+use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class ModelQueryTest extends TestCase
 {
@@ -169,7 +169,7 @@ class ModelQueryTest extends TestCase
         $mod = [
             'attrib' => 'cn',
             'modtype' => 3,
-            'values' => [0 => 'baz']
+            'values' => [0 => 'baz'],
         ];
 
         $expectation = LdapFake::operation('modifyBatch')
@@ -274,7 +274,7 @@ class ModelQueryTest extends TestCase
     {
         $expectations = [
             LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturn(true),
-            LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true)
+            LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true),
         ];
 
         $ldap = (new LdapFake)->expect(array_merge(['bind' => true], $expectations));

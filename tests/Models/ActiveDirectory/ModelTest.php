@@ -2,10 +2,10 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
-use Mockery as m;
+use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Query\Builder;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Models\ActiveDirectory\Entry;
+use Mockery as m;
 
 class ModelTest extends TestCase
 {

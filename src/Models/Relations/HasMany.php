@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Models\Relations;
 
-use LdapRecord\Models\Model;
 use LdapRecord\DetectsErrors;
-use LdapRecord\Query\Collection;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Query\Collection;
 
 class HasMany extends OneToMany
 {
@@ -40,10 +40,10 @@ class HasMany extends OneToMany
      */
     protected $bypass = [
         'attach' => [
-            'Already exists', 'Type or value exists'
+            'Already exists', 'Type or value exists',
         ],
         'detach' => [
-            'No such attribute', 'Server is unwilling to perform'
+            'No such attribute', 'Server is unwilling to perform',
         ],
     ];
 

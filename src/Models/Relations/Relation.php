@@ -293,7 +293,7 @@ abstract class Relation
      *
      * @param Model  $model
      * @param string $attribute
-     * 
+     *
      * @return string|null
      */
     protected function getFirstAttributeValue(Model $model, $attribute)

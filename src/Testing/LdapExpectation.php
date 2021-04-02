@@ -2,10 +2,10 @@
 
 namespace LdapRecord\Testing;
 
-use UnexpectedValueException;
 use LdapRecord\LdapRecordException;
-use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Framework\Constraint\IsEqual;
+use UnexpectedValueException;
 
 class LdapExpectation
 {

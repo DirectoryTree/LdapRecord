@@ -2,16 +2,16 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Container;
+use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Models\Scope;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Relations\Relation;
-use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Tests\TestCase;
 
 class ModelRelationTest extends TestCase
 {
@@ -155,7 +155,7 @@ class ModelRelationTest extends TestCase
         $this->assertTrue($relation->contains('cn=foo,dc=local,dc=com'));
         $this->assertTrue($relation->contains($related));
         $this->assertTrue($relation->contains(['foo', 'bar']));
-        
+
         $this->assertFalse($relation->contains(null));
         $this->assertFalse($relation->contains(['']));
         $this->assertFalse($relation->contains($unrelated));

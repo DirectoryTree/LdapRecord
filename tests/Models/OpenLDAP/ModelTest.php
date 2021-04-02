@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Tests\Models\OpenLDAP;
 
-use LdapRecord\Container;
 use LdapRecord\Connection;
-use LdapRecord\Tests\TestCase;
+use LdapRecord\Container;
 use LdapRecord\Models\OpenLDAP\Entry;
 use LdapRecord\Models\OpenLDAP\Scopes\AddEntryUuidToSelects;
+use LdapRecord\Tests\TestCase;
 
 class ModelTest extends TestCase
 {

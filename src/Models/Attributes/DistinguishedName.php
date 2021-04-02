@@ -18,9 +18,33 @@ class DistinguishedName
      *
      * @param string|null $value
      */
-    public function __construct($value)
+    public function __construct($value = null)
     {
         $this->value = $value;
+    }
+
+    /**
+     * Get a new DN builder object from the given DN.
+     *
+     * @param string|null $value
+     *
+     * @return DistinguishedNameBuilder
+     */
+    public static function of($value = null)
+    {
+        return new DistinguishedNameBuilder($value);
+    }
+
+    /**
+     * Make a new Distinguished Name instance.
+     *
+     * @param string|null $value
+     *
+     * @return static
+     */
+    public function make($value = null)
+    {
+        return new static($value);
     }
 
     /**

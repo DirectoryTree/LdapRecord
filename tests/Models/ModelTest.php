@@ -2,23 +2,20 @@
 
 namespace LdapRecord\Tests\Models;
 
-use Mockery as m;
 use Carbon\Carbon;
 use DateTimeInterface;
-use LdapRecord\Container;
 use LdapRecord\Connection;
+use LdapRecord\Container;
+use LdapRecord\ContainerException;
+use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\ContainerException;
-use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\BatchModification;
-use LdapRecord\Models\Attributes\Timestamp;
-use LdapRecord\Models\ModelDoesNotExistException;
 
 class ModelTest extends TestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -119,6 +116,11 @@ class ModelTest extends TestCase
 
         $model->cn = 'John Doe';
         $this->assertEquals('cn=John Doe', $model->getCreatableRdn());
+
+        $model->cn = '<.,&$^@*$';
+        $this->assertEquals('cn=\3c.\2c&$^@*$', $model->getCreatableRdn());
+
+        $this->assertEquals('ou=Name', $model->getCreatableRdn('Name', 'ou'));
     }
 
     public function test_creatable_dn()
@@ -170,11 +172,11 @@ class ModelTest extends TestCase
 
         $model->setRawAttributes([
             'count' => 1,
-            'foo'   => [
+            'foo' => [
                 'count' => 1,
-                'bar'   => [
+                'bar' => [
                     'count' => 1,
-                    'baz'   => [
+                    'baz' => [
                         'count' => 1,
                     ],
                 ],
@@ -284,8 +286,8 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isDirty('baz'));
         $this->assertTrue($model->isDirty('other'));
         $this->assertEquals([
-            'bar'   => [20],
-            'baz'   => [30],
+            'bar' => [20],
+            'baz' => [30],
             'other' => [40],
         ], $model->getDirty());
     }
@@ -300,9 +302,9 @@ class ModelTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib'  => 'pwdlastset',
+                'attrib' => 'pwdlastset',
                 'modtype' => LDAP_MODIFY_BATCH_REPLACE,
-                'values'  => ['0'],
+                'values' => ['0'],
             ],
         ], $model->getModifications());
     }
@@ -314,7 +316,7 @@ class ModelTest extends TestCase
 
         $model->objectguid = 'bf9679e7-0de6-11d0-a285-00aa003049e2';
         $this->assertEquals([
-            'foo'        => ['bar'],
+            'foo' => ['bar'],
             'objectguid' => ['bf9679e7-0de6-11d0-a285-00aa003049e2'],
         ], $model->jsonSerialize());
         $this->assertEquals('{"foo":["bar"],"objectguid":["bf9679e7-0de6-11d0-a285-00aa003049e2"]}', json_encode($model->jsonSerialize()));
@@ -354,14 +356,14 @@ class ModelTest extends TestCase
         $date = Carbon::now();
 
         $model = new ModelWithDatesStub([
-            'standard'       => $date,
-            'windows'        => $date,
+            'standard' => $date,
+            'windows' => $date,
             'windowsinteger' => $date,
         ]);
 
         $this->assertEquals([
-            'standard'       => [$date->format(DateTimeInterface::ISO8601)],
-            'windows'        => [$date->format(DateTimeInterface::ISO8601)],
+            'standard' => [$date->format(DateTimeInterface::ISO8601)],
+            'windows' => [$date->format(DateTimeInterface::ISO8601)],
             'windowsinteger' => [$date->format(DateTimeInterface::ISO8601)],
         ], $model->jsonSerialize());
     }
@@ -369,14 +371,14 @@ class ModelTest extends TestCase
     public function test_serialization_of_all_date_types_ignores_reset_integer_zero()
     {
         $model = new ModelWithDatesStub([
-            'standard'       => 0,
-            'windows'        => 0,
+            'standard' => 0,
+            'windows' => 0,
             'windowsinteger' => 0,
         ]);
 
         $this->assertEquals([
-            'standard'       => [0],
-            'windows'        => [0],
+            'standard' => [0],
+            'windows' => [0],
             'windowsinteger' => [0],
         ], $model->jsonSerialize());
     }
@@ -412,11 +414,11 @@ class ModelTest extends TestCase
     {
         $records = [
             [
-                'dn'  => 'baz',
+                'dn' => 'baz',
                 'foo' => 'bar',
             ],
             [
-                'dn'  => 'foo',
+                'dn' => 'foo',
                 'bar' => 'baz',
             ],
         ];
@@ -485,9 +487,9 @@ class ModelTest extends TestCase
     {
         $model = new Entry();
         $model->setRawAttributes([
-            'cn'             => ['Common Name'],
+            'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
-            'name'           => ['Name'],
+            'name' => ['Name'],
         ]);
 
         $model->cn = null;
@@ -524,9 +526,9 @@ class ModelTest extends TestCase
     public function test_modifications_are_not_stacked()
     {
         $model = (new Entry())->setRawAttributes([
-            'cn'             => ['Common Name'],
+            'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
-            'name'           => ['Name'],
+            'name' => ['Name'],
         ]);
 
         $model->cn = null;
@@ -611,60 +613,6 @@ class ModelTest extends TestCase
         $this->assertEquals(['foo' => ['bar']], $model->getAttributes());
     }
 
-    public function test_rename()
-    {
-        $model = new ModelRenameTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
-
-        $model->rename('cn=Jane Doe');
-
-        $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
-        $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
-        $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
-    }
-
-    public function test_rename_with_parent()
-    {
-        $model = new ModelRenameWithParentTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
-
-        $model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org');
-
-        $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
-        $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
-        $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
-    }
-
-    public function test_rename_does_not_occur_when_given_the_same_rdn_and_parent_dn()
-    {
-        $model = (new Entry)->setRawAttributes([
-            'dn' => 'cn=John Doe,dc=acme,dc=org',
-        ]);
-
-        $model->rename('cn=John Doe');
-
-        $this->assertFalse($model->wasRecentlyRenamed);
-    }
-
-    public function test_rename_without_existing_model()
-    {
-        $model = new Entry();
-
-        $this->expectException(ModelDoesNotExistException::class);
-
-        $model->rename('invalid');
-    }
-
-    public function test_move()
-    {
-        $model = new ModelMoveTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
-
-        $model->move('ou=Users,dc=acme,dc=org');
-
-        $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
-    }
-
     public function test_generated_dns_are_properly_escaped()
     {
         $model = new Entry();
@@ -688,8 +636,8 @@ class ModelCreateTestStub extends Model
 class ModelWithDatesStub extends Model
 {
     protected $dates = [
-        'standard'       => 'ldap',
-        'windows'        => 'windows',
+        'standard' => 'ldap',
+        'windows' => 'windows',
         'windowsinteger' => 'windows-int',
     ];
 }
@@ -704,47 +652,5 @@ class ModelBootingTestStub extends Model
     public static function booted()
     {
         return static::$booted;
-    }
-}
-
-class ModelRenameTestStub extends Model
-{
-    public function newQuery()
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
-    }
-}
-
-class ModelRenameWithParentTestStub extends Model
-{
-    public function newQuery()
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
-    }
-}
-
-class ModelMoveTestStub extends Model
-{
-    public function newQuery()
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
     }
 }

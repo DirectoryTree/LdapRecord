@@ -3,17 +3,17 @@
 namespace LdapRecord\Models;
 
 use ArrayAccess;
-use JsonSerializable;
-use LdapRecord\Container;
-use LdapRecord\Connection;
 use InvalidArgumentException;
+use JsonSerializable;
+use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\EscapesValues;
-use UnexpectedValueException;
-use LdapRecord\Query\Model\Builder;
-use LdapRecord\Models\Events\Renamed;
-use LdapRecord\Models\Attributes\Guid;
-use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Models\Attributes\DistinguishedName;
+use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Models\Events\Renamed;
+use LdapRecord\Models\Events\Renaming;
+use LdapRecord\Query\Model\Builder;
+use UnexpectedValueException;
 
 /** @mixin Builder */
 abstract class Model implements ArrayAccess, JsonSerializable
@@ -502,7 +502,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetExists($offset)
     {
-        return !is_null($this->getAttribute($offset));
+        return ! is_null($this->getAttribute($offset));
     }
 
     /**
@@ -1263,7 +1263,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
 
         $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
-        
+
         // If the model was successfully renamed, we will set
         // its new DN so any further updates to the model
         // can be performed without any issues.
@@ -1288,26 +1288,46 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get a distinguished name that is creatable for the model.
      *
+     * @param string|null $name
+     * @param string|null $attribute
+     *
      * @return string
      */
-    public function getCreatableDn()
+    public function getCreatableDn($name = null, $attribute = null)
     {
         return implode(',', [
-            $this->getCreatableRdn(),
-            $this->in ?? $this->newQuery()->getbaseDn()
+            $this->getCreatableRdn($name, $attribute),
+            $this->in ?? $this->newQuery()->getbaseDn(),
         ]);
     }
 
     /**
-     * Get a creatable RDN for the model.
+     * Get a creatable (escaped) RDN for the model.
+     *
+     * @param string|null $name
+     * @param string|null $attribute
      *
      * @return string
      */
-    public function getCreatableRdn()
+    public function getCreatableRdn($name = null, $attribute = null)
     {
-        $name = $this->escape($this->getFirstAttribute('cn'))->dn();
+        $attribute = $attribute ?? $this->getCreatableRdnAttribute();
 
-        return "cn=$name";
+        $name = $this->escape(
+            $name ?? $this->getFirstAttribute($attribute)
+        )->dn();
+
+        return "$attribute=$name";
+    }
+
+    /**
+     * Get the creatable RDN attribute name.
+     *
+     * @return string
+     */
+    protected function getCreatableRdnAttribute()
+    {
+        return 'cn';
     }
 
     /**

@@ -75,7 +75,7 @@ Built-in support for [changing](https://ldaprecord.com/docs/core/v2/active-direc
 
 🗑 **Restore Deleted Objects**
 
-We've all been there -- accidentally deleting a user or group in Active Directory. [Restore them](https://ldaprecord.com/docs/core/v2/models/#restoring) by seamlessly accessing your directory's recycle bin.
+We've all been there -- accidentally deleting a user or group in Active Directory. [Restore them](https://ldaprecord.com/docs/core/v2/models/#restoring-deleted-models) by seamlessly accessing your directory's recycle bin.
 
 ---
 

@@ -106,6 +106,9 @@ return PhpCsFixer\Config::create()
         'phpdoc_trim' => true,
         'phpdoc_types' => true,
         'phpdoc_var_without_name' => true,
+        'php_unit_method_casing' => [
+            'case' => 'snake_case',
+        ],
         'psr4' => true,
         'self_accessor' => true,
         'short_scalar_cast' => true,

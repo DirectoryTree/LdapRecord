@@ -8,21 +8,21 @@ use LdapRecord\Tests\TestCase;
 
 class DistinguishedNameBuilderTest extends TestCase
 {
-    public function testGet()
+    public function test_get()
     {
         $builder = new DistinguishedNameBuilder('cn=john,dc=local,dc=com');
 
         $this->assertEquals('cn=john,dc=local,dc=com', $builder->get());
     }
 
-    public function testReverse()
+    public function test_reverse()
     {
         $builder = new DistinguishedNameBuilder('cn=john,dc=local,dc=com');
 
         $this->assertEquals('dc=com,dc=local,cn=john', $builder->reverse()->get());
     }
 
-    public function testShift()
+    public function test_shift()
     {
         $this->assertEquals(
             'dc=local,dc=com',
@@ -54,7 +54,7 @@ class DistinguishedNameBuilderTest extends TestCase
         $this->assertEquals(['cn=john', 'dc=local', 'dc=com'], $removed);
     }
 
-    public function testPop()
+    public function test_pop()
     {
         $this->assertEquals(
             'cn=john,dc=local',
@@ -86,7 +86,7 @@ class DistinguishedNameBuilderTest extends TestCase
         $this->assertEquals(['cn=john', 'dc=local', 'dc=com'], $removed);
     }
 
-    public function testAppend()
+    public function test_append()
     {
         $this->assertEquals(
             'cn=john,dc=local,dc=com,dc=org',
@@ -109,7 +109,7 @@ class DistinguishedNameBuilderTest extends TestCase
         );
     }
 
-    public function testPrepend()
+    public function test_prepend()
     {
         $this->assertEquals(
             'ou=users,cn=john,dc=local,dc=com',
@@ -132,7 +132,30 @@ class DistinguishedNameBuilderTest extends TestCase
         );
     }
 
-    public function testChaining()
+    public function test_components_arrays_and_strings_can_be_passed_to_append_and_prepend()
+    {
+        $dn = (new DistinguishedNameBuilder())
+            ->prepend([
+                'cn=John Doe',
+                ['dc', 'local'],
+                ['dc', 'com'],
+            ])
+            ->get();
+
+        $this->assertEquals('cn=John Doe,dc=local,dc=com', $dn);
+
+        $dn = (new DistinguishedNameBuilder())
+            ->append([
+                'cn=John Doe',
+                ['dc', 'local'],
+                ['dc', 'com'],
+            ])
+            ->get();
+
+        $this->assertEquals('cn=John Doe,dc=local,dc=com', $dn);
+    }
+
+    public function test_chaining()
     {
         $dn = DistinguishedName::of();
 
@@ -145,7 +168,7 @@ class DistinguishedNameBuilderTest extends TestCase
         $this->assertEquals('cn=John Doe,dc=local,dc=com', (string) $dn->get());
     }
 
-    public function testChainingWithShiftPrependPopAppend()
+    public function test_chaining_with_shift_prepend_pop_append()
     {
         $dn = DistinguishedName::of('cn=John Doe,dc=local,dc=com')
             ->shift(1, $removed)

@@ -107,9 +107,9 @@ class DistinguishedNameBuilder
         // RDN's have been given if the value is null, and
         // attempt to break them into their components.
         if (is_null($value)) {
-            $attribute = is_array($attribute) ? $attribute : [$attribute];
+            $attributes = is_array($attribute) ? $attribute : [$attribute];
 
-            $components = array_map([$this, 'explodeRdn'], $attribute);
+            $components = array_map([$this, 'makeComponentizedArray'], $attributes);
         } else {
             $components = [[$attribute, $value]];
         }
@@ -119,6 +119,18 @@ class DistinguishedNameBuilder
 
             return $this->makeAppendableComponent($attribute, $value);
         }, $components);
+    }
+
+    /**
+     * Make a componentized array by exploding the value if it's a string.
+     *
+     * @param string $value
+     *
+     * @return array
+     */
+    protected function makeComponentizedArray($value)
+    {
+        return is_array($value) ? $value : $this->explodeRdn($value);
     }
 
     /**

@@ -109,7 +109,7 @@ class DistinguishedNameBuilder
         if (is_null($value)) {
             $attribute = is_array($attribute) ? $attribute : [$attribute];
 
-            $components = [...array_map([$this, 'explodeRdn'], $attribute)];
+            $components = array_map([$this, 'explodeRdn'], $attribute);
         } else {
             $components = [[$attribute, $value]];
         }

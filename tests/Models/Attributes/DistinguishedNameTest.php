@@ -15,7 +15,7 @@ class DistinguishedNameTest extends TestCase
         $dn->set('bar');
         $this->assertEquals('bar', $dn->get());
 
-        $this->assertNull((new DistinguishedName(null))->get());
+        $this->assertEmpty((new DistinguishedName(null))->get());
     }
 
     public function test_components_returns_attributes()

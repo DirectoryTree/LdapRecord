@@ -20,7 +20,17 @@ class DistinguishedName
      */
     public function __construct($value = null)
     {
-        $this->value = $value;
+        $this->value = trim($value);
+    }
+
+    /**
+     * Get the distinguished name value.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->value;
     }
 
     /**
@@ -42,7 +52,7 @@ class DistinguishedName
      *
      * @return static
      */
-    public function make($value = null)
+    public static function make($value = null)
     {
         return new static($value);
     }

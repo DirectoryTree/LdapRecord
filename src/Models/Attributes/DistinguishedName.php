@@ -34,13 +34,25 @@ class DistinguishedName
     }
 
     /**
-     * Get a new DN builder object from the given DN.
+     * Alias of the "build" method.
      *
      * @param string|null $value
      *
      * @return DistinguishedNameBuilder
      */
     public static function of($value = null)
+    {
+        return static::build($value);
+    }
+
+    /**
+     * Get a new DN builder object from the given DN.
+     *
+     * @param string|null $value
+     *
+     * @return DistinguishedNameBuilder
+     */
+    public static function build($value = null)
     {
         return new DistinguishedNameBuilder($value);
     }

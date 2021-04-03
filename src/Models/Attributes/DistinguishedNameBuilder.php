@@ -38,7 +38,7 @@ class DistinguishedNameBuilder
      * Forward missing method calls onto the Distinguished name object.
      *
      * @param string $method
-     * @param array $args
+     * @param array  $args
      *
      * @return mixed
      */

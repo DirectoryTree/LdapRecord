@@ -128,7 +128,7 @@ class LdapExpectation
     /**
      * The error message to return from the expectation.
      *
-     * @param int $code
+     * @param int    $code
      * @param string $error
      * @param string $diagnosticMessage
      *

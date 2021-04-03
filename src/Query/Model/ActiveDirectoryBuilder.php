@@ -115,8 +115,8 @@ class ActiveDirectoryBuilder extends Builder
     /**
      * Adds a 'where not member of' filter to the current query.
      *
-     * @param string  $dn
-     * @param bool $nested
+     * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
@@ -145,8 +145,8 @@ class ActiveDirectoryBuilder extends Builder
     /**
      * Adds a 'or where not member of' filter to the current query.
      *
-     * @param string  $dn
-     * @param bool $nested
+     * @param string $dn
+     * @param bool   $nested
      *
      * @return $this
      */
@@ -222,7 +222,7 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @param Closure $callback
      * @param string  $attribute
-     * @param bool $nested
+     * @param bool    $nested
      *
      * @return $this
      */

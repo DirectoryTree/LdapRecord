@@ -494,9 +494,9 @@ class LdapFake extends LdapBase
     /**
      * Assert that the expected arguments match the operations arguments.
      *
-     * @param string        $method
-     * @param Constraint[]  $expectedArgs
-     * @param array         $methodArgs
+     * @param string       $method
+     * @param Constraint[] $expectedArgs
+     * @param array        $methodArgs
      *
      * @return void
      */

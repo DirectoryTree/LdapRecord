@@ -284,9 +284,9 @@ class HasMany extends OneToMany
      *
      * If a bypassable exception is encountered, the value will be returned.
      *
-     * @param callable       $operation
-     * @param string|array   $bypass
-     * @param mixed          $value
+     * @param callable     $operation
+     * @param string|array $bypass
+     * @param mixed        $value
      *
      * @return mixed
      *

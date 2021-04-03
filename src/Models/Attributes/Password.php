@@ -192,9 +192,9 @@ class Password
      * Make a new password hash.
      *
      * @param string      $password The password to make a hash of.
-     * @param string      $method The hash function to use.
-     * @param string|null $algo The algorithm to use for hashing.
-     * @param string|null $salt The salt to append onto the hash.
+     * @param string      $method   The hash function to use.
+     * @param string|null $algo     The algorithm to use for hashing.
+     * @param string|null $salt     The salt to append onto the hash.
      *
      * @return string
      */

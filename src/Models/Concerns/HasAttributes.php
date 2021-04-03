@@ -324,8 +324,8 @@ trait HasAttributes
     /**
      * Determine whether an attribute should be cast to a native type.
      *
-     * @param string             $key
-     * @param array|string|null  $types
+     * @param string            $key
+     * @param array|string|null $types
      *
      * @return bool
      */

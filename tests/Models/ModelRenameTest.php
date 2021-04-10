@@ -92,6 +92,27 @@ class ModelRenameTest extends TestCase
         );
     }
 
+    public function test_rename_escaping_parent()
+    {
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(
+                LdapFake::operation('rename')->with(
+                    'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org', 'cn=Тестирование\2c Имя\2c Побег'
+                )
+            );
+
+        $model = new Entry();
+
+        $model->setRawAttributes([
+            'dn' => 'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org',
+        ]);
+
+        $model->rename(
+            $model->getCreatableRdn('Тестирование, Имя, Побег')
+        );
+    }
+
     public function test_move()
     {
         DirectoryFake::setup()

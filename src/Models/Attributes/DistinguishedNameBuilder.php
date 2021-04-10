@@ -29,9 +29,9 @@ class DistinguishedNameBuilder
      */
     public function __construct($dn = null)
     {
-        $this->components = array_map(
-            [$this, 'explodeRdn'], DistinguishedName::make($dn)->components()
-        );
+        $this->components = array_map(function ($rdn) {
+            return DistinguishedName::explodeRdn($rdn);
+        }, DistinguishedName::make($dn)->components());
     }
 
     /**
@@ -130,7 +130,7 @@ class DistinguishedNameBuilder
      */
     protected function makeComponentizedArray($value)
     {
-        return is_array($value) ? $value : $this->explodeRdn($value);
+        return is_array($value) ? $value : DistinguishedName::explodeRdn($value);
     }
 
     /**
@@ -156,10 +156,9 @@ class DistinguishedNameBuilder
      */
     public function pop($amount = 1, &$removed = [])
     {
-        $removed = array_map(
-            [$this, 'makeRdn'],
-            array_splice($this->components, -$amount, $amount)
-        );
+        $removed = array_map(function ($component) {
+            return DistinguishedName::makeRdn($component);
+        }, array_splice($this->components, -$amount, $amount));
 
         return $this;
     }
@@ -174,10 +173,9 @@ class DistinguishedNameBuilder
      */
     public function shift($amount = 1, &$removed = [])
     {
-        $removed = array_map(
-            [$this, 'makeRdn'],
-            array_splice($this->components, 0, $amount)
-        );
+        $removed = array_map(function ($component) {
+            return DistinguishedName::makeRdn($component);
+        }, array_splice($this->components, 0, $amount));
 
         return $this;
     }
@@ -215,32 +213,8 @@ class DistinguishedNameBuilder
             ? array_reverse($this->components)
             : $this->components;
 
-        return implode(',', array_map(
-            [$this, 'makeRdn'], $components
-        ));
-    }
-
-    /**
-     * Explode the RDN into an attribute and value.
-     *
-     * @param string $rdn
-     *
-     * @return string
-     */
-    protected function explodeRdn($rdn)
-    {
-        return explode('=', $rdn);
-    }
-
-    /**
-     * Implode the component attribute and value into an RDN.
-     *
-     * @param string $rdn
-     *
-     * @return string
-     */
-    protected function makeRdn(array $component)
-    {
-        return implode('=', $component);
+        return implode(',', array_map(function ($component) {
+            return DistinguishedName::makeRdn($component);
+        }, $components));
     }
 }

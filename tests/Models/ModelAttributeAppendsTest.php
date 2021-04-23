@@ -32,6 +32,17 @@ class ModelAttributeAppendsTest extends TestCase
     {
         $this->assertTrue((new ModelAttributeAppendsTestStub())->hasAppended('foo'));
     }
+
+    public function test_appends_with_hyphenated_property()
+    {
+        $model = new ModelAttributeAppendsTestStub();
+
+        $model->setAppends(['foo-bar']);
+
+        $this->assertEquals([
+            'foo-bar' => ['foo-bar'],
+        ], $model->jsonSerialize());
+    }
 }
 
 class ModelAttributeAppendsTestStub extends Model
@@ -41,5 +52,10 @@ class ModelAttributeAppendsTestStub extends Model
     public function getFooAttribute()
     {
         return 'bar';
+    }
+
+    public function getFooBarAttribute()
+    {
+        return 'foo-bar';
     }
 }

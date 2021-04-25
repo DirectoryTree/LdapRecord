@@ -617,7 +617,7 @@ trait HasAttributes
      */
     protected function getArrayableAppends()
     {
-        if (! count($this->appends)) {
+        if (empty($this->appends)) {
             return [];
         }
 

@@ -508,6 +508,16 @@ trait HasAttributes
     }
 
     /**
+     * Convert the model to its JSON representation.
+     *
+     * @return string
+     */
+    public function toJson()
+    {
+        return json_encode($this);
+    }
+
+    /**
      * Encode the given value as JSON.
      *
      * @param mixed $value

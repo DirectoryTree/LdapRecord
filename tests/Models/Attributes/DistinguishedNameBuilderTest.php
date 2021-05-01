@@ -181,4 +181,35 @@ class DistinguishedNameBuilderTest extends TestCase
 
         $this->assertEquals('cn=John Doe,ou=users,dc=local,dc=org,dc=com', (string) $dn);
     }
+
+    public function test_components()
+    {
+        $this->assertEmpty(
+            DistinguishedName::of('')->components()
+        );
+
+        $this->assertEquals(
+            [
+                ['cn', 'John Doe'],
+                ['dc', 'local'],
+                ['dc', 'com'],
+            ],
+            DistinguishedName::of('cn=John Doe,dc=local,dc=com')->components()
+        );
+    }
+
+    public function test_components_of_type()
+    {
+        $this->assertEmpty(
+            DistinguishedName::of('cn=John Doe,dc=local,dc=com')->components('dn')
+        );
+
+        $this->assertEquals(
+            [
+                ['dc', 'local'],
+                ['dc', 'com'],
+            ],
+            DistinguishedName::of('cn=John Doe,dc=local,dc=com')->components('dc')
+        );
+    }
 }

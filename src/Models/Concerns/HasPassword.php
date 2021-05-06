@@ -224,7 +224,9 @@ trait HasPassword
         }
 
         [,$algo] = array_pad(
-            Password::getHashMethodAndAlgo($password) ?? [], $length = 2, $value = null
+            Password::getHashMethodAndAlgo($password) ?? [],
+            $length = 2,
+            $value = null
         );
 
         switch ($algo) {

@@ -225,9 +225,9 @@ class DistinguishedNameTest extends TestCase
         $dn = new DistinguishedName('foo=bar');
 
         $this->assertEquals(
-           ['foo' => ['bar']],
-           $dn->assoc()
-       );
+            ['foo' => ['bar']],
+            $dn->assoc()
+        );
     }
 
     public function test_assoc_with_alternate_casing()

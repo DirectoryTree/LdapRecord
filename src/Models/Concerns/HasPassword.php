@@ -215,11 +215,11 @@ trait HasPassword
      */
     public function determinePasswordHashMethod()
     {
-        if (! ($password = $this->password)) {
+        if (! $password = $this->password) {
             return;
         }
 
-        if (! ($method = Password::getHashMethod($password))) {
+        if (! $method = Password::getHashMethod($password)) {
             return;
         }
 

@@ -10,7 +10,7 @@ jobs:
     php-cs-fixer:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout code
+            - name: Checkout Code
               uses: actions/checkout@v2
               with:
                   ref: ${{ github.head_ref }}
@@ -27,7 +27,7 @@ jobs:
             - name: Fix Style
               run: ./vendor/bin/php-cs-fixer fix --diff --allow-risky=yes
 
-            - name: Commit changes
+            - name: Commit Changes
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: Fix styling changes

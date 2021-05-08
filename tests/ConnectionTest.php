@@ -57,7 +57,7 @@ class ConnectionTest extends TestCase
     public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => false]);
-        
+
         $conn->initialize();
 
         $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());

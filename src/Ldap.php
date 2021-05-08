@@ -113,7 +113,7 @@ class Ldap extends LdapBase
      */
     public function getDetailedError()
     {
-        if (!$number = $this->errNo()) {
+        if (! $number = $this->errNo()) {
             return;
         }
 

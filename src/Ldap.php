@@ -113,13 +113,13 @@ class Ldap extends LdapBase
      */
     public function getDetailedError()
     {
-        // If the returned error number is zero, the last LDAP operation
-        // succeeded. In such case we won't return a detailed error.
-        if ($number = $this->errNo()) {
-            $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
-
-            return new DetailedError($number, $this->err2Str($number), $message);
+        if (!$number = $this->errNo()) {
+            return;
         }
+
+        $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
+
+        return new DetailedError($number, $this->err2Str($number), $message);
     }
 
     /**

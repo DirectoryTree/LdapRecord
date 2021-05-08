@@ -974,7 +974,10 @@ class BuilderTest extends TestCase
         $ldap->expect([
             'bind' => true,
             'search' => null,
-        ])->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []));
+            LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+        ]);
 
         $b->get();
     }
@@ -1012,9 +1015,13 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->expect(['bind' => true])
-            ->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []))
-            ->expect(LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results));
+            ->expect([
+                'bind' => true,
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+                LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
+            ]);
 
         $this->assertEquals($dn, $b->find($dn)['dn'][0]);
     }
@@ -1025,9 +1032,13 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->expect(['bind' => true])
-            ->expect(LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, []))
-            ->expect(LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturn(true));
+            ->expect([
+                'bind' => true,
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+                LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturn(true),
+            ]);
 
         $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));
     }

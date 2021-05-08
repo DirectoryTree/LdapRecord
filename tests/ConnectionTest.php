@@ -57,41 +57,56 @@ class ConnectionTest extends TestCase
     public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => false]);
+        
+        $conn->initialize();
+
         $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
     }
 
     public function test_ssl_protocol_and_port_is_used_when_enabled()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => true]);
+
+        $conn->initialize();
+
         $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
     }
 
     public function test_reinitialize_using_ssl_swaps_protocol_and_port()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1']]);
+
+        $conn->initialize();
+
         $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
 
         $conn->getConfiguration()->set('use_ssl', true);
-        $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
 
         $conn->initialize();
+
         $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
     }
 
     public function test_configured_non_standard_port_is_used_when_ssl_is_enabled()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+
+        $conn->initialize();
+
         $this->assertEquals('ldaps://127.0.0.1:123', $conn->getLdapConnection()->getHost());
     }
 
-    public function test_setting_ldap_connection_initializes_it()
+    public function test_ldap_connection_can_be_set_without_initialization()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+
         $ldap = new Ldap();
+
         $this->assertEquals('', $ldap->getHost());
 
         $conn->setLdapConnection($ldap);
-        $this->assertEquals('ldaps://127.0.0.1:123', $ldap->getHost());
+
+        $this->assertNull($ldap->getHost());
     }
 
     public function test_is_connected()
@@ -203,11 +218,13 @@ class ConnectionTest extends TestCase
     public function test_connections_are_setup()
     {
         $ldap = (new LdapFake)
-            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_PROTOCOL_VERSION, 3))
-            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_NETWORK_TIMEOUT, 5))
-            ->expect(LdapFake::operation('setOption')->once()->with(LDAP_OPT_REFERRALS, false));
+            ->expect([
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+            ]);
 
-        new Connection(['hosts' => ['foo', 'bar']], $ldap);
+        (new Connection(['hosts' => ['foo', 'bar']], $ldap))->initialize();
     }
 
     public function test_reconnect()

@@ -138,8 +138,6 @@ class Connection
     {
         $this->ldap = $ldap;
 
-        $this->initialize();
-
         return $this;
     }
 
@@ -251,6 +249,8 @@ class Connection
      */
     public function connect($username = null, $password = null)
     {
+        $this->initialize();
+
         $attempt = function () use ($username, $password) {
             $this->dispatch(new Events\Connecting($this));
 

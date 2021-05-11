@@ -106,7 +106,7 @@ interface LdapInterface
     /**
      * Determine if the connection has been created.
      *
-     * @return boolean
+     * @return bool
      */
     public function isConnected();
 

@@ -72,6 +72,14 @@ abstract class LdapBase implements LdapInterface
     /**
      * @inheritdoc
      */
+    public function isConnected()
+    {
+        return ! is_null($this->connection);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function canChangePasswords()
     {
         return $this->isUsingSSL() || $this->isUsingTLS();

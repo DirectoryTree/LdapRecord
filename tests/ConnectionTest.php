@@ -16,6 +16,7 @@ use LdapRecord\Ldap;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
 use LdapRecord\Testing\LdapFake;
+use Mockery as m;
 
 class ConnectionTest extends TestCase
 {
@@ -47,6 +48,36 @@ class ConnectionTest extends TestCase
     public function test_connections_can_create_auth_instance()
     {
         $this->assertInstanceOf(Guard::class, (new Connection())->auth());
+    }
+
+    public function test_connections_creating_auth_instance_are_initialized()
+    {
+        $ldap = m::mock(Ldap::class);
+
+        $ldap->shouldReceive('isConnected')->once()->andReturn(false);
+        $ldap->shouldReceive('setOptions')->once();
+        $ldap->shouldReceive('connect')->once();
+
+        $conn = new Connection([]);
+
+        $conn->setLdapConnection($ldap);
+
+        $conn->auth();
+    }
+
+    public function test_connections_creating_auth_instance_that_are_connected_are_not_initialized()
+    {
+        $ldap = m::mock(Ldap::class);
+
+        $ldap->shouldReceive('isConnected')->once()->andReturn(true);
+        $ldap->shouldNotReceive('setOptions');
+        $ldap->shouldNotReceive('connect');
+
+        $conn = new Connection([]);
+
+        $conn->setLdapConnection($ldap);
+
+        $conn->auth();
     }
 
     public function test_connections_can_create_queries()

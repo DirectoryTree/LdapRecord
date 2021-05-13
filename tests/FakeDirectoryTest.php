@@ -12,7 +12,7 @@ use LdapRecord\Testing\DirectoryFake;
 
 class FakeDirectoryTest extends TestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 

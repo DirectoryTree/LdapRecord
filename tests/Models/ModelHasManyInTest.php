@@ -14,7 +14,7 @@ use Mockery as m;
 
 class ModelHasManyInTest extends TestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 

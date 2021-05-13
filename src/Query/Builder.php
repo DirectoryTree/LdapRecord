@@ -937,7 +937,7 @@ class Builder
         // 2 values are passed to the method, we will assume that
         // the operator is 'equals' and keep going.
         if (func_num_args() === 2 && in_array($operator, $bypass) === false) {
-            list($value, $operator) = [$operator, '='];
+            [$value, $operator] = [$operator, '='];
         }
 
         if (! in_array($operator, $this->grammar->getOperators())) {
@@ -1760,7 +1760,7 @@ class Builder
             if (is_numeric($key) && is_array($value)) {
                 // If the key is numeric and the value is an array, we'll
                 // assume we've been given an array with conditionals.
-                list($field, $condition) = $value;
+                [$field, $condition] = $value;
 
                 // Since a value is optional for some conditionals, we will
                 // try and retrieve the third parameter from the array,

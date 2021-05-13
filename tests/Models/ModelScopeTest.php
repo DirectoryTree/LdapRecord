@@ -13,7 +13,7 @@ use LdapRecord\Tests\TestCase;
 
 class ModelScopeTest extends TestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 

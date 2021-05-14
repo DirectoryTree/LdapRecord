@@ -924,19 +924,16 @@ class Builder
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
         if (is_array($field)) {
-            // If the field is an array, we will assume it is an array of
-            // key-value pairs and can add them each as a where clause.
+            // If the field is an array, we will assume we have been
+            // provided with an array of key-value pairs and can
+            // add them each as their own seperate where clause.
             return $this->addArrayOfWheres($field, $boolean, $raw);
         }
 
-        // We'll bypass the 'has' and 'notHas' operator since they
-        // only require two arguments inside the where method.
-        $bypass = ['*', '!*'];
-
-        // Here we will make some assumptions about the operator. If only
-        // 2 values are passed to the method, we will assume that
-        // the operator is 'equals' and keep going.
-        if (func_num_args() === 2 && in_array($operator, $bypass) === false) {
+        // If we have been provided with two arguments not a "has" or
+        // "not has" operator, we'll assume the developer is creating
+        // an "equals" clause and set the proper operator in place.
+        if (func_num_args() === 2 && ! in_array($operator, ['*', '!*'])) {
             [$value, $operator] = [$operator, '='];
         }
 
@@ -1378,7 +1375,7 @@ class Builder
     }
 
     /**
-     * Adds a filter onto the current query.
+     * Adds a filter binding onto the current query.
      *
      * @param string $type     The type of filter to add.
      * @param array  $bindings The bindings of the filter.
@@ -1390,23 +1387,37 @@ class Builder
     public function addFilter($type, array $bindings)
     {
         if (! array_key_exists($type, $this->filters)) {
-            throw new InvalidArgumentException("Filter type [$type] is invalid.");
+            throw new InvalidArgumentException("Filter type: [$type] is invalid.");
         }
 
-        // The required filter key bindings.
-        $required = ['field', 'operator', 'value'];
+        // Each filter clause require key bindings to be set. We
+        // will validate this here to ensure all of them have
+        // been provided, or throw an exception otherwise.
+        if ($missing = $this->missingBindingKeys($bindings)) {
+            $keys = implode(', ', $missing);
 
-        // Here we will ensure the proper key bindings are given.
-        if (count(array_intersect_key(array_flip($required), $bindings)) !== count($required)) {
-            // Retrieve the keys that are missing in the bindings array.
-            $missing = implode(', ', array_diff($required, array_flip($bindings)));
-
-            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$missing] keys.");
+            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$keys] keys.");
         }
 
         $this->filters[$type][] = $bindings;
 
         return $this;
+    }
+
+    /**
+     * Extract any missing required binding keys.
+     *
+     * @param array $bindings
+     *
+     * @return array
+     */
+    protected function missingBindingKeys($bindings)
+    {
+        $required = array_flip(['field', 'operator', 'value']);
+
+        $existing = array_intersect_key($required, $bindings);
+
+        return array_keys(array_diff_key($required, $existing));
     }
 
     /**
@@ -1426,7 +1437,7 @@ class Builder
      */
     public function clearFilters()
     {
-        foreach ($this->filters as $type => $filters) {
+        foreach (array_keys($this->filters) as $type) {
             $this->filters[$type] = [];
         }
 

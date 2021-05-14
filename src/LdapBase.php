@@ -231,9 +231,9 @@ abstract class LdapBase implements LdapInterface
      */
     protected function makeConnectionUris($hosts, $port)
     {
-        // If an attempt to connect via SSL is being performed, and
-        // we are still using the default port, we will swap it
-        // for the default SSL port, for convenience.
+        // If an attempt to connect via the SSL is being performed,
+        // and we are still using the default port, we'll swap it
+        // for the default SSL port, for developer convenience.
         if ($this->isUsingSSL() && $port == static::PORT) {
             $port = static::PORT_SSL;
         }

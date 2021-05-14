@@ -531,7 +531,7 @@ class Grammar
         if (! $this->operatorExists($operator)) {
             throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
         }
-        
+
         return 'compile'.ucfirst($this->operators[$operator]);
     }
 

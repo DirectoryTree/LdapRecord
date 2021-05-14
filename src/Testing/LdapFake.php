@@ -285,7 +285,7 @@ class LdapFake extends LdapBase
     {
         $this->bound = false;
 
-        $this->host = $this->getConnectionString($hosts, $port);
+        $this->host = $this->makeConnectionUris($hosts, $port);
 
         return $this->connection = $this->hasExpectations('connect')
             ? $this->resolveExpectation('connect', func_get_args())

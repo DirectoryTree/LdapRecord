@@ -66,14 +66,14 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib'  => 'unicodepwd',
+                'attrib' => 'unicodepwd',
                 'modtype' => 2,
-                'values'  => [Password::encode('bar')],
+                'values' => [Password::encode('bar')],
             ],
             [
-                'attrib'  => 'unicodepwd',
+                'attrib' => 'unicodepwd',
                 'modtype' => 1,
-                'values'  => [Password::encode('baz')],
+                'values' => [Password::encode('baz')],
             ],
         ], $user->getModifications());
     }

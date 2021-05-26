@@ -47,9 +47,9 @@ class ModelScopeTest extends TestCase
         $query = (new ModelWithGlobalScopeTestStub())->newQuery()->applyScopes();
 
         $this->assertEquals([
-            'field'    => 'foo',
+            'field' => 'foo',
             'operator' => '=',
-            'value'    => 'bar',
+            'value' => 'bar',
         ], $query->filters['and'][0]);
     }
 
@@ -59,9 +59,9 @@ class ModelScopeTest extends TestCase
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([
-            'field'    => 'foo',
+            'field' => 'foo',
             'operator' => '=',
-            'value'    => 'bar',
+            'value' => 'bar',
         ], $query->filters['and'][0]);
     }
 

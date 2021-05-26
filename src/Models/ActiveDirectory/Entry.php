@@ -19,8 +19,8 @@ class Entry extends BaseEntry implements ActiveDirectory
      * @var array
      */
     protected $defaultDates = [
-        'whenchanged'           => 'windows',
-        'whencreated'           => 'windows',
+        'whenchanged' => 'windows',
+        'whencreated' => 'windows',
         'dscorepropagationdata' => 'windows',
     ];
 
@@ -110,7 +110,7 @@ class Entry extends BaseEntry implements ActiveDirectory
         });
 
         $this->save([
-            'isDeleted'         => null,
+            'isDeleted' => null,
             'distinguishedName' => $newDn,
         ]);
     }

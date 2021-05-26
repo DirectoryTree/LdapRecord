@@ -35,17 +35,17 @@ class FakeDirectoryTest extends TestCase
     public function test_fake_connection_uses_real_connections_config()
     {
         $config = [
-            'hosts'            => ['localhost'],
-            'base_dn'          => 'dc=local,dc=com',
-            'username'         => 'user',
-            'password'         => 'pass',
-            'port'             => 389,
-            'use_tls'          => true,
-            'use_ssl'          => false,
-            'timeout'          => 5,
-            'version'          => 3,
+            'hosts' => ['localhost'],
+            'base_dn' => 'dc=local,dc=com',
+            'username' => 'user',
+            'password' => 'pass',
+            'port' => 389,
+            'use_tls' => true,
+            'use_ssl' => false,
+            'timeout' => 5,
+            'version' => 3,
             'follow_referrals' => false,
-            'options'          => ['foo'],
+            'options' => ['foo'],
         ];
 
         Container::addConnection(new Connection($config), 'local');

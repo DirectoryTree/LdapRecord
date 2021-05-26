@@ -18,12 +18,12 @@ class Arr
     }
 
     /**
-    * Determine if the given key exists in the provided array.
-    *
-    * @param  \ArrayAccess|array  $array
-    * @param  string|int  $key
-    * @return bool
-    */
+     * Determine if the given key exists in the provided array.
+     *
+     * @param  \ArrayAccess|array  $array
+     * @param  string|int  $key
+     * @return bool
+     */
     public static function exists($array, $key)
     {
         if ($array instanceof ArrayAccess) {

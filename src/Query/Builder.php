@@ -16,8 +16,8 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\DeprecatedPaginator;
 use LdapRecord\Query\Pagination\Paginator;
-use LdapRecord\Utilities;
 use LdapRecord\Support\Arr;
+use LdapRecord\Utilities;
 
 class Builder
 {

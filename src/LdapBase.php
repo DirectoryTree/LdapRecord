@@ -74,7 +74,7 @@ abstract class LdapBase implements LdapInterface
      */
     public function isConnected()
     {
-        return ! is_null($this->connection);
+        return !is_null($this->connection);
     }
 
     /**
@@ -152,9 +152,9 @@ abstract class LdapBase implements LdapInterface
      *
      * @param Closure $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function executeFailableOperation(Closure $operation)
     {
@@ -162,7 +162,7 @@ abstract class LdapBase implements LdapInterface
         // exceptions, which could be a signifcant detriment to our application.
         // Here, we will enforce these operations to throw exceptions instead.
         set_error_handler(function ($severity, $message, $file, $line) {
-            if (! $this->shouldBypassError($message)) {
+            if (!$this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
             }
         });
@@ -248,7 +248,7 @@ abstract class LdapBase implements LdapInterface
      * Assemble the host URI strings.
      *
      * @param array|string $hosts
-     * @param string $port
+     * @param string       $port
      *
      * @return array
      */

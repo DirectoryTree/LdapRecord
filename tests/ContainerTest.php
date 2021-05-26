@@ -146,7 +146,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $event = new Binding(new Ldap, 'username', 'password');
+        $event = new Binding(new Ldap(), 'username', 'password');
 
         $dispatcher = $container->getEventDispatcher();
 

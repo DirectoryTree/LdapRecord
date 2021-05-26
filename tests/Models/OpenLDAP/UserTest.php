@@ -37,7 +37,7 @@ class UserTest extends TestCase
 
     public function test_algo_is_automatically_detected_when_changing_a_users_password()
     {
-        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
+        $user = (new OpenLDAPUserTestStub())->setRawAttributes([
             'userpassword' => [
                 '{MD5}Xr4ilOzQ4PCOq3aQ0qbuaQ==',
             ],
@@ -57,7 +57,7 @@ class UserTest extends TestCase
     {
         $pass = Password::sha512crypt('secret');
 
-        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
+        $user = (new OpenLDAPUserTestStub())->setRawAttributes([
             'userpassword' => [
                 $pass,
             ],

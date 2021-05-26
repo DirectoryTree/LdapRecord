@@ -101,7 +101,7 @@ class Ldap extends LdapBase
      */
     public function getLastError()
     {
-        if (! $this->connection) {
+        if (!$this->connection) {
             return;
         }
 
@@ -113,7 +113,7 @@ class Ldap extends LdapBase
      */
     public function getDetailedError()
     {
-        if (! $number = $this->errNo()) {
+        if (!$number = $this->errNo()) {
             return;
         }
 
@@ -224,7 +224,7 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
                 ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
                 : ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
@@ -245,7 +245,7 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
                 ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
                 : ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
@@ -266,7 +266,7 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
                 ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
                 : ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
         });
@@ -285,7 +285,7 @@ class Ldap extends LdapBase
             &$referrals,
             &$serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
+            return $this->supportsServerControlsInMethods() && !empty($serverControls)
                 ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls)
                 : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
         });

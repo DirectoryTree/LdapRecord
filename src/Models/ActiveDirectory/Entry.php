@@ -86,13 +86,13 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param string|null $newParentDn
      *
-     * @return bool
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return bool
      */
     public function restore($newParentDn = null)
     {
-        if (! $this->isDeleted()) {
+        if (!$this->isDeleted()) {
             return false;
         }
 
@@ -120,13 +120,13 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param string|null $connection
      *
-     * @return static
-     *
      * @throws \LdapRecord\Models\ModelNotFoundException
+     *
+     * @return static
      */
     public static function getRootDse($connection = null)
     {
-        return static::on($connection ?? (new static)->getConnectionName())
+        return static::on($connection ?? (new static())->getConnectionName())
             ->in(null)
             ->read()
             ->whereHas('objectclass')

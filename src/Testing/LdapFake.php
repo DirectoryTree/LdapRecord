@@ -80,11 +80,11 @@ class LdapFake extends LdapBase
             // If the key is non-numeric, we will assume
             // that the string is the method name and
             // the expectation is the return value.
-            if (! is_numeric($key)) {
+            if (!is_numeric($key)) {
                 $expectation = static::operation($key)->andReturn($expectation);
             }
 
-            if (! $expectation instanceof LdapExpectation) {
+            if (!$expectation instanceof LdapExpectation) {
                 $expectation = static::operation($expectation);
             }
 
@@ -449,9 +449,9 @@ class LdapFake extends LdapBase
      * @param string $method
      * @param array  $args
      *
-     * @return mixed
-     *
      * @throws Exception
+     *
+     * @return mixed
      */
     protected function resolveExpectation($method, $args = [])
     {
@@ -464,7 +464,7 @@ class LdapFake extends LdapBase
                 $this->removeExpectation($method, $key);
             }
 
-            if (! is_null($exception = $expectation->getExpectedException())) {
+            if (!is_null($exception = $expectation->getExpectedException())) {
                 throw $exception;
             }
 

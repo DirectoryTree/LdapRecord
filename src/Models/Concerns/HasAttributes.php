@@ -121,7 +121,7 @@ trait HasAttributes
     protected function addDateAttributesToArray(array $attributes)
     {
         foreach ($this->getDates() as $attribute => $type) {
-            if (! isset($attributes[$attribute])) {
+            if (!isset($attributes[$attribute])) {
                 continue;
             }
 
@@ -190,7 +190,7 @@ trait HasAttributes
             // We want to spin through all the mutated attributes for this model and call
             // the mutator for the attribute. We cache off every mutated attributes so
             // we don't have to constantly check on attributes that actually change.
-            if (! array_key_exists($key, $attributes)) {
+            if (!array_key_exists($key, $attributes)) {
                 continue;
             }
 
@@ -243,7 +243,7 @@ trait HasAttributes
      */
     public function getAttribute($key)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -266,11 +266,11 @@ trait HasAttributes
             return $this->getMutatedAttributeValue($key, $value);
         }
 
-        if ($this->isDateAttribute($key) && ! is_null($value)) {
+        if ($this->isDateAttribute($key) && !is_null($value)) {
             return $this->asDateTime(Arr::first($value), $this->getDates()[$key]);
         }
 
-        if ($this->isCastedAttribute($key) && ! is_null($value)) {
+        if ($this->isCastedAttribute($key) && !is_null($value)) {
             return $this->castAttribute($key, $value);
         }
 
@@ -311,9 +311,9 @@ trait HasAttributes
      * @param string $type
      * @param mixed  $value
      *
-     * @return float|string
-     *
      * @throws LdapRecordException
+     *
+     * @return float|string
      */
     public function fromDateTime($type, $value)
     {
@@ -326,9 +326,9 @@ trait HasAttributes
      * @param mixed  $value
      * @param string $type
      *
-     * @return Carbon|false
-     *
      * @throws LdapRecordException
+     *
+     * @return Carbon|false
      */
     public function asDateTime($value, $type)
     {
@@ -539,7 +539,7 @@ trait HasAttributes
      */
     public function fromJson($value, $asObject = false)
     {
-        return json_decode($value, ! $asObject);
+        return json_decode($value, !$asObject);
     }
 
     /**
@@ -723,12 +723,12 @@ trait HasAttributes
         } elseif (
             $value &&
             $this->isDateAttribute($key) &&
-            ! $this->valueIsResetInteger($value)
+            !$this->valueIsResetInteger($value)
         ) {
             $value = $this->fromDateTime($this->getDates()[$key], $value);
         }
 
-        if ($this->isJsonCastable($key) && ! is_null($value)) {
+        if ($this->isJsonCastable($key) && !is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
         }
 
@@ -870,7 +870,7 @@ trait HasAttributes
         // search results will contain integer keys that have
         // attribute names as values. We don't need these.
         $this->attributes = array_filter($raw, function ($key) {
-            return ! is_int($key);
+            return !is_int($key);
         }, ARRAY_FILTER_USE_KEY);
 
         // LDAP search results will contain the distinguished
@@ -977,7 +977,7 @@ trait HasAttributes
      */
     public function isDirty($key)
     {
-        return ! $this->originalIsEquivalent($key);
+        return !$this->originalIsEquivalent($key);
     }
 
     /**
@@ -1042,7 +1042,7 @@ trait HasAttributes
      */
     protected function originalIsEquivalent($key)
     {
-        if (! array_key_exists($key, $this->original)) {
+        if (!array_key_exists($key, $this->original)) {
             return false;
         }
 
@@ -1067,7 +1067,7 @@ trait HasAttributes
     {
         $class = static::class;
 
-        if (! isset(static::$mutatorCache[$class])) {
+        if (!isset(static::$mutatorCache[$class])) {
             static::cacheMutatedAttributes($class);
         }
 

@@ -59,6 +59,6 @@ class GrammarTest extends TestCase
             'ends_with', 'not_ends_with', 'contains', 'not_contains',
         ];
 
-        $this->assertEquals($expected, (new Grammar)->getOperators());
+        $this->assertEquals($expected, (new Grammar())->getOperators());
     }
 }

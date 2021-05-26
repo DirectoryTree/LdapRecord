@@ -64,14 +64,14 @@ abstract class AbstractPaginator
         do {
             $this->applyServerControls($ldap);
 
-            if (! $resource = $this->query->run($this->filter)) {
+            if (!$resource = $this->query->run($this->filter)) {
                 break;
             }
 
             $this->updateServerControls($ldap, $resource);
 
             $pages[] = $this->query->parse($resource);
-        } while (! empty($this->fetchCookie()));
+        } while (!empty($this->fetchCookie()));
 
         $this->resetServerControls($ldap);
 

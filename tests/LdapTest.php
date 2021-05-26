@@ -20,7 +20,7 @@ class LdapTest extends TestCase
 
     public function test_host_arrays_are_properly_processed()
     {
-        $ldap = new LdapFake;
+        $ldap = new LdapFake();
 
         $ldap->connect(['dc01', 'dc02'], $port = 500);
 
@@ -29,7 +29,7 @@ class LdapTest extends TestCase
 
     public function test_host_strings_are_properly_processed()
     {
-        $ldap = new LdapFake;
+        $ldap = new LdapFake();
 
         $ldap->connect('dc01', $port = 500);
 
@@ -87,7 +87,7 @@ class LdapTest extends TestCase
 
     public function test_set_options()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect([
                 LdapFake::operation('setOption')->once()->with(1, 'value'),
                 LdapFake::operation('setOption')->once()->with(2, 'value'),

@@ -49,7 +49,7 @@ class Timestamp
      */
     public function setType($type)
     {
-        if (! in_array($type, $this->types)) {
+        if (!in_array($type, $this->types)) {
             throw new LdapRecordException("Unrecognized LDAP date type [$type]");
         }
 
@@ -61,9 +61,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return float|string
-     *
      * @throws LdapRecordException
+     *
+     * @return float|string
      */
     public function fromDateTime($value)
     {
@@ -121,9 +121,9 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return Carbon|false
-     *
      * @throws LdapRecordException
+     *
+     * @return Carbon|false
      */
     public function toDateTime($value)
     {
@@ -213,15 +213,15 @@ class Timestamp
      *
      * @param int $value
      *
-     * @return DateTime|bool
-     *
      * @throws \Exception
+     *
+     * @return DateTime|bool
      */
     protected function convertWindowsIntegerTimeToDateTime($value)
     {
         // ActiveDirectory dates that contain integers may return
         // "0" when they are not set. We will validate that here.
-        if (! $value) {
+        if (!$value) {
             return false;
         }
 

@@ -1181,15 +1181,16 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
         foreach ($attributes as $attribute => $value) {
-            // If the attribute value is empty, we will remove
-            // the attribute from the model and continue on.
+            // If the attribute value is empty, we can assume the
+            // attribute was completely deleted from the model.
+            // We will pull the attribute out and continue on.
             if (empty($value)) {
                 unset($this->attributes[$attribute]);
             }
             // Otherwise, only specific attribute values have been
             // removed. We will determine which ones have been
             // removed and update the attributes value.
-            else {
+            elseif (Arr::exists($this->attributes, $attribute)) {
                 $this->attributes[$attribute] = array_values(
                     array_diff($this->attributes[$attribute], (array) $value)
                 );
@@ -1357,9 +1358,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function isValidModification($mod)
     {
-        return is_array($mod) &&
-            array_key_exists(BatchModification::KEY_MODTYPE, $mod) &&
-            array_key_exists(BatchModification::KEY_ATTRIB, $mod);
+        return Arr::accessible($mod)
+            && Arr::exists($mod, BatchModification::KEY_MODTYPE)
+            && Arr::exists($mod, BatchModification::KEY_ATTRIB);
     }
 
     /**
@@ -1374,7 +1375,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         foreach ($this->getDirty() as $attribute => $values) {
             $modification = $this->newBatchModification($attribute, null, (array) $values);
 
-            if (array_key_exists($attribute, $this->original)) {
+            if (Arr::exists($this->original, $attribute)) {
                 // If the attribute we're modifying has an original value, we will
                 // give the BatchModification object its values to automatically
                 // determine which type of LDAP operation we need to perform.

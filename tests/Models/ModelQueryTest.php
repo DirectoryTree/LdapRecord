@@ -272,12 +272,11 @@ class ModelQueryTest extends TestCase
 
     public function test_delete_attribute()
     {
-        $expectations = [
+        $ldap = (new LdapFake())->expect([
+            'bind' => true,
             LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturn(true),
             LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true),
-        ];
-
-        $ldap = (new LdapFake())->expect(array_merge(['bind' => true], $expectations));
+        ]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -299,6 +298,24 @@ class ModelQueryTest extends TestCase
 
         $this->assertEquals(['bar' => ['baz', 'zar']], $model->getAttributes());
         $this->assertEquals(['bar' => ['baz', 'zar']], $model->getOriginal());
+    }
+
+    public function test_delete_attribute_with_array()
+    {
+        $ldap = (new LdapFake())
+            ->expect([
+                'bind' => true,
+                LdapFake::operation('modDelete')->once()->with('dn', ['foo' => [], 'bar' => ['zar']])->andReturn(true),
+            ]);
+
+        $query = new Builder(new Connection([], $ldap));
+
+        $model = m::mock(Entry::class)->makePartial();
+        $model->shouldReceive('newQuery')->once()->andReturn($query);
+
+        $model->setRawAttributes(['dn' => 'dn']);
+
+        $model->deleteAttribute(['foo', 'bar' => 'zar']);
     }
 
     public function test_delete_attribute_without_existing_model()

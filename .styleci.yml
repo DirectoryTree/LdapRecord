@@ -1,1 +1,3 @@
-preset: recommended
+preset: laravel
+enabled:
+  - phpdoc_align

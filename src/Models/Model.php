@@ -13,6 +13,7 @@ use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Support\Arr;
 use UnexpectedValueException;
 
 /** @mixin Builder */
@@ -1160,7 +1161,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * Delete specific values in attributes:
      *
-     *     ["memberuid" => "username"]
+     *     ["memberuid" => "jdoe"]
      *
      * Delete an entire attribute:
      *
@@ -1175,10 +1176,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $this->validateExistence();
 
-        // If we have been given a string, we will assume we're
-        // removing a single attribute. Otherwise, we will
-        // assume it's an array of attributes to remove.
-        $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
+        $attributes = $this->makeDeletableAttributes($attributes);
 
         $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
@@ -1199,6 +1197,26 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         $this->syncOriginal();
+    }
+
+    /**
+     * Make a deletable attribute array.
+     *
+     * @param string|array $attributes
+     *
+     * @return array
+     */
+    protected function makeDeletableAttributes($attributes)
+    {
+        $delete = [];
+
+        foreach (Arr::wrap($attributes) as $key => $value) {
+            is_int($key)
+                ? $delete[$value] = []
+                : $delete[$key] = Arr::wrap($value);
+        }
+
+        return $delete;
     }
 
     /**

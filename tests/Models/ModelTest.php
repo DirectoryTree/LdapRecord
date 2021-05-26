@@ -172,11 +172,11 @@ class ModelTest extends TestCase
 
         $model->setRawAttributes([
             'count' => 1,
-            'foo'   => [
+            'foo' => [
                 'count' => 1,
-                'bar'   => [
+                'bar' => [
                     'count' => 1,
-                    'baz'   => [
+                    'baz' => [
                         'count' => 1,
                     ],
                 ],
@@ -286,8 +286,8 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isDirty('baz'));
         $this->assertTrue($model->isDirty('other'));
         $this->assertEquals([
-            'bar'   => [20],
-            'baz'   => [30],
+            'bar' => [20],
+            'baz' => [30],
             'other' => [40],
         ], $model->getDirty());
     }
@@ -302,9 +302,9 @@ class ModelTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib'  => 'pwdlastset',
+                'attrib' => 'pwdlastset',
                 'modtype' => LDAP_MODIFY_BATCH_REPLACE,
-                'values'  => ['0'],
+                'values' => ['0'],
             ],
         ], $model->getModifications());
     }
@@ -316,7 +316,7 @@ class ModelTest extends TestCase
 
         $model->objectguid = 'bf9679e7-0de6-11d0-a285-00aa003049e2';
         $this->assertEquals([
-            'foo'        => ['bar'],
+            'foo' => ['bar'],
             'objectguid' => ['bf9679e7-0de6-11d0-a285-00aa003049e2'],
         ], $model->jsonSerialize());
         $this->assertEquals('{"foo":["bar"],"objectguid":["bf9679e7-0de6-11d0-a285-00aa003049e2"]}', json_encode($model->jsonSerialize()));
@@ -356,14 +356,14 @@ class ModelTest extends TestCase
         $date = Carbon::now();
 
         $model = new ModelWithDatesStub([
-            'standard'       => $date,
-            'windows'        => $date,
+            'standard' => $date,
+            'windows' => $date,
             'windowsinteger' => $date,
         ]);
 
         $this->assertEquals([
-            'standard'       => [$date->format(DateTimeInterface::ISO8601)],
-            'windows'        => [$date->format(DateTimeInterface::ISO8601)],
+            'standard' => [$date->format(DateTimeInterface::ISO8601)],
+            'windows' => [$date->format(DateTimeInterface::ISO8601)],
             'windowsinteger' => [$date->format(DateTimeInterface::ISO8601)],
         ], $model->jsonSerialize());
     }
@@ -371,14 +371,14 @@ class ModelTest extends TestCase
     public function test_serialization_of_all_date_types_ignores_reset_integer_zero()
     {
         $model = new ModelWithDatesStub([
-            'standard'       => 0,
-            'windows'        => 0,
+            'standard' => 0,
+            'windows' => 0,
             'windowsinteger' => 0,
         ]);
 
         $this->assertEquals([
-            'standard'       => [0],
-            'windows'        => [0],
+            'standard' => [0],
+            'windows' => [0],
             'windowsinteger' => [0],
         ], $model->jsonSerialize());
     }
@@ -414,11 +414,11 @@ class ModelTest extends TestCase
     {
         $records = [
             [
-                'dn'  => 'baz',
+                'dn' => 'baz',
                 'foo' => 'bar',
             ],
             [
-                'dn'  => 'foo',
+                'dn' => 'foo',
                 'bar' => 'baz',
             ],
         ];
@@ -487,9 +487,9 @@ class ModelTest extends TestCase
     {
         $model = new Entry();
         $model->setRawAttributes([
-            'cn'             => ['Common Name'],
+            'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
-            'name'           => ['Name'],
+            'name' => ['Name'],
         ]);
 
         $model->cn = null;
@@ -526,9 +526,9 @@ class ModelTest extends TestCase
     public function test_modifications_are_not_stacked()
     {
         $model = (new Entry())->setRawAttributes([
-            'cn'             => ['Common Name'],
+            'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
-            'name'           => ['Name'],
+            'name' => ['Name'],
         ]);
 
         $model->cn = null;
@@ -636,8 +636,8 @@ class ModelCreateTestStub extends Model
 class ModelWithDatesStub extends Model
 {
     protected $dates = [
-        'standard'       => 'ldap',
-        'windows'        => 'windows',
+        'standard' => 'ldap',
+        'windows' => 'windows',
         'windowsinteger' => 'windows-int',
     ];
 }

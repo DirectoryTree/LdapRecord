@@ -37,7 +37,7 @@ class Builder
      */
     public $filters = [
         'and' => [],
-        'or'  => [],
+        'or' => [],
         'raw' => [],
     ];
 

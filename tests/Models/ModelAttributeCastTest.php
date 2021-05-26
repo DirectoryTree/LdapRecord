@@ -93,7 +93,7 @@ class ModelAttributeCastTest extends TestCase
     public function test_integer_attributes_are_casted()
     {
         $model = (new ModelCastStub())->setRawAttributes([
-            'intAttribute'     => ['1234.5678'],
+            'intAttribute' => ['1234.5678'],
             'integerAttribute' => ['1234.5678'],
         ]);
 
@@ -138,21 +138,21 @@ class ModelAttributeCastTest extends TestCase
 class ModelCastStub extends Model
 {
     protected $casts = [
-        'intAttribute'     => 'int',
+        'intAttribute' => 'int',
         'integerAttribute' => 'integer',
-        'floatAttribute'   => 'float',
-        'doubleAttribute'  => 'float',
+        'floatAttribute' => 'float',
+        'doubleAttribute' => 'float',
         'decimalAttribute' => 'decimal:2',
 
-        'boolAttribute'    => 'bool',
+        'boolAttribute' => 'bool',
         'booleanAttribute' => 'boolean',
 
-        'objectAttribute'     => 'object',
-        'jsonAttribute'       => 'json',
+        'objectAttribute' => 'object',
+        'jsonAttribute' => 'json',
         'collectionAttribute' => 'collection',
 
-        'ldapDateTime'       => 'datetime:ldap',
-        'windowsDateTime'    => 'datetime:windows',
+        'ldapDateTime' => 'datetime:ldap',
+        'windowsDateTime' => 'datetime:windows',
         'windowsIntDateTime' => 'datetime:windows-int',
     ];
 }

@@ -19,7 +19,7 @@ class ConnectionEventsTest extends TestCase
             ->expect(LdapFake::operation('bind')->with('user', $this->anything())->andReturn(true));
 
         $conn = new Connection([
-            'hosts'    => ['one'],
+            'hosts' => ['one'],
             'username' => 'user',
         ], $ldap);
 
@@ -59,7 +59,7 @@ class ConnectionEventsTest extends TestCase
             ->shouldReturnError("Can't contact LDAP server");
 
         $conn = new Connection([
-            'hosts'    => ['one', 'two', 'three'],
+            'hosts' => ['one', 'two', 'three'],
             'username' => 'user',
         ], $ldap);
 

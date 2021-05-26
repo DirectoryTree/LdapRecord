@@ -167,9 +167,9 @@ class ModelQueryTest extends TestCase
     public function test_update()
     {
         $mod = [
-            'attrib'  => 'cn',
+            'attrib' => 'cn',
             'modtype' => 3,
-            'values'  => [0 => 'baz'],
+            'values' => [0 => 'baz'],
         ];
 
         $expectation = LdapFake::operation('modifyBatch')
@@ -285,7 +285,7 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->twice()->andReturn($query);
 
         $model->setRawAttributes([
-            'dn'  => 'dn',
+            'dn' => 'dn',
             'foo' => ['bar'],
             'bar' => ['baz', 'zal', 'zar'],
         ]);
@@ -424,8 +424,8 @@ class ModelWithObjectClassStub extends Model
 class ModelQueryDateConversionTest extends Model
 {
     protected $dates = [
-        'standard'       => 'ldap',
-        'windows'        => 'windows',
+        'standard' => 'ldap',
+        'windows' => 'windows',
         'windowsinteger' => 'windows-int',
     ];
 }

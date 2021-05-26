@@ -52,7 +52,7 @@ class ModelEventTest extends TestCase
             ->with(
                 'cn=foo,dc=bar,dc=baz',
                 [
-                    'cn'          => ['foo'],
+                    'cn' => ['foo'],
                     'objectclass' => ['bar'],
                 ]
             )
@@ -67,7 +67,7 @@ class ModelEventTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setDn('cn=foo,dc=bar,dc=baz')->fill([
-            'cn'          => 'foo',
+            'cn' => 'foo',
             'objectclass' => 'bar',
         ])->save();
     }
@@ -89,9 +89,9 @@ class ModelEventTest extends TestCase
                 'cn=foo,dc=bar,dc=baz',
                 [
                     [
-                        'attrib'  => 'cn',
+                        'attrib' => 'cn',
                         'modtype' => 1,
-                        'values'  => ['foo'],
+                        'values' => ['foo'],
                     ],
                 ],
             ])->andReturn(true);

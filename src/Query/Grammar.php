@@ -12,20 +12,20 @@ class Grammar
      * @var array
      */
     public $operators = [
-        '*'               => 'has',
-        '!*'              => 'notHas',
-        '='               => 'equals',
-        '!'               => 'doesNotEqual',
-        '!='              => 'doesNotEqual',
-        '>='              => 'greaterThanOrEquals',
-        '<='              => 'lessThanOrEquals',
-        '~='              => 'approximatelyEquals',
-        'starts_with'     => 'startsWith',
+        '*' => 'has',
+        '!*' => 'notHas',
+        '=' => 'equals',
+        '!' => 'doesNotEqual',
+        '!=' => 'doesNotEqual',
+        '>=' => 'greaterThanOrEquals',
+        '<=' => 'lessThanOrEquals',
+        '~=' => 'approximatelyEquals',
+        'starts_with' => 'startsWith',
         'not_starts_with' => 'notStartsWith',
-        'ends_with'       => 'endsWith',
-        'not_ends_with'   => 'notEndsWith',
-        'contains'        => 'contains',
-        'not_contains'    => 'notContains',
+        'ends_with' => 'endsWith',
+        'not_ends_with' => 'notEndsWith',
+        'contains' => 'contains',
+        'not_contains' => 'notContains',
     ];
 
     /**

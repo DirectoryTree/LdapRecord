@@ -183,8 +183,8 @@ class Connection
             $this->configuration->get('options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
-                LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),
-                LDAP_OPT_REFERRALS        => $this->configuration->get('follow_referrals'),
+                LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
+                LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals'),
             ]
         ));
     }

@@ -5,6 +5,7 @@ namespace LdapRecord\Testing;
 use Exception;
 use LdapRecord\DetailedError;
 use LdapRecord\LdapBase;
+use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
 
@@ -73,7 +74,7 @@ class LdapFake extends LdapBase
      */
     public function expect($expectations = [])
     {
-        $expectations = is_array($expectations) ? $expectations : [$expectations];
+        $expectations = Arr::wrap($expectations);
 
         foreach ($expectations as $key => $expectation) {
             // If the key is non-numeric, we will assume

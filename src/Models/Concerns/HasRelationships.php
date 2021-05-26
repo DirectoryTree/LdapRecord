@@ -2,10 +2,10 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use LdapRecord\Support\Arr;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\HasManyIn;
 use LdapRecord\Models\Relations\HasOne;
-use Tightenco\Collect\Support\Arr;
 
 trait HasRelationships
 {

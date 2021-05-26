@@ -9,7 +9,7 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\DetectsResetIntegers;
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 trait HasAttributes
 {

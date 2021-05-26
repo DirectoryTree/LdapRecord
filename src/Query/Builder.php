@@ -17,7 +17,7 @@ use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\DeprecatedPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Utilities;
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 class Builder
 {

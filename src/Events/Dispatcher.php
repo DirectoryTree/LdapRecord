@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Events;
 
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 /**
  * Class Dispatcher.

@@ -41,7 +41,7 @@ class TimestampTest extends TestCase
         $date = new DateTime();
         $this->assertEquals($date->format('YmdHis\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime())->setTimezone(new \DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis').'-0500', $timestamp->fromDateTime($date));
     }
 
@@ -52,7 +52,7 @@ class TimestampTest extends TestCase
         $date = new DateTime();
         $this->assertEquals($date->format('YmdHis.0\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime())->setTimezone(new \DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis.0').'-0500', $timestamp->fromDateTime($date));
     }
 

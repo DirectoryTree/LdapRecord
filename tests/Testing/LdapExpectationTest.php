@@ -73,7 +73,7 @@ class LdapExpectationTest extends TestCase
     {
         $expectation = (new LdapExpectation('method'));
 
-        $expectation->andThrow(new Exception);
+        $expectation->andThrow(new Exception());
 
         $this->assertInstanceOf(Exception::class, $expectation->getExpectedException());
     }
@@ -82,7 +82,7 @@ class LdapExpectationTest extends TestCase
     {
         $expectation = (new LdapExpectation('method'));
 
-        $expectation->andThrow(new LdapRecordException);
+        $expectation->andThrow(new LdapRecordException());
 
         $this->assertInstanceOf(LdapRecordException::class, $expectation->getExpectedException());
     }

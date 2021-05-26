@@ -11,7 +11,7 @@ class ArrayValidator extends Validator
      */
     public function validate()
     {
-        if (! is_array($this->value)) {
+        if (!is_array($this->value)) {
             throw new ConfigurationException("Option {$this->key} must be an array.");
         }
 

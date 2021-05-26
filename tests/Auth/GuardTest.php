@@ -38,7 +38,7 @@ class GuardTest extends TestCase
 
     public function test_attempt_binds_the_given_credentials_and_rebinds_with_configured_user()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
@@ -52,30 +52,30 @@ class GuardTest extends TestCase
 
     public function test_bind_does_not_rebind_with_configured_user()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(true));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $this->assertNull($guard->bind('user', 'pass'));
     }
 
     public function test_bind_allows_null_username_and_password()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with(null, null)->andReturn(true));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $this->assertNull($guard->bind(null, null));
     }
 
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturn(false));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $this->expectException(BindException::class);
 
@@ -84,7 +84,7 @@ class GuardTest extends TestCase
 
     public function test_bind_as_administrator()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
         $guard = new Guard($ldap, new DomainConfiguration([
@@ -116,10 +116,10 @@ class GuardTest extends TestCase
             $firedBound = true;
         });
 
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $guard->setDispatcher($events);
 
@@ -166,10 +166,10 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $guard->setDispatcher($events);
 
@@ -191,10 +191,10 @@ class GuardTest extends TestCase
             $totalFired++;
         });
 
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturn(true));
 
-        $guard = new Guard($ldap, new DomainConfiguration);
+        $guard = new Guard($ldap, new DomainConfiguration());
 
         $guard->setDispatcher($events);
 

@@ -82,11 +82,11 @@ class DistinguishedName
     {
         $dn = ldap_explode_dn($dn, $withoutAttributes = false);
 
-        if (! is_array($dn)) {
+        if (!is_array($dn)) {
             return [];
         }
 
-        if (! array_key_exists('count', $dn)) {
+        if (!array_key_exists('count', $dn)) {
             return [];
         }
 
@@ -326,7 +326,7 @@ class DistinguishedName
             return false;
         }
 
-        if (! $length = count($components) - count($ancestorComponents)) {
+        if (!$length = count($components) - count($ancestorComponents)) {
             return false;
         }
 

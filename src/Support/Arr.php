@@ -22,7 +22,7 @@ class Arr
      * Determine if the given key exists in the provided array.
      *
      * @param \ArrayAccess|array $array
-     * @param  string|int  $key
+     * @param string|int         $key
      *
      * @return bool
      */
@@ -54,9 +54,9 @@ class Arr
     /**
      * Return the first element in an array passing a given truth test.
      *
-     * @param iterable $array
-     * @param  callable|null  $callback
-     * @param  mixed  $default
+     * @param iterable      $array
+     * @param callable|null $callback
+     * @param mixed         $default
      *
      * @return mixed
      */
@@ -84,9 +84,9 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      *
-     * @param array $array
+     * @param array         $array
      * @param callable|null $callback
-     * @param mixed  $default
+     * @param mixed         $default
      *
      * @return mixed
      */
@@ -103,14 +103,14 @@ class Arr
      * Get an item from an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
-     * @param  string|int|null  $key
-     * @param  mixed  $default
+     * @param string|int|null   $key
+     * @param mixed             $default
      *
      * @return mixed
      */
     public static function get($array, $key, $default = null)
     {
-        if (! static::accessible($array)) {
+        if (!static::accessible($array)) {
             return value($default);
         }
 

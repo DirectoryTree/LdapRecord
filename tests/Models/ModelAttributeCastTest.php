@@ -10,44 +10,44 @@ class ModelAttributeCastTest extends TestCase
 {
     public function test_boolean_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['TRUE']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['TRUE']]);
         $this->assertTrue($model->boolAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['FALSE']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['FALSE']]);
         $this->assertFalse($model->boolAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['booleanAttribute' => ['FALSE']]);
+        $model = (new ModelCastStub())->setRawAttributes(['booleanAttribute' => ['FALSE']]);
         $this->assertFalse($model->booleanAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['booleanAttribute' => ['FALSE']]);
+        $model = (new ModelCastStub())->setRawAttributes(['booleanAttribute' => ['FALSE']]);
         $this->assertFalse($model->booleanAttribute);
 
         // Casing differences
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['true']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['true']]);
         $this->assertTrue($model->boolAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['false']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['false']]);
         $this->assertFalse($model->boolAttribute);
 
         // Variable differences
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['invalid']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['invalid']]);
         $this->assertTrue($model->boolAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['']]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => ['']]);
         $this->assertFalse($model->boolAttribute);
 
-        $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => []]);
+        $model = (new ModelCastStub())->setRawAttributes(['boolAttribute' => []]);
         $this->assertNull($model->boolAttribute);
 
-        $model = (new ModelCastStub);
+        $model = (new ModelCastStub());
         $this->assertNull($model->boolAttribute);
     }
 
     public function test_float_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['floatAttribute' => ['12345.6789']]);
+        $model = (new ModelCastStub())->setRawAttributes(['floatAttribute' => ['12345.6789']]);
 
         $this->assertIsFloat($value = $model->floatAttribute);
         $this->assertEquals(12345.6789, $value);
@@ -55,7 +55,7 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_double_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['doubleAttribute' => ['1234.567']]);
+        $model = (new ModelCastStub())->setRawAttributes(['doubleAttribute' => ['1234.567']]);
 
         $this->assertIsFloat($value = $model->doubleAttribute);
         $this->assertEquals(1234.567, $value);
@@ -63,11 +63,11 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_object_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['objectAttribute' => ['{"foo": 1, "bar": "two"}']]);
+        $model = (new ModelCastStub())->setRawAttributes(['objectAttribute' => ['{"foo": 1, "bar": "two"}']]);
 
         $this->assertIsObject($value = $model->objectAttribute);
 
-        $object = (new \stdClass);
+        $object = (new \stdClass());
         $object->foo = 1;
         $object->bar = 'two';
 
@@ -76,14 +76,14 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_json_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['jsonAttribute' => ['{"foo": 1, "bar": "two"}']]);
+        $model = (new ModelCastStub())->setRawAttributes(['jsonAttribute' => ['{"foo": 1, "bar": "two"}']]);
 
         $this->assertEquals(['foo' => 1, 'bar' => 'two'], $model->jsonAttribute);
     }
 
     public function test_collection_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['collectionAttribute' => ['foo' => 1, 'bar' => 'two']]);
+        $model = (new ModelCastStub())->setRawAttributes(['collectionAttribute' => ['foo' => 1, 'bar' => 'two']]);
 
         $this->assertInstanceOf(Collection::class, $collection = $model->collectionAttribute);
 
@@ -92,8 +92,8 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_integer_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes([
-            'intAttribute' => ['1234.5678'],
+        $model = (new ModelCastStub())->setRawAttributes([
+            'intAttribute'     => ['1234.5678'],
             'integerAttribute' => ['1234.5678'],
         ]);
 
@@ -106,7 +106,7 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_decimal_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['decimalAttribute' => ['1234.5678']]);
+        $model = (new ModelCastStub())->setRawAttributes(['decimalAttribute' => ['1234.5678']]);
 
         $this->assertIsString($value = $model->decimalAttribute);
 
@@ -115,21 +115,21 @@ class ModelAttributeCastTest extends TestCase
 
     public function test_ldap_datetime_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['ldapDateTime' => ['20201002021244Z']]);
+        $model = (new ModelCastStub())->setRawAttributes(['ldapDateTime' => ['20201002021244Z']]);
 
         $this->assertEquals('Fri Oct 02 2020 02:12:44 GMT+0000', $model->ldapDateTime->toString());
     }
 
     public function test_windows_datetime_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['windowsDateTime' => ['20201002021618.0Z']]);
+        $model = (new ModelCastStub())->setRawAttributes(['windowsDateTime' => ['20201002021618.0Z']]);
 
         $this->assertEquals('Fri Oct 02 2020 02:16:18 GMT+0000', $model->windowsDateTime->toString());
     }
 
     public function test_windows_int_datetime_attributes_are_casted()
     {
-        $model = (new ModelCastStub)->setRawAttributes(['windowsIntDateTime' => ['132460789290000000']]);
+        $model = (new ModelCastStub())->setRawAttributes(['windowsIntDateTime' => ['132460789290000000']]);
 
         $this->assertEquals('Fri Oct 02 2020 02:22:09 GMT+0000', $model->windowsIntDateTime->toString());
     }
@@ -138,21 +138,21 @@ class ModelAttributeCastTest extends TestCase
 class ModelCastStub extends Model
 {
     protected $casts = [
-        'intAttribute' => 'int',
+        'intAttribute'     => 'int',
         'integerAttribute' => 'integer',
-        'floatAttribute' => 'float',
-        'doubleAttribute' => 'float',
+        'floatAttribute'   => 'float',
+        'doubleAttribute'  => 'float',
         'decimalAttribute' => 'decimal:2',
 
-        'boolAttribute' => 'bool',
+        'boolAttribute'    => 'bool',
         'booleanAttribute' => 'boolean',
 
-        'objectAttribute' => 'object',
-        'jsonAttribute' => 'json',
+        'objectAttribute'     => 'object',
+        'jsonAttribute'       => 'json',
         'collectionAttribute' => 'collection',
 
-        'ldapDateTime' => 'datetime:ldap',
-        'windowsDateTime' => 'datetime:windows',
+        'ldapDateTime'       => 'datetime:ldap',
+        'windowsDateTime'    => 'datetime:windows',
         'windowsIntDateTime' => 'datetime:windows-int',
     ];
 }

@@ -111,9 +111,9 @@ class Connection
      *
      * @param array $config
      *
-     * @return $this
-     *
      * @throws Configuration\ConfigurationException
+     *
+     * @return $this
      */
     public function setConfiguration($config = [])
     {
@@ -241,10 +241,10 @@ class Connection
      * @param string|null $username
      * @param string|null $password
      *
-     * @return Connection
-     *
      * @throws Auth\BindException
      * @throws LdapRecordException
+     *
+     * @return Connection
      */
     public function connect($username = null, $password = null)
     {
@@ -274,10 +274,10 @@ class Connection
     /**
      * Reconnect to the LDAP server.
      *
-     * @return void
-     *
      * @throws Auth\BindException
      * @throws ConnectionException
+     *
+     * @return void
      */
     public function reconnect()
     {
@@ -345,7 +345,7 @@ class Connection
             // Before running the operation, we will check if the current
             // connection is bound and connect if necessary. Otherwise
             // some LDAP operations will not be executed properly.
-            if (! $this->isConnected()) {
+            if (!$this->isConnected()) {
                 $this->connect();
             }
 
@@ -385,9 +385,9 @@ class Connection
      *
      * @param Closure $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function runOperationCallback(Closure $operation)
     {
@@ -401,7 +401,7 @@ class Connection
      */
     public function auth()
     {
-        if (! $this->ldap->isConnected()) {
+        if (!$this->ldap->isConnected()) {
             $this->initialize();
         }
 
@@ -442,9 +442,9 @@ class Connection
      * @param LdapRecordException $e
      * @param Closure             $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $operation)
     {
@@ -463,9 +463,9 @@ class Connection
      *
      * @param Closure $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function retry(Closure $operation)
     {
@@ -486,9 +486,9 @@ class Connection
      * @param LdapRecordException $e
      * @param Closure             $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function retryOnNextHost(LdapRecordException $e, Closure $operation)
     {

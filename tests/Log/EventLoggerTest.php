@@ -37,7 +37,7 @@ class EventLoggerTest extends TestCase
 
     public function test_failed_auth_event_reports_result()
     {
-        $ldap = (new LdapFake)->shouldReturnError('Invalid Credentials');
+        $ldap = (new LdapFake())->shouldReturnError('Invalid Credentials');
 
         $ldap->connect('192.168.1.1');
 

@@ -54,10 +54,10 @@ class Guard
      * @param string $password
      * @param bool   $stayBound
      *
-     * @return bool
-     *
      * @throws UsernameRequiredException
      * @throws PasswordRequiredException
+     *
+     * @return bool
      */
     public function attempt($username, $password, $stayBound = false)
     {
@@ -80,7 +80,7 @@ class Guard
             $authenticated = false;
         }
 
-        if (! $stayBound) {
+        if (!$stayBound) {
             $this->bindAsConfiguredUser();
         }
 
@@ -103,12 +103,12 @@ class Guard
         // Prior to binding, we will upgrade our connectivity to TLS on our current
         // connection and ensure we are not already bound before upgrading.
         // This is to prevent subsequent upgrading on several binds.
-        if ($this->connection->isUsingTLS() && ! $this->connection->isBound()) {
+        if ($this->connection->isUsingTLS() && !$this->connection->isBound()) {
             $this->connection->startTLS();
         }
 
         try {
-            if (! $this->connection->bind($username, $password)) {
+            if (!$this->connection->bind($username, $password)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 

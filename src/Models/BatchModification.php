@@ -118,7 +118,7 @@ class BatchModification
         // modification. Passing null or empty values will result
         // in an exception when trying to save the modification.
         $this->values = array_filter($this->normalizeAttributeValues($values), function ($value) {
-            return is_numeric($value) && $this->valueIsResetInteger((int) $value) ?: ! empty($value);
+            return is_numeric($value) && $this->valueIsResetInteger((int) $value) ?: !empty($value);
         });
 
         return $this;
@@ -162,7 +162,7 @@ class BatchModification
             return $this;
         }
 
-        if (! $this->isValidType($type)) {
+        if (!$this->isValidType($type)) {
             throw new InvalidArgumentException('Given batch modification type is invalid.');
         }
 
@@ -188,7 +188,7 @@ class BatchModification
      */
     public function isValid()
     {
-        return ! is_null($this->get());
+        return !is_null($this->get());
     }
 
     /**
@@ -202,9 +202,9 @@ class BatchModification
         switch (true) {
             case empty($this->original) && empty($this->values):
                 return $this;
-            case ! empty($this->original) && empty($this->values):
+            case !empty($this->original) && empty($this->values):
                 return $this->setType(LDAP_MODIFY_BATCH_REMOVE_ALL);
-            case empty($this->original) && ! empty($this->values):
+            case empty($this->original) && !empty($this->values):
                 return $this->setType(LDAP_MODIFY_BATCH_ADD);
             default:
                return $this->determineBatchTypeFromOriginal();
@@ -222,11 +222,11 @@ class BatchModification
         $removed = $this->getRemovedValues();
 
         switch (true) {
-            case ! empty($added) && ! empty($removed):
+            case !empty($added) && !empty($removed):
                 return $this->setType(LDAP_MODIFY_BATCH_REPLACE);
-            case ! empty($added):
+            case !empty($added):
                 return $this->setValues($added)->setType(LDAP_MODIFY_BATCH_ADD);
-            case ! empty($removed):
+            case !empty($removed):
                 return $this->setValues($removed)->setType(LDAP_MODIFY_BATCH_REMOVE);
             default:
                 return $this;

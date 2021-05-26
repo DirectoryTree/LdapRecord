@@ -27,7 +27,7 @@ class Collection extends QueryCollection
             return false;
         }
 
-        if (!$models) {
+        if (! $models) {
             return parent::isNotEmpty();
         }
 
@@ -36,7 +36,7 @@ class Collection extends QueryCollection
                 return $this->compareModelWithRelated($model, $related);
             });
 
-            if (!$exists) {
+            if (! $exists) {
                 return false;
             }
         }
@@ -117,6 +117,6 @@ class Collection extends QueryCollection
      */
     protected function isValidDn($dn)
     {
-        return !empty((new DistinguishedName($dn))->components());
+        return ! empty((new DistinguishedName($dn))->components());
     }
 }

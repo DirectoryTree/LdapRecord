@@ -271,7 +271,7 @@ class Password
      */
     public static function getHashMethod($password)
     {
-        if (!preg_match('/^\{(\w+)\}/', $password, $matches)) {
+        if (! preg_match('/^\{(\w+)\}/', $password, $matches)) {
             return;
         }
 
@@ -287,7 +287,7 @@ class Password
      */
     public static function getHashMethodAndAlgo($password)
     {
-        if (!preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
+        if (! preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
             return;
         }
 

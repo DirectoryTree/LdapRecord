@@ -156,7 +156,7 @@ class Builder extends BaseBuilder
         // If the model is not compatible with ANR filters,
         // we must construct an equivalent filter that
         // the current LDAP server does support.
-        if (!$this->modelIsCompatibleWithAnr()) {
+        if (! $this->modelIsCompatibleWithAnr()) {
             return $this->prepareAnrEquivalentQuery($value)->first($columns);
         }
 
@@ -187,7 +187,7 @@ class Builder extends BaseBuilder
      */
     public function findByAnrOrFail($value, $columns = ['*'])
     {
-        if (!$entry = $this->findByAnr($value, $columns)) {
+        if (! $entry = $this->findByAnr($value, $columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -219,7 +219,7 @@ class Builder extends BaseBuilder
     {
         $this->select($columns);
 
-        if (!$this->modelIsCompatibleWithAnr()) {
+        if (! $this->modelIsCompatibleWithAnr()) {
             foreach ($values as $value) {
                 $this->prepareAnrEquivalentQuery($value);
             }
@@ -317,7 +317,7 @@ class Builder extends BaseBuilder
      */
     public function applyScopes()
     {
-        if (!$this->scopes) {
+        if (! $this->scopes) {
             return $this;
         }
 
@@ -360,7 +360,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScope($scope)
     {
-        if (!is_string($scope)) {
+        if (! is_string($scope)) {
             $scope = get_class($scope);
         }
 
@@ -380,7 +380,7 @@ class Builder extends BaseBuilder
      */
     public function withoutGlobalScopes(array $scopes = null)
     {
-        if (!is_array($scopes)) {
+        if (! is_array($scopes)) {
             $scopes = array_keys($this->scopes);
         }
 
@@ -431,7 +431,7 @@ class Builder extends BaseBuilder
         if ($value instanceof DateTime) {
             $field = $this->model->normalizeAttributeKey($field);
 
-            if (!$this->model->isDateAttribute($field)) {
+            if (! $this->model->isDateAttribute($field)) {
                 throw new \UnexpectedValueException(
                     "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
                     .' Refer to https://ldaprecord.com/docs/model-mutators/#date-mutators'

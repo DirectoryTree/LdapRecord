@@ -19,11 +19,11 @@ class Utilities
     {
         $dn = ldap_explode_dn($dn, ($removeAttributePrefixes ? 1 : 0));
 
-        if (!is_array($dn)) {
+        if (! is_array($dn)) {
             return false;
         }
 
-        if (!array_key_exists('count', $dn)) {
+        if (! array_key_exists('count', $dn)) {
             return false;
         }
 
@@ -70,7 +70,7 @@ class Utilities
         // ID - 32bit unsigned long, big-endian order
         $sid = @unpack('C1rev/C1count/x2/N1id', $value);
 
-        if (!isset($sid['id']) || !isset($sid['rev'])) {
+        if (! isset($sid['id']) || ! isset($sid['rev'])) {
             return;
         }
 

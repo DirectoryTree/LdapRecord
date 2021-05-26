@@ -101,7 +101,7 @@ class LdapExpectation
         $args = is_array($args) ? $args : func_get_args();
 
         foreach ($args as $key => $arg) {
-            if (!$arg instanceof Constraint) {
+            if (! $arg instanceof Constraint) {
                 $args[$key] = new IsEqual($arg);
             }
         }
@@ -294,7 +294,7 @@ class LdapExpectation
      */
     public function decrementCallCount()
     {
-        if (!$this->indefinitely) {
+        if (! $this->indefinitely) {
             $this->count -= 1;
         }
 

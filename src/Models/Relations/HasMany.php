@@ -138,7 +138,7 @@ class HasMany extends OneToMany
         // we will add the key to the attributes to select and also
         // validate that the key isn't already being selected
         // to prevent stacking on multiple relation calls.
-        if (!in_array('*', $columns) && !in_array($key, $columns)) {
+        if (! in_array('*', $columns) && ! in_array($key, $columns)) {
             $this->query->addSelect($key);
         }
 
@@ -181,7 +181,7 @@ class HasMany extends OneToMany
                 return $this->using->createAttribute($this->usingKey, $foreign);
             }
 
-            if (!$model instanceof Model) {
+            if (! $model instanceof Model) {
                 $model = $this->getForeignModelByValueOrFail($model);
             }
 
@@ -237,7 +237,7 @@ class HasMany extends OneToMany
                 return $this->using->deleteAttribute([$this->usingKey => $foreign]);
             }
 
-            if (!$model instanceof Model) {
+            if (! $model instanceof Model) {
                 $model = $this->getForeignModelByValueOrFail($model);
             }
 
@@ -274,7 +274,7 @@ class HasMany extends OneToMany
      */
     protected function getForeignModelByValueOrFail($model)
     {
-        if (!is_null($model = $this->getForeignModelByValue($model))) {
+        if (! is_null($model = $this->getForeignModelByValue($model))) {
             return $model;
         }
 

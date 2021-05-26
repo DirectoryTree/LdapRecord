@@ -557,7 +557,7 @@ class Builder
             // We will avoid setting the controls during any pagination
             // requests as it will clear the cookie we need to send
             // to the server upon retrieving every page.
-            if (! $this->paginated) {
+            if (!$this->paginated) {
                 // Before running the query, we will set the LDAP server controls. This
                 // allows the controls to be automatically reset upon each new query
                 // that is conducted on the same connection during each request.
@@ -603,7 +603,7 @@ class Builder
      */
     public function parse($resource)
     {
-        if (! $resource) {
+        if (!$resource) {
             return [];
         }
 
@@ -660,13 +660,13 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Model|static
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model|static
      */
     public function firstOrFail($columns = ['*'])
     {
-        if (! $record = $this->first($columns)) {
+        if (!$record = $this->first($columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -713,9 +713,9 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @return Model
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model
      */
     public function findByOrFail($attribute, $value, $columns = ['*'])
     {
@@ -739,7 +739,7 @@ class Builder
         $objects = [];
 
         foreach ($dns as $dn) {
-            if (! is_null($object = $this->find($dn, $columns))) {
+            if (!is_null($object = $this->find($dn, $columns))) {
                 $objects[] = $object;
             }
         }
@@ -796,9 +796,9 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @return Model|static
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model|static
      */
     public function findOrFail($dn, $columns = ['*'])
     {
@@ -819,7 +819,7 @@ class Builder
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
-        if (! empty($columns)) {
+        if (!empty($columns)) {
             $this->columns = $columns;
         }
 
@@ -917,9 +917,9 @@ class Builder
      * @param string       $boolean
      * @param bool         $raw
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
+     *
+     * @return $this
      */
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
@@ -933,11 +933,11 @@ class Builder
         // If we have been provided with two arguments not a "has" or
         // "not has" operator, we'll assume the developer is creating
         // an "equals" clause and set the proper operator in place.
-        if (func_num_args() === 2 && ! in_array($operator, ['*', '!*'])) {
+        if (func_num_args() === 2 && !in_array($operator, ['*', '!*'])) {
             [$value, $operator] = [$operator, '='];
         }
 
-        if (! in_array($operator, $this->grammar->getOperators())) {
+        if (!in_array($operator, $this->grammar->getOperators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -1380,13 +1380,13 @@ class Builder
      * @param string $type     The type of filter to add.
      * @param array  $bindings The bindings of the filter.
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
+     *
+     * @return $this
      */
     public function addFilter($type, array $bindings)
     {
-        if (! array_key_exists($type, $this->filters)) {
+        if (!array_key_exists($type, $this->filters)) {
             throw new InvalidArgumentException("Filter type: [$type] is invalid.");
         }
 
@@ -1576,9 +1576,9 @@ class Builder
      * @param string $dn
      * @param array  $attributes
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function insert($dn, array $attributes)
     {
@@ -1586,7 +1586,7 @@ class Builder
             throw new LdapRecordException('A new LDAP object must have a distinguished name (dn).');
         }
 
-        if (! array_key_exists('objectclass', $attributes)) {
+        if (!array_key_exists('objectclass', $attributes)) {
             throw new LdapRecordException(
                 'A new LDAP object must contain at least one object class (objectclass) to be created.'
             );
@@ -1694,9 +1694,9 @@ class Builder
      * @param string $method
      * @param array  $parameters
      *
-     * @return mixed
-     *
      * @throws BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {

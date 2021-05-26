@@ -13,7 +13,7 @@ class BuilderTest extends TestCase
 {
     protected function newBuilder()
     {
-        return new Builder(new Connection([], (new LdapFake)));
+        return new Builder(new Connection([], (new LdapFake())));
     }
 
     public function test_builder_always_has_default_filter()
@@ -972,7 +972,7 @@ class BuilderTest extends TestCase
         $ldap = $b->getConnection()->getLdapConnection();
 
         $ldap->expect([
-            'bind' => true,
+            'bind'   => true,
             'search' => null,
             LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
             LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
@@ -1060,7 +1060,7 @@ class BuilderTest extends TestCase
         $result = [
             'count' => 1,
             [
-                'count' => 1,
+                'count'       => 1,
                 'objectclass' => ['foo'],
             ],
         ];
@@ -1068,14 +1068,14 @@ class BuilderTest extends TestCase
         $b->getConnection()
             ->getLdapConnection()
             ->expect([
-                'bind' => true,
-                'search' => $result,
+                'bind'        => true,
+                'search'      => $result,
                 'parseResult' => $result,
             ]);
 
         $this->assertEquals([
             [
-                'count' => 1,
+                'count'       => 1,
                 'objectclass' => ['foo'],
             ],
         ], $b->paginate(500));

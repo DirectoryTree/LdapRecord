@@ -106,7 +106,7 @@ class ModelQueryTest extends TestCase
             )
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -144,7 +144,7 @@ class ModelQueryTest extends TestCase
             ->with('foo', ['bar' => ['baz']])
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -167,9 +167,9 @@ class ModelQueryTest extends TestCase
     public function test_update()
     {
         $mod = [
-            'attrib' => 'cn',
+            'attrib'  => 'cn',
             'modtype' => 3,
-            'values' => [0 => 'baz'],
+            'values'  => [0 => 'baz'],
         ];
 
         $expectation = LdapFake::operation('modifyBatch')
@@ -177,7 +177,7 @@ class ModelQueryTest extends TestCase
             ->with('foo', [$mod])
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -198,7 +198,7 @@ class ModelQueryTest extends TestCase
 
         $this->expectException(ModelDoesNotExistException::class);
 
-        (new Entry)->update();
+        (new Entry())->update();
     }
 
     public function test_update_without_changes_does_not_attempt_update()
@@ -219,7 +219,7 @@ class ModelQueryTest extends TestCase
             ->with(['foo', ['bar' => ['baz']]])
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -247,7 +247,7 @@ class ModelQueryTest extends TestCase
             ->with('foo')
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -277,7 +277,7 @@ class ModelQueryTest extends TestCase
             LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true),
         ];
 
-        $ldap = (new LdapFake)->expect(array_merge(['bind' => true], $expectations));
+        $ldap = (new LdapFake())->expect(array_merge(['bind' => true], $expectations));
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -285,7 +285,7 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->twice()->andReturn($query);
 
         $model->setRawAttributes([
-            'dn' => 'dn',
+            'dn'  => 'dn',
             'foo' => ['bar'],
             'bar' => ['baz', 'zal', 'zar'],
         ]);

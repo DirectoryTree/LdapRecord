@@ -52,13 +52,13 @@ class ModelEventTest extends TestCase
             ->with(
                 'cn=foo,dc=bar,dc=baz',
                 [
-                    'cn' => ['foo'],
+                    'cn'          => ['foo'],
                     'objectclass' => ['bar'],
                 ]
             )
             ->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -67,7 +67,7 @@ class ModelEventTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setDn('cn=foo,dc=bar,dc=baz')->fill([
-            'cn' => 'foo',
+            'cn'          => 'foo',
             'objectclass' => 'bar',
         ])->save();
     }
@@ -89,14 +89,14 @@ class ModelEventTest extends TestCase
                 'cn=foo,dc=bar,dc=baz',
                 [
                     [
-                        'attrib' => 'cn',
+                        'attrib'  => 'cn',
                         'modtype' => 1,
-                        'values' => ['foo'],
+                        'values'  => ['foo'],
                     ],
                 ],
             ])->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['isBound' => true, $modifyBatchExpectation]);
+        $ldap = (new LdapFake())->expect(['isBound' => true, $modifyBatchExpectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -120,7 +120,7 @@ class ModelEventTest extends TestCase
 
         $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturn(true);
 
-        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 

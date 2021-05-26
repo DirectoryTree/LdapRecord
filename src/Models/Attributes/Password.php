@@ -244,9 +244,9 @@ class Password
      *
      * @param int $type
      *
-     * @return array
-     *
      * @throws InvalidArgumentException
+     *
+     * @return array
      */
     protected static function makeCryptPrefixAndLength($type)
     {
@@ -271,7 +271,7 @@ class Password
      */
     public static function getHashMethod($password)
     {
-        if (! preg_match('/^\{(\w+)\}/', $password, $matches)) {
+        if (!preg_match('/^\{(\w+)\}/', $password, $matches)) {
             return;
         }
 
@@ -287,7 +287,7 @@ class Password
      */
     public static function getHashMethodAndAlgo($password)
     {
-        if (! preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
+        if (!preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
             return;
         }
 
@@ -297,9 +297,9 @@ class Password
     /**
      * Attempt to retrieve a salt from the encrypted password.
      *
-     * @return string
-     *
      * @throws LdapRecordException
+     *
+     * @return string
      */
     public static function getSalt($encryptedPassword)
     {
@@ -321,9 +321,9 @@ class Password
      *
      * @param string $method
      *
-     * @return bool
-     *
      * @throws \ReflectionException
+     *
+     * @return bool
      */
     public static function hashMethodRequiresSalt($method): bool
     {

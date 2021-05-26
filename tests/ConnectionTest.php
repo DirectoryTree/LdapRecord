@@ -33,7 +33,7 @@ class ConnectionTest extends TestCase
     {
         $conn = new Connection([]);
 
-        $conn->setLdapConnection($ldap = new LdapFake);
+        $conn->setLdapConnection($ldap = new LdapFake());
 
         $this->assertEquals($ldap, $conn->getLdapConnection());
     }
@@ -142,12 +142,12 @@ class ConnectionTest extends TestCase
 
     public function test_is_connected()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('isBound')->once()->andReturn(true));
 
         $this->assertTrue((new Connection([], $ldap))->isConnected());
 
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('isBound')->once()->andReturn(false));
 
         $this->assertFalse((new Connection([], $ldap))->isConnected());
@@ -155,14 +155,14 @@ class ConnectionTest extends TestCase
 
     public function test_reconnect_initializes_connection()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('close')->once())
             ->expect(LdapFake::operation('ssl')->twice()->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
         $conn = new Connection([
-            'hosts' => ['127.0.0.1'],
-            'use_ssl' => true,
+            'hosts'    => ['127.0.0.1'],
+            'use_ssl'  => true,
             'username' => 'foo',
             'password' => 'bar',
         ], $ldap);
@@ -188,7 +188,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_failure()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(false))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
@@ -203,7 +203,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_passes_with_rebind()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
 
@@ -220,7 +220,7 @@ class ConnectionTest extends TestCase
     {
         $this->expectException(BindException::class);
 
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(false));
 
@@ -234,7 +234,7 @@ class ConnectionTest extends TestCase
 
     public function test_auth_passes_without_rebind()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->once()->with('username', 'password')->andReturn(true));
 
         $conn = new Connection([
@@ -248,7 +248,7 @@ class ConnectionTest extends TestCase
 
     public function test_connections_are_setup()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect([
                 LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
                 LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
@@ -260,7 +260,7 @@ class ConnectionTest extends TestCase
 
     public function test_reconnect()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('close')->once())
             ->expect(LdapFake::operation('connect')->twice())
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturn(true));
@@ -275,7 +275,7 @@ class ConnectionTest extends TestCase
 
     public function test_ldap_operations_can_be_executed_with_connections()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('bind')->andReturn(true));
 
         $conn = new Connection([], $ldap);
@@ -294,7 +294,7 @@ class ConnectionTest extends TestCase
 
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
-        $ldap = (new LdapFake)
+        $ldap = (new LdapFake())
             ->expect(LdapFake::operation('close')->times(3))
             ->expect(LdapFake::operation('connect')->times(4))
             ->expect(LdapFake::operation('bind')->andReturn(true));
@@ -338,7 +338,7 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_already_exists_error_is_returned()
     {
-        $ldap = (new LdapFake)->expect(['bind' => true]);
+        $ldap = (new LdapFake())->expect(['bind' => true]);
 
         $conn = new Connection([], $ldap);
 
@@ -351,7 +351,7 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_insufficient_access_error_is_returned()
     {
-        $ldap = (new LdapFake)->expect(['bind' => true]);
+        $ldap = (new LdapFake())->expect(['bind' => true]);
 
         $conn = new Connection([], $ldap);
 
@@ -364,7 +364,7 @@ class ConnectionTest extends TestCase
 
     public function test_exception_is_transformed_when_constraint_violation_error_is_returned()
     {
-        $ldap = (new LdapFake)->expect(['bind' => true]);
+        $ldap = (new LdapFake())->expect(['bind' => true]);
 
         $conn = new Connection([], $ldap);
 

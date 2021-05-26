@@ -67,7 +67,7 @@ class Cache
     {
         $value = $this->get($key);
 
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             return $value;
         }
 

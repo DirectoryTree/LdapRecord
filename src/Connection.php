@@ -345,7 +345,7 @@ class Connection
             // Before running the operation, we will check if the current
             // connection is bound and connect if necessary. Otherwise
             // some LDAP operations will not be executed properly.
-            if (!$this->isConnected()) {
+            if (! $this->isConnected()) {
                 $this->connect();
             }
 
@@ -401,7 +401,7 @@ class Connection
      */
     public function auth()
     {
-        if (!$this->ldap->isConnected()) {
+        if (! $this->ldap->isConnected()) {
             $this->initialize();
         }
 

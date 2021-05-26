@@ -74,7 +74,7 @@ abstract class LdapBase implements LdapInterface
      */
     public function isConnected()
     {
-        return !is_null($this->connection);
+        return ! is_null($this->connection);
     }
 
     /**
@@ -162,7 +162,7 @@ abstract class LdapBase implements LdapInterface
         // exceptions, which could be a signifcant detriment to our application.
         // Here, we will enforce these operations to throw exceptions instead.
         set_error_handler(function ($severity, $message, $file, $line) {
-            if (!$this->shouldBypassError($message)) {
+            if (! $this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
             }
         });

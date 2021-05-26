@@ -167,7 +167,7 @@ class Container
     {
         $instance = static::getInstance();
 
-        if (!($dispatcher = $instance->dispatcher())) {
+        if (! ($dispatcher = $instance->dispatcher())) {
             $instance->setDispatcher($dispatcher = new Dispatcher());
         }
 

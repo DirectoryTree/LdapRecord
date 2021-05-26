@@ -130,7 +130,7 @@ class DomainConfiguration
      */
     public function get($key)
     {
-        if (!$this->has($key)) {
+        if (! $this->has($key)) {
             throw new ConfigurationException("Option {$key} does not exist.");
         }
 

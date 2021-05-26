@@ -49,7 +49,7 @@ class Timestamp
      */
     public function setType($type)
     {
-        if (!in_array($type, $this->types)) {
+        if (! in_array($type, $this->types)) {
             throw new LdapRecordException("Unrecognized LDAP date type [$type]");
         }
 
@@ -221,7 +221,7 @@ class Timestamp
     {
         // ActiveDirectory dates that contain integers may return
         // "0" when they are not set. We will validate that here.
-        if (!$value) {
+        if (! $value) {
             return false;
         }
 

@@ -1,1 +1,3 @@
 preset: laravel
+enabled:
+  - align_phpdoc: "vertical"

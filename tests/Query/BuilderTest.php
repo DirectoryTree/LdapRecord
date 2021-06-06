@@ -1050,9 +1050,6 @@ class BuilderTest extends TestCase
         $this->assertEquals('(\28foo\29=\62\61\72)', $b->getQuery());
     }
 
-    /**
-     * @requires PHP >= 7.4
-     */
     public function test_pagination()
     {
         $b = $this->newBuilder();
@@ -1079,6 +1076,36 @@ class BuilderTest extends TestCase
                 'objectclass' => ['foo'],
             ],
         ], $b->paginate(500));
+    }
+
+    public function test_chunk()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            'count' => 1,
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $b->chunk(500, function ($results) {
+            $this->assertEquals([
+                [
+                    'count' => 1,
+                    'objectclass' => ['foo'],
+                ],
+            ], $results);
+        });
     }
 
     public function test_setting_dn_with_base_substitutes_with_current_query_base()

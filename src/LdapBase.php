@@ -214,6 +214,8 @@ abstract class LdapBase implements LdapInterface
     /**
      * Determine if the current PHP version supports server controls.
      *
+     * @deprecated
+     *
      * @return bool
      */
     public function supportsServerControlsInMethods()

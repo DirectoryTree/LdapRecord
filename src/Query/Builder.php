@@ -15,6 +15,7 @@ use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\DeprecatedPaginator;
+use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
 use LdapRecord\Utilities;
@@ -485,6 +486,60 @@ class Builder
     }
 
     /**
+     * Runs the paginate operation with the given filter.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return array
+     */
+    protected function runPaginate($filter, $perPage, $isCritical)
+    {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+            return (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap);
+        });
+    }
+
+    /**
+     * Chunk the results of a paginated LDAP query.
+     *
+     * @param int     $pageSize
+     * @param Closure $callback
+     * @param bool    $isCritical
+     *
+     * @return void
+     */
+    public function chunk($pageSize, Closure $callback, $isCritical = false)
+    {
+        $start = microtime(true);
+        
+        $query = $this->getQuery();
+
+        foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
+            $callback($this->process($chunk));
+        }
+
+        $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+    }
+
+    /**
+     * Runs the chunk operation with the given filter.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return array
+     */
+    protected function runChunk($filter, $perPage, $isCritical)
+    {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+            return (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap);
+        });
+    }
+
+    /**
      * Processes and converts the given LDAP results into models.
      *
      * @param array $results
@@ -571,26 +626,6 @@ class Builder
                 $onlyAttributes = false,
                 $this->limit
             );
-        });
-    }
-
-    /**
-     * Runs the paginate operation with the given filter.
-     *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
-     * @return array
-     */
-    protected function runPaginate($filter, $perPage, $isCritical)
-    {
-        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
-            $paginator = $ldap->supportsServerControlsInMethods()
-                ? new Paginator($this, $filter, $perPage, $isCritical)
-                : new DeprecatedPaginator($this, $filter, $perPage, $isCritical);
-
-            return $paginator->execute($ldap);
         });
     }
 
@@ -1828,6 +1863,9 @@ class Builder
                 break;
             case 'read':
                 $event = new Events\Read(...$args);
+                break;
+            case 'chunk':
+                $event = new Events\Chunk(...$args);
                 break;
             case 'paginate':
                 $event = new Events\Paginate(...$args);

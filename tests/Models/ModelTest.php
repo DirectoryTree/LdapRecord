@@ -56,6 +56,12 @@ class ModelTest extends TestCase
         $this->assertEquals(2, ((new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes()));
     }
 
+    public function test_getting_object_classes()
+    {
+        $this->assertEmpty((new Entry)->getObjectClasses());
+        $this->assertEquals(['foo', 'bar'], (new Entry(['objectclass' => ['foo', 'bar']]))->getObjectClasses());
+    }
+
     public function test_getting_and_setting_dn()
     {
         $model = new Entry();

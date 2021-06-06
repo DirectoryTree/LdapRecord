@@ -57,7 +57,7 @@ class ModelHasManyTest extends TestCase
 
         $related = m::mock(ModelHasManyStub::class);
         $related->shouldReceive('getDn')->andReturn('bar');
-        $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
+        $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
         $related->shouldReceive('relation')->once()->andReturnSelf();
         $related->shouldReceive('recursive')->once()->andReturnSelf();
@@ -146,7 +146,7 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('getAttribute')->once()->with('objectclass')->andReturnNull();
+        $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
         $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
 

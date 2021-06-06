@@ -676,7 +676,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models batch modifications to be processed.
+     * Get the model's batch modifications to be processed.
      *
      * @return array
      */
@@ -736,7 +736,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models guid attribute key name.
+     * Get the model's guid attribute key name.
      *
      * @return string
      */
@@ -746,7 +746,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models ANR attributes for querying when incompatible with ANR.
+     * Get the model's ANR attributes for querying when incompatible with ANR.
      *
      * @return array
      */
@@ -804,7 +804,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models binary object GUID.
+     * Get the model's binary object GUID.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
      *
@@ -816,7 +816,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models string GUID.
+     * Get the model's object classes.
+     *
+     * @return array
+     */
+    public function getObjectClasses()
+    {
+        return $this->getAttribute('objectclass') ?: [];
+    }
+
+    /**
+     * Get the model's string GUID.
      *
      * @return string|null
      */

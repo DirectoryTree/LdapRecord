@@ -14,7 +14,6 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
-use LdapRecord\Query\Pagination\DeprecatedPaginator;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
@@ -513,7 +512,7 @@ class Builder
     public function chunk($pageSize, Closure $callback, $isCritical = false)
     {
         $start = microtime(true);
-        
+
         $query = $this->getQuery();
 
         foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {

@@ -111,7 +111,7 @@ class HasMany extends OneToMany
     /**
      * Chunk the relation results using the given callback.
      *
-     * @param int $pageSize
+     * @param int     $pageSize
      * @param Closure $callback
      *
      * @return void

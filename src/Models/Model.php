@@ -806,7 +806,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Get the model's binary object GUID.
      *
-     * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
+     * @see https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
      *
      * @return string|null
      */

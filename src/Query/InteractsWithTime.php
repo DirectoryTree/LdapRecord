@@ -9,7 +9,7 @@ use DateTimeInterface;
 /**
  * @author Taylor Otwell
  *
- * @link https://laravel.com
+ * @see https://laravel.com
  */
 trait InteractsWithTime
 {

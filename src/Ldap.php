@@ -17,7 +17,7 @@ class Ldap extends LdapBase
     /**
      * Retrieves the first entry from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-first-entry.php
+     * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
      * @param resource $searchResult
      *
@@ -33,7 +33,7 @@ class Ldap extends LdapBase
     /**
      * Retrieves the next entry from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-next-entry.php
+     * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
      * @param resource $entry
      *
@@ -49,7 +49,7 @@ class Ldap extends LdapBase
     /**
      * Retrieves the ldap entry's attributes.
      *
-     * @link http://php.net/manual/en/function.ldap-get-attributes.php
+     * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
      * @param resource $entry
      *
@@ -65,7 +65,7 @@ class Ldap extends LdapBase
     /**
      * Returns the number of entries from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-count-entries.php
+     * @see http://php.net/manual/en/function.ldap-count-entries.php
      *
      * @param resource $searchResult
      *
@@ -81,7 +81,7 @@ class Ldap extends LdapBase
     /**
      * Compare value of attribute found in entry specified with DN.
      *
-     * @link http://php.net/manual/en/function.ldap-compare.php
+     * @see http://php.net/manual/en/function.ldap-compare.php
      *
      * @param string $dn
      * @param string $attribute
@@ -125,7 +125,7 @@ class Ldap extends LdapBase
     /**
      * Get all binary values from the specified result entry.
      *
-     * @link http://php.net/manual/en/function.ldap-get-values-len.php
+     * @see http://php.net/manual/en/function.ldap-get-values-len.php
      *
      * @param $entry
      * @param $attribute
@@ -160,7 +160,7 @@ class Ldap extends LdapBase
     /**
      * Set a callback function to do re-binds on referral chasing.
      *
-     * @link http://php.net/manual/en/function.ldap-set-rebind-proc.php
+     * @see http://php.net/manual/en/function.ldap-set-rebind-proc.php
      *
      * @param callable $callback
      *
@@ -411,9 +411,7 @@ class Ldap extends LdapBase
      */
     public function errNo()
     {
-        return $this->connection
-            ? ldap_errno($this->connection)
-            : null;
+        return $this->connection ? ldap_errno($this->connection) : null;
     }
 
     /**

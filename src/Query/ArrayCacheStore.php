@@ -44,7 +44,7 @@ class ArrayCacheStore implements CacheInterface
     {
         $this->storage[$key] = [
             'value' => $value,
-            'expiresAt' => $this->calculateExpiration($ttl)
+            'expiresAt' => $this->calculateExpiration($ttl),
         ];
 
         return true;

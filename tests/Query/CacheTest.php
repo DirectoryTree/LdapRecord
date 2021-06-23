@@ -28,17 +28,9 @@ class CacheTest extends TestCase
         $cache = new Cache(new ArrayCacheStore());
 
         $this->assertTrue($cache->put('foo', 'bar'));
-        $this->assertEquals('bar', $cache->get('foo'));
-    }
-
-    public function test_items_can_be_stored_with_expiry()
-    {
-        $cache = new Cache(new ArrayCacheStore());
-
-        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->subDay()));
         $this->assertNull($cache->get('foo'));
 
-        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->addDay()));
+        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->addSeconds(10)));
         $this->assertEquals('bar', $cache->get('foo'));
     }
 
@@ -46,7 +38,9 @@ class CacheTest extends TestCase
     {
         $cache = new Cache(new ArrayCacheStore());
 
-        $this->assertTrue($cache->put('foo', 'bar'));
+        $cache->put('test', 'test');
+
+        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->addMinute()));
         $this->assertEquals('bar', $cache->get('foo'));
 
         $cache->delete('foo');
@@ -57,7 +51,7 @@ class CacheTest extends TestCase
     {
         $cache = new Cache(new ArrayCacheStore());
 
-        $cache->remember('foo', 0, function () {
+        $cache->remember('foo', Carbon::now()->addMinute(), function () {
             return 'bar';
         });
 

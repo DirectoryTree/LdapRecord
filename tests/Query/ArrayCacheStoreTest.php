@@ -37,17 +37,19 @@ class ArrayCacheStoreTest extends TestCase
         $this->assertEquals('value', $store->get('key'));
     }
 
-    public function test_set_keys_with_expiry_return_default_value()
+    public function test_set_keys_with_expiry_return_default_value_when_expired()
     {
+        Carbon::setTestNow(Carbon::now());
+
         $store = new ArrayCacheStore();
 
-        $store->set('key', 'value', Carbon::now()->subDay()->getTimestamp());
+        $store->set('key', 'value', 10);
+        $this->assertEquals('value', $store->get('key', 'foo'));
 
-        $this->assertNull($store->get('key'));
+        Carbon::setTestNow(Carbon::now()->addSeconds(10)->addSecond());
         $this->assertEquals('foo', $store->get('key', 'foo'));
 
-        $store->set('key', 'value', Carbon::now()->addDay()->getTimestamp());
-        $this->assertEquals('value', $store->get('key', 'foo'));
+        Carbon::setTestNow(null);
     }
 
     public function test_set_multiple__stores_values()

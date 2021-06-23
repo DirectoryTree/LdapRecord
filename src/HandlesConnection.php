@@ -3,8 +3,8 @@
 namespace LdapRecord;
 
 use Closure;
-use Exception;
 use ErrorException;
+use Exception;
 
 trait HandlesConnection
 {

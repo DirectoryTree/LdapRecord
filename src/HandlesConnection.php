@@ -3,13 +3,11 @@
 namespace LdapRecord;
 
 use Closure;
-use ErrorException;
 use Exception;
+use ErrorException;
 
-abstract class LdapBase implements LdapInterface
+trait HandlesConnection
 {
-    use DetectsErrors;
-
     /**
      * The LDAP host that is currently connected.
      *
@@ -136,7 +134,7 @@ abstract class LdapBase implements LdapInterface
      */
     public function getProtocol()
     {
-        return $this->isUsingSSL() ? $this::PROTOCOL_SSL : $this::PROTOCOL;
+        return $this->isUsingSSL() ? LdapInterface::PROTOCOL_SSL : LdapInterface::PROTOCOL;
     }
 
     /**
@@ -236,8 +234,8 @@ abstract class LdapBase implements LdapInterface
         // If an attempt to connect via SSL protocol is being performed,
         // and we are still using the default port, we will swap it
         // for the default SSL port, for developer convenience.
-        if ($this->isUsingSSL() && $port == static::PORT) {
-            $port = static::PORT_SSL;
+        if ($this->isUsingSSL() && $port == LdapInterface::PORT) {
+            $port = LdapInterface::PORT_SSL;
         }
 
         // The blank space here is intentional. PHP's LDAP extension

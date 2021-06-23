@@ -2,8 +2,10 @@
 
 namespace LdapRecord;
 
-class Ldap extends LdapBase
+class Ldap implements LdapInterface
 {
+    use HandlesConnection, DetectsErrors;
+
     /**
      * @inheritdoc
      */

@@ -4,13 +4,17 @@ namespace LdapRecord\Testing;
 
 use Exception;
 use LdapRecord\DetailedError;
-use LdapRecord\LdapBase;
+use LdapRecord\DetectsErrors;
+use LdapRecord\HandlesConnection;
+use LdapRecord\LdapInterface;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
 
-class LdapFake extends LdapBase
+class LdapFake implements LdapInterface
 {
+    use HandlesConnection, DetectsErrors;
+
     /**
      * The expectations of the LDAP fake.
      *
@@ -230,7 +234,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isUsingSSL')
             ? $this->resolveExpectation('isUsingSSL')
-            : parent::isUsingSSL();
+            : $this->useSSL;
     }
 
     /**
@@ -240,7 +244,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isUsingTLS')
             ? $this->resolveExpectation('isUsingTLS')
-            : parent::isUsingTLS();
+            : $this->useTLS;
     }
 
     /**
@@ -250,7 +254,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isBound')
             ? $this->resolveExpectation('isBound')
-            : parent::isBound();
+            : $this->bound;
     }
 
     /**

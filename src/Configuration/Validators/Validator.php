@@ -26,7 +26,7 @@ abstract class Validator
      * @var string
      */
     protected $message;
-    
+
     /**
      * Constructor.
      *

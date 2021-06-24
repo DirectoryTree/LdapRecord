@@ -96,6 +96,11 @@ class DomainConfigurationTest extends TestCase
         ], $config->all());
     }
 
+    public function test_port_can_be_numeric()
+    {
+        $this->assertEquals('123', (new DomainConfiguration(['port' => '123']))->get('port'));
+    }
+
     public function test_extend()
     {
         DomainConfiguration::extend('name', '');

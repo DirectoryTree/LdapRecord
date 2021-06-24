@@ -16,6 +16,6 @@ class IntegerValidator extends Validator
      */
     public function passes()
     {
-        return is_int($this->value);
+        return is_numeric($this->value);
     }
 }

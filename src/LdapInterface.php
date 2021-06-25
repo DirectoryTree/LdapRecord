@@ -138,7 +138,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return array
      */
@@ -256,7 +256,7 @@ interface LdapInterface
      *
      * @param string $dn
      * @param string $filter
-     * @param array  $attributes
+     * @param array  $fields
      * @param bool   $onlyAttributes
      * @param int    $size
      * @param int    $time

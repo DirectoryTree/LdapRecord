@@ -21,7 +21,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return resource
      */
@@ -69,7 +69,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return int
      */

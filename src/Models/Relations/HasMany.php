@@ -116,7 +116,7 @@ class HasMany extends OneToMany
      *
      * @return void
      */
-    public function chunk($pageSize = 1000, Closure $callback)
+    public function chunk($pageSize, Closure $callback)
     {
         $this->getRelationQuery()->chunk($pageSize, function ($entries) use ($callback) {
             $callback($this->transformResults($entries));

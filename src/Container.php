@@ -7,6 +7,14 @@ use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Events\Logger;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @method static $this reset()
+ * @method static Connection getDefaultConnection()
+ * @method static $this getConnection(string|null $name = null)
+ * @method static $this removeConnection(string|null $name = null)
+ * @method static $this setDefaultConnection(string|null $name = null)
+ * @method static $this addConnection(Connection $connection, string|null $name = null)
+ */
 class Container
 {
     /**
@@ -56,6 +64,35 @@ class Container
     ];
 
     /**
+     * The static calls to proxy to the container instance methods.
+     *
+     * @var array
+     */
+    protected static $proxy = [
+        'reset' => 'flush',
+        'addConnection' => 'add',
+        'getConnection' => 'get',
+        'removeConnection' => 'remove',
+        'getDefaultConnection' => 'getDefault',
+        'setDefaultConnection' => 'setDefault',
+    ];
+
+    /**
+     * Forward missing static calls onto the instance.
+     *
+     * @param string $method
+     * @param mixed  $args
+     *
+     * @return mixed
+     */
+    public static function __callStatic($method, $args)
+    {
+        $method = static::$proxy[$method] ?? $method;
+
+        return static::getInstance()->{$method}(...$args);
+    }
+
+    /**
      * Get or set the current instance of the container.
      *
      * @return Container
@@ -85,77 +122,6 @@ class Container
     public static function getNewInstance()
     {
         return static::setInstance(new static());
-    }
-
-    /**
-     * Add a connection to the container.
-     *
-     * @param Connection  $connection
-     * @param string|null $name
-     *
-     * @return static
-     */
-    public static function addConnection(Connection $connection, $name = null)
-    {
-        return static::getInstance()->add($connection, $name);
-    }
-
-    /**
-     * Remove a connection from the container.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public static function removeConnection($name)
-    {
-        static::getInstance()->remove($name);
-    }
-
-    /**
-     * Get a connection by name or return the default.
-     *
-     * @param string|null $name
-     *
-     * @throws ContainerException If the given connection does not exist.
-     *
-     * @return Connection
-     */
-    public static function getConnection($name = null)
-    {
-        return static::getInstance()->get($name);
-    }
-
-    /**
-     * Set the default connection name.
-     *
-     * @param string|null $name
-     *
-     * @return static
-     */
-    public static function setDefaultConnection($name = null)
-    {
-        return static::getInstance()->setDefault($name);
-    }
-
-    /**
-     * Get the default connection.
-     *
-     * @return Connection
-     */
-    public static function getDefaultConnection()
-    {
-        return static::getInstance()->getDefault();
-    }
-
-    /**
-     * Flush all of the added connections and reset the container.
-     *
-     * @return $this
-     */
-    public static function reset()
-    {
-        return static::getInstance()->flush();
     }
 
     /**

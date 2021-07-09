@@ -212,4 +212,15 @@ class DistinguishedNameBuilderTest extends TestCase
             DistinguishedName::of('cn=John Doe,dc=local,dc=com')->components('dc')
         );
     }
+
+    public function test_missing_method_calls_are_proxied_to_dn_instance()
+    {
+        $builder = DistinguishedName::of('cn=John Doe,dc=local,dc=com');
+        
+        $this->assertEquals([
+            'John Doe',
+            'local',
+            'com'
+        ], $builder->values());
+    }
 }

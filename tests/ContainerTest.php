@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests;
 
+use BadMethodCallException;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Connection;
 use LdapRecord\Container;
@@ -171,11 +172,9 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
     }
 
-    public function test_event_dispatcher_is_set_with_static_call()
+    public function test_event_dispatcher_is_set_with_new_instance()
     {
         $container = Container::getInstance();
-
-        $this->assertNull($container->dispatcher());
 
         $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
 
@@ -192,10 +191,18 @@ class ContainerTest extends TestCase
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
 
-        $container->setLogger($logger = new NullLogger());
+        $container->setLogger(new NullLogger());
 
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
+    }
+
+    public function test_calling_undefined_method_throws_bad_method_call_exception()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Call to undefined method LdapRecord\ConnectionManager::undefined()');
+
+        Container::undefined();
     }
 }

@@ -52,6 +52,8 @@ class ConnectionManager
     /**
      * The method calls to proxy for compatibility.
      *
+     * To be removed in the next major version.
+     *
      * @var array
      */
     protected $proxy = [
@@ -62,8 +64,8 @@ class ConnectionManager
         'removeConnection' => 'remove',
         'getDefaultConnection' => 'getDefault',
         'setDefaultConnection' => 'setDefault',
-        'setEventDispatcher' => 'setDispatcher',
         'getEventDispatcher' => 'dispatcher',
+        'setEventDispatcher' => 'setDispatcher',
     ];
 
     /**
@@ -249,7 +251,7 @@ class ConnectionManager
     }
 
     /**
-     * Initializes the event logger.
+     * Initialize the event logger.
      *
      * @return void
      */
@@ -267,7 +269,7 @@ class ConnectionManager
     }
 
     /**
-     * Returns a new event logger instance.
+     * Make a new event logger instance.
      *
      * @return Logger
      */

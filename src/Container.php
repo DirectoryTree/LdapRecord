@@ -9,6 +9,7 @@ namespace LdapRecord;
  * @method static Connection getDefaultConnection()
  * @method static Connection get(string|null $name = null)
  * @method static Connection getConnection(string|null $name = null)
+ * @method static bool exists(string $name)
  * @method static $this remove(string|null $name = null)
  * @method static $this removeConnection(string|null $name = null)
  * @method static $this setDefault(string|null $name = null)

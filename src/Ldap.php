@@ -226,7 +226,9 @@ class Ldap implements LdapInterface
             $deref,
             $serverControls
         ) {
-            return ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
+            return empty($serverControls)
+                ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -245,7 +247,9 @@ class Ldap implements LdapInterface
             $deref,
             $serverControls
         ) {
-            return ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
+            return empty($serverControls)
+                ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -264,7 +268,9 @@ class Ldap implements LdapInterface
             $deref,
             $serverControls
         ) {
-            return ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
+            return empty($serverControls)
+                ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -281,7 +287,9 @@ class Ldap implements LdapInterface
             &$referrals,
             &$serverControls
         ) {
-            return ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls);
+            return empty($serverControls)
+                ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals)
+                : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls);
         });
     }
 

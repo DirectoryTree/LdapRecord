@@ -129,9 +129,7 @@ class ConnectionManager
      */
     public function remove($name)
     {
-        if ($this->exists($name)) {
-            unset($this->connections[$name]);
-        }
+        unset($this->connections[$name]);
 
         return $this;
     }
@@ -187,7 +185,7 @@ class ConnectionManager
     /**
      * Checks if the connection exists.
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */

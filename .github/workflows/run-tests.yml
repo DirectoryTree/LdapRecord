@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         php: [8.0, 7.4, 7.3]
 
-    name: P${{ matrix.php }}
+    name: OS${{ matrix.os }} - P${{ matrix.php }}
 
     steps:
       - name: Checkout code

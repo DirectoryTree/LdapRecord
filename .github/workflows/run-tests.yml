@@ -8,10 +8,13 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
         php: [8.0, 7.4, 7.3]
 
     name: P${{ matrix.php }}

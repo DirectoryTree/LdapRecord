@@ -509,6 +509,8 @@ interface LdapInterface
     /**
      * Determine if the current PHP version supports server controls.
      *
+     * @deprecated since v2.5.0
+     *
      * @return bool
      */
     public function supportsServerControlsInMethods();

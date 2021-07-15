@@ -212,7 +212,7 @@ trait HandlesConnection
     /**
      * Determine if the current PHP version supports server controls.
      *
-     * @deprecated
+     * @deprecated since v2.5.0
      *
      * @return bool
      */

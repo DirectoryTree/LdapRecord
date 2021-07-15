@@ -18,7 +18,22 @@ class DistinguishedNameTest extends TestCase
         $this->assertEmpty((new DistinguishedName(null))->get());
     }
 
-    public function test_components_returns_attributes()
+    public function test_rdns()
+    {
+        $dn = new DistinguishedName(null);
+        $this->assertEquals([], $dn->rdns());
+
+        $dn = new DistinguishedName('foo');
+        $this->assertEquals([], $dn->rdns());
+
+        $dn = new DistinguishedName('cn=foo\,bar');
+        $this->assertEquals(['cn=foo\2Cbar'], $dn->rdns());
+
+        $dn = new DistinguishedName('cn=foo,dc=bar');
+        $this->assertEquals(['cn=foo', 'dc=bar'], $dn->rdns());
+    }
+
+    public function test_components()
     {
         $dn = new DistinguishedName(null);
         $this->assertEquals([], $dn->components());
@@ -26,14 +41,14 @@ class DistinguishedNameTest extends TestCase
         $dn = new DistinguishedName('foo');
         $this->assertEquals([], $dn->components());
 
-        $dn = new DistinguishedName('cn=foo');
-        $this->assertEquals(['cn=foo'], $dn->components());
+        $dn = new DistinguishedName('cn=foo\,bar');
+        $this->assertEquals(['cn=foo\2cbar'], $dn->components());
 
         $dn = new DistinguishedName('cn=foo,dc=bar');
         $this->assertEquals(['cn=foo', 'dc=bar'], $dn->components());
     }
 
-    public function test_values_excludes_attributes()
+    public function test_values()
     {
         $dn = new DistinguishedName(null);
         $this->assertEquals([], $dn->values());
@@ -188,6 +203,46 @@ class DistinguishedNameTest extends TestCase
 
         $dn = new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz');
         $this->assertEquals('John Doe', $dn->name());
+    }
+
+    public function test_head()
+    {
+        $dn = new DistinguishedName(null);
+        $this->assertNull($dn->head());
+
+        $dn = new DistinguishedName('');
+        $this->assertNull($dn->head());
+
+        $dn = new DistinguishedName('invalid');
+        $this->assertNull($dn->head());
+
+        $dn = new DistinguishedName('cn=John');
+        $this->assertEquals('cn', $dn->head());
+
+        $dn = new DistinguishedName('cn=John,ou=foo,dc=local');
+        $this->assertEquals('cn', $dn->head());
+    }
+
+    public function test_multi()
+    {
+        $dn = new DistinguishedName(null);
+        $this->assertEmpty($dn->multi());
+
+        $dn = new DistinguishedName('');
+        $this->assertEmpty($dn->multi());
+
+        $dn = new DistinguishedName('invalid');
+        $this->assertEmpty($dn->multi());
+
+        $dn = new DistinguishedName('cn=John');
+        $this->assertEquals([['cn', 'John']], $dn->multi());
+
+        $dn = new DistinguishedName('cn=John,ou=foo,dc=local');
+        $this->assertEquals([
+            ['cn', 'John'],
+            ['ou', 'foo'],
+            ['dc', 'local'],
+        ], $dn->multi());
     }
 
     public function test_assoc()

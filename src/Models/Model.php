@@ -804,6 +804,16 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the model's object GUID key.
+     *
+     * @return void
+     */
+    public function getObjectGuidKey()
+    {
+        return $this->guidKey;
+    }
+
+    /**
      * Get the model's binary object GUID.
      *
      * @see https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx

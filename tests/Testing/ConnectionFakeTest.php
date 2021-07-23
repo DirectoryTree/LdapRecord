@@ -3,7 +3,6 @@
 namespace LdapRecord\Testing;
 
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Testing\ConnectionFake;
 
 class ConnectionFakeTest extends TestCase
 {
@@ -18,7 +17,7 @@ class ConnectionFakeTest extends TestCase
             'hosts' => ['foo', 'bar'],
             'use_tls' => true,
         ]);
-        
+
         $config = $fake->getConfiguration();
 
         $this->assertEquals(['foo', 'bar'], $config->get('hosts'));
@@ -27,7 +26,7 @@ class ConnectionFakeTest extends TestCase
 
     public function testMakeWithCustomLdapFake()
     {
-        $fake =  ConnectionFake::make([], ExtendedLdapFake::class);
+        $fake = ConnectionFake::make([], ExtendedLdapFake::class);
 
         $this->assertInstanceOf(ExtendedLdapFake::class, $fake->getLdapConnection());
     }

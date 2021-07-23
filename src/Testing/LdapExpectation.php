@@ -207,7 +207,7 @@ class LdapExpectation
     public function getMethod()
     {
         if (is_null($this->method)) {
-            throw new UnexpectedValueException("An expectation must have a method.");
+            throw new UnexpectedValueException('An expectation must have a method.');
         }
 
         return $this->method;

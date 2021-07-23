@@ -134,7 +134,7 @@ class LdapFake implements LdapInterface
     {
         unset($this->expectations[$method][$key]);
     }
-    
+
     /**
      * Set the error number of a failed bind attempt.
      *

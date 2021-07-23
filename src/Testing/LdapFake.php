@@ -105,7 +105,7 @@ class LdapFake implements LdapInterface
      *
      * @return bool
      */
-    protected function hasExpectations($method)
+    public function hasExpectations($method)
     {
         return count($this->getExpectations($method)) > 0;
     }
@@ -117,7 +117,7 @@ class LdapFake implements LdapInterface
      *
      * @return LdapExpectation[]|mixed
      */
-    protected function getExpectations($method)
+    public function getExpectations($method)
     {
         return $this->expectations[$method] ?? [];
     }
@@ -130,11 +130,11 @@ class LdapFake implements LdapInterface
      *
      * @return void
      */
-    protected function removeExpectation($method, $key)
+    public function removeExpectation($method, $key)
     {
         unset($this->expectations[$method][$key]);
     }
-
+    
     /**
      * Set the error number of a failed bind attempt.
      *

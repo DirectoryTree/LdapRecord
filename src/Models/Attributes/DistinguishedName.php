@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Attributes;
 
 use LdapRecord\EscapesValues;
+use LdapRecord\Support\Arr;
 
 class DistinguishedName
 {
@@ -260,9 +261,7 @@ class DistinguishedName
      */
     public function name()
     {
-        $values = $this->values();
-
-        return reset($values) ?: null;
+        return Arr::first($this->values());
     }
 
     /**
@@ -272,9 +271,7 @@ class DistinguishedName
      */
     public function head()
     {
-        $attriubtes = $this->attributes();
-
-        return reset($attriubtes) ?: null;
+        return Arr::first($this->attributes());
     }
 
     /**
@@ -284,9 +281,19 @@ class DistinguishedName
      */
     public function relative()
     {
-        $components = $this->components();
+        return Arr::first($this->components());
+    }
 
-        return reset($components) ?: null;
+    /**
+     * Alias of relative().
+     *
+     * Get the first RDN from the distinguished name.
+     *
+     * @return string|null
+     */
+    public function first()
+    {
+        return $this->relative();
     }
 
     /**

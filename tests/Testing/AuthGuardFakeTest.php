@@ -3,9 +3,9 @@
 namespace LdapRecord\Tests\Testing;
 
 use LdapRecord\Configuration\DomainConfiguration;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Testing\AuthGuardFake;
 use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class AuthGuardFakeTest extends TestCase
 {

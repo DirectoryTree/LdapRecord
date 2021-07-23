@@ -105,7 +105,7 @@ class LdapFakeTest extends TestCase
         $fake = new LdapFake();
 
         $fake->expect(['connect' => false]);
-        
+
         $this->assertFalse($fake->connect('host', 389));
     }
 

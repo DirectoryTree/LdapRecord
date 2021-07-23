@@ -6,9 +6,9 @@ use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
 use LdapRecord\Testing\ConnectionFake;
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Testing\DirectoryFake;
 use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 
 class DirectoryFakeTest extends TestCase
 {

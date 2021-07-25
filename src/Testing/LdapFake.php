@@ -457,7 +457,7 @@ class LdapFake implements LdapInterface
      *
      * @return mixed
      */
-    protected function resolveExpectation($method, $args = [])
+    protected function resolveExpectation($method, array $args = [])
     {
         foreach ($this->getExpectations($method) as $key => $expectation) {
             $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
@@ -505,7 +505,7 @@ class LdapFake implements LdapInterface
      *
      * @return void
      */
-    protected function assertMethodArgumentsMatch($method, $expectedArgs = [], $methodArgs = [])
+    protected function assertMethodArgumentsMatch($method, array $expectedArgs = [], array $methodArgs = [])
     {
         foreach ($expectedArgs as $key => $constraint) {
             $argNumber = $key + 1;

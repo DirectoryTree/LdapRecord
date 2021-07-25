@@ -157,7 +157,7 @@ abstract class OneToMany extends Relation
 
         foreach ($results as $model) {
             $loaded[] = $model->getDn();
-            
+
             // Finally, we will fetch the related models relations,
             // passing along our loaded models, to ensure we do
             // not attempt fetching already loaded relations.

@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Testing;
 
+use LdapRecord\Models\Entry;
 use LdapRecord\Tests\TestCase;
 
 class ConnectionFakeTest extends TestCase
@@ -29,6 +30,36 @@ class ConnectionFakeTest extends TestCase
         $fake = ConnectionFake::make([], ExtendedLdapFake::class);
 
         $this->assertInstanceOf(ExtendedLdapFake::class, $fake->getLdapConnection());
+    }
+
+    public function testActingAsWithModel()
+    {
+        $fake = ConnectionFake::make([]);
+
+        $user = (new Entry())->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+        ]);
+
+        $fake->actingAs($user);
+
+        $ldap = $fake->getLdapConnection();
+
+        $this->assertTrue($ldap->hasExpectations('bind'));
+
+        $this->assertTrue($fake->auth()->attempt($user->getDn(), 'secret', $stayBound = true));
+    }
+
+    public function testActingAsWithDn()
+    {
+        $fake = ConnectionFake::make([]);
+
+        $fake->actingAs('cn=John Doe,dc=local,dc=com');
+
+        $ldap = $fake->getLdapConnection();
+
+        $this->assertTrue($ldap->hasExpectations('bind'));
+
+        $this->assertTrue($fake->auth()->attempt('cn=John Doe,dc=local,dc=com', 'secret', $stayBound = true));
     }
 }
 

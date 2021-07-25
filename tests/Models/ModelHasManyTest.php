@@ -60,8 +60,7 @@ class ModelHasManyTest extends TestCase
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
         $related->shouldReceive('relation')->once()->andReturnSelf();
-        $related->shouldReceive('recursive')->once()->andReturnSelf();
-        $related->shouldReceive('get')->once()->andReturn(new Collection([$child = new Entry()]));
+        $related->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([$child = new Entry()]));
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once();

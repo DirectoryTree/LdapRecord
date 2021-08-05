@@ -3,9 +3,7 @@
 namespace LdapRecord\Tests\Log;
 
 use LdapRecord\Auth\Events\Bound;
-use LdapRecord\Auth\Events\Event as AuthEvent;
 use LdapRecord\Auth\Events\Failed;
-use LdapRecord\Connection;
 use LdapRecord\Events\Logger;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Testing\ConnectionFake;

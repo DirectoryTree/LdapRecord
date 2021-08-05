@@ -2,10 +2,13 @@
 
 namespace LdapRecord\Tests\Log;
 
+use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Event as AuthEvent;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Connection;
 use LdapRecord\Events\Logger;
+use LdapRecord\Query\Events\QueryExecuted;
+use LdapRecord\Testing\ConnectionFake;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -15,20 +18,17 @@ class EventLoggerTest extends TestCase
 {
     public function test_auth_events_are_logged()
     {
-        $event = m::mock(AuthEvent::class);
+        $ldap = new LdapFake();
+
+        $ldap->connect('localhost');
+
+        $event = new Bound($ldap, 'jdoe@email.com', 'secret');
+
         $logger = m::mock(LoggerInterface::class);
-        $connection = m::mock(Connection::class);
 
-        $logger->shouldReceive('info')->once()->withArgs(function ($logged) {
-            return strpos($logged, 'LDAP (ldap://192.168.1.1)') !== false &&
-                strpos($logged, 'Username: jdoe@acme.org') !== false;
-        });
-
-        $connection->shouldReceive('getHost')->once()->andReturn('ldap://192.168.1.1');
-
-        $event
-            ->shouldReceive('getConnection')->once()->andReturn($connection)
-            ->shouldReceive('getUsername')->once()->andReturn('jdoe@acme.org');
+        $logger->shouldReceive('info')->once()->with(
+            'LDAP (ldap://localhost:389) - Operation: Bound - Username: jdoe@email.com'
+        );
 
         $eLogger = new Logger($logger);
 
@@ -39,14 +39,42 @@ class EventLoggerTest extends TestCase
     {
         $ldap = (new LdapFake())->shouldReturnError('Invalid Credentials');
 
-        $ldap->connect('192.168.1.1');
+        $ldap->connect('localhost');
 
         $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret');
 
         $logger = m::mock(LoggerInterface::class);
 
         $logger->shouldReceive('warning')->once()->with(
-            'LDAP (ldap://192.168.1.1:389) - Operation: Failed - Username: jdoe@acme.org - Reason: Invalid Credentials'
+            'LDAP (ldap://localhost:389) - Operation: Failed - Username: jdoe@acme.org - Reason: Invalid Credentials'
+        );
+
+        $eLogger = new Logger($logger);
+
+        $eLogger->log($event);
+    }
+
+    public function test_queries_are_logged()
+    {
+        $ldap = (new LdapFake())->expect(['search' => []]);
+
+        $conn = new ConnectionFake([
+            'base_dn' => 'dc=local,dc=com',
+            'hosts' => ['localhost'],
+        ], $ldap);
+
+        $conn->shouldBeConnected()->connect();
+
+        $query = $conn->query()->where('foo', '=', 'bar');
+
+        $query->get();
+
+        $event = new QueryExecuted($query, 2.5);
+
+        $logger = m::mock(LoggerInterface::class);
+
+        $logger->shouldReceive('info')->once()->with(
+            'LDAP (ldap://localhost:389) - Operation: QueryExecuted - Base DN: dc=local,dc=com - Filter: (foo=\62\61\72) - Selected: (*) - Time Elapsed: 2.5'
         );
 
         $eLogger = new Logger($logger);

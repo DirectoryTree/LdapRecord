@@ -138,7 +138,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * The "booting" method of the model.
+     * The "boot" method of the model.
      *
      * @return void
      */

@@ -119,7 +119,7 @@ class Connection
     {
         $this->configuration = new DomainConfiguration($config);
 
-        $this->hosts = $this->configuration->get('hosts');
+        $this->hosts = $this->resolveHosts();
 
         $this->host = reset($this->hosts);
 
@@ -507,5 +507,38 @@ class Connection
         call_user_func($this->failed, $this->ldap);
 
         throw $e;
+    }
+
+    /**
+     * Resolve hosts to connect to from SRV records.
+     *
+     * @return array
+     */
+    protected function resolveHosts()
+    {
+        $host_is_dns_srv = $this->configuration->get('host_is_dns_srv');
+        $host_is_ad_dns_srv = $this->configuration->get('host_is_ad_dns_srv');
+        if ($host_is_dns_srv === false && $host_is_ad_dns_srv === false) {
+            return $this->configuration->get('hosts');
+        }
+
+        $record_name = null;
+        if ($host_is_ad_dns_srv === true) {
+            $record_name = strtr('_ldap._tcp.dc._msdcs.:domain', [':domain' => $this->configuration->get('hosts')[0]]);
+        }
+        if ($host_is_dns_srv === true) {
+            $record_name = $this->configuration->get('hosts')[0];
+        }
+
+        $hosts = [];
+        if ($record_name) {
+            $dns_result = dns_get_record($record_name, DNS_SRV);
+
+            foreach ($dns_result as $res) {
+                $hosts[] = $res['target'];
+            }
+        }
+
+        return $hosts;
     }
 }

@@ -43,6 +43,8 @@ class DomainConfigurationTest extends TestCase
         $this->assertEmpty($config->get('base_dn'));
         $this->assertFalse($config->get('use_ssl'));
         $this->assertFalse($config->get('use_tls'));
+        $this->assertFalse($config->get('host_is_dns_srv'));
+        $this->assertFalse($config->get('host_is_ad_dns_srv'));
         $this->assertEquals([], $config->get('options'));
     }
 
@@ -91,6 +93,8 @@ class DomainConfigurationTest extends TestCase
             'password' => '',
             'use_ssl' => false,
             'use_tls' => false,
+            'host_is_dns_srv' => false,
+            'host_is_ad_dns_srv' => false,
             'follow_referrals' => false,
             'options' => [],
         ], $config->all());

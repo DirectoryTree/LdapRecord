@@ -24,6 +24,12 @@ class DomainConfiguration
         // An array of LDAP hosts.
         'hosts' => [],
 
+        // Get host list from SRV record
+        'host_is_dns_srv' => false,
+
+        // Get host list from SRV record assuming host name is a base AD domain
+        'host_is_ad_dns_srv' => false,
+
         // The global LDAP operation timeout limit in seconds.
         'timeout' => 5,
 

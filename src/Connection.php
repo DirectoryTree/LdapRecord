@@ -532,10 +532,16 @@ class Connection
 
         $hosts = [];
         if ($record_name) {
-            $dns_result = dns_get_record($record_name, DNS_SRV);
+            if ($dns_result = dns_get_record($record_name, DNS_SRV)) {
+                $dns_collection = collect($dns_result)->mapToGroups(function ($item, $key) {
+                    return [$item['pri'] => $item];
+                })->transform(function ($item, $key) {
+                    return $item->sortByDesc('weight');
+                })->flatten(1);
 
-            foreach ($dns_result as $res) {
-                $hosts[] = $res['target'];
+                foreach ($dns_collection as $res) {
+                    $hosts[] = $res['target'];
+                }
             }
         }
 

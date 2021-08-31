@@ -230,6 +230,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getConnectionName()
     {
+        if (method_exists($this, 'connection')) {
+            return $this->connection();
+        }
+
         return $this->connection;
     }
 

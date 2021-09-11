@@ -60,6 +60,16 @@ class EscapedValue
     }
 
     /**
+     * Get the raw (unescaped) value.
+     *
+     * @return mixed
+     */
+    public function raw()
+    {
+        return $this->value;
+    }
+
+    /**
      * Set the characters to exclude from being escaped.
      *
      * @param string $characters

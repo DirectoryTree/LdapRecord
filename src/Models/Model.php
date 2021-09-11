@@ -1174,16 +1174,15 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @throws \LdapRecord\LdapRecordException
      *
-     * @return Collection
+     * @return void
      */
     protected function deleteLeafNodes()
     {
-        return $this->newQueryWithoutScopes()
+        $this->newQueryWithoutScopes()
             ->in($this->dn)
             ->listing()
-            ->paginate()
-            ->each(function (self $model) {
-                $model->delete($recursive = true);
+            ->chunk(250, function ($models) {
+                $models->each->delete($recursive = true);
             });
     }
 

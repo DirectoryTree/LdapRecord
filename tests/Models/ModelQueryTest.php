@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Models;
 
+use Closure;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
@@ -338,13 +339,17 @@ class ModelQueryTest extends TestCase
         $query = m::mock(Builder::class);
         $query->shouldReceive('listing')->once()->andReturnSelf();
         $query->shouldReceive('in')->once()->with('foo')->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->andReturn($shouldBeDeleted);
+        $query->shouldReceive('chunk')->once()->with(250, m::on(function ($callback) use ($shouldBeDeleted) {
+            $callback($shouldBeDeleted);
+            
+            return $callback instanceof Closure;
+        }));
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('newQueryWithoutScopes')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
-        $this->assertEquals($shouldBeDeleted, $model->deleteLeafNodes());
+        $this->assertNull($model->deleteLeafNodes());
         $this->assertFalse($shouldBeDeleted->first()->exists);
     }
 

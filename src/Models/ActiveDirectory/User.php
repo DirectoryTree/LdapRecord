@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
@@ -116,5 +117,42 @@ class User extends Entry implements Authenticatable
     public function scopeWhereHasMailbox(Builder $query)
     {
         return $query->whereHas('msExchMailboxGuid');
+    }
+
+    /**
+     * Scopes the query to users having a lockout value set.
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeWhereHasLockout(Builder $query)
+    {
+        return $query->where('lockoutTime', '>=', 1);
+    }
+
+    /**
+     * Determine if the user is locked out using the domains LockoutDuration group policy value.
+     *
+     * @see https://ldapwiki.com/wiki/Active%20Directory%20Account%20Lockout
+     * @see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-lockout-duration
+     *
+     * @param string $localTimezone
+     * @param int $durationInMinutes
+     *
+     * @return bool
+     */
+    public function isLockedOut($localTimezone, $durationInMinutes = 0)
+    {
+        $time = $this->getFirstAttribute('lockouttime');
+
+        if (! $time instanceof Carbon) {
+            return false;
+        }
+
+        return ! $time
+            ->setTimezone($localTimezone)
+            ->addMinutes($durationInMinutes)
+            ->isPast();
     }
 }

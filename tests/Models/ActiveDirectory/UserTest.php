@@ -2,12 +2,14 @@
 
 namespace LdapRecord\Tests\Models\ActiveDirectory;
 
+use Carbon\Carbon;
 use LdapRecord\Connection;
 use LdapRecord\ConnectionException;
 use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\Password;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Tests\TestCase;
 
 class UserTest extends TestCase
@@ -89,6 +91,29 @@ class UserTest extends TestCase
 
         $this->assertEquals($filters['and'][4]['field'], 'msExchMailboxGuid');
         $this->assertEquals($filters['and'][4]['operator'], '*');
+    }
+
+    public function test_scope_where_has_lockout_is_applied()
+    {
+        $filters = User::whereHasLockout()->filters;
+
+        $this->assertEquals($filters['and'][4]['field'], 'lockoutTime');
+        $this->assertEquals($filters['and'][4]['operator'], '>=');
+        $this->assertEquals($filters['and'][4]['value']->raw(), 1);
+    }
+
+    public function test_is_locked_out()
+    {
+        $lockoutTime = (new Timestamp('windows-int'))->fromDateTime(
+            Carbon::now()->subMinutes(10)
+        );
+
+        $user = (new User)->setRawAttributes(
+            ['lockouttime' => [$lockoutTime]]
+        );
+
+        $this->assertTrue($user->isLockedOut('UTC', $lockoutDuration = 11));
+        $this->assertFalse($user->isLockedOut('UTC', $lockoutDuration = 10));
     }
 }
 

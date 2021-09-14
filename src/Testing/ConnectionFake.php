@@ -25,8 +25,9 @@ class ConnectionFake extends Connection
     /**
      * Make a new fake LDAP connection instance.
      *
-     * @param  array  $config
-     * @param  string $ldap
+     * @param array  $config
+     * @param string $ldap
+     *
      * @return static
      */
     public static function make(array $config = [], $ldap = LdapFake::class)
@@ -41,7 +42,8 @@ class ConnectionFake extends Connection
     /**
      * Set the user to authenticate as.
      *
-     * @param  Model|string $user
+     * @param Model|string $user
+     *
      * @return $this
      */
     public function actingAs($user)

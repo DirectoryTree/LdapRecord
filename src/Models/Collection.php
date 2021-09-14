@@ -12,7 +12,8 @@ class Collection extends QueryCollection
     /**
      * Determine if the collection contains all of the given models, or any models.
      *
-     * @param  mixed $models
+     * @param mixed $models
+     *
      * @return bool
      */
     public function exists($models = null)
@@ -46,9 +47,10 @@ class Collection extends QueryCollection
     /**
      * Determine if any of the given models are contained in the collection.
      *
-     * @param  mixed $key
-     * @param  mixed $operator
-     * @param  mixed $value
+     * @param mixed $key
+     * @param mixed $operator
+     * @param mixed $value
+     *
      * @return bool
      */
     public function contains($key, $operator = null, $value = null)
@@ -76,7 +78,8 @@ class Collection extends QueryCollection
     /**
      * Get the provided models as an array.
      *
-     * @param  mixed $models
+     * @param mixed $models
+     *
      * @return array
      */
     protected function getArrayableModels($models = null)
@@ -89,8 +92,9 @@ class Collection extends QueryCollection
     /**
      * Compare the related model with the given.
      *
-     * @param  Model|string $model
-     * @param  Model        $related
+     * @param Model|string $model
+     * @param Model        $related
+     *
      * @return bool
      */
     protected function compareModelWithRelated($model, $related)
@@ -107,7 +111,8 @@ class Collection extends QueryCollection
     /**
      * Determine if the given string is a valid distinguished name.
      *
-     * @param  string $dn
+     * @param string $dn
+     *
      * @return bool
      */
     protected function isValidDn($dn)

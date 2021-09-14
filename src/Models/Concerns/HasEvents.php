@@ -10,7 +10,8 @@ trait HasEvents
     /**
      * Fires the specified model event.
      *
-     * @param  Event $event
+     * @param Event $event
+     *
      * @return mixed
      */
     protected function fireModelEvent(Event $event)
@@ -21,8 +22,9 @@ trait HasEvents
     /**
      * Listens to a model event.
      *
-     * @param  string  $event
-     * @param  Closure $listener
+     * @param string  $event
+     * @param Closure $listener
+     *
      * @return mixed
      */
     protected function listenForModelEvent($event, Closure $listener)

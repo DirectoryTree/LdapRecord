@@ -106,9 +106,10 @@ trait HasPassword
     /**
      * Set the changed password.
      *
-     * @param  string $oldPassword
-     * @param  string $newPassword
-     * @param  string $attribute
+     * @param string $oldPassword
+     * @param string $newPassword
+     * @param string $attribute
+     *
      * @return void
      */
     protected function setChangedPassword($oldPassword, $newPassword, $attribute)
@@ -135,8 +136,9 @@ trait HasPassword
     /**
      * Set the password on the model.
      *
-     * @param  string $password
-     * @param  string $attribute
+     * @param string $password
+     * @param string $attribute
+     *
      * @return void
      */
     protected function setPassword($password, $attribute)
@@ -153,9 +155,10 @@ trait HasPassword
     /**
      * Encode / hash the given password.
      *
-     * @param  string $method
-     * @param  string $password
-     * @param  string $salt
+     * @param string $method
+     * @param string $password
+     * @param string $salt
+     *
      * @return string
      *
      * @throws LdapRecordException
@@ -200,7 +203,8 @@ trait HasPassword
     /**
      * Attempt to retrieve the password's salt.
      *
-     * @param  string      $method
+     * @param string $method
+     *
      * @return string|null
      */
     public function getPasswordSalt($method)

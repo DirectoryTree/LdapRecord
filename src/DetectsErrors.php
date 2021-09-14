@@ -7,7 +7,8 @@ trait DetectsErrors
     /**
      * Determine if the error was caused by a lost connection.
      *
-     * @param  string $error
+     * @param string $error
+     *
      * @return bool
      */
     protected function causedByLostConnection($error)
@@ -18,7 +19,8 @@ trait DetectsErrors
     /**
      * Determine if the error was caused by lack of pagination support.
      *
-     * @param  string $error
+     * @param string $error
+     *
      * @return bool
      */
     protected function causedByPaginationSupport($error)
@@ -30,6 +32,7 @@ trait DetectsErrors
      * Determine if the error was caused by a size limit warning.
      *
      * @param $error
+     *
      * @return bool
      */
     protected function causedBySizeLimit($error)
@@ -40,7 +43,8 @@ trait DetectsErrors
     /**
      * Determine if the error was caused by a "No such object" warning.
      *
-     * @param  string $error
+     * @param string $error
+     *
      * @return bool
      */
     protected function causedByNoSuchObject($error)
@@ -51,8 +55,9 @@ trait DetectsErrors
     /**
      * Determine if the error contains the any of the messages.
      *
-     * @param  string       $error
-     * @param  string|array $messages
+     * @param string       $error
+     * @param string|array $messages
+     *
      * @return bool
      */
     protected function errorContainsMessage($error, $messages = [])

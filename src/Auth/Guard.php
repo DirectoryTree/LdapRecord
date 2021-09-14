@@ -50,9 +50,10 @@ class Guard
     /**
      * Attempt binding a user to the LDAP server.
      *
-     * @param  string $username
-     * @param  string $password
-     * @param  bool   $stayBound
+     * @param string $username
+     * @param string $password
+     * @param bool   $stayBound
+     *
      * @return bool
      *
      * @throws UsernameRequiredException
@@ -147,7 +148,8 @@ class Guard
     /**
      * Set the event dispatcher instance.
      *
-     * @param  DispatcherInterface $dispatcher
+     * @param DispatcherInterface $dispatcher
+     *
      * @return void
      */
     public function setDispatcher(DispatcherInterface $dispatcher)
@@ -158,8 +160,9 @@ class Guard
     /**
      * Fire the attempting event.
      *
-     * @param  string $username
-     * @param  string $password
+     * @param string $username
+     * @param string $password
+     *
      * @return void
      */
     protected function fireAttemptingEvent($username, $password)
@@ -172,8 +175,9 @@ class Guard
     /**
      * Fire the passed event.
      *
-     * @param  string $username
-     * @param  string $password
+     * @param string $username
+     * @param string $password
+     *
      * @return void
      */
     protected function firePassedEvent($username, $password)
@@ -186,8 +190,9 @@ class Guard
     /**
      * Fire the failed event.
      *
-     * @param  string $username
-     * @param  string $password
+     * @param string $username
+     * @param string $password
+     *
      * @return void
      */
     protected function fireFailedEvent($username, $password)
@@ -200,8 +205,9 @@ class Guard
     /**
      * Fire the binding event.
      *
-     * @param  string $username
-     * @param  string $password
+     * @param string $username
+     * @param string $password
+     *
      * @return void
      */
     protected function fireBindingEvent($username, $password)
@@ -214,8 +220,9 @@ class Guard
     /**
      * Fire the bound event.
      *
-     * @param  string $username
-     * @param  string $password
+     * @param string $username
+     * @param string $password
+     *
      * @return void
      */
     protected function fireBoundEvent($username, $password)

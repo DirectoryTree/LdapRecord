@@ -72,7 +72,8 @@ class EscapedValue
     /**
      * Set the characters to exclude from being escaped.
      *
-     * @param  string $characters
+     * @param string $characters
+     *
      * @return $this
      */
     public function ignore($characters)

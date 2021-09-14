@@ -44,8 +44,9 @@ class Builder extends BaseBuilder
     /**
      * Dynamically handle calls into the query instance.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
+     *
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -60,8 +61,9 @@ class Builder extends BaseBuilder
     /**
      * Apply the given scope on the current builder instance.
      *
-     * @param  callable $scope
-     * @param  array    $parameters
+     * @param callable $scope
+     * @param array    $parameters
+     *
      * @return mixed
      */
     protected function callScope(callable $scope, $parameters = [])
@@ -89,7 +91,8 @@ class Builder extends BaseBuilder
     /**
      * Set the model instance for the model being queried.
      *
-     * @param  Model $model
+     * @param Model $model
+     *
      * @return $this
      */
     public function setModel(Model $model)
@@ -112,7 +115,8 @@ class Builder extends BaseBuilder
     /**
      * Get a new model query builder instance.
      *
-     * @param  string|null $baseDn
+     * @param string|null $baseDn
+     *
      * @return static
      */
     public function newInstance($baseDn = null)
@@ -123,8 +127,9 @@ class Builder extends BaseBuilder
     /**
      * Finds a model by its distinguished name.
      *
-     * @param  array|string                                   $dn
-     * @param  array|string|string[]                          $columns
+     * @param array|string          $dn
+     * @param array|string|string[] $columns
+     *
      * @return Model|\LdapRecord\Query\Collection|static|null
      */
     public function find($dn, $columns = ['*'])
@@ -137,8 +142,9 @@ class Builder extends BaseBuilder
     /**
      * Finds a record using ambiguous name resolution.
      *
-     * @param  string|array                                   $value
-     * @param  array|string                                   $columns
+     * @param string|array $value
+     * @param array|string $columns
+     *
      * @return Model|\LdapRecord\Query\Collection|static|null
      */
     public function findByAnr($value, $columns = ['*'])
@@ -172,8 +178,9 @@ class Builder extends BaseBuilder
      *
      * If a record is not found, an exception is thrown.
      *
-     * @param  string       $value
-     * @param  array|string $columns
+     * @param string       $value
+     * @param array|string $columns
+     *
      * @return Model
      *
      * @throws ModelNotFoundException
@@ -203,8 +210,9 @@ class Builder extends BaseBuilder
     /**
      * Finds multiple records using ambiguous name resolution.
      *
-     * @param  array                        $values
-     * @param  array                        $columns
+     * @param array $values
+     * @param array $columns
+     *
      * @return \LdapRecord\Query\Collection
      */
     public function findManyByAnr(array $values = [], $columns = ['*'])
@@ -225,7 +233,8 @@ class Builder extends BaseBuilder
     /**
      * Creates an ANR equivalent query for LDAP distributions that do not support ANR.
      *
-     * @param  string $value
+     * @param string $value
+     *
      * @return $this
      */
     protected function prepareAnrEquivalentQuery($value)
@@ -240,8 +249,9 @@ class Builder extends BaseBuilder
     /**
      * Finds a record by its string GUID.
      *
-     * @param  string            $guid
-     * @param  array|string      $columns
+     * @param string       $guid
+     * @param array|string $columns
+     *
      * @return Model|static|null
      */
     public function findByGuid($guid, $columns = ['*'])
@@ -258,8 +268,9 @@ class Builder extends BaseBuilder
      *
      * Fails upon no records returned.
      *
-     * @param  string       $guid
-     * @param  array|string $columns
+     * @param string       $guid
+     * @param array|string $columns
+     *
      * @return Model|static
      *
      * @throws ModelNotFoundException
@@ -288,7 +299,8 @@ class Builder extends BaseBuilder
     /**
      * Apply the query scopes and execute the callback.
      *
-     * @param  Closure $callback
+     * @param Closure $callback
+     *
      * @return mixed
      */
     protected function afterScopes(Closure $callback)
@@ -327,8 +339,9 @@ class Builder extends BaseBuilder
     /**
      * Register a new global scope.
      *
-     * @param  string         $identifier
-     * @param  Scope|\Closure $scope
+     * @param string         $identifier
+     * @param Scope|\Closure $scope
+     *
      * @return $this
      */
     public function withGlobalScope($identifier, $scope)
@@ -341,7 +354,8 @@ class Builder extends BaseBuilder
     /**
      * Remove a registered global scope.
      *
-     * @param  Scope|string $scope
+     * @param Scope|string $scope
+     *
      * @return $this
      */
     public function withoutGlobalScope($scope)
@@ -360,7 +374,8 @@ class Builder extends BaseBuilder
     /**
      * Remove all or passed registered global scopes.
      *
-     * @param  array|null $scopes
+     * @param array|null $scopes
+     *
      * @return $this
      */
     public function withoutGlobalScopes(array $scopes = null)
@@ -399,7 +414,8 @@ class Builder extends BaseBuilder
     /**
      * Processes and converts the given LDAP results into models.
      *
-     * @param  array                        $results
+     * @param array $results
+     *
      * @return \LdapRecord\Query\Collection
      */
     protected function process(array $results)

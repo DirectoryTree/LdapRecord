@@ -48,8 +48,9 @@ class Container
     /**
      * Forward missing static calls onto the current instance.
      *
-     * @param  string $method
-     * @param  mixed  $args
+     * @param string $method
+     * @param mixed  $args
+     *
      * @return mixed
      */
     public static function __callStatic($method, $args)
@@ -70,7 +71,8 @@ class Container
     /**
      * Set the container instance.
      *
-     * @param  Container|null $container
+     * @param Container|null $container
+     *
      * @return Container|null
      */
     public static function setInstance(self $container = null)
@@ -101,8 +103,9 @@ class Container
     /**
      * Forward missing method calls onto the connection manager.
      *
-     * @param  string $method
-     * @param  mixed  $args
+     * @param string $method
+     * @param mixed  $args
+     *
      * @return mixed
      */
     public function __call($method, $args)

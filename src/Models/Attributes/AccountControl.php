@@ -92,7 +92,8 @@ class AccountControl
     /**
      * Add the flag to the account control values.
      *
-     * @param  int   $flag
+     * @param int $flag
+     *
      * @return $this
      */
     public function add($flag)
@@ -107,7 +108,8 @@ class AccountControl
     /**
      * Remove the flag from the account control.
      *
-     * @param  int   $flag
+     * @param int $flag
+     *
      * @return $this
      */
     public function remove($flag)
@@ -120,7 +122,8 @@ class AccountControl
     /**
      * Extract and apply the flag.
      *
-     * @param  int  $flag
+     * @param int $flag
+     *
      * @return void
      */
     public function apply($flag)
@@ -131,7 +134,8 @@ class AccountControl
     /**
      * Determine if the account control contains the given UAC flag(s).
      *
-     * @param  int  $flag
+     * @param int $flag
+     *
      * @return bool
      */
     public function has($flag)
@@ -150,7 +154,8 @@ class AccountControl
     /**
      * Determine if the account control does not contain the given UAC flag(s).
      *
-     * @param  int  $flag
+     * @param int $flag
+     *
      * @return bool
      */
     public function doesntHave($flag)
@@ -436,7 +441,8 @@ class AccountControl
     /**
      * Set the account control values.
      *
-     * @param  array $flags
+     * @param array $flags
+     *
      * @return void
      */
     public function setValues(array $flags)
@@ -477,7 +483,8 @@ class AccountControl
     /**
      * Extracts the given flag into an array of flags used.
      *
-     * @param  int   $flag
+     * @param int $flag
+     *
      * @return array
      */
     public function extractFlags($flag)

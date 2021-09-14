@@ -10,7 +10,8 @@ class HasOnePrimaryGroup extends HasOne
     /**
      * Get the foreign model by the given value.
      *
-     * @param  string     $value
+     * @param string $value
+     *
      * @return Model|null
      */
     protected function getForeignModelByValue($value)
@@ -25,7 +26,8 @@ class HasOnePrimaryGroup extends HasOne
      *
      * Retrieves the last RID from the models Object SID.
      *
-     * @param  Model  $model
+     * @param Model $model
+     *
      * @return string
      */
     protected function getForeignValueFromModel(Model $model)

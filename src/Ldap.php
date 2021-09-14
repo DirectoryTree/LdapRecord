@@ -21,7 +21,8 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param  resource $searchResults
+     * @param resource $searchResults
+     *
      * @return resource
      */
     public function getFirstEntry($searchResults)
@@ -36,7 +37,8 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param  resource $entry
+     * @param resource $entry
+     *
      * @return resource
      */
     public function getNextEntry($entry)
@@ -51,7 +53,8 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param  resource    $entry
+     * @param resource $entry
+     *
      * @return array|false
      */
     public function getAttributes($entry)
@@ -66,7 +69,8 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param  resource $searchResults
+     * @param resource $searchResults
+     *
      * @return int
      */
     public function countEntries($searchResults)
@@ -81,9 +85,10 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-compare.php
      *
-     * @param  string $dn
-     * @param  string $attribute
-     * @param  string $value
+     * @param string $dn
+     * @param string $attribute
+     * @param string $value
+     *
      * @return mixed
      */
     public function compare($dn, $attribute, $value)
@@ -126,6 +131,7 @@ class Ldap implements LdapInterface
      *
      * @param $entry
      * @param $attribute
+     *
      * @return array
      */
     public function getValuesLen($entry, $attribute)
@@ -158,7 +164,8 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-set-rebind-proc.php
      *
-     * @param  callable $callback
+     * @param callable $callback
+     *
      * @return bool
      */
     public function setRebindCallback(callable $callback)
@@ -450,7 +457,8 @@ class Ldap implements LdapInterface
     /**
      * Extract the diagnostic code from the message.
      *
-     * @param  string      $message
+     * @param string $message
+     *
      * @return string|bool
      */
     public function extractDiagnosticCode($message)

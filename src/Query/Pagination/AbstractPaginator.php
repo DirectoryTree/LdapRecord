@@ -38,7 +38,7 @@ abstract class AbstractPaginator
     /**
      * Constructor.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      */
     public function __construct(Builder $query, $filter, $perPage, $isCritical)
     {
@@ -51,8 +51,7 @@ abstract class AbstractPaginator
     /**
      * Execute the pagination request.
      *
-     * @param LdapInterface $ldap
-     *
+     * @param  LdapInterface  $ldap
      * @return array
      */
     public function execute(LdapInterface $ldap)
@@ -95,8 +94,7 @@ abstract class AbstractPaginator
     /**
      * Apply the server controls.
      *
-     * @param LdapInterface $ldap
-     *
+     * @param  LdapInterface  $ldap
      * @return void
      */
     abstract protected function applyServerControls(LdapInterface $ldap);
@@ -104,8 +102,7 @@ abstract class AbstractPaginator
     /**
      * Reset the server controls.
      *
-     * @param LdapInterface $ldap
-     *
+     * @param  LdapInterface  $ldap
      * @return mixed
      */
     abstract protected function resetServerControls(LdapInterface $ldap);
@@ -113,9 +110,8 @@ abstract class AbstractPaginator
     /**
      * Update the server controls.
      *
-     * @param LdapInterface $ldap
-     * @param resource      $resource
-     *
+     * @param  LdapInterface  $ldap
+     * @param  resource  $resource
      * @return void
      */
     abstract protected function updateServerControls(LdapInterface $ldap, $resource);

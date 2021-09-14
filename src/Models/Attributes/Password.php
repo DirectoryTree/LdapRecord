@@ -15,8 +15,7 @@ class Password
     /**
      * Make an encoded password for transmission over LDAP.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function encode($password)
@@ -27,9 +26,8 @@ class Password
     /**
      * Make a salted md5 password.
      *
-     * @param string      $password
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  null|string  $salt
      * @return string
      */
     public static function smd5($password, $salt = null)
@@ -40,9 +38,8 @@ class Password
     /**
      * Make a salted SHA password.
      *
-     * @param string      $password
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  null|string  $salt
      * @return string
      */
     public static function ssha($password, $salt = null)
@@ -53,9 +50,8 @@ class Password
     /**
      * Make a salted SSHA256 password.
      *
-     * @param string      $password
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  null|string  $salt
      * @return string
      */
     public static function ssha256($password, $salt = null)
@@ -66,9 +62,8 @@ class Password
     /**
      * Make a salted SSHA384 password.
      *
-     * @param string      $password
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  null|string  $salt
      * @return string
      */
     public static function ssha384($password, $salt = null)
@@ -79,9 +74,8 @@ class Password
     /**
      * Make a salted SSHA512 password.
      *
-     * @param string      $password
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  null|string  $salt
      * @return string
      */
     public static function ssha512($password, $salt = null)
@@ -92,8 +86,7 @@ class Password
     /**
      * Make a non-salted SHA password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function sha($password)
@@ -104,8 +97,7 @@ class Password
     /**
      * Make a non-salted SHA256 password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function sha256($password)
@@ -116,8 +108,7 @@ class Password
     /**
      * Make a non-salted SHA384 password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function sha384($password)
@@ -128,8 +119,7 @@ class Password
     /**
      * Make a non-salted SHA512 password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function sha512($password)
@@ -140,8 +130,7 @@ class Password
     /**
      * Make a non-salted md5 password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string
      */
     public static function md5($password)
@@ -152,9 +141,8 @@ class Password
     /**
      * Crypt password with an MD5 salt.
      *
-     * @param string $password
-     * @param string $salt
-     *
+     * @param  string  $password
+     * @param  string  $salt
      * @return string
      */
     public static function md5Crypt($password, $salt = null)
@@ -165,9 +153,8 @@ class Password
     /**
      * Crypt password with a SHA256 salt.
      *
-     * @param string $password
-     * @param string $salt
-     *
+     * @param  string  $password
+     * @param  string  $salt
      * @return string
      */
     public static function sha256Crypt($password, $salt = null)
@@ -178,9 +165,8 @@ class Password
     /**
      * Crypt a password with a SHA512 salt.
      *
-     * @param string $password
-     * @param string $salt
-     *
+     * @param  string  $password
+     * @param  string  $salt
      * @return string
      */
     public static function sha512Crypt($password, $salt = null)
@@ -191,11 +177,10 @@ class Password
     /**
      * Make a new password hash.
      *
-     * @param string      $password The password to make a hash of.
-     * @param string      $method   The hash function to use.
-     * @param string|null $algo     The algorithm to use for hashing.
-     * @param string|null $salt     The salt to append onto the hash.
-     *
+     * @param  string  $password  The password to make a hash of.
+     * @param  string  $method  The hash function to use.
+     * @param  string|null  $algo  The algorithm to use for hashing.
+     * @param  string|null  $salt  The salt to append onto the hash.
      * @return string
      */
     protected static function makeHash($password, $method, $algo = null, $salt = null)
@@ -208,10 +193,9 @@ class Password
     /**
      * Make a hashed password.
      *
-     * @param string      $password
-     * @param int         $type
-     * @param null|string $salt
-     *
+     * @param  string  $password
+     * @param  int  $type
+     * @param  null|string  $salt
      * @return string
      */
     protected static function makeCrypt($password, $type, $salt = null)
@@ -222,8 +206,7 @@ class Password
     /**
      * Make a salt for the crypt() method using the given type.
      *
-     * @param int $type
-     *
+     * @param  int  $type
      * @return string
      */
     protected static function makeCryptSalt($type)
@@ -242,11 +225,10 @@ class Password
     /**
      * Determine the crypt prefix and length.
      *
-     * @param int $type
+     * @param  int  $type
+     * @return array
      *
      * @throws InvalidArgumentException
-     *
-     * @return array
      */
     protected static function makeCryptPrefixAndLength($type)
     {
@@ -265,8 +247,7 @@ class Password
     /**
      * Attempt to retrieve the hash method used for the password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return string|void
      */
     public static function getHashMethod($password)
@@ -281,8 +262,7 @@ class Password
     /**
      * Attempt to retrieve the hash method and algorithm used for the password.
      *
-     * @param string $password
-     *
+     * @param  string  $password
      * @return array|void
      */
     public static function getHashMethodAndAlgo($password)
@@ -297,9 +277,9 @@ class Password
     /**
      * Attempt to retrieve a salt from the encrypted password.
      *
-     * @throws LdapRecordException
-     *
      * @return string
+     *
+     * @throws LdapRecordException
      */
     public static function getSalt($encryptedPassword)
     {
@@ -319,11 +299,10 @@ class Password
     /**
      * Determine if the hash method requires a salt to be given.
      *
-     * @param string $method
+     * @param  string  $method
+     * @return bool
      *
      * @throws \ReflectionException
-     *
-     * @return bool
      */
     public static function hashMethodRequiresSalt($method): bool
     {

@@ -9,7 +9,7 @@ use LdapRecord\Query\Model\Builder;
 
 /**
  * @method bool exists($models = null) Determine if the relation contains all of the given models, or any models
- * @method bool contains($models)      Determine if any of the given models are contained in the relation
+ * @method bool contains($models) Determine if any of the given models are contained in the relation
  */
 abstract class Relation
 {
@@ -58,11 +58,11 @@ abstract class Relation
     /**
      * Constructor.
      *
-     * @param Builder $query
-     * @param Model   $parent
-     * @param mixed   $related
-     * @param string  $relationKey
-     * @param string  $foreignKey
+     * @param  Builder  $query
+     * @param  Model  $parent
+     * @param  mixed  $related
+     * @param  string  $relationKey
+     * @param  string  $foreignKey
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {
@@ -78,9 +78,8 @@ abstract class Relation
     /**
      * Handle dynamic method calls to the relationship.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -108,8 +107,7 @@ abstract class Relation
     /**
      * Execute the relationship query.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return Collection
      */
     public function get($columns = ['*'])
@@ -122,8 +120,7 @@ abstract class Relation
      *
      * If the query columns are empty, the given columns are applied.
      *
-     * @param array $columns
-     *
+     * @param  array  $columns
      * @return Collection
      */
     protected function getResultsWithColumns($columns)
@@ -138,8 +135,7 @@ abstract class Relation
     /**
      * Get the first result of the relationship.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return Model|null
      */
     public function first($columns = ['*'])
@@ -239,8 +235,7 @@ abstract class Relation
     /**
      * Get the foreign model by the given value.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return Model|null
      */
     protected function getForeignModelByValue($value)
@@ -253,8 +248,7 @@ abstract class Relation
     /**
      * Returns the escaped foreign key value for use in an LDAP filter from the model.
      *
-     * @param Model $model
-     *
+     * @param  Model  $model
      * @return string
      */
     protected function getEscapedForeignValueFromModel(Model $model)
@@ -277,8 +271,7 @@ abstract class Relation
     /**
      * Get the foreign key value from the model.
      *
-     * @param Model $model
-     *
+     * @param  Model  $model
      * @return string
      */
     protected function getForeignValueFromModel(Model $model)
@@ -291,9 +284,8 @@ abstract class Relation
     /**
      * Get the first attribute value from the model.
      *
-     * @param Model  $model
-     * @param string $attribute
-     *
+     * @param  Model  $model
+     * @param  string  $attribute
      * @return string|null
      */
     protected function getFirstAttributeValue(Model $model, $attribute)
@@ -304,8 +296,7 @@ abstract class Relation
     /**
      * Transforms the results by converting the models into their related.
      *
-     * @param Collection $results
-     *
+     * @param  Collection  $results
      * @return Collection
      */
     protected function transformResults(Collection $results)
@@ -336,9 +327,8 @@ abstract class Relation
     /**
      * Determines the model from the given relations.
      *
-     * @param Model $model
-     * @param array $related
-     *
+     * @param  Model  $model
+     * @param  array  $related
      * @return string|bool
      */
     protected function determineModelFromRelated(Model $model, array $related)
@@ -355,8 +345,7 @@ abstract class Relation
     /**
      * Sort and normalize the object classes.
      *
-     * @param array $classes
-     *
+     * @param  array  $classes
      * @return array
      */
     protected function normalizeObjectClasses($classes)

@@ -30,8 +30,8 @@ abstract class Validator
     /**
      * Constructor.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param  string  $key
+     * @param  mixed  $value
      */
     public function __construct($key, $value)
     {
@@ -49,9 +49,9 @@ abstract class Validator
     /**
      * Validate the configuration value.
      *
-     * @throws ConfigurationException
-     *
      * @return bool
+     *
+     * @throws ConfigurationException
      */
     public function validate()
     {
@@ -65,9 +65,9 @@ abstract class Validator
     /**
      * Throw a configuration exception.
      *
-     * @throws ConfigurationException
-     *
      * @return void
+     *
+     * @throws ConfigurationException
      */
     protected function fail()
     {

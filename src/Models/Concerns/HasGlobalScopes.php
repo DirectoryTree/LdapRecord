@@ -11,12 +11,11 @@ trait HasGlobalScopes
     /**
      * Register a new global scope on the model.
      *
-     * @param Scope|Closure|string $scope
-     * @param Closure|null         $implementation
+     * @param  Scope|Closure|string  $scope
+     * @param  Closure|null  $implementation
+     * @return mixed
      *
      * @throws InvalidArgumentException
-     *
-     * @return mixed
      */
     public static function addGlobalScope($scope, Closure $implementation = null)
     {
@@ -34,8 +33,7 @@ trait HasGlobalScopes
     /**
      * Determine if a model has a global scope.
      *
-     * @param Scope|string $scope
-     *
+     * @param  Scope|string  $scope
      * @return bool
      */
     public static function hasGlobalScope($scope)
@@ -46,8 +44,7 @@ trait HasGlobalScopes
     /**
      * Get a global scope registered with the model.
      *
-     * @param Scope|string $scope
-     *
+     * @param  Scope|string  $scope
      * @return Scope|Closure|null
      */
     public static function getGlobalScope($scope)

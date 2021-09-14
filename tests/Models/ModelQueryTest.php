@@ -341,7 +341,7 @@ class ModelQueryTest extends TestCase
         $query->shouldReceive('in')->once()->with('foo')->andReturnSelf();
         $query->shouldReceive('chunk')->once()->with(250, m::on(function ($callback) use ($shouldBeDeleted) {
             $callback($shouldBeDeleted);
-            
+
             return $callback instanceof Closure;
         }));
 

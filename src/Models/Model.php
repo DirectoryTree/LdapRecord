@@ -3,6 +3,7 @@
 namespace LdapRecord\Models;
 
 use ArrayAccess;
+use Illuminate\Contracts\Support\Arrayable;
 use InvalidArgumentException;
 use JsonSerializable;
 use LdapRecord\Connection;
@@ -14,7 +15,6 @@ use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
-use Illuminate\Contracts\Support\Arrayable;
 use UnexpectedValueException;
 
 /** @mixin Builder */
@@ -115,7 +115,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Constructor.
      *
-     * @param array $attributes
+     * @param  array  $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -163,9 +163,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Handle dynamic method calls into the model.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -180,9 +179,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Handle dynamic static method calls into the method.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
     public static function __callStatic($method, $parameters)
@@ -203,8 +201,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the models distinguished name.
      *
-     * @param string $dn
-     *
+     * @param  string  $dn
      * @return static
      */
     public function setDn($dn)
@@ -237,8 +234,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the connection associated with the model.
      *
-     * @param string $name
-     *
+     * @param  string  $name
      * @return $this
      */
     public function setConnection($name)
@@ -251,8 +247,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Begin querying the model on a given connection.
      *
-     * @param string|null $connection
-     *
+     * @param  string|null  $connection
      * @return Builder
      */
     public static function on($connection = null)
@@ -267,8 +262,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get all the models from the directory.
      *
-     * @param array|mixed $attributes
-     *
+     * @param  array|mixed  $attributes
      * @return Collection|static[]
      */
     public static function all($attributes = ['*'])
@@ -313,8 +307,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create a new query builder.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return Builder
      */
     public function newQueryBuilder(Connection $connection)
@@ -325,8 +318,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create a new model instance.
      *
-     * @param array $attributes
-     *
+     * @param  array  $attributes
      * @return static
      */
     public function newInstance(array $attributes = [])
@@ -337,8 +329,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Resolve a connection instance.
      *
-     * @param string|null $connection
-     *
+     * @param  string|null  $connection
      * @return Connection
      */
     public static function resolveConnection($connection = null)
@@ -369,8 +360,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the connection container.
      *
-     * @param Container $container
-     *
+     * @param  Container  $container
      * @return void
      */
     public static function setConnectionContainer(Container $container)
@@ -391,8 +381,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Register the query scopes for this builder instance.
      *
-     * @param Builder $builder
-     *
+     * @param  Builder  $builder
      * @return Builder
      */
     public function registerModelScopes($builder)
@@ -407,8 +396,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Register the global model scopes.
      *
-     * @param Builder $builder
-     *
+     * @param  Builder  $builder
      * @return Builder
      */
     public function registerGlobalScopes($builder)
@@ -423,8 +411,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Apply the model object class scopes to the given builder instance.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return void
      */
     public function applyObjectClassScopes(Builder $query)
@@ -447,10 +434,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Returns a new batch modification.
      *
-     * @param string|null     $attribute
-     * @param string|int|null $type
-     * @param array           $values
-     *
+     * @param  string|null  $attribute
+     * @param  string|int|null  $type
+     * @param  array  $values
      * @return BatchModification
      */
     public function newBatchModification($attribute = null, $type = null, $values = [])
@@ -461,8 +447,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Returns a new collection with the specified items.
      *
-     * @param mixed $items
-     *
+     * @param  mixed  $items
      * @return Collection
      */
     public function newCollection($items = [])
@@ -473,8 +458,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically retrieve attributes on the object.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return bool
      */
     public function __get($key)
@@ -485,9 +469,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically set attributes on the object.
      *
-     * @param mixed $key
-     * @param mixed $value
-     *
+     * @param  mixed  $key
+     * @param  mixed  $value
      * @return $this
      */
     public function __set($key, $value)
@@ -498,8 +481,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the given offset exists.
      *
-     * @param string $offset
-     *
+     * @param  string  $offset
      * @return bool
      */
     public function offsetExists($offset)
@@ -510,8 +492,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the value for a given offset.
      *
-     * @param string $offset
-     *
+     * @param  string  $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -522,9 +503,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the value at the given offset.
      *
-     * @param string $offset
-     * @param mixed  $value
-     *
+     * @param  string  $offset
+     * @param  mixed  $value
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -535,8 +515,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Unset the value at the given offset.
      *
-     * @param string $offset
-     *
+     * @param  string  $offset
      * @return void
      */
     public function offsetUnset($offset)
@@ -547,8 +526,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if an attribute exists on the model.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function __isset($key)
@@ -559,8 +537,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Unset an attribute on the model.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return void
      */
     public function __unset($key)
@@ -591,8 +568,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Converts extra attributes for JSON serialization.
      *
-     * @param array $attributes
-     *
+     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesForJson(array $attributes = [])
@@ -626,8 +602,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      *
-     * @param static $model
-     *
+     * @param  static  $model
      * @return bool
      */
     public function is(self $model)
@@ -638,8 +613,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Hydrate a new collection of models from LDAP search results.
      *
-     * @param array $records
-     *
+     * @param  array  $records
      * @return Collection
      */
     public function hydrate($records)
@@ -654,8 +628,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Converts the current model into the given model.
      *
-     * @param Model $into
-     *
+     * @param  Model  $into
      * @return Model
      */
     public function convert(self $into)
@@ -705,8 +678,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the models batch modifications.
      *
-     * @param array $modifications
-     *
+     * @param  array  $modifications
      * @return $this
      */
     public function setModifications(array $modifications = [])
@@ -723,11 +695,10 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Adds a batch modification to the model.
      *
-     * @param array|BatchModification $mod
+     * @param  array|BatchModification  $mod
+     * @return $this
      *
      * @throws InvalidArgumentException
-     *
-     * @return $this
      */
     public function addModification($mod = [])
     {
@@ -769,8 +740,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the name of the model, or the given DN.
      *
-     * @param string|null $dn
-     *
+     * @param  string|null  $dn
      * @return string|null
      */
     public function getName($dn = null)
@@ -781,8 +751,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the head attribute of the model, or the given DN.
      *
-     * @param string|null $dn
-     *
+     * @param  string|null  $dn
      * @return string|null
      */
     public function getHead($dn = null)
@@ -794,7 +763,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Get the RDN of the model, of the given DN.
      *
      * @param string|null
-     *
      * @return string|null
      */
     public function getRdn($dn = null)
@@ -806,7 +774,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Get the parent distinguished name of the model, or the given DN.
      *
      * @param string|null
-     *
      * @return string|null
      */
     public function getParentDn($dn = null)
@@ -817,8 +784,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create a new Distinguished Name object.
      *
-     * @param string|null $dn
-     *
+     * @param  string|null  $dn
      * @return DistinguishedName
      */
     public function newDn($dn = null)
@@ -875,8 +841,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a direct descendant of the given.
      *
-     * @param static|string $parent
-     *
+     * @param  static|string  $parent
      * @return bool
      */
     public function isChildOf($parent)
@@ -889,8 +854,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a direct ascendant of the given.
      *
-     * @param static|string $child
-     *
+     * @param  static|string  $child
      * @return bool
      */
     public function isParentOf($child)
@@ -903,8 +867,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a descendant of the given.
      *
-     * @param static|string $model
-     *
+     * @param  static|string  $model
      * @return bool
      */
     public function isDescendantOf($model)
@@ -915,8 +878,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a ancestor of the given.
      *
-     * @param static|string $model
-     *
+     * @param  static|string  $model
      * @return bool
      */
     public function isAncestorOf($model)
@@ -927,9 +889,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determines if the DN is inside of the parent DN.
      *
-     * @param static|string $dn
-     * @param static|string $parentDn
-     *
+     * @param  static|string  $dn
+     * @param  static|string  $parentDn
      * @return bool
      */
     protected function dnIsInside($dn, $parentDn)
@@ -942,8 +903,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the base DN of where the model should be created in.
      *
-     * @param static|string $dn
-     *
+     * @param  static|string  $dn
      * @return $this
      */
     public function inside($dn)
@@ -956,11 +916,10 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Save the model to the directory.
      *
-     * @param array $attributes The attributes to update or create for the current entry.
+     * @param  array  $attributes  The attributes to update or create for the current entry.
+     * @return void
      *
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function save(array $attributes = [])
     {
@@ -978,9 +937,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Inserts the model into the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return void
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     protected function performInsert()
     {
@@ -1020,9 +979,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Updates the model in the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return void
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     protected function performUpdate()
     {
@@ -1044,11 +1003,10 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create the model in the directory.
      *
-     * @param array $attributes The attributes for the new entry.
+     * @param  array  $attributes  The attributes for the new entry.
+     * @return Model
      *
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return Model
      */
     public static function create(array $attributes = [])
     {
@@ -1062,13 +1020,12 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create an attribute on the model.
      *
-     * @param string $attribute The attribute to create
-     * @param mixed  $value     The value of the new attribute
+     * @param  string  $attribute  The attribute to create
+     * @param  mixed  $value  The value of the new attribute
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function createAttribute($attribute, $value)
     {
@@ -1082,12 +1039,11 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Update the model.
      *
-     * @param array $attributes The attributes to update for the current entry.
+     * @param  array  $attributes  The attributes to update for the current entry.
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function update(array $attributes = [])
     {
@@ -1099,13 +1055,12 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Update the model attribute with the specified value.
      *
-     * @param string $attribute The attribute to modify
-     * @param mixed  $value     The new value for the attribute
+     * @param  string  $attribute  The attribute to modify
+     * @param  mixed  $value  The new value for the attribute
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function updateAttribute($attribute, $value)
     {
@@ -1119,12 +1074,11 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Destroy the models for the given distinguished names.
      *
-     * @param Collection|array|string $dns
-     * @param bool                    $recursive
+     * @param  Collection|array|string  $dns
+     * @param  bool  $recursive
+     * @return int
      *
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return int
      */
     public static function destroy($dns, $recursive = false)
     {
@@ -1153,12 +1107,11 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Throws a ModelNotFoundException if the current model does
      * not exist or does not contain a distinguished name.
      *
-     * @param bool $recursive Whether to recursively delete leaf nodes (models that are children).
+     * @param  bool  $recursive  Whether to recursively delete leaf nodes (models that are children).
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function delete($recursive = false)
     {
@@ -1183,9 +1136,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Deletes leaf nodes that are attached to the model.
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return void
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     protected function deleteLeafNodes()
     {
@@ -1200,7 +1153,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Delete an attribute on the model.
      *
-     * @param string|array $attributes The attribute(s) to delete
+     * @param  string|array  $attributes  The attribute(s) to delete
      *
      * Delete specific values in attributes:
      *
@@ -1209,11 +1162,10 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Delete an entire attribute:
      *
      *     ["memberuid" => []]
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function deleteAttribute($attributes)
     {
@@ -1246,8 +1198,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Make a deletable attribute array.
      *
-     * @param string|array $attributes
-     *
+     * @param  string|array  $attributes
      * @return array
      */
     protected function makeDeletableAttributes($attributes)
@@ -1268,14 +1219,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * For example: $user->move($ou);
      *
-     * @param static|string $newParentDn  The new parent of the current model.
-     * @param bool          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
+     * @param  static|string  $newParentDn  The new parent of the current model.
+     * @param  bool  $deleteOldRdn  Whether to delete the old models relative distinguished name once renamed / moved.
+     * @return void
      *
      * @throws UnexpectedValueException
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function move($newParentDn, $deleteOldRdn = true)
     {
@@ -1291,14 +1241,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Rename the model to a new RDN and new parent.
      *
-     * @param string             $rdn          The models new relative distinguished name. Example: "cn=JohnDoe"
-     * @param static|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
-     * @param bool|true          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
+     * @param  string  $rdn  The models new relative distinguished name. Example: "cn=JohnDoe"
+     * @param  static|string|null  $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
+     * @param  bool|true  $deleteOldRdn  Whether to delete the old models relative distinguished name once renamed / moved.
+     * @return void
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
-     *
-     * @return void
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
@@ -1350,9 +1299,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get a distinguished name that is creatable for the model.
      *
-     * @param string|null $name
-     * @param string|null $attribute
-     *
+     * @param  string|null  $name
+     * @param  string|null  $attribute
      * @return string
      */
     public function getCreatableDn($name = null, $attribute = null)
@@ -1366,9 +1314,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get a creatable (escaped) RDN for the model.
      *
-     * @param string|null $name
-     * @param string|null $attribute
-     *
+     * @param  string|null  $name
+     * @param  string|null  $attribute
      * @return string
      */
     public function getCreatableRdn($name = null, $attribute = null)
@@ -1395,8 +1342,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determines if the given modification is valid.
      *
-     * @param mixed $mod
-     *
+     * @param  mixed  $mod
      * @return bool
      */
     protected function isValidModification($mod)
@@ -1438,9 +1384,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Validates that the current model exists.
      *
-     * @throws ModelDoesNotExistException
-     *
      * @return void
+     *
+     * @throws ModelDoesNotExistException
      */
     protected function validateExistence()
     {

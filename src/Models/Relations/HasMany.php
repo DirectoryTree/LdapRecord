@@ -52,7 +52,7 @@ class HasMany extends OneToMany
      * Set the model and attribute to use for attaching / detaching.
      *
      * @param  Model  $using
-     * @param  string  $usingKey
+     * @param  string $usingKey
      * @return $this
      */
     public function using(Model $using, $usingKey)
@@ -66,7 +66,7 @@ class HasMany extends OneToMany
     /**
      * Set the pagination page size of the relation query.
      *
-     * @param  int  $pageSize
+     * @param  int   $pageSize
      * @return $this
      */
     public function setPageSize($pageSize)
@@ -79,7 +79,7 @@ class HasMany extends OneToMany
     /**
      * Paginate the relation using the given page size.
      *
-     * @param  int  $pageSize
+     * @param  int        $pageSize
      * @return Collection
      */
     public function paginate($pageSize = 1000)
@@ -90,7 +90,7 @@ class HasMany extends OneToMany
     /**
      * Paginate the relation using the page size once.
      *
-     * @param  int  $pageSize
+     * @param  int        $pageSize
      * @return Collection
      */
     protected function paginateOnceUsing($pageSize)
@@ -107,8 +107,8 @@ class HasMany extends OneToMany
     /**
      * Chunk the relation results using the given callback.
      *
-     * @param  int  $pageSize
-     * @param  Closure  $callback
+     * @param  int     $pageSize
+     * @param  Closure $callback
      * @return void
      */
     public function chunk($pageSize, Closure $callback)
@@ -163,7 +163,7 @@ class HasMany extends OneToMany
     /**
      * Attach a model to the relation.
      *
-     * @param  Model|string  $model
+     * @param  Model|string       $model
      * @return Model|string|false
      */
     public function attach($model)
@@ -178,7 +178,7 @@ class HasMany extends OneToMany
     /**
      * Build the attach callback.
      *
-     * @param  Model|string  $model
+     * @param  Model|string $model
      * @return \Closure
      */
     protected function buildAttachCallback($model)
@@ -201,7 +201,7 @@ class HasMany extends OneToMany
     /**
      * Attach a collection of models to the parent instance.
      *
-     * @param  iterable  $models
+     * @param  iterable $models
      * @return iterable
      */
     public function attachMany($models)
@@ -216,7 +216,7 @@ class HasMany extends OneToMany
     /**
      * Detach the model from the relation.
      *
-     * @param  Model|string  $model
+     * @param  Model|string       $model
      * @return Model|string|false
      */
     public function detach($model)
@@ -231,7 +231,7 @@ class HasMany extends OneToMany
     /**
      * Build the detach callback.
      *
-     * @param  Model|string  $model
+     * @param  Model|string $model
      * @return \Closure
      */
     protected function buildDetachCallback($model)
@@ -254,7 +254,7 @@ class HasMany extends OneToMany
     /**
      * Get the attachable foreign value from the model.
      *
-     * @param  Model|string  $model
+     * @param  Model|string $model
      * @return string
      */
     protected function getAttachableForeignValue($model)
@@ -271,7 +271,7 @@ class HasMany extends OneToMany
     /**
      * Get the foreign model by the given value, or fail.
      *
-     * @param  string  $model
+     * @param  string $model
      * @return Model
      *
      * @throws ModelNotFoundException
@@ -293,9 +293,9 @@ class HasMany extends OneToMany
      *
      * If a bypassable exception is encountered, the value will be returned.
      *
-     * @param  callable  $operation
-     * @param  string|array  $bypass
-     * @param  mixed  $value
+     * @param  callable     $operation
+     * @param  string|array $bypass
+     * @param  mixed        $value
      * @return mixed
      *
      * @throws LdapRecordException

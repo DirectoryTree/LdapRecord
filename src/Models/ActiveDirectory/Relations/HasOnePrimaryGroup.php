@@ -10,7 +10,7 @@ class HasOnePrimaryGroup extends HasOne
     /**
      * Get the foreign model by the given value.
      *
-     * @param  string  $value
+     * @param  string     $value
      * @return Model|null
      */
     protected function getForeignModelByValue($value)

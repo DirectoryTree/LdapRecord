@@ -148,7 +148,7 @@ trait HandlesConnection
     /**
      * Convert warnings to exceptions for the given operation.
      *
-     * @param  Closure  $operation
+     * @param  Closure $operation
      * @return mixed
      *
      * @throws LdapRecordException
@@ -187,7 +187,7 @@ trait HandlesConnection
     /**
      * Determine if the failed operation should be bypassed.
      *
-     * @param  string  $method
+     * @param  string $method
      * @return bool
      */
     protected function shouldBypassFailure($method)
@@ -198,7 +198,7 @@ trait HandlesConnection
     /**
      * Determine if the error should be bypassed.
      *
-     * @param  string  $error
+     * @param  string $error
      * @return bool
      */
     protected function shouldBypassError($error)
@@ -221,8 +221,8 @@ trait HandlesConnection
     /**
      * Generates an LDAP connection string for each host given.
      *
-     * @param  string|array  $hosts
-     * @param  string  $port
+     * @param  string|array $hosts
+     * @param  string       $port
      * @return string
      */
     protected function makeConnectionUris($hosts, $port)
@@ -243,8 +243,8 @@ trait HandlesConnection
     /**
      * Assemble the host URI strings.
      *
-     * @param  array|string  $hosts
-     * @param  string  $port
+     * @param  array|string $hosts
+     * @param  string       $port
      * @return array
      */
     protected function assembleHostUris($hosts, $port)

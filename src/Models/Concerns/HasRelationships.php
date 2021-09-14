@@ -13,8 +13,8 @@ trait HasRelationships
      * Returns a new has one relationship.
      *
      * @param  mixed  $related
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
+     * @param  string $relationKey
+     * @param  string $foreignKey
      * @return HasOne
      */
     public function hasOne($related, $relationKey, $foreignKey = 'dn')
@@ -25,7 +25,7 @@ trait HasRelationships
     /**
      * Returns a new has many relationship.
      *
-     * @param  mixed  $related
+     * @param  mixed   $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
      * @return HasMany
@@ -38,9 +38,9 @@ trait HasRelationships
     /**
      * Returns a new has many in relationship.
      *
-     * @param  mixed  $related
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
+     * @param  mixed     $related
+     * @param  string    $relationKey
+     * @param  string    $foreignKey
      * @return HasManyIn
      */
     public function hasManyIn($related, $relationKey, $foreignKey = 'dn')

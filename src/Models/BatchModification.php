@@ -46,9 +46,9 @@ class BatchModification
     /**
      * Constructor.
      *
-     * @param  string|null  $attribute
-     * @param  string|int|null  $type
-     * @param  array  $values
+     * @param string|null     $attribute
+     * @param string|int|null $type
+     * @param array           $values
      */
     public function __construct($attribute = null, $type = null, array $values = [])
     {
@@ -60,7 +60,7 @@ class BatchModification
     /**
      * Set the original value of the attribute before modification.
      *
-     * @param  array|string  $original
+     * @param  array|string $original
      * @return $this
      */
     public function setOriginal($original = [])
@@ -83,7 +83,7 @@ class BatchModification
     /**
      * Set the attribute of the modification.
      *
-     * @param  string  $attribute
+     * @param  string $attribute
      * @return $this
      */
     public function setAttribute($attribute)
@@ -106,7 +106,7 @@ class BatchModification
     /**
      * Set the values of the modification.
      *
-     * @param  array  $values
+     * @param  array $values
      * @return $this
      */
     public function setValues(array $values = [])
@@ -124,7 +124,7 @@ class BatchModification
     /**
      * Normalize all of the attribute values.
      *
-     * @param  array|string  $values
+     * @param  array|string $values
      * @return array
      */
     protected function normalizeAttributeValues($values = [])
@@ -148,7 +148,7 @@ class BatchModification
     /**
      * Set the type of the modification.
      *
-     * @param  int|null  $type
+     * @param  int|null $type
      * @return $this
      */
     public function setType($type = null)

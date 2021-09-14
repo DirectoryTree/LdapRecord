@@ -21,7 +21,7 @@ class Logger
     /**
      * Constructor.
      *
-     * @param  LoggerInterface|null  $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(LoggerInterface $logger = null)
     {
@@ -31,7 +31,7 @@ class Logger
     /**
      * Logs the given event.
      *
-     * @param  mixed  $event
+     * @param  mixed $event
      * @return void
      */
     public function log($event)
@@ -49,7 +49,7 @@ class Logger
     /**
      * Logs an authentication event.
      *
-     * @param  AuthEvent  $event
+     * @param  AuthEvent $event
      * @return void
      */
     public function auth(AuthEvent $event)
@@ -76,7 +76,7 @@ class Logger
     /**
      * Logs a model event.
      *
-     * @param  ModelEvent  $event
+     * @param  ModelEvent $event
      * @return void
      */
     public function model(ModelEvent $event)
@@ -100,7 +100,7 @@ class Logger
     /**
      * Logs a query event.
      *
-     * @param  QueryEvent  $event
+     * @param  QueryEvent $event
      * @return void
      */
     public function query(QueryEvent $event)

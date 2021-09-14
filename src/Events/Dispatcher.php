@@ -57,7 +57,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * Setup a wildcard listener callback.
      *
-     * @param  string  $event
+     * @param  string $event
      * @param  mixed  $listener
      * @return void
      */
@@ -133,8 +133,8 @@ class Dispatcher implements DispatcherInterface
     /**
      * Parse the given event and payload and prepare them for dispatching.
      *
-     * @param  mixed  $event
-     * @param  mixed  $payload
+     * @param  mixed $event
+     * @param  mixed $payload
      * @return array
      */
     protected function parseEventAndPayload($event, $payload)
@@ -166,7 +166,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * Get the wildcard listeners for the event.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
      * @return array
      */
     protected function getWildcardListeners($eventName)
@@ -187,8 +187,8 @@ class Dispatcher implements DispatcherInterface
      *
      * This function is a direct excerpt from Laravel's Str::is().
      *
-     * @param  string  $wildcard
-     * @param  string  $eventName
+     * @param  string $wildcard
+     * @param  string $eventName
      * @return bool
      */
     protected function wildcardContainsEvent($wildcard, $eventName)
@@ -225,7 +225,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * Add the listeners for the event's interfaces to the given array.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
      * @param  array  $listeners
      * @return array
      */
@@ -245,8 +245,8 @@ class Dispatcher implements DispatcherInterface
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  \Closure|string  $listener
-     * @param  bool  $wildcard
+     * @param  \Closure|string $listener
+     * @param  bool            $wildcard
      * @return \Closure
      */
     public function makeListener($listener, $wildcard = false)
@@ -267,8 +267,8 @@ class Dispatcher implements DispatcherInterface
     /**
      * Create a class based listener.
      *
-     * @param  string  $listener
-     * @param  bool  $wildcard
+     * @param  string   $listener
+     * @param  bool     $wildcard
      * @return \Closure
      */
     protected function createClassListener($listener, $wildcard = false)
@@ -288,7 +288,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * Create the class based event callable.
      *
-     * @param  string  $listener
+     * @param  string   $listener
      * @return callable
      */
     protected function createClassCallable($listener)
@@ -301,7 +301,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * Parse the class listener into class and method.
      *
-     * @param  string  $listener
+     * @param  string $listener
      * @return array
      */
     protected function parseListenerCallback($listener)

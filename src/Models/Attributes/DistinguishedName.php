@@ -19,7 +19,7 @@ class DistinguishedName
     /**
      * Constructor.
      *
-     * @param  string|null  $value
+     * @param string|null $value
      */
     public function __construct($value = null)
     {
@@ -39,7 +39,7 @@ class DistinguishedName
     /**
      * Alias of the "build" method.
      *
-     * @param  string|null  $value
+     * @param  string|null              $value
      * @return DistinguishedNameBuilder
      */
     public static function of($value = null)
@@ -50,7 +50,7 @@ class DistinguishedName
     /**
      * Get a new DN builder object from the given DN.
      *
-     * @param  string|null  $value
+     * @param  string|null              $value
      * @return DistinguishedNameBuilder
      */
     public static function build($value = null)
@@ -61,7 +61,7 @@ class DistinguishedName
     /**
      * Make a new distinguished name instance.
      *
-     * @param  string|null  $value
+     * @param  string|null $value
      * @return static
      */
     public static function make($value = null)
@@ -72,7 +72,7 @@ class DistinguishedName
     /**
      * Explode a distinguished name into relative distinguished names.
      *
-     * @param  string  $dn
+     * @param  string $dn
      * @return array
      */
     public static function explode($dn)
@@ -95,7 +95,7 @@ class DistinguishedName
     /**
      * Un-escapes a hexadecimal string into its original string representation.
      *
-     * @param  string  $value
+     * @param  string $value
      * @return string
      */
     public static function unescape($value)
@@ -108,7 +108,7 @@ class DistinguishedName
     /**
      * Explode the RDN into an attribute and value.
      *
-     * @param  string  $rdn
+     * @param  string $rdn
      * @return array
      */
     public static function explodeRdn($rdn)
@@ -119,7 +119,7 @@ class DistinguishedName
     /**
      * Implode the component attribute and value into an RDN.
      *
-     * @param  string  $rdn
+     * @param  string $rdn
      * @return string
      */
     public static function makeRdn(array $component)
@@ -140,7 +140,7 @@ class DistinguishedName
     /**
      * Set the underlying value.
      *
-     * @param  string|null  $value
+     * @param  string|null $value
      * @return $this
      */
     public function set($value)
@@ -305,7 +305,7 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a parent of the given child.
      *
-     * @param  DistinguishedName  $child
+     * @param  DistinguishedName $child
      * @return bool
      */
     public function isParentOf(self $child)
@@ -316,7 +316,7 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a child of the given parent.
      *
-     * @param  DistinguishedName  $parent
+     * @param  DistinguishedName $parent
      * @return bool
      */
     public function isChildOf(self $parent)
@@ -336,7 +336,7 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is an ancestor of the descendant.
      *
-     * @param  DistinguishedName  $descendant
+     * @param  DistinguishedName $descendant
      * @return bool
      */
     public function isAncestorOf(self $descendant)
@@ -347,7 +347,7 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a descendant of the ancestor.
      *
-     * @param  DistinguishedName  $ancestor
+     * @param  DistinguishedName $ancestor
      * @return bool
      */
     public function isDescendantOf(self $ancestor)
@@ -371,8 +371,8 @@ class DistinguishedName
     /**
      * Compare whether the two distinguished name values are equal.
      *
-     * @param  array  $values
-     * @param  array  $other
+     * @param  array $values
+     * @param  array $other
      * @return bool
      */
     protected function compare(array $values, array $other)
@@ -383,7 +383,7 @@ class DistinguishedName
     /**
      * Recase the array values.
      *
-     * @param  array  $values
+     * @param  array $values
      * @return array
      */
     protected function recase(array $values)
@@ -394,7 +394,7 @@ class DistinguishedName
     /**
      * Normalize the string value.
      *
-     * @param  string  $value
+     * @param  string $value
      * @return string
      */
     protected function normalize($value)

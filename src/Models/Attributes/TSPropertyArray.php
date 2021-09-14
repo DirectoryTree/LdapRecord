@@ -71,7 +71,7 @@ class TSPropertyArray
      *   - Pass the userParameters binary value. The object representation of that will be decoded and constructed.
      *   - Pass nothing and a default set of TSProperty key => value pairs will be used (See DEFAULTS constant).
      *
-     * @param  mixed  $tsPropertyArray
+     * @param mixed $tsPropertyArray
      */
     public function __construct($tsPropertyArray = null)
     {
@@ -93,7 +93,7 @@ class TSPropertyArray
     /**
      * Check if a specific TSProperty exists by its property name.
      *
-     * @param  string  $propName
+     * @param  string $propName
      * @return bool
      */
     public function has($propName)
@@ -104,7 +104,7 @@ class TSPropertyArray
     /**
      * Get a TSProperty object by its property name (ie. CtxWFProfilePath).
      *
-     * @param  string  $propName
+     * @param  string     $propName
      * @return TSProperty
      */
     public function get($propName)
@@ -117,7 +117,7 @@ class TSPropertyArray
     /**
      * Add a TSProperty object. If it already exists, it will be overwritten.
      *
-     * @param  TSProperty  $tsProperty
+     * @param  TSProperty $tsProperty
      * @return $this
      */
     public function add(TSProperty $tsProperty)
@@ -130,7 +130,7 @@ class TSPropertyArray
     /**
      * Remove a TSProperty by its property name (ie. CtxMinEncryptionLevel).
      *
-     * @param  string  $propName
+     * @param  string $propName
      * @return $this
      */
     public function remove($propName)
@@ -147,7 +147,7 @@ class TSPropertyArray
     /**
      * Set the value for a specific TSProperty by its name.
      *
-     * @param  string  $propName
+     * @param  string $propName
      * @param  mixed  $propValue
      * @return $this
      */
@@ -209,7 +209,7 @@ class TSPropertyArray
     /**
      * Validates that the given property name exists.
      *
-     * @param  string  $propName
+     * @param string $propName
      */
     protected function validateProp($propName)
     {
@@ -219,7 +219,7 @@ class TSPropertyArray
     }
 
     /**
-     * @param  string  $propName
+     * @param  string     $propName
      * @return TSProperty
      */
     protected function getTsPropObj($propName)
@@ -230,7 +230,7 @@ class TSPropertyArray
     /**
      * Get an associative array with all of the userParameters property names and values.
      *
-     * @param  string  $userParameters
+     * @param  string $userParameters
      * @return void
      */
     protected function decodeUserParameters($userParameters)
@@ -263,9 +263,9 @@ class TSPropertyArray
      * individual TSProperty structures. Return the full length
      * of the TSPropertyArray data.
      *
-     * @param  string  $tsPropertyArray
-     * @param  int  $tsPropCount
-     * @return int The length of the data in the TSPropertyArray
+     * @param  string $tsPropertyArray
+     * @param  int    $tsPropCount
+     * @return int    The length of the data in the TSPropertyArray
      */
     protected function addTSPropData($tsPropertyArray, $tsPropCount)
     {

@@ -81,7 +81,7 @@ class ConnectionManager
     /**
      * Forward missing method calls onto the instance.
      *
-     * @param  string  $method
+     * @param  string $method
      * @param  mixed  $args
      * @return mixed
      */
@@ -104,7 +104,7 @@ class ConnectionManager
      * Add a new connection.
      *
      * @param  Connection  $connection
-     * @param  string|null  $name
+     * @param  string|null $name
      * @return $this
      */
     public function add(Connection $connection, $name = null)
@@ -144,7 +144,7 @@ class ConnectionManager
     /**
      * Get a connection by name or return the default.
      *
-     * @param  string|null  $name
+     * @param  string|null $name
      * @return Connection
      *
      * @throws ContainerException If the given connection does not exist.
@@ -181,7 +181,7 @@ class ConnectionManager
     /**
      * Checks if the connection exists.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return bool
      */
     public function exists($name)
@@ -192,7 +192,7 @@ class ConnectionManager
     /**
      * Set the default connection name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return $this
      */
     public function setDefault($name = null)
@@ -231,7 +231,7 @@ class ConnectionManager
     /**
      * Set the event logger to use.
      *
-     * @param  LoggerInterface  $logger
+     * @param  LoggerInterface $logger
      * @return void
      */
     public function setLogger(LoggerInterface $logger)
@@ -292,7 +292,7 @@ class ConnectionManager
     /**
      * Set the event dispatcher.
      *
-     * @param  DispatcherInterface  $dispatcher
+     * @param  DispatcherInterface $dispatcher
      * @return void
      */
     public function setDispatcher(DispatcherInterface $dispatcher)

@@ -41,7 +41,7 @@ class MbString
     /**
      * Split a string into its individual characters and return it as an array.
      *
-     * @param  string  $value
+     * @param  string   $value
      * @return string[]
      */
     public static function split($value)

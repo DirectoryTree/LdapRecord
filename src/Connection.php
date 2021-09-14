@@ -88,8 +88,8 @@ class Connection
     /**
      * Constructor.
      *
-     * @param  array  $config
-     * @param  LdapInterface|null  $ldap
+     * @param array              $config
+     * @param LdapInterface|null $ldap
      */
     public function __construct($config = [], LdapInterface $ldap = null)
     {
@@ -109,7 +109,7 @@ class Connection
     /**
      * Set the connection configuration.
      *
-     * @param  array  $config
+     * @param  array $config
      * @return $this
      *
      * @throws Configuration\ConfigurationException
@@ -128,7 +128,7 @@ class Connection
     /**
      * Set the LDAP connection.
      *
-     * @param  LdapInterface  $ldap
+     * @param  LdapInterface $ldap
      * @return $this
      */
     public function setLdapConnection(LdapInterface $ldap)
@@ -141,7 +141,7 @@ class Connection
     /**
      * Set the event dispatcher.
      *
-     * @param  DispatcherInterface  $dispatcher
+     * @param  DispatcherInterface $dispatcher
      * @return $this
      */
     public function setDispatcher(DispatcherInterface $dispatcher)
@@ -189,7 +189,7 @@ class Connection
     /**
      * Set the cache store.
      *
-     * @param  CacheInterface  $store
+     * @param  CacheInterface $store
      * @return $this
      */
     public function setCache(CacheInterface $store)
@@ -234,8 +234,8 @@ class Connection
      *
      * If no username or password is specified, then the configured credentials are used.
      *
-     * @param  string|null  $username
-     * @param  string|null  $password
+     * @param  string|null $username
+     * @param  string|null $password
      * @return Connection
      *
      * @throws Auth\BindException
@@ -306,7 +306,7 @@ class Connection
     /**
      * Dispatch an event.
      *
-     * @param  object  $event
+     * @param  object $event
      * @return void
      */
     public function dispatch($event)
@@ -329,7 +329,7 @@ class Connection
     /**
      * Perform the operation on the LDAP connection.
      *
-     * @param  Closure  $operation
+     * @param  Closure $operation
      * @return mixed
      */
     public function run(Closure $operation)
@@ -355,7 +355,7 @@ class Connection
     /**
      * Attempt to get an exception for the cause of failure.
      *
-     * @param  LdapRecordException  $e
+     * @param  LdapRecordException $e
      * @return mixed
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e)
@@ -375,7 +375,7 @@ class Connection
     /**
      * Run the operation callback on the current LDAP connection.
      *
-     * @param  Closure  $operation
+     * @param  Closure $operation
      * @return mixed
      *
      * @throws LdapRecordException
@@ -430,8 +430,8 @@ class Connection
     /**
      * Attempt to retry an LDAP operation if due to a lost connection.
      *
-     * @param  LdapRecordException  $e
-     * @param  Closure  $operation
+     * @param  LdapRecordException $e
+     * @param  Closure             $operation
      * @return mixed
      *
      * @throws LdapRecordException
@@ -451,7 +451,7 @@ class Connection
     /**
      * Retry the operation on the current host.
      *
-     * @param  Closure  $operation
+     * @param  Closure $operation
      * @return mixed
      *
      * @throws LdapRecordException
@@ -472,8 +472,8 @@ class Connection
     /**
      * Attempt the operation again on the next host.
      *
-     * @param  LdapRecordException  $e
-     * @param  Closure  $operation
+     * @param  LdapRecordException $e
+     * @param  Closure             $operation
      * @return mixed
      *
      * @throws LdapRecordException

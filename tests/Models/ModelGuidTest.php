@@ -32,6 +32,6 @@ class ModelGuidTest extends TestCase
 
         $m = new Entry(['objectguid' => hex2bin($hex)]);
 
-        $this->assertEquals('270db4d0-249d-46a7-9cc5-eb695d9af9ac', $m->jsonSerialize()['objectguid'][0]);
+        $this->assertEquals('270db4d0-249d-46a7-9cc5-eb695d9af9ac', $m->toArray()['objectguid'][0]);
     }
 }

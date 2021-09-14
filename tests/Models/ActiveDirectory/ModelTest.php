@@ -34,7 +34,7 @@ class ModelTest extends TestCase
 
         $m = new Entry(['objectsid' => hex2bin($hex)]);
 
-        $this->assertEquals('S-1-5-21-1004336348-1177238915-682003330-512', $m->jsonSerialize()['objectsid'][0]);
+        $this->assertEquals('S-1-5-21-1004336348-1177238915-682003330-512', $m->toArray()['objectsid'][0]);
     }
 
     public function test_is_deleted()

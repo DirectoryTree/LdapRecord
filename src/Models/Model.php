@@ -14,10 +14,11 @@ use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
+use Illuminate\Contracts\Support\Arrayable;
 use UnexpectedValueException;
 
 /** @mixin Builder */
-abstract class Model implements ArrayAccess, JsonSerializable
+abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 {
     use EscapesValues;
     use Concerns\HasEvents;
@@ -568,13 +569,23 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Convert the object into something JSON serializable.
+     * Convert the model to its JSON encodeable array form.
+     *
+     * @return void
+     */
+    public function toArray()
+    {
+        return $this->attributesToArray();
+    }
+
+    /**
+     * Convert the model's attributes into JSON encodeable values.
      *
      * @return array
      */
     public function jsonSerialize()
     {
-        return $this->attributesToArray();
+        return $this->toArray();
     }
 
     /**

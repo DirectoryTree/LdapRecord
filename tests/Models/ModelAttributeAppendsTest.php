@@ -11,7 +11,7 @@ class ModelAttributeAppendsTest extends TestCase
     {
         $this->assertEquals([
             'foo' => ['bar'],
-        ], (new ModelAttributeAppendsTestStub())->jsonSerialize());
+        ], (new ModelAttributeAppendsTestStub())->toArray());
     }
 
     public function test_get_appends()
@@ -41,7 +41,7 @@ class ModelAttributeAppendsTest extends TestCase
 
         $this->assertEquals([
             'foo-bar' => ['foo-bar'],
-        ], $model->jsonSerialize());
+        ], $model->toArray());
     }
 }
 

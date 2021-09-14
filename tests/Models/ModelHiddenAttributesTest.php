@@ -32,7 +32,7 @@ class ModelHiddenAttributesTest extends TestCase
             'baz' => 'zal',
         ]);
 
-        $this->assertEquals(['baz' => ['zal']], $m->jsonSerialize());
+        $this->assertEquals(['baz' => ['zal']], $m->toArray());
     }
 
     public function test_attributes_can_be_visible()
@@ -42,7 +42,7 @@ class ModelHiddenAttributesTest extends TestCase
             'baz' => 'zal',
         ]);
 
-        $this->assertEquals(['foo' => ['bar']], $m->jsonSerialize());
+        $this->assertEquals(['foo' => ['bar']], $m->toArray());
     }
 
     public function test_attributes_can_be_made_visible()
@@ -57,7 +57,7 @@ class ModelHiddenAttributesTest extends TestCase
         $this->assertEquals([
             'foo' => ['bar'],
             'baz' => ['zal'],
-        ], $m->jsonSerialize());
+        ], $m->toArray());
     }
 
     public function test_attributes_can_be_made_hidden()
@@ -69,7 +69,7 @@ class ModelHiddenAttributesTest extends TestCase
 
         $m->makeHidden('foo');
 
-        $this->assertEquals(['baz' => ['zal']], $m->jsonSerialize());
+        $this->assertEquals(['baz' => ['zal']], $m->toArray());
     }
 
     public function test_attributes_can_be_added_as_hidden()
@@ -81,7 +81,7 @@ class ModelHiddenAttributesTest extends TestCase
 
         $m->addHidden('baz');
 
-        $this->assertEmpty($m->jsonSerialize());
+        $this->assertEmpty($m->toArray());
     }
 
     public function test_hidden_cannot_be_overridden_and_made_visible()
@@ -93,7 +93,7 @@ class ModelHiddenAttributesTest extends TestCase
 
         $m->setVisible(['foo']);
 
-        $this->assertEmpty($m->jsonSerialize());
+        $this->assertEmpty($m->toArray());
     }
 
     public function test_visible_can_be_overridden()
@@ -105,7 +105,7 @@ class ModelHiddenAttributesTest extends TestCase
 
         $m->setHidden(['baz']);
 
-        $this->assertEquals(['foo' => ['bar']], $m->jsonSerialize());
+        $this->assertEquals(['foo' => ['bar']], $m->toArray());
     }
 
     public function test_visible_attributes_can_be_added()
@@ -120,7 +120,7 @@ class ModelHiddenAttributesTest extends TestCase
         $this->assertEquals([
             'foo' => ['bar'],
             'baz' => ['zal'],
-        ], $m->jsonSerialize());
+        ], $m->toArray());
     }
 
     public function test_attribute_keys_are_normalized()
@@ -132,7 +132,7 @@ class ModelHiddenAttributesTest extends TestCase
 
         $m->makeHidden(['FOO', 'bAz']);
 
-        $this->assertEmpty($m->jsonSerialize());
+        $this->assertEmpty($m->toArray());
     }
 }
 

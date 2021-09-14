@@ -19,8 +19,8 @@ class ModelAccessorMutatorTest extends TestCase
         $model->createtimestamp = $date;
 
         $this->assertEquals(['bar'], $model->getAttributes()['foo']);
-        $this->assertEquals(['barbaz'], $model->jsonSerialize()['foo']);
-        $this->assertEquals([$date->format(\DateTimeInterface::ISO8601)], $model->jsonSerialize()['createtimestamp']);
+        $this->assertEquals(['barbaz'], $model->toArray()['foo']);
+        $this->assertEquals([$date->format(\DateTimeInterface::ISO8601)], $model->toArray()['createtimestamp']);
         $this->assertEquals('barbaz', $model->foo);
         $this->assertEquals('barbaz', $model->getAttribute('foo'));
         $this->assertEquals('barbaz', $model->getFirstAttribute('foo'));
@@ -39,7 +39,7 @@ class ModelAccessorMutatorTest extends TestCase
         $model = new ModelAccessorStub();
 
         $this->assertEquals('baz-other', $model->getAttribute('foo-bar'));
-        $this->assertEquals(['baz'], $model->jsonSerialize()['foo-bar']);
+        $this->assertEquals(['baz'], $model->toArray()['foo-bar']);
         $this->assertEquals('baz-other', $model->foo_bar);
         $this->assertNull($model->foobar);
         $this->assertNull($model->getAttribute('foobar'));
@@ -55,7 +55,7 @@ class ModelAccessorMutatorTest extends TestCase
 
         $this->assertEquals(['setter-baz'], $model->foo);
         $this->assertEquals(['setter-baz'], $model->getAttributes()['foo']);
-        $this->assertEquals(['setter-baz'], $model->jsonSerialize()['foo']);
+        $this->assertEquals(['setter-baz'], $model->toArray()['foo']);
         $this->assertTrue(isset($model->foo));
     }
 

@@ -115,6 +115,20 @@ class UserTest extends TestCase
         $this->assertTrue($user->isLockedOut('UTC', $lockoutDuration = 11));
         $this->assertFalse($user->isLockedOut('UTC', $lockoutDuration = 10));
     }
+
+    public function test_is_locked_out_with_only_duration()
+    {
+        $lockoutTime = (new Timestamp('windows-int'))->fromDateTime(
+            Carbon::now()->subMinutes(10)
+        );
+
+        $user = (new User)->setRawAttributes(
+            ['lockouttime' => [$lockoutTime]]
+        );
+
+        $this->assertTrue($user->isLockedOut($lockoutDuration = 11));
+        $this->assertFalse($user->isLockedOut($lockoutDuration = 10));
+    }
 }
 
 class UserPasswordTestStub extends User

@@ -73,6 +73,20 @@ class DistinguishedName
     }
 
     /**
+     * Determine if the given value is a valid distinguished name.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    public static function isValid($value)
+    {
+        $values = array_filter(static::make($value)->values());
+
+        return ! empty($values);
+    }
+
+    /**
      * Explode a distinguished name into relative distinguished names.
      *
      * @param string $dn
@@ -81,19 +95,19 @@ class DistinguishedName
      */
     public static function explode($dn)
     {
-        $dn = ldap_explode_dn($dn, $withoutAttributes = false);
+        $components = ldap_explode_dn($dn, $withoutAttributes = false);
 
-        if (! is_array($dn)) {
+        if (! is_array($components)) {
             return [];
         }
 
-        if (! array_key_exists('count', $dn)) {
+        if (! array_key_exists('count', $components)) {
             return [];
         }
 
-        unset($dn['count']);
+        unset($components['count']);
 
-        return $dn;
+        return $components;
     }
 
     /**

@@ -63,6 +63,22 @@ class DistinguishedNameTest extends TestCase
         $this->assertEquals(['foo', 'bar'], $dn->values());
     }
 
+    public function test_is_valid()
+    {
+        $this->assertFalse(DistinguishedName::isValid(null));
+        $this->assertFalse(DistinguishedName::isValid(''));
+        $this->assertFalse(DistinguishedName::isValid('invalid'));
+        $this->assertFalse(DistinguishedName::isValid('=john doe'));
+        $this->assertFalse(DistinguishedName::isValid('cn='));
+        $this->assertFalse(DistinguishedName::isValid('Invalid distinguished name cn=john doe'));
+
+        $this->assertTrue(DistinguishedName::isValid('cn=john doe'));
+        $this->assertTrue(DistinguishedName::isValid('cn = john doe'));
+        $this->assertTrue(DistinguishedName::isValid(' cn = john doe '));
+        $this->assertTrue(DistinguishedName::isValid('cn =john doedc=local,dc=com'));
+        $this->assertTrue(DistinguishedName::isValid('cn =john doe,dc=local,dc=com'));
+    }
+
     public function test_is_ancestor_of()
     {
         $dn = new DistinguishedName('ou=foo,dc=bar,dc=baz');

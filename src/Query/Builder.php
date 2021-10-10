@@ -576,7 +576,11 @@ class Builder
     {
         unset($results['count']);
 
-        return $this->paginated ? $this->flattenPages($results) : $results;
+        if ($this->paginated) {
+            return $this->flattenPages($results);
+        }
+
+        return $results;
     }
 
     /**
@@ -609,9 +613,7 @@ class Builder
      */
     protected function getCachedResponse($query, Closure $callback)
     {
-        // If caching is enabled and we have a cache instance available,
-        // we will try to retrieve the cached results instead.
-        if ($this->caching && $this->cache) {
+        if ($this->cache && $this->caching) {
             $key = $this->getCacheKey($query);
 
             if ($this->flushCache) {
@@ -621,7 +623,6 @@ class Builder
             return $this->cache->remember($key, $this->cacheUntil, $callback);
         }
 
-        // Otherwise, we will simply execute the callback.
         return $callback();
     }
 
@@ -711,7 +712,9 @@ class Builder
      */
     public function first($columns = ['*'])
     {
-        return Arr::get($this->limit(1)->get($columns), 0);
+        return Arr::first(
+            $this->limit(1)->get($columns)
+        );
     }
 
     /**

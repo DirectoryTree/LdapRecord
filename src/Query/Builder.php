@@ -501,13 +501,32 @@ class Builder
     }
 
     /**
+     * Execute a callback over each item while chunking.
+     *
+     * @param Closure $callback
+     * @param int     $count
+     *
+     * @return bool
+     */
+    public function each(Closure $callback, $count = 1000)
+    {
+        return $this->chunk($count, function ($results) use ($callback) {
+            foreach ($results as $key => $value) {
+                if ($callback($value, $key) === false) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Chunk the results of a paginated LDAP query.
      *
      * @param int     $pageSize
      * @param Closure $callback
      * @param bool    $isCritical
      *
-     * @return void
+     * @return bool
      */
     public function chunk($pageSize, Closure $callback, $isCritical = false)
     {
@@ -515,11 +534,19 @@ class Builder
 
         $query = $this->getQuery();
 
+        $page = 1;
+
         foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
-            $callback($this->process($chunk));
+            if ($callback($this->process($chunk), $page) === false) {
+                return false;
+            }
+
+            $page++;
         }
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+
+        return true;
     }
 
     /**
@@ -694,7 +721,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Model|static
+     * @return Model|array
      *
      * @throws ObjectNotFoundException
      */
@@ -705,6 +732,31 @@ class Builder
         }
 
         return $record;
+    }
+
+    /**
+     * Execute the query and get the first result if it's the sole matching record.
+     *
+     * @param  array|string  $columns
+     *
+     * @return Model|array
+     *
+     * @throws RecordsNotFoundException
+     * @throws MultipleRecordsFoundException
+     */
+    public function sole($columns = ['*'])
+    {
+        $result = $this->limit(2)->get($columns);
+
+        if (empty($result)) {
+            throw new RecordsNotFoundException;
+        }
+
+        if (count($result) > 1) {
+            throw new MultipleRecordsFoundException;
+        }
+
+        return reset($result);
     }
 
     /**

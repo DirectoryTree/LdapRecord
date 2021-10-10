@@ -79,6 +79,22 @@ class DistinguishedNameTest extends TestCase
         $this->assertTrue(DistinguishedName::isValid('cn =john doe,dc=local,dc=com'));
     }
 
+    public function test_is_empty()
+    {
+        $this->assertTrue(DistinguishedName::make(null)->isEmpty());
+        $this->assertTrue(DistinguishedName::make('')->isEmpty());
+        $this->assertTrue(DistinguishedName::make('invalid')->isEmpty());
+        $this->assertTrue(DistinguishedName::make('=john doe')->isEmpty());
+        $this->assertTrue(DistinguishedName::make('cn=')->isEmpty());
+        $this->assertTrue(DistinguishedName::make('Invalid distinguished name cn=john doe')->isEmpty());
+
+        $this->assertFalse(DistinguishedName::make('cn=john doe')->isEmpty());
+        $this->assertFalse(DistinguishedName::make('cn = john doe')->isEmpty());
+        $this->assertFalse(DistinguishedName::make(' cn = john doe ')->isEmpty());
+        $this->assertFalse(DistinguishedName::make('cn =john doedc=local,dc=com')->isEmpty());
+        $this->assertFalse(DistinguishedName::make('cn =john doe,dc=local,dc=com')->isEmpty());
+    }
+
     public function test_is_ancestor_of()
     {
         $dn = new DistinguishedName('ou=foo,dc=bar,dc=baz');

@@ -6,8 +6,8 @@ use DateTime;
 use LdapRecord\Connection;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
-use LdapRecord\Query\MultipleRecordsFoundException;
-use LdapRecord\Query\RecordsNotFoundException;
+use LdapRecord\Query\MultipleObjectsFoundException;
+use LdapRecord\Query\ObjectsNotFoundException;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
@@ -1026,7 +1026,7 @@ class BuilderTest extends TestCase
         $this->assertEquals($result[0], $b->sole());
     }
 
-    public function test_sole_throws_records_missing_exception_when_nothing_is_returned()
+    public function test_sole_throws_objects_not_found_exception_when_nothing_is_returned()
     {
         $b = $this->newBuilder();
 
@@ -1038,12 +1038,12 @@ class BuilderTest extends TestCase
                 'parseResult' => [],
             ]);
 
-        $this->expectException(RecordsNotFoundException::class);
+        $this->expectException(ObjectsNotFoundException::class);
 
         $b->sole();
     }
 
-    public function test_sole_throws_multiple_records_exception_when_more_than_one_result_is_returned()
+    public function test_sole_throws_multiple_objects_found_exception_when_more_than_one_result_is_returned()
     {
         $b = $this->newBuilder();
 
@@ -1060,7 +1060,7 @@ class BuilderTest extends TestCase
                 'parseResult' => $result,
             ]);
 
-        $this->expectException(MultipleRecordsFoundException::class);
+        $this->expectException(MultipleObjectsFoundException::class);
 
         $b->sole();
     }

@@ -744,19 +744,19 @@ class Builder
      *
      * @return Model|array
      *
-     * @throws RecordsNotFoundException
-     * @throws MultipleRecordsFoundException
+     * @throws ObjectsNotFoundException
+     * @throws MultipleObjectsFoundException
      */
     public function sole($columns = ['*'])
     {
         $result = $this->limit(2)->get($columns);
 
         if (empty($result)) {
-            throw new RecordsNotFoundException;
+            throw new ObjectsNotFoundException;
         }
 
         if (count($result) > 1) {
-            throw new MultipleRecordsFoundException;
+            throw new MultipleObjectsFoundException;
         }
 
         return reset($result);

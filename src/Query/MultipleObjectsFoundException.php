@@ -4,6 +4,6 @@ namespace LdapRecord\Query;
 
 use LdapRecord\LdapRecordException;
 
-class RecordsNotFoundException extends LdapRecordException
+class MultipleObjectsFoundException extends LdapRecordException
 {
 }

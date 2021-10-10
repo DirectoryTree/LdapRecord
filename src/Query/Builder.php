@@ -737,7 +737,7 @@ class Builder
     /**
      * Execute the query and get the first result if it's the sole matching record.
      *
-     * @param  array|string  $columns
+     * @param array|string $columns
      *
      * @return Model|array
      *

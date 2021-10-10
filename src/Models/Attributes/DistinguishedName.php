@@ -81,9 +81,7 @@ class DistinguishedName
      */
     public static function isValid($value)
     {
-        $values = array_filter(static::make($value)->values());
-
-        return ! empty($values);
+        return ! static::make($value)->isEmpty();
     }
 
     /**
@@ -322,6 +320,18 @@ class DistinguishedName
         array_shift($components);
 
         return implode(',', $components) ?: null;
+    }
+
+    /**
+     * Determine if the distinguished name is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty(
+            array_filter($this->values())
+        );
     }
 
     /**

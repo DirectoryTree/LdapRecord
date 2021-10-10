@@ -43,6 +43,18 @@ class ModelRenameTest extends TestCase
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
     }
 
+    public function test_rename_with_no_attribute()
+    {
+        $model = new ModelRenameTestStub();
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $model->rename('Jane Doe');
+
+        $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
+        $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
+        $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
+    }
+
     public function test_rename_with_parent()
     {
         $model = new ModelRenameWithParentTestStub();

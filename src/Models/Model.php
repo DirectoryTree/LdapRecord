@@ -1072,7 +1072,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function createAttribute($attribute, $value)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
 
@@ -1091,7 +1091,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function update(array $attributes = [])
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->save($attributes);
     }
@@ -1109,7 +1109,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function updateAttribute($attribute, $value)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
 
@@ -1162,7 +1162,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function delete($recursive = false)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->fireModelEvent(new Events\Deleting($this));
 
@@ -1217,7 +1217,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function deleteAttribute($attributes)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $attributes = $this->makeDeletableAttributes($attributes);
 
@@ -1279,7 +1279,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function move($newParentDn, $deleteOldRdn = true)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         if (! $rdn = $this->getRdn()) {
             throw new UnexpectedValueException('Current model does not contain an RDN to move.');
@@ -1302,7 +1302,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         if ($newParentDn instanceof self) {
             $newParentDn = $newParentDn->getDn();
@@ -1320,6 +1320,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
          && $newParentDn === $this->getParentDn()
         ) {
             return;
+        }
+
+        // If the RDN we have been given is empty when parsed, we must
+        // have been given a string, with no attribute. In this case,
+        // we will create a new RDN using the current DN's head.
+        if ($this->newDn($rdn)->isEmpty()) {
+            $rdn = $this->getUpdateableRdn($rdn);
         }
 
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
@@ -1345,6 +1352,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         $this->fireModelEvent(new Renamed($this));
 
         $this->wasRecentlyRenamed = true;
+    }
+
+    /**
+     * Get an updateable RDN for the model.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getUpdateableRdn($name)
+    {
+        return $this->getCreatableRdn($name, $this->newDn($this->dn)->head());
     }
 
     /**
@@ -1436,13 +1455,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Validates that the current model exists.
+     * Throw an exception if the model does not exist.
      *
      * @return void
      *
      * @throws ModelDoesNotExistException
      */
-    protected function validateExistence()
+    protected function requireExistence()
     {
         if (! $this->exists || is_null($this->dn)) {
             throw ModelDoesNotExistException::forModel($this);

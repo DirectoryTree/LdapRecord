@@ -973,7 +973,7 @@ class BuilderTest extends TestCase
 
         $result = [
             ['count' => 1, 'cn' => ['Foo']],
-            ['count' => 1, 'cn' => ['Bar']]
+            ['count' => 1, 'cn' => ['Bar']],
         ];
 
         $b->getConnection()
@@ -993,7 +993,7 @@ class BuilderTest extends TestCase
 
         $result = [
             ['count' => 1, 'cn' => ['Foo']],
-            ['count' => 1, 'cn' => ['Bar']]
+            ['count' => 1, 'cn' => ['Bar']],
         ];
 
         $b->getConnection()
@@ -1049,7 +1049,7 @@ class BuilderTest extends TestCase
 
         $result = [
             ['count' => 1, 'cn' => ['Foo']],
-            ['count' => 1, 'cn' => ['Bar']]
+            ['count' => 1, 'cn' => ['Bar']],
         ];
 
         $b->getConnection()
@@ -1235,7 +1235,7 @@ class BuilderTest extends TestCase
             $this->assertEquals(0, $key);
             $this->assertEquals([
                 'count' => 1,
-                'objectclass' => ['foo']
+                'objectclass' => ['foo'],
             ], $object);
         });
 

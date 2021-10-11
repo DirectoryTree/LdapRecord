@@ -1139,7 +1139,7 @@ class BuilderTest extends TestCase
         $this->assertEquals('foo', $b->existsOr(function () {
             return 'foo';
         }));
-            
+
         $this->assertTrue($b->existsOr(function () {
             return 'foo';
         }));

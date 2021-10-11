@@ -29,7 +29,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     use Concerns\HasRelationships;
 
     /**
-     * Indicates if the model exists in the LDAP directory.
+     * Indicates if the model exists in the directory.
      *
      * @var bool
      */
@@ -64,7 +64,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     protected $in;
 
     /**
-     * The object classes of the LDAP model.
+     * The object classes of the model.
      *
      * @var array
      */
@@ -78,7 +78,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     protected static $container;
 
     /**
-     * The LDAP connection name for the model.
+     * The connection name for the model.
      *
      * @var string|null
      */
@@ -215,7 +215,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Get the LDAP connection for the model.
+     * Get the connection for the model.
      *
      * @return Connection
      */
@@ -636,7 +636,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Hydrate a new collection of models from LDAP search results.
+     * Hydrate a new collection of models from search results.
      *
      * @param array $records
      *
@@ -959,7 +959,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * @param array $attributes
      *
      * @return void
-     * 
+     *
      * @throws \LdapRecord\LdapRecordException
      */
     public function saveQuietly(array $attributes = [])

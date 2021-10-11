@@ -238,12 +238,12 @@ class Builder
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param array    $columns
-     * @param callable $callback
+     * @param array   $columns
+     * @param Closure $callback
      *
      * @return mixed
      */
-    protected function onceWithColumns($columns, $callback)
+    protected function onceWithColumns($columns, Closure $callback)
     {
         $original = $this->columns;
 
@@ -738,6 +738,18 @@ class Builder
     }
 
     /**
+     * Return the first entry in a result, or execute the callback.
+     *
+     * @param Closure $callback
+     *
+     * @return Model|mixed
+     */
+    public function firstOr(Closure $callback)
+    {
+        return $this->first() ?: $callback();
+    }
+
+    /**
      * Execute the query and get the first result if it's the sole matching record.
      *
      * @param array|string $columns
@@ -760,6 +772,38 @@ class Builder
         }
 
         return reset($result);
+    }
+
+    /**
+     * Determine if any results exist for the current query.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return ! is_null($this->first());
+    }
+
+    /**
+     * Determine if no results exist for the current query.
+     *
+     * @return bool
+     */
+    public function doesntExist()
+    {
+        return ! $this->exists();
+    }
+
+    /**
+     * Execute the given callback if no rows exist for the current query.
+     *
+     * @param Closure $callback
+     *
+     * @return bool|mixed
+     */
+    public function existsOr(Closure $callback)
+    {
+        return $this->exists() ? true : $callback();
     }
 
     /**

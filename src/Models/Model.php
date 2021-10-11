@@ -959,7 +959,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * @param array $attributes
      *
      * @return void
-     * 
+     *
      * @throws \LdapRecord\LdapRecordException
      */
     public function saveQuietly(array $attributes = [])

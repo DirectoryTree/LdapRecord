@@ -626,13 +626,27 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      *
-     * @param static $model
+     * @param Model|null $model
      *
      * @return bool
      */
-    public function is(self $model)
+    public function is($model)
     {
-        return $this->dn == $model->getDn() && $this->getConnectionName() == $model->getConnectionName();
+        return ! is_null($model)
+           && $this->dn == $model->getDn()
+           && $this->getConnectionName() == $model->getConnectionName();
+    }
+    
+    /**
+     * Determine if two models are not the same.
+     *
+     * @param Model|null $model
+     * 
+     * @return bool
+     */
+    public function isNot($model)
+    {
+        return ! $this->is($model);
     }
 
     /**

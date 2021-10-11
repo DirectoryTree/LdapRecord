@@ -32,7 +32,7 @@
         "php": ">=7.3",
         "ext-ldap": "*",
         "ext-json": "*",
-        "psr/log": "^1.0",
+        "psr/log": "*",
         "psr/simple-cache": "^1.0",
         "nesbot/carbon": "^1.0|^2.0",
         "tightenco/collect": "^5.6|^6.0|^7.0|^8.0",
@@ -44,7 +44,9 @@
         "spatie/ray": "^1.24"
     },
     "archive": {
-        "exclude": ["/tests"]
+        "exclude": [
+            "/tests"
+        ]
     },
     "autoload": {
         "psr-4": {

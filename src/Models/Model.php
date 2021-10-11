@@ -954,6 +954,22 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
+     * Save the model to the directory without raising any events.
+     *
+     * @param array $attributes
+     *
+     * @return void
+     * 
+     * @throws \LdapRecord\LdapRecordException
+     */
+    public function saveQuietly(array $attributes = [])
+    {
+        static::withoutEvents(function () use ($attributes) {
+            $this->save($attributes);
+        });
+    }
+
+    /**
      * Save the model to the directory.
      *
      * @param array $attributes The attributes to update or create for the current entry.

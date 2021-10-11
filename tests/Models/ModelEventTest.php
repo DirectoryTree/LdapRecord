@@ -36,6 +36,17 @@ class ModelEventTest extends TestCase
         (new ModelEventSaveStub())->save();
     }
 
+    public function test_save_quietly_does_not_fire_any_events()
+    {
+        $dispatcher = m::mock(DispatcherInterface::class)->makePartial();
+
+        $dispatcher->shouldNotReceive('fire');
+
+        Container::getInstance()->setEventDispatcher($dispatcher);
+
+        (new ModelEventSaveStub())->saveQuietly();
+    }
+
     public function test_create_fires_events()
     {
         $dispatcher = m::mock(DispatcherInterface::class);

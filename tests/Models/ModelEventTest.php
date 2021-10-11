@@ -45,6 +45,8 @@ class ModelEventTest extends TestCase
         Container::getInstance()->setEventDispatcher($dispatcher);
 
         (new ModelEventSaveStub())->saveQuietly();
+
+        $this->assertEquals($dispatcher, Container::getInstance()->getEventDispatcher());
     }
 
     public function test_create_fires_events()

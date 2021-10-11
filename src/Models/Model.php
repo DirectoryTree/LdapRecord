@@ -641,7 +641,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Determine if two models are not the same.
      *
      * @param Model|null $model
-     * 
+     *
      * @return bool
      */
     public function isNot($model)

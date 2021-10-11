@@ -1007,6 +1007,144 @@ class BuilderTest extends TestCase
         $this->assertEquals($result[0], $b->first());
     }
 
+    public function test_first_or()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertEquals('foo', $b->firstOr(function () {
+            return 'foo';
+        }));
+
+        $this->assertEquals($result[0], $b->firstOr(function () {
+            return 'foo';
+        }));
+    }
+
+    public function test_exists()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertFalse($b->exists());
+        $this->assertTrue($b->exists());
+    }
+
+    public function test_doesnt_exist()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertTrue($b->doesntExist());
+        $this->assertFalse($b->doesntExist());
+    }
+
+    public function test_exists_or()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertEquals('foo', $b->existsOr(function () {
+            return 'foo';
+        }));
+            
+        $this->assertTrue($b->existsOr(function () {
+            return 'foo';
+        }));
+    }
+
     public function test_sole()
     {
         $b = $this->newBuilder();

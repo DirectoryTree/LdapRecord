@@ -636,7 +636,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
            && $this->dn == $model->getDn()
            && $this->getConnectionName() == $model->getConnectionName();
     }
-    
+
     /**
      * Determine if two models are not the same.
      *

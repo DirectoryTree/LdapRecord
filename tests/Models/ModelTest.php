@@ -550,6 +550,36 @@ class ModelTest extends TestCase
         $this->assertCount(3, $model->getModifications());
     }
 
+    public function test_is()
+    {
+        $model = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+
+        $match = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
+
+        $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
+
+        $this->assertFalse($model->is(null));
+
+        $this->assertFalse($model->is($notMatch));
+
+        $this->assertTrue($model->is($match));
+    }
+
+    public function test_is_not()
+    {
+        $model = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+
+        $match = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
+
+        $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
+
+        $this->assertTrue($model->isNot(null));
+
+        $this->assertTrue($model->isNot($notMatch));
+
+        $this->assertFalse($model->isNot($match));
+    }
+
     public function test_is_descendent_of()
     {
         $model = new Entry();

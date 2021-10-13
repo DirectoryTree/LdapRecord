@@ -238,12 +238,12 @@ class Builder
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param array    $columns
-     * @param callable $callback
+     * @param array   $columns
+     * @param Closure $callback
      *
      * @return mixed
      */
-    protected function onceWithColumns($columns, $callback)
+    protected function onceWithColumns($columns, Closure $callback)
     {
         $original = $this->columns;
 
@@ -501,13 +501,32 @@ class Builder
     }
 
     /**
+     * Execute a callback over each item while chunking.
+     *
+     * @param Closure $callback
+     * @param int     $count
+     *
+     * @return bool
+     */
+    public function each(Closure $callback, $count = 1000)
+    {
+        return $this->chunk($count, function ($results) use ($callback) {
+            foreach ($results as $key => $value) {
+                if ($callback($value, $key) === false) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Chunk the results of a paginated LDAP query.
      *
      * @param int     $pageSize
      * @param Closure $callback
      * @param bool    $isCritical
      *
-     * @return void
+     * @return bool
      */
     public function chunk($pageSize, Closure $callback, $isCritical = false)
     {
@@ -515,11 +534,19 @@ class Builder
 
         $query = $this->getQuery();
 
+        $page = 1;
+
         foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
-            $callback($this->process($chunk));
+            if ($callback($this->process($chunk), $page) === false) {
+                return false;
+            }
+
+            $page++;
         }
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+
+        return true;
     }
 
     /**
@@ -549,7 +576,11 @@ class Builder
     {
         unset($results['count']);
 
-        return $this->paginated ? $this->flattenPages($results) : $results;
+        if ($this->paginated) {
+            return $this->flattenPages($results);
+        }
+
+        return $results;
     }
 
     /**
@@ -582,9 +613,7 @@ class Builder
      */
     protected function getCachedResponse($query, Closure $callback)
     {
-        // If caching is enabled and we have a cache instance available,
-        // we will try to retrieve the cached results instead.
-        if ($this->caching && $this->cache) {
+        if ($this->cache && $this->caching) {
             $key = $this->getCacheKey($query);
 
             if ($this->flushCache) {
@@ -594,7 +623,6 @@ class Builder
             return $this->cache->remember($key, $this->cacheUntil, $callback);
         }
 
-        // Otherwise, we will simply execute the callback.
         return $callback();
     }
 
@@ -684,7 +712,9 @@ class Builder
      */
     public function first($columns = ['*'])
     {
-        return Arr::get($this->limit(1)->get($columns), 0);
+        return Arr::first(
+            $this->limit(1)->get($columns)
+        );
     }
 
     /**
@@ -694,7 +724,7 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Model|static
+     * @return Model|array
      *
      * @throws ObjectNotFoundException
      */
@@ -705,6 +735,75 @@ class Builder
         }
 
         return $record;
+    }
+
+    /**
+     * Return the first entry in a result, or execute the callback.
+     *
+     * @param Closure $callback
+     *
+     * @return Model|mixed
+     */
+    public function firstOr(Closure $callback)
+    {
+        return $this->first() ?: $callback();
+    }
+
+    /**
+     * Execute the query and get the first result if it's the sole matching record.
+     *
+     * @param array|string $columns
+     *
+     * @return Model|array
+     *
+     * @throws ObjectsNotFoundException
+     * @throws MultipleObjectsFoundException
+     */
+    public function sole($columns = ['*'])
+    {
+        $result = $this->limit(2)->get($columns);
+
+        if (empty($result)) {
+            throw new ObjectsNotFoundException;
+        }
+
+        if (count($result) > 1) {
+            throw new MultipleObjectsFoundException;
+        }
+
+        return reset($result);
+    }
+
+    /**
+     * Determine if any results exist for the current query.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return ! is_null($this->first());
+    }
+
+    /**
+     * Determine if no results exist for the current query.
+     *
+     * @return bool
+     */
+    public function doesntExist()
+    {
+        return ! $this->exists();
+    }
+
+    /**
+     * Execute the given callback if no rows exist for the current query.
+     *
+     * @param Closure $callback
+     *
+     * @return bool|mixed
+     */
+    public function existsOr(Closure $callback)
+    {
+        return $this->exists() ? true : $callback();
     }
 
     /**

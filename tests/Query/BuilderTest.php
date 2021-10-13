@@ -6,6 +6,8 @@ use DateTime;
 use LdapRecord\Connection;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
+use LdapRecord\Query\MultipleObjectsFoundException;
+use LdapRecord\Query\ObjectsNotFoundException;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
@@ -965,6 +967,242 @@ class BuilderTest extends TestCase
         $this->assertEquals(['foo' => ['oid' => 'foo', 'isCritical' => false, 'value' => null]], $b->controls);
     }
 
+    public function test_get()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $this->assertEquals($result, $b->get());
+    }
+
+    public function test_first()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $this->assertEquals($result[0], $b->first());
+    }
+
+    public function test_first_or()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertEquals('foo', $b->firstOr(function () {
+            return 'foo';
+        }));
+
+        $this->assertEquals($result[0], $b->firstOr(function () {
+            return 'foo';
+        }));
+    }
+
+    public function test_exists()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertFalse($b->exists());
+        $this->assertTrue($b->exists());
+    }
+
+    public function test_doesnt_exist()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertTrue($b->doesntExist());
+        $this->assertFalse($b->doesntExist());
+    }
+
+    public function test_exists_or()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn([]);
+                },
+            ])->expect([
+                'search' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+                'parseResult' => function ($operation) use ($result) {
+                    $operation->once()->andReturn($result);
+                },
+            ]);
+
+        $this->assertEquals('foo', $b->existsOr(function () {
+            return 'foo';
+        }));
+
+        $this->assertTrue($b->existsOr(function () {
+            return 'foo';
+        }));
+    }
+
+    public function test_sole()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $this->assertEquals($result[0], $b->sole());
+    }
+
+    public function test_sole_throws_objects_not_found_exception_when_nothing_is_returned()
+    {
+        $b = $this->newBuilder();
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => [],
+                'parseResult' => [],
+            ]);
+
+        $this->expectException(ObjectsNotFoundException::class);
+
+        $b->sole();
+    }
+
+    public function test_sole_throws_multiple_objects_found_exception_when_more_than_one_result_is_returned()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            ['count' => 1, 'cn' => ['Foo']],
+            ['count' => 1, 'cn' => ['Bar']],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $this->expectException(MultipleObjectsFoundException::class);
+
+        $b->sole();
+    }
+
     public function test_getting_results_sets_ldap_controls()
     {
         $b = $this->newBuilder();
@@ -1098,7 +1336,8 @@ class BuilderTest extends TestCase
                 'parseResult' => $result,
             ]);
 
-        $b->chunk(500, function ($results) {
+        $result = $b->chunk(500, function ($results, $page) {
+            $this->assertEquals(1, $page);
             $this->assertEquals([
                 [
                     'count' => 1,
@@ -1106,6 +1345,39 @@ class BuilderTest extends TestCase
                 ],
             ], $results);
         });
+
+        $this->assertTrue($result);
+    }
+
+    public function test_each()
+    {
+        $b = $this->newBuilder();
+
+        $result = [
+            'count' => 1,
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => $result,
+            ]);
+
+        $result = $b->each(function ($object, $key) {
+            $this->assertEquals(0, $key);
+            $this->assertEquals([
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ], $object);
+        });
+
+        $this->assertTrue($result);
     }
 
     public function test_setting_dn_with_base_substitutes_with_current_query_base()

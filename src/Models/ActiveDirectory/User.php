@@ -137,12 +137,12 @@ class User extends Entry implements Authenticatable
      * @see https://ldapwiki.com/wiki/Active%20Directory%20Account%20Lockout
      * @see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-lockout-duration
      *
-     * @param string $localTimezone
-     * @param int    $durationInMinutes
+     * @param string|int $localTimezone
+     * @param int|null   $durationInMinutes
      *
      * @return bool
      */
-    public function isLockedOut($localTimezone, $durationInMinutes = 0)
+    public function isLockedOut($localTimezone, $durationInMinutes = null)
     {
         $time = $this->getFirstAttribute('lockouttime');
 
@@ -150,9 +150,10 @@ class User extends Entry implements Authenticatable
             return false;
         }
 
-        return ! $time
-            ->setTimezone($localTimezone)
-            ->addMinutes($durationInMinutes)
-            ->isPast();
+        is_int($localTimezone)
+            ? $time->addMinutes($localTimezone)
+            : $time->setTimezone($localTimezone)->addMinutes($durationInMinutes ?: 0);
+
+        return ! $time->isPast();
     }
 }

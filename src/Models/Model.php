@@ -29,7 +29,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     use Concerns\HasRelationships;
 
     /**
-     * Indicates if the model exists in the LDAP directory.
+     * Indicates if the model exists in the directory.
      *
      * @var bool
      */
@@ -64,7 +64,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     protected $in;
 
     /**
-     * The object classes of the LDAP model.
+     * The object classes of the model.
      *
      * @var array
      */
@@ -78,7 +78,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     protected static $container;
 
     /**
-     * The LDAP connection name for the model.
+     * The connection name for the model.
      *
      * @var string|null
      */
@@ -215,7 +215,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Get the LDAP connection for the model.
+     * Get the connection for the model.
      *
      * @return Connection
      */
@@ -626,17 +626,31 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      *
-     * @param static $model
+     * @param Model|null $model
      *
      * @return bool
      */
-    public function is(self $model)
+    public function is($model)
     {
-        return $this->dn == $model->getDn() && $this->getConnectionName() == $model->getConnectionName();
+        return ! is_null($model)
+           && $this->dn == $model->getDn()
+           && $this->getConnectionName() == $model->getConnectionName();
     }
 
     /**
-     * Hydrate a new collection of models from LDAP search results.
+     * Determine if two models are not the same.
+     *
+     * @param Model|null $model
+     *
+     * @return bool
+     */
+    public function isNot($model)
+    {
+        return ! $this->is($model);
+    }
+
+    /**
+     * Hydrate a new collection of models from search results.
      *
      * @param array $records
      *
@@ -954,6 +968,22 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
+     * Save the model to the directory without raising any events.
+     *
+     * @param array $attributes
+     *
+     * @return void
+     *
+     * @throws \LdapRecord\LdapRecordException
+     */
+    public function saveQuietly(array $attributes = [])
+    {
+        static::withoutEvents(function () use ($attributes) {
+            $this->save($attributes);
+        });
+    }
+
+    /**
      * Save the model to the directory.
      *
      * @param array $attributes The attributes to update or create for the current entry.
@@ -1072,7 +1102,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function createAttribute($attribute, $value)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
 
@@ -1091,7 +1121,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function update(array $attributes = [])
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->save($attributes);
     }
@@ -1109,7 +1139,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function updateAttribute($attribute, $value)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
 
@@ -1162,7 +1192,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function delete($recursive = false)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $this->fireModelEvent(new Events\Deleting($this));
 
@@ -1217,7 +1247,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function deleteAttribute($attributes)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         $attributes = $this->makeDeletableAttributes($attributes);
 
@@ -1279,7 +1309,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function move($newParentDn, $deleteOldRdn = true)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         if (! $rdn = $this->getRdn()) {
             throw new UnexpectedValueException('Current model does not contain an RDN to move.');
@@ -1302,7 +1332,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
-        $this->validateExistence();
+        $this->requireExistence();
 
         if ($newParentDn instanceof self) {
             $newParentDn = $newParentDn->getDn();
@@ -1320,6 +1350,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
          && $newParentDn === $this->getParentDn()
         ) {
             return;
+        }
+
+        // If the RDN we have been given is empty when parsed, we must
+        // have been given a string, with no attribute. In this case,
+        // we will create a new RDN using the current DN's head.
+        if ($this->newDn($rdn)->isEmpty()) {
+            $rdn = $this->getUpdateableRdn($rdn);
         }
 
         $this->fireModelEvent(new Renaming($this, $rdn, $newParentDn));
@@ -1345,6 +1382,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         $this->fireModelEvent(new Renamed($this));
 
         $this->wasRecentlyRenamed = true;
+    }
+
+    /**
+     * Get an updateable RDN for the model.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getUpdateableRdn($name)
+    {
+        return $this->getCreatableRdn($name, $this->newDn($this->dn)->head());
     }
 
     /**
@@ -1436,13 +1485,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Validates that the current model exists.
+     * Throw an exception if the model does not exist.
      *
      * @return void
      *
      * @throws ModelDoesNotExistException
      */
-    protected function validateExistence()
+    protected function requireExistence()
     {
         if (! $this->exists || is_null($this->dn)) {
             throw ModelDoesNotExistException::forModel($this);

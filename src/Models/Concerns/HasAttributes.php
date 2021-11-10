@@ -710,7 +710,7 @@ trait HasAttributes
      * Set an attribute value by the specified key.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -748,7 +748,7 @@ trait HasAttributes
     public function setRawAttribute($key, $value)
     {
         $key = $this->normalizeAttributeKey($key);
-        
+
         $this->attributes[$key] = Arr::wrap($value);
 
         return $this;

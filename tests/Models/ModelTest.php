@@ -665,7 +665,7 @@ class ModelTest extends TestCase
         $this->assertEquals('cn=John\5c\2c\3d\2b\3c\3e\3b\5c\23Doe,dc=local,dc=com', $model->getCreatableDn());
     }
 
-    public function test_setting_dn_attributes_set_distinguished_name_on_model_if_present()
+    public function test_setting_dn_attributes_set_distinguished_name_on_model()
     {
         $this->assertEquals('foo', (new Entry(['distinguishedname' => 'foo']))->getDn());
         $this->assertEquals('foo', Entry::make(['distinguishedname' => 'foo'])->getDn());

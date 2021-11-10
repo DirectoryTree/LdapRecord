@@ -217,7 +217,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * A mutator for setting the models distinguished name.
      *
-     * @param strin $dn
+     * @param string $dn
      *
      * @return $this
      */

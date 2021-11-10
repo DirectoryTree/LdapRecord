@@ -109,10 +109,9 @@ class Entry extends BaseEntry implements ActiveDirectory
             }
         });
 
-        $this->save([
-            'isDeleted' => null,
-            'distinguishedName' => $newDn,
-        ]);
+        $this->setRawAttribute('distinguishedname', $newDn);
+
+        $this->save(['isDeleted' => null]);
     }
 
     /**

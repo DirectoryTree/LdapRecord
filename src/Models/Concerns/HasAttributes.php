@@ -707,10 +707,10 @@ trait HasAttributes
     }
 
     /**
-     * Set an attribute value by the specified key and sub-key.
+     * Set an attribute value by the specified key.
      *
-     * @param mixed $key
-     * @param mixed $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -731,6 +731,23 @@ trait HasAttributes
         if ($this->isJsonCastable($key) && ! is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
         }
+
+        $this->attributes[$key] = Arr::wrap($value);
+
+        return $this;
+    }
+
+    /**
+     * Set an attribute on the model. No checking is done.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    public function setRawAttribute($key, $value)
+    {
+        $key = $this->normalizeAttributeKey($key);
 
         $this->attributes[$key] = Arr::wrap($value);
 

@@ -8,7 +8,7 @@ class LiveLdapTest extends TestCase
 {
     /** @var Connection */
     protected $conn;
-    
+
     protected function setUp(): void
     {
         $this->conn = new Connection([
@@ -36,24 +36,24 @@ class LiveLdapTest extends TestCase
         $admin = $this->conn->query()->find('cn=admin,dc=example,dc=com');
 
         $this->assertEquals([
-            'objectclass' =>  [
+            'objectclass' => [
                 'count' => 2,
                 'simpleSecurityObject',
                 'organizationalRole',
             ],
-                'objectclass',
-              'cn' => [
+            'objectclass',
+            'cn' => [
                 'count' => 1,
-                 'admin',
-              ],
-              'cn',
-              'description' => [
+                'admin',
+            ],
+            'cn',
+            'description' => [
                 'count' => 1,
                 'LDAP administrator',
-              ],
-              2 => 'description',
-              "count" => 3,
-              "dn" => 'cn=admin,dc=example,dc=com',
+            ],
+            2 => 'description',
+            'count' => 3,
+            'dn' => 'cn=admin,dc=example,dc=com',
         ], $admin);
     }
 

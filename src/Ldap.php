@@ -214,7 +214,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,
@@ -235,7 +235,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,
@@ -256,7 +256,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,

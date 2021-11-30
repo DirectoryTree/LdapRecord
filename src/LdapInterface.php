@@ -247,7 +247,7 @@ interface LdapInterface
      *
      * @return resource
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = []);
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
 
     /**
      * Performs a single level search on the current connection.
@@ -265,7 +265,7 @@ interface LdapInterface
      *
      * @return resource
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = []);
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
 
     /**
      * Reads an entry on the current connection.
@@ -283,7 +283,7 @@ interface LdapInterface
      *
      * @return resource
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = []);
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
 
     /**
      * Extract information from an LDAP result.

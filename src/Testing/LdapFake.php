@@ -326,7 +326,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('search', func_get_args());
     }
@@ -334,7 +334,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('listing', func_get_args());
     }
@@ -342,7 +342,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('read', func_get_args());
     }

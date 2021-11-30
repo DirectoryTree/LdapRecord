@@ -12,7 +12,7 @@ class LiveLdapTest extends TestCase
     protected function setUp(): void
     {
         $this->conn = new Connection([
-            'hosts' => ['ldap.forumsys.com'],
+            'hosts' => ['52.87.186.93'],
             'base_dn' => 'dc=example,dc=com',
             'username' => 'cn=read-only-admin,dc=example,dc=com',
             'password' => 'password',

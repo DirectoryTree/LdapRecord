@@ -238,26 +238,28 @@ trait HasAttributes
      * Returns the models attribute by its key.
      *
      * @param int|string $key
+     * @param mixed      $default
      *
      * @return mixed
      */
-    public function getAttribute($key)
+    public function getAttribute($key, $default = null)
     {
         if (! $key) {
             return;
         }
 
-        return $this->getAttributeValue($key);
+        return $this->getAttributeValue($key, $default);
     }
 
     /**
      * Get an attributes value.
      *
      * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getAttributeValue($key)
+    public function getAttributeValue($key, $default = null)
     {
         $key = $this->normalizeAttributeKey($key);
         $value = $this->getAttributeFromArray($key);
@@ -274,7 +276,7 @@ trait HasAttributes
             return $this->castAttribute($key, $value);
         }
 
-        return $value;
+        return is_null($value) ? $default : $value;
     }
 
     /**
@@ -686,13 +688,14 @@ trait HasAttributes
      * Returns the first attribute by the specified key.
      *
      * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getFirstAttribute($key)
+    public function getFirstAttribute($key, $default = null)
     {
         return Arr::first(
-            Arr::wrap($this->getAttribute($key))
+            Arr::wrap($this->getAttribute($key, $default)),
         );
     }
 

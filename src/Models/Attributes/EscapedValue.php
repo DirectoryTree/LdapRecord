@@ -34,7 +34,7 @@ class EscapedValue
      */
     public function __construct($value, $ignore = '', $flags = 0)
     {
-        $this->value = $value;
+        $this->value = (string) $value;
         $this->ignore = $ignore;
         $this->flags = $flags;
     }

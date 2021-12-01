@@ -25,7 +25,7 @@ class EscapeValueTest extends TestCase
         foreach ($this->escapedDnCharacters as $character) {
             $value = (new EscapedValue($character))->dn()->get();
 
-            $this->assertEquals(ldap_escape($character, null, LDAP_ESCAPE_DN), $value);
+            $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_DN), $value);
         }
     }
 
@@ -34,7 +34,7 @@ class EscapeValueTest extends TestCase
         foreach ($this->escapedFilterCharacters as $character) {
             $value = (new EscapedValue($character))->filter()->get();
 
-            $this->assertEquals(ldap_escape($character, null, LDAP_ESCAPE_FILTER), $value);
+            $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_FILTER), $value);
         }
     }
 
@@ -45,7 +45,7 @@ class EscapeValueTest extends TestCase
         foreach ($characters as $character) {
             $value = (new EscapedValue($character))->both()->get();
 
-            $this->assertEquals(ldap_escape($character, null, LDAP_ESCAPE_FILTER + LDAP_ESCAPE_DN), $value);
+            $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_FILTER + LDAP_ESCAPE_DN), $value);
         }
     }
 

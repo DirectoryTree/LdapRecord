@@ -4,9 +4,9 @@ namespace LdapRecord\Query;
 
 use BadMethodCallException;
 use Closure;
-use LDAP\Result;
 use DateTimeInterface;
 use InvalidArgumentException;
+use LDAP\Result;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\EscapesValues;

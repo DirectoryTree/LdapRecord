@@ -4,6 +4,7 @@ namespace LdapRecord;
 
 use LDAP\Connection as RawLdapConnection;
 
+/** @psalm-suppress UndefinedClass */
 class Ldap implements LdapInterface
 {
     use HandlesConnection, DetectsErrors;

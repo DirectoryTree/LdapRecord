@@ -104,7 +104,7 @@ class Ldap implements LdapInterface
     public function getLastError()
     {
         if (! $this->connection) {
-            return;
+            return null;
         }
 
         return ldap_error($this->connection);
@@ -116,7 +116,7 @@ class Ldap implements LdapInterface
     public function getDetailedError()
     {
         if (! $number = $this->errNo()) {
-            return;
+            return null;
         }
 
         $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);

@@ -2,6 +2,8 @@
 
 namespace LdapRecord;
 
+use LDAP\Connection as RawLdapConnection;
+
 class Ldap implements LdapInterface
 {
     use HandlesConnection, DetectsErrors;
@@ -202,7 +204,9 @@ class Ldap implements LdapInterface
      */
     public function close()
     {
-        $result = is_resource($this->connection) ? @ldap_close($this->connection) : false;
+        $result = (is_resource($this->connection) || $this->connection instanceof RawLdapConnection)
+            ? @ldap_close($this->connection)
+            : false;
 
         $this->connection = null;
         $this->bound = false;

@@ -4,6 +4,7 @@ namespace LdapRecord\Query;
 
 use BadMethodCallException;
 use Closure;
+use LDAP\Result;
 use DateTimeInterface;
 use InvalidArgumentException;
 use LdapRecord\Connection;
@@ -673,7 +674,7 @@ class Builder
             $entries = $ldap->getEntries($resource);
 
             // Free up memory.
-            if (is_resource($resource)) {
+            if (is_resource($resource) || $resource instanceof Result) {
                 $ldap->freeResult($resource);
             }
 

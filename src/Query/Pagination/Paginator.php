@@ -15,6 +15,16 @@ class Paginator extends AbstractPaginator
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function shouldContinue()
+    {
+        $cookie = (string) $this->fetchCookie();
+
+        return ! empty($cookie) || $cookie === '0';
+    }
+
+    /**
      * @inheritdoc
      */
     protected function prepareServerControls()

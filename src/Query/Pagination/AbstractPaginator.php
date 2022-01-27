@@ -67,11 +67,11 @@ abstract class AbstractPaginator
             if (! $resource = $this->query->run($this->filter)) {
                 break;
             }
-
+            
             $this->updateServerControls($ldap, $resource);
 
             $pages[] = $this->query->parse($resource);
-        } while (! empty($this->fetchCookie()));
+        } while ($this->shouldContinue());
 
         $this->resetServerControls($ldap);
 
@@ -84,6 +84,13 @@ abstract class AbstractPaginator
      * @return string
      */
     abstract protected function fetchCookie();
+
+    /**
+     * Whether the paginater should continue iterating.
+     *
+     * @return boolean
+     */
+    abstract protected function shouldContinue();
 
     /**
      * Prepare the server controls before executing the pagination request.

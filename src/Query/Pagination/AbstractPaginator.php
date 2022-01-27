@@ -79,18 +79,23 @@ abstract class AbstractPaginator
     }
 
     /**
+     * Whether the paginater should continue iterating.
+     *
+     * @return boolean
+     */
+    protected function shouldContinue()
+    {
+        $cookie = (string) $this->fetchCookie();
+
+        return ! empty($cookie) || $cookie === '0';
+    }
+
+    /**
      * Fetch the pagination cookie.
      *
      * @return string
      */
     abstract protected function fetchCookie();
-
-    /**
-     * Whether the paginater should continue iterating.
-     *
-     * @return boolean
-     */
-    abstract protected function shouldContinue();
 
     /**
      * Prepare the server controls before executing the pagination request.

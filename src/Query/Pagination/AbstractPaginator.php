@@ -67,7 +67,7 @@ abstract class AbstractPaginator
             if (! $resource = $this->query->run($this->filter)) {
                 break;
             }
-            
+
             $this->updateServerControls($ldap, $resource);
 
             $pages[] = $this->query->parse($resource);

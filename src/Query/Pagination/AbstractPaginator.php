@@ -87,7 +87,7 @@ abstract class AbstractPaginator
     {
         $cookie = (string) $this->fetchCookie();
 
-        return ! empty($cookie) || $cookie === '0';
+        return $cookie !== '';
     }
 
     /**

@@ -9,7 +9,7 @@ class UtilitiesTest extends TestCase
     public function test_explode_dn()
     {
         $dn = 'cn=Testing,ou=Folder,dc=corp,dc=org';
-
+        
         $split = Utilities::explodeDn($dn);
 
         $expected = ['Testing', 'Folder', 'corp', 'org'];
@@ -58,19 +58,6 @@ class UtilitiesTest extends TestCase
         $expected = 'S-1-5-21-1004336348-1177238915-682003330-512';
 
         $this->assertEquals($expected, Utilities::binarySidToString(pack('H*', str_replace('\\', '', $sid))));
-        $this->assertNull(Utilities::binaryGuidToString(null));
-        $this->assertNull(Utilities::binaryGuidToString('  '));
-    }
-
-    public function test_binary_guid_to_string()
-    {
-        $guid = '\d0\b4\0d\27\9d\24\a7\46\9c\c5\eb\69\5d\9a\f9\ac';
-
-        $expected = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';
-
-        $this->assertEquals($expected, Utilities::binaryGuidToString(pack('H*', str_replace('\\', '', $guid))));
-        $this->assertNull(Utilities::binaryGuidToString(null));
-        $this->assertNull(Utilities::binaryGuidToString('  '));
     }
 
     public function test_string_guid_to_hex()

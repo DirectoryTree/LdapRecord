@@ -23,7 +23,7 @@ class Sid
      */
     public static function isValid($sid)
     {
-        return Utilities::isValidSid($sid);
+        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", (string) $sid);
     }
 
     /**

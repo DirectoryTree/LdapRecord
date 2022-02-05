@@ -88,4 +88,18 @@ class SidTest extends TestCase
 
         $this->assertEquals(hex2bin($hex), $expected->getBinary());
     }
+
+    public function test_is_valid()
+    {
+        $this->assertTrue(Sid::isValid('S-1-5-21-3623811015-3361044348-30300820-1013'));
+        $this->assertTrue(Sid::isValid('S-1-5-21-362381101-336104434-3030082-101'));
+        $this->assertTrue(Sid::isValid('S-1-5-21-362381101-336104434'));
+        $this->assertTrue(Sid::isValid('S-1-5-21-362381101'));
+        $this->assertTrue(Sid::isValid('S-1-5-21'));
+        $this->assertTrue(Sid::isValid('S-1-5'));
+
+        $this->assertFalse(Sid::isValid('Invalid SID'));
+        $this->assertFalse(Sid::isValid('S-1'));
+        $this->assertFalse(Sid::isValid(''));
+    }
 }

@@ -30,4 +30,15 @@ class GuidTest extends TestCase
             $expected->getValue()
         );
     }
+
+    public function test_is_valid()
+    {
+        $this->assertTrue(Guid::isValid('59e5e143-a50e-41a9-bf2b-badee699a577'));
+        $this->assertTrue(Guid::isValid('8be90b30-0bbb-4638-b468-7aaeb32c74f9'));
+        $this->assertTrue(Guid::isValid('17bab266-05ac-4e30-9fad-1c7093e4dd83'));
+
+        $this->assertFalse(Guid::isValid('Invalid GUID'));
+        $this->assertFalse(Guid::isValid('17bab266-05ac-4e30-9fad'));
+        $this->assertFalse(Guid::isValid(''));
+    }
 }

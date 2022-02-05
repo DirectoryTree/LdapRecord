@@ -79,28 +79,4 @@ class Utilities
     {
         return ($unixTime + 11644473600) * 10000000;
     }
-
-    /**
-     * Validates that the inserted string is an object SID.
-     *
-     * @param string $sid
-     *
-     * @return bool
-     */
-    public static function isValidSid($sid)
-    {
-        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", (string) $sid);
-    }
-
-    /**
-     * Validates that the inserted string is an object GUID.
-     *
-     * @param string $guid
-     *
-     * @return bool
-     */
-    public static function isValidGuid($guid)
-    {
-        return (bool) preg_match('/^([0-9a-fA-F]){8}(-([0-9a-fA-F]){4}){3}-([0-9a-fA-F]){12}$/', (string) $guid);
-    }
 }

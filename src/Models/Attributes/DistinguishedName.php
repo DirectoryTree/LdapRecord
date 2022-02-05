@@ -117,9 +117,7 @@ class DistinguishedName
      */
     public static function unescape($value)
     {
-        return preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', function ($matches) {
-            return chr(hexdec($matches[1]));
-        }, $value);
+        return Hex::unescape($value);
     }
 
     /**

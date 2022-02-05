@@ -1,8 +1,8 @@
 <?php
 
-namespace LdapRecord;
+namespace LdapRecord\Models\Attributes;
 
-class Utilities
+class Hex
 {
     /**
      * Un-escapes a hexadecimal string into its original string representation.

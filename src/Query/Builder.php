@@ -12,6 +12,7 @@ use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\LdapInterface;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Attributes\Hex;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
@@ -283,7 +284,7 @@ class Builder
      */
     public function getUnescapedQuery()
     {
-        return Utilities::unescape($this->getQuery());
+        return Hex::unescape($this->getQuery());
     }
 
     /**

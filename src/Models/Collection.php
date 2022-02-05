@@ -85,7 +85,7 @@ class Collection extends QueryCollection
     protected function getArrayableModels($models = null)
     {
         return $models instanceof QueryCollection
-            ? $models->toArray()
+            ? $models->all()
             : Arr::wrap($models);
     }
 

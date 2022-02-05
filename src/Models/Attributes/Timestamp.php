@@ -226,7 +226,7 @@ class Timestamp
         }
 
         return (new DateTime())->setTimestamp(
-            Utilities::convertWindowsTimeToUnixTime($value)
+            round($value / 10000000) - 11644473600
         );
     }
 

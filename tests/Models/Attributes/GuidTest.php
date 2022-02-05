@@ -7,7 +7,7 @@ use LdapRecord\Tests\TestCase;
 
 class GuidTest extends TestCase
 {
-    public function test_can_convert_guid_from_string()
+    public function test_can_convert_guid_from_string_to_hex()
     {
         $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';
 
@@ -19,7 +19,14 @@ class GuidTest extends TestCase
         );
     }
 
-    public function test_can_convert_guid_from_binary()
+    public function test_can_convert_guid_from_string_to_encoded_hex()
+    {
+        $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';
+
+        $this->assertEquals('\d0\b4\0d\27\9d\24\a7\46\9c\c5\eb\69\5d\9a\f9\ac', (new Guid($guid))->getEncodedHex());
+    }
+
+    public function test_can_convert_guid_from_binary_to_string()
     {
         $hex = 'd0b40d279d24a7469cc5eb695d9af9ac';
 

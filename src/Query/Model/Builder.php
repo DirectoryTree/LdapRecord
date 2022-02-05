@@ -278,7 +278,7 @@ class Builder extends BaseBuilder
     public function findByGuidOrFail($guid, $columns = ['*'])
     {
         if ($this->model instanceof ActiveDirectory) {
-            $guid = Utilities::stringGuidToHex($guid);
+            $guid = $this->model->newGuid($guid)->getEncodedHex();
         }
 
         return $this->whereRaw([

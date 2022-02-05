@@ -49,25 +49,7 @@ class Utilities
             return chr(hexdec($matches[1]));
         }, $value);
     }
-
-    /**
-     * Converts a string GUID to it's hex variant.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function stringGuidToHex($string)
-    {
-        $hex = '\\'.substr($string, 6, 2).'\\'.substr($string, 4, 2).'\\'.substr($string, 2, 2).'\\'.substr($string, 0, 2);
-        $hex = $hex.'\\'.substr($string, 11, 2).'\\'.substr($string, 9, 2);
-        $hex = $hex.'\\'.substr($string, 16, 2).'\\'.substr($string, 14, 2);
-        $hex = $hex.'\\'.substr($string, 19, 2).'\\'.substr($string, 21, 2);
-        $hex = $hex.'\\'.substr($string, 24, 2).'\\'.substr($string, 26, 2).'\\'.substr($string, 28, 2).'\\'.substr($string, 30, 2).'\\'.substr($string, 32, 2).'\\'.substr($string, 34, 2);
-
-        return $hex;
-    }
-
+    
     /**
      * Convert a Unix timestamp to Windows timestamp.
      *

@@ -3,7 +3,6 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
 
 class Guid
 {
@@ -114,15 +113,33 @@ class Guid
      */
     public function getHex()
     {
-        $data = '';
+        return $this->makeHex();
+    }
 
+    /**
+     * Get the encoded, hexadecimal representation of the GUID string.
+     *
+     * @return string
+     */
+    public function getEncodedHex()
+    {
+        return $this->makeHex(true);
+    }
+
+    /**
+     * Make a representation of the current GUID value.
+     *
+     * @param bool $encoded
+     *
+     * @return string
+     */
+    protected function makeHex($encoded = false)
+    {
         $guid = str_replace('-', '', $this->value);
 
-        foreach ($this->octetSections as $section) {
-            $data .= $this->parseSection($guid, $section, $octet = true);
-        }
-
-        return $data;
+        return array_reduce($this->octetSections, function ($carry, $section) use ($guid, $encoded) {
+            return $carry .= $this->parseSection($guid, $section, $encoded);
+        }, '');
     }
 
     /**
@@ -152,26 +169,18 @@ class Guid
     /**
      * Return the specified section of the hexadecimal string.
      *
-     * @author Chad Sikorra <Chad.Sikorra@gmail.com>
-     *
-     * @see https://github.com/ldaptools/ldaptools
-     *
-     * @param string $hex      The full hex string.
-     * @param array  $sections An array of start and length (unless octet is true, then length is always 2).
-     * @param bool   $octet    Whether this is for octet string form.
+     * @param string $hex
+     * @param array  $sections
+     * @param bool   $encoded
      *
      * @return string The concatenated sections in upper-case.
      */
-    protected function parseSection($hex, array $sections, $octet = false)
+    protected function parseSection($hex, array $sections, $encoded = false)
     {
         $parsedString = '';
 
         foreach ($sections as $section) {
-            $start = $octet ? $section : $section[0];
-
-            $length = $octet ? 2 : $section[1];
-
-            $parsedString .= substr($hex, $start, $length);
+            $parsedString .= ($encoded ? '\\' : '').substr($hex, $section, $length = 2);
         }
 
         return $parsedString;

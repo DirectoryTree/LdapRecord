@@ -3,7 +3,6 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
 
 class Sid
 {

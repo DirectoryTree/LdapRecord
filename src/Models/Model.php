@@ -507,6 +507,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
+     * Make a new Guid instance.
+     *
+     * @param string $value
+     *
+     * @return Guid
+     */
+    public function newGuid($value)
+    {
+        return new Guid($value);
+    }
+
+    /**
      * Dynamically retrieve attributes on the object.
      *
      * @param mixed $key
@@ -921,7 +933,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     public function getConvertedGuid()
     {
         try {
-            return (string) new Guid($this->getObjectGuid());
+            return (string) $this->newGuid($this->getObjectGuid());
         } catch (InvalidArgumentException $e) {
             return;
         }

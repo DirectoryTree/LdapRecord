@@ -6,7 +6,6 @@ use DateTime;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Utilities;
 
 class TimestampTest extends TestCase
 {

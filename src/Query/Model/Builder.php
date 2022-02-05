@@ -9,7 +9,6 @@ use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
-use LdapRecord\Utilities;
 
 class Builder extends BaseBuilder
 {

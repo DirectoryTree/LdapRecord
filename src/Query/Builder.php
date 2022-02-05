@@ -19,7 +19,6 @@ use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
-use LdapRecord\Utilities;
 
 /** @psalm-suppress UndefinedClass */
 class Builder

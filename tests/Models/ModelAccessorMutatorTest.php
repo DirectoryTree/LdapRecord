@@ -7,7 +7,6 @@ use DateTime;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Utilities;
 
 class ModelAccessorMutatorTest extends TestCase
 {

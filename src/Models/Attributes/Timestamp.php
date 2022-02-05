@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Utilities;
 
 class Timestamp
 {

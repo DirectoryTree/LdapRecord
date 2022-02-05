@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Query;
 
-use LdapRecord\Models\Model;
 use Illuminate\Support\Collection as BaseCollection;
+use LdapRecord\Models\Model;
 
 class Collection extends BaseCollection
 {

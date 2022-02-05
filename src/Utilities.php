@@ -5,38 +5,6 @@ namespace LdapRecord;
 class Utilities
 {
     /**
-     * Converts a DN string into an array of RDNs.
-     *
-     * This will also decode hex characters into their true
-     * UTF-8 representation embedded inside the DN as well.
-     *
-     * @param string $dn
-     * @param bool   $removeAttributePrefixes
-     *
-     * @return array|false
-     */
-    public static function explodeDn($dn, $removeAttributePrefixes = true)
-    {
-        $dn = ldap_explode_dn($dn, ($removeAttributePrefixes ? 1 : 0));
-
-        if (! is_array($dn)) {
-            return false;
-        }
-
-        if (! array_key_exists('count', $dn)) {
-            return false;
-        }
-
-        unset($dn['count']);
-
-        foreach ($dn as $rdn => $value) {
-            $dn[$rdn] = static::unescape($value);
-        }
-
-        return $dn;
-    }
-
-    /**
      * Un-escapes a hexadecimal string into its original string representation.
      *
      * @param string $value

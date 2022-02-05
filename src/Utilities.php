@@ -49,16 +49,4 @@ class Utilities
             return chr(hexdec($matches[1]));
         }, $value);
     }
-    
-    /**
-     * Convert a Unix timestamp to Windows timestamp.
-     *
-     * @param float $unixTime
-     *
-     * @return float
-     */
-    public static function convertUnixTimeToWindowsTime($unixTime)
-    {
-        return ($unixTime + 11644473600) * 10000000;
-    }
 }

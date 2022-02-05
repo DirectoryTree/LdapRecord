@@ -239,6 +239,6 @@ class Timestamp
      */
     protected function convertDateTimeToWindowsInteger(DateTime $date)
     {
-        return Utilities::convertUnixTimeToWindowsTime($date->getTimestamp());
+        return ($date->getTimestamp() + 11644473600) * 10000000;
     }
 }

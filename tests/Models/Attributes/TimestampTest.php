@@ -60,9 +60,9 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp('windows-int');
 
-        $date = new DateTime();
+        $date = new DateTime('2020-01-01 00:00:00');
 
-        $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $timestamp->fromDateTime($date));
+        $this->assertEquals(132223104000000000, $timestamp->fromDateTime($date));
     }
 
     public function test_ldap_type_can_be_converted_to_date()

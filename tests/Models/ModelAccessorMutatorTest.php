@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 use LdapRecord\Utilities;
@@ -109,7 +110,7 @@ class ModelAccessorMutatorTest extends TestCase
         // Case insensitivity
         $this->assertInstanceOf(Carbon::class, $model->accountExpires);
         $this->assertTrue($date->setTimezone('UTC')->micro(0)->eq($model->accountexpires));
-        $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $model->getAttributes()['accountexpires'][0]);
+        $this->assertEquals((new Timestamp('windows-int'))->fromDateTime($date), $model->getAttributes()['accountexpires'][0]);
     }
 
     public function test_models_mutate_from_ldap_type_to_date()

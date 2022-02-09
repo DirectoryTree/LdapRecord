@@ -18,7 +18,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get($key, $default = null)
     {
         if (! isset($this->storage[$key])) {
             return $default;
@@ -40,7 +40,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    public function set($key, $value, $ttl = null)
     {
         $this->storage[$key] = [
             'value' => $value,
@@ -77,7 +77,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function delete(string $key): bool
+    public function delete($key)
     {
         unset($this->storage[$key]);
 
@@ -87,7 +87,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function clear(): bool
+    public function clear()
     {
         $this->storage = [];
 
@@ -97,7 +97,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function getMultiple(iterable $keys, mixed $default = null): iterable
+    public function getMultiple($keys, $default = null)
     {
         $values = [];
 
@@ -111,7 +111,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
+    public function setMultiple($values, $ttl = null)
     {
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);
@@ -123,7 +123,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function deleteMultiple(iterable $keys): bool
+    public function deleteMultiple($keys)
     {
         foreach ($keys as $key) {
             $this->delete($key);
@@ -135,7 +135,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function has(string $key): bool
+    public function has($key)
     {
         return isset($this->storage[$key]);
     }

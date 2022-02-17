@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Unit\Tests;
 
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Connection;
 use LdapRecord\Container;
@@ -10,6 +9,7 @@ use LdapRecord\DetailedError;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Testing\ConnectionFake;
 use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Tests\TestCase;
 
 class FakeDirectoryTest extends TestCase
 {

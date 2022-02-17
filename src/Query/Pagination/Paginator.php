@@ -37,28 +37,6 @@ class Paginator extends AbstractPaginator
      */
     protected function updateServerControls(LdapInterface $ldap, $resource)
     {
-        $errorCode = 0;
-        $dn = $errorMessage = $refs = null;
-
-        $ldap->parseResult(
-            $resource,
-            $errorCode,
-            $dn,
-            $errorMessage,
-            $refs,
-            $this->query->controls
-        );
-
-        $this->resetPageSize();
-    }
-
-    /**
-     * Reset the page control page size.
-     *
-     * @return void
-     */
-    protected function resetPageSize()
-    {
         $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $this->perPage;
     }
 
@@ -67,6 +45,6 @@ class Paginator extends AbstractPaginator
      */
     protected function resetServerControls(LdapInterface $ldap)
     {
-        $this->query->controls = [];
+        unset($this->query->controls[LDAP_CONTROL_PAGEDRESULTS]);
     }
 }

@@ -51,6 +51,13 @@ class Builder
     public $controls = [];
 
     /**
+     * The LDAP server controls that were processed.
+     *
+     * @var array
+     */
+    public $controlsResponse = [];
+
+    /**
      * The size limit of the query.
      *
      * @var int
@@ -672,6 +679,18 @@ class Builder
         }
 
         return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
+            $this->controlsResponse = $this->controls;
+
+            // Process the server controls response.
+            $ldap->parseResult(
+                $resource,
+                $errorCode,
+                $dn,
+                $errorMessage,
+                $refs,
+                $this->controlsResponse
+            );
+
             $entries = $ldap->getEntries($resource);
 
             // Free up memory.
@@ -975,6 +994,33 @@ class Builder
         $this->columns = array_merge((array) $this->columns, $column);
 
         return $this;
+    }
+
+    /**
+     * Add an order by control to the query.
+     *
+     * @param string $attribute
+     * @param string $direction
+     *
+     * @return $this
+     */
+    public function orderBy($attribute, $direction = 'asc')
+    {
+        return $this->addControl(LDAP_CONTROL_SORTREQUEST, true, [
+            ['attr' => $attribute, 'reverse' => $direction === 'desc'],
+        ]);
+    }
+
+    /**
+     * Add an order by descending control to the query.
+     *
+     * @param string $attribute
+     *
+     * @return $this
+     */
+    public function orderByDesc($attribute)
+    {
+        return $this->orderBy($attribute, 'desc');
     }
 
     /**

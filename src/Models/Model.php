@@ -910,7 +910,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function getObjectClasses()
     {
-        return $this->getAttribute('objectclass') ?: [];
+        return $this->getAttribute('objectclass', static::$objectClasses);
     }
 
     /**

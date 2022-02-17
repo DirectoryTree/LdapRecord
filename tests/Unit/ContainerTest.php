@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Unit\Tests;
 
-use LdapRecord\Tests\TestCase;
 use BadMethodCallException;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Connection;
@@ -10,6 +9,7 @@ use LdapRecord\Container;
 use LdapRecord\ContainerException;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Ldap;
+use LdapRecord\Tests\TestCase;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

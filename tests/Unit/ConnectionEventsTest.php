@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Unit\Tests;
 
-use LdapRecord\Tests\TestCase;
 use LdapRecord\Connection;
 use LdapRecord\Events\Connected;
 use LdapRecord\Events\Connecting;
@@ -10,6 +9,7 @@ use LdapRecord\Events\ConnectionFailed;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 use Mockery as m;
 
 class ConnectionEventsTest extends TestCase

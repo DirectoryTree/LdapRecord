@@ -681,6 +681,9 @@ class Builder
         return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
             $this->controlsResponse = $this->controls;
 
+            $errorCode = 0;
+            $dn = $errorMessage = $refs = null;
+
             // Process the server controls response.
             $ldap->parseResult(
                 $resource,

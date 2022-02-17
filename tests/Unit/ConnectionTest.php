@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Unit\Tests;
 
-use LdapRecord\Tests\TestCase;
 use Carbon\Carbon;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Guard;
@@ -17,6 +16,7 @@ use LdapRecord\Ldap;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
 use LdapRecord\Testing\LdapFake;
+use LdapRecord\Tests\TestCase;
 use Mockery as m;
 
 class ConnectionTest extends TestCase

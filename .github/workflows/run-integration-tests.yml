@@ -27,8 +27,8 @@ jobs:
                   path: ~/.composer/cache/files
                   key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
-            - name: Setup LDAP Server
-              uses: virgilio21/openldap-action@v1.1
+            - name: Setup OpenLDAP Test Server
+              uses: DirectoryTree/Setup-OpenLDAP@v1.0.0
               with:
                   adminPassword: "secret"
                   domain: "local.com"

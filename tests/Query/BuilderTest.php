@@ -1258,6 +1258,7 @@ class BuilderTest extends TestCase
                 LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
                 LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
                 LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+                LdapFake::operation('parseResult')->once(),
                 LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
             ]);
 

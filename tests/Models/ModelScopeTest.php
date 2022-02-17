@@ -104,7 +104,7 @@ class ModelScopeTest extends TestCase
                 LdapFake::operation('parseResult')->once(),
                 LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
                     ['dn' => 'cn=John Doe,dc=local,dc=com'],
-                ])
+                ]),
             ]
         );
 
@@ -123,7 +123,7 @@ class ModelScopeTest extends TestCase
                 LdapFake::operation('parseResult')->once(),
                 LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
                     ['dn' => 'cn=John Doe,dc=local,dc=com'],
-                ])
+                ]),
             ]
         );
 

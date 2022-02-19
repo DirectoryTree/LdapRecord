@@ -22,17 +22,12 @@ class Parser
         $filter = reset($extracted);
 
         switch (true) {
-            // If the parsed filter begins or ends with a parenthesis, then unneeded,
-            // additional brackets are surrounding the query. We will recursively
-            // parse the filter until we reach the first group or condition.
             case static::isWrapped($filter):
                 return static::parse($filter);
-
             case ! static::isGroup($filter):
                 return static::buildConditions($extracted);
-
             case count($extracted) > 1:
-                throw new ParserException('Bad search filter.');
+                throw new ParserException(sprintf('Multiple root filters detected in [%s]', $string));
             case ! Str::endsWith($filter, ')'):
                 throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
             default:

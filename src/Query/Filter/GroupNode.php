@@ -17,7 +17,7 @@ class GroupNode extends Node
      * @var Node[]
      */
     protected $nodes = [];
-    
+
     /**
      * Constructor.
      *

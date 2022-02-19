@@ -33,10 +33,8 @@ class Parser
 
             case count($extracted) > 1:
                 throw new ParserException('Bad search filter.');
-
             case ! Str::endsWith($filter, ')'):
                 throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
-
             default:
                 return new GroupNode($filter);
         }
@@ -59,7 +57,7 @@ class Parser
      *
      * @param string $filter
      *
-     * @return boolean
+     * @return bool
      */
     protected static function isWrapped($filter)
     {
@@ -71,7 +69,7 @@ class Parser
      *
      * @param string $filter
      *
-     * @return boolean
+     * @return bool
      */
     protected static function isGroup($filter)
     {

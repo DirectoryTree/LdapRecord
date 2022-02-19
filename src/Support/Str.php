@@ -7,8 +7,8 @@ class Str
     /**
      * Return the remainder of a string after the last occurrence of a given value.
      *
-     * @param  string  $subject
-     * @param  string  $search
+     * @param string $subject
+     * @param string $search
      *
      * @return string
      */
@@ -30,7 +30,7 @@ class Str
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param string $haystack
+     * @param string          $haystack
      * @param string|string[] $needles
      *
      * @return bool
@@ -49,8 +49,8 @@ class Str
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
+     * @param string          $haystack
+     * @param string|string[] $needles
      *
      * @return bool
      */
@@ -71,10 +71,10 @@ class Str
     /**
      * Execute a callback when a needle is found in the haystack.
      *
-     * @param string $haystack
+     * @param string          $haystack
      * @param string|string[] $needles
-     * @param \Closure|mixed $callback
-     * @param \Closure|mixed $default
+     * @param \Closure|mixed  $callback
+     * @param \Closure|mixed  $default
      *
      * @return mixed
      */
@@ -92,9 +92,10 @@ class Str
     /**
      * Determine if a given string contains a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
-     * @param  bool  $ignoreCase
+     * @param string          $haystack
+     * @param string|string[] $needles
+     * @param bool            $ignoreCase
+     *
      * @return bool
      */
     public static function contains($haystack, $needles, $ignoreCase = false)

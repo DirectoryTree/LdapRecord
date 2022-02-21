@@ -34,18 +34,21 @@ abstract class AbstractPaginator
      * @var bool
      */
     protected $isCritical;
-
+    
+    protected $page;
+    
     /**
      * Constructor.
      *
      * @param Builder $query
      */
-    public function __construct(Builder $query, $filter, $perPage, $isCritical)
+    public function __construct(Builder $query, $filter, $perPage, $isCritical, $page = 1)
     {
         $this->query = $query;
         $this->filter = $filter;
         $this->perPage = $perPage;
         $this->isCritical = $isCritical;
+        $this->page = $page;
     }
 
     /**

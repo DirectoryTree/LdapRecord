@@ -292,9 +292,7 @@ class Ldap implements LdapInterface
             &$referrals,
             &$serverControls
         ) {
-            return empty($serverControls)
-                ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals)
-                : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls);
+             return ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls);
         });
     }
 

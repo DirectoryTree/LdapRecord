@@ -17,6 +17,7 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
+use LdapRecord\Query\Pagination\ListPagesPaginator;
 use LdapRecord\Support\Arr;
 use LdapRecord\Utilities;
 
@@ -494,6 +495,34 @@ class Builder
     }
 
     /**
+     * @param int $pageSize
+     * @param int $page
+     * @param false $isCritical
+     * @return array
+     */
+    public function forPage($pageSize = 1000, $page = 1, $isCritical = false)
+    {
+        $this->paginated = true;
+
+        $start = microtime(true);
+
+        $query = $this->getQuery();
+
+        // Here we will create the pagination callback. This allows us
+        // to only execute an LDAP request if caching is disabled
+        // or if no cache of the given query exists yet.
+        $callback = function () use ($query, $pageSize, $page, $isCritical) {
+            return $this->runListPagePaginate($query, $pageSize, $page, $isCritical);
+        };
+
+        $pages = $this->getCachedResponse($query, $callback);
+
+        $this->logQuery($this, 'paginate', $this->getElapsedTime($start));
+
+        return $this->process($pages);
+    }
+
+    /**
      * Runs the paginate operation with the given filter.
      *
      * @param string $filter
@@ -506,6 +535,23 @@ class Builder
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             return (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap);
+        });
+    }
+
+    /**
+     * Runs the paginate operation with the given filter and number of page.
+     * 
+     * @param string $filter
+     * @param int  $perPage
+     * @param int  $page
+     * @param bool  $isCritical
+     * 
+     * @return array
+     */
+    protected function runListPagePaginate($filter, $perPage, $page, $isCritical)
+    {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $page, $isCritical) {
+            return (new ListPagesPaginator($this, $filter, $perPage, $isCritical, $page))->execute($ldap);
         });
     }
 

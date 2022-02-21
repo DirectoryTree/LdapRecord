@@ -1,0 +1,50 @@
+<?php
+
+namespace LdapRecord\Query\Pagination;
+
+use LdapRecord\LdapInterface;
+
+class ListPagesPaginator extends Paginator
+{
+    /**
+     * Execute the pagination request.
+     * 
+     * @param LdapInterface $ldap
+     * @return array
+     */
+    public function execute(LdapInterface $ldap)
+    {
+        $search_result = [];
+
+        $this->prepareServerControls();
+        $this->applyServerControls($ldap);
+
+        $currentPage = 0;
+
+        $dn = $this->query->getBaseDn();
+
+        $result = $ldap->search($dn, $this->filter, $this->query->columns, false, 0, 0, LDAP_DEREF_NEVER, $this->query->controls);
+
+        do {
+            $currentPage += 1;
+
+            $ldap->parseResult($result, $errcode, $matcheddn, $errmsg, $referrals,$controls);
+
+            if ($currentPage == $this->page) {
+                $search_result[] = $ldap->getEntries($result);
+                break;
+            } else {
+                $ldap->freeResult($result);
+            }
+
+            $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'] = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+
+            $result = $ldap->search($dn, $this->filter, $this->query->columns, false, 0, 0, LDAP_DEREF_NEVER, $this->query->controls);
+
+        } while ($this->shouldContinue());
+
+        $this->resetServerControls($ldap);
+
+        return $search_result;
+    }
+}

@@ -17,15 +17,15 @@ class Parser
     public static function parse($string)
     {
         [$open, $close] = static::countParenthesis($string);
-        
+
         if ($open !== $close) {
             $errors = [-1 => '"("', 1 => '")"'];
-            
+
             throw new ParserException(
                 sprintf('Unclosed filter group. Missing %s parenthesis', $errors[$open <=> $close])
             );
         }
-        
+
         preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", trim($string), $matches);
 
         $extracted = $matches[1];
@@ -98,7 +98,7 @@ class Parser
                 : new ConditionNode($filter);
         }, $filters);
     }
-    
+
     /**
      * Count the open and close parenthesis of the sting.
      *

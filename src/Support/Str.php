@@ -117,10 +117,10 @@ class Str
     /**
      * Returns the number of substring occurrences.
      *
-     * @param  string  $haystack
-     * @param  string  $needle
-     * @param  int  $offset
-     * @param  int|null  $length
+     * @param string   $haystack
+     * @param string   $needle
+     * @param int      $offset
+     * @param int|null $length
      *
      * @return int
      */

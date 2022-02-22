@@ -65,9 +65,9 @@ class Parser
     {
         switch (true) {
             case $node instanceof GroupNode:
-                return static::wrap($node->getOperator() . static::assemble($node->getNodes()));
+                return static::wrap($node->getOperator().static::assemble($node->getNodes()));
             case $node instanceof ConditionNode:
-                return static::wrap($node->getAttribute() . $node->getOperator() . $node->getValue());
+                return static::wrap($node->getAttribute().$node->getOperator().$node->getValue());
             default:
                 throw new ParserException('Unable to assemble. Invalid node instance given.');
         }

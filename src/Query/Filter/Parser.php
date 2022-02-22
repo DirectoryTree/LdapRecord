@@ -2,12 +2,13 @@
 
 namespace LdapRecord\Query\Filter;
 
+use LdapRecord\Support\Arr;
 use LdapRecord\Support\Str;
 
 class Parser
 {
     /**
-     * Parse an LDAP filter.
+     * Parse an LDAP filter into nodes.
      *
      * @param string $string
      *
@@ -25,7 +26,7 @@ class Parser
             case static::isWrapped($filter):
                 return static::parse($filter);
             case ! static::isGroup($filter):
-                return static::buildConditions($extracted);
+                return static::buildNodes($extracted);
             case count($extracted) > 1:
                 throw new ParserException(sprintf('Multiple root filters detected in [%s]', $string));
             case ! Str::endsWith($filter, ')'):
@@ -36,15 +37,68 @@ class Parser
     }
 
     /**
-     * Build an array of conditions.
+     * Assemble the parsed nodes into a single filter.
      *
-     * @param array<string> $filters
+     * @param Node|Node[] $nodes
      *
-     * @return ConditionNode[]
+     * @return string
      */
-    protected static function buildConditions(array $filters = [])
+    public static function assemble($nodes = [])
     {
-        return array_map(fn ($filter) => new ConditionNode($filter), $filters);
+        $result = '';
+
+        foreach (Arr::wrap($nodes) as $node) {
+            $result .= static::compileNode($node);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Assemble the node into its string based format.
+     *
+     * @param GroupNode|ConditionNode $node
+     *
+     * @return string
+     */
+    protected static function compileNode($node)
+    {
+        switch (true) {
+            case $node instanceof GroupNode:
+                return static::wrap($node->getOperator() . static::assemble($node->getNodes()));
+            case $node instanceof ConditionNode:
+                return static::wrap($node->getAttribute() . $node->getOperator() . $node->getValue());
+            default:
+                throw new ParserException('Unable to assemble. Invalid node instance given.');
+        }
+    }
+
+    /**
+     * Build an array of nodes from the given filters.
+     *
+     * @param string[] $filters
+     *
+     * @return GroupNode|ConditionNode[]
+     */
+    protected static function buildNodes(array $filters = [])
+    {
+        return array_map(function ($filter) {
+            return static::isGroup($filter)
+                ? new GroupNode($filter)
+                : new ConditionNode($filter);
+        }, $filters);
+    }
+
+    /**
+     * Wrap the value in parentheses.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected static function wrap($value)
+    {
+        return "($value)";
     }
 
     /**
@@ -68,6 +122,6 @@ class Parser
      */
     protected static function isGroup($filter)
     {
-        return in_array(substr($filter, 0, 1), ['&', '|', '!']);
+        return Str::startsWith($filter, ['&', '|', '!']);
     }
 }

@@ -67,12 +67,28 @@ class ParserTest extends TestCase
         $this->assertEquals('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))', Parser::assemble($group));
     }
 
-    public function test_parse_throws_exception_when_unclosed_bracket_is_detected()
+    public function test_parse_throws_exception_when_missing_open_parenthesis_is_detected()
+    {
+        $this->expectException(ParserException::class);
+        $this->expectExceptionMessage('Unclosed filter group. Missing "(" parenthesis');
+
+        Parser::parse('(|(foo=bar)(:baz:~=zal)))');
+    }
+
+    public function test_parse_throws_exception_when_missing_close_parenthesis_is_detected()
+    {
+        $this->expectException(ParserException::class);
+        $this->expectExceptionMessage('Unclosed filter group. Missing ")" parenthesis');
+
+        Parser::parse('((|(foo=bar)(:baz:~=zal))');
+    }
+
+    public function test_parse_throws_exception_when_unclosed_nested_filter_is_detected()
     {
         $this->expectException(ParserException::class);
         $this->expectExceptionMessage('Unclosed filter group [:baz:~=zal]');
 
-        Parser::parse('(|(foo=bar):baz:~=zal))');
+        Parser::parse('((|(foo=bar):baz:~=zal))');
     }
 
     public function test_assemble_can_rebuild_parsed_filter()

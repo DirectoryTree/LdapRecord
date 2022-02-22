@@ -32,7 +32,7 @@
         "php": ">=7.4",
         "ext-ldap": "*",
         "ext-json": "*",
-        "psr/log": "*",
+        "psr/log": "^1.0|^2.0|^3.0",
         "psr/simple-cache": "^1.0|^2.0",
         "nesbot/carbon": "^1.0|^2.0",
         "tightenco/collect": "^5.6|^6.0|^7.0|^8.0",

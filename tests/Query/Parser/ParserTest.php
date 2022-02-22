@@ -2,11 +2,11 @@
 
 namespace LdapRecord\Tests\Query\Parser;
 
-use LdapRecord\Tests\TestCase;
-use LdapRecord\Query\Filter\Parser;
-use LdapRecord\Query\Filter\GroupNode;
 use LdapRecord\Query\Filter\ConditionNode;
+use LdapRecord\Query\Filter\GroupNode;
+use LdapRecord\Query\Filter\Parser;
 use LdapRecord\Query\Filter\ParserException;
+use LdapRecord\Tests\TestCase;
 
 class ParserTest extends TestCase
 {
@@ -53,7 +53,7 @@ class ParserTest extends TestCase
         $this->assertEquals('|', $nodes[2]->getOperator());
 
         $this->assertCount(2, $nodes = $nodes[2]->getNodes());
-        
+
         $this->assertInstanceOf(ConditionNode::class, $nodes[0]);
         $this->assertEquals('sn', $nodes[0]->getAttribute());
         $this->assertEquals('=', $nodes[0]->getOperator());

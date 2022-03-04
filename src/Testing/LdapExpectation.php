@@ -108,7 +108,7 @@ class LdapExpectation
             if (! $arg instanceof Constraint) {
                 return new IsEqual($arg);
             }
-            
+
             return $arg;
         }, is_array($args) ? $args : func_get_args());
 

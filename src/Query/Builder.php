@@ -577,10 +577,10 @@ class Builder
     /**
      * Slices the LDAP query into pages.
      *
-     * @param int $perPage
+     * @param int      $perPage
      * @param int|null $page
-     * @param string $orderBy
-     * 
+     * @param string   $orderBy
+     *
      * @return Slice
      */
     public function slice($perPage = null, $page = null, $orderBy = 'cn')
@@ -601,14 +601,14 @@ class Builder
 
         return new Slice($objects, $total, $perPage, $page);
     }
-    
+
     /**
      * Get the results of a query for a given page.
      *
-     * @param integer $page
-     * @param integer $perPage
+     * @param int    $page
+     * @param int    $perPage
      * @param string $orderBy
-     * 
+     *
      * @return Collection|array
      */
     public function forPage($page = 1, $perPage = 100, $orderBy = 'cn')
@@ -617,7 +617,7 @@ class Builder
 
         $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
             'before' => 0,
-            'after'	=> $perPage - 1,
+            'after' => $perPage - 1,
             'offset' => ($page * $perPage) - $perPage + 1,
             'count' => 0,
         ]);

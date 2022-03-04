@@ -575,17 +575,18 @@ class Builder
     }
 
     /**
-     * Slices the LDAP query into pages.
+     * Create a slice of the LDAP query into a page.
      *
      * @param int      $perPage
      * @param int|null $page
-     * @param string   $orderBy
+     * @param string $orderBy
+     * @param string $orderByDir
      *
      * @return Slice
      */
-    public function slice($perPage = null, $page = null, $orderBy = 'cn')
+    public function slice($perPage = null, $page = null, $orderBy = 'cn', $orderByDir = 'asc')
     {
-        $results = $this->forPage($page, $perPage, $orderBy);
+        $results = $this->forPage($page, $perPage, $orderBy, $orderByDir);
 
         $viewListData = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value'] ?? ['target' => 0, 'count' => 0];
 
@@ -608,13 +609,16 @@ class Builder
      * @param int    $page
      * @param int    $perPage
      * @param string $orderBy
+     * @param string $orderByDir
      *
      * @return Collection|array
      */
-    public function forPage($page = 1, $perPage = 100, $orderBy = 'cn')
+    public function forPage($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
     {
-        $this->orderBy($orderBy);
-
+        if (! $this->hasOrderBy()) {
+            $this->orderBy($orderBy, $orderByDir);    
+        }
+        
         $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
             'before' => 0,
             'after' => $perPage - 1,
@@ -1075,6 +1079,16 @@ class Builder
     public function orderByDesc($attribute)
     {
         return $this->orderBy($attribute, 'desc');
+    }
+
+    /**
+     * Determine if the query has a sotr request control header.
+     *
+     * @return bool
+     */
+    public function hasOrderBy()
+    {
+        return $this->hasControl(LDAP_CONTROL_SORTREQUEST);
     }
 
     /**

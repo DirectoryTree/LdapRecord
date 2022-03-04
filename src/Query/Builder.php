@@ -575,6 +575,57 @@ class Builder
     }
 
     /**
+     * Slices the LDAP query into pages.
+     *
+     * @param int $perPage
+     * @param int|null $page
+     * @param string $orderBy
+     * 
+     * @return Slice
+     */
+    public function slice($perPage = null, $page = null, $orderBy = 'cn')
+    {
+        $results = $this->forPage($page, $perPage, $orderBy);
+
+        $viewListData = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value'] ?? ['target' => 0, 'count' => 0];
+
+        ['target' => $index, 'count' => $total] = $viewListData;
+
+        // Some LDAP servers seem to have an issue where the last result in a virtual
+        // list view will always be returned, regardless of the offset being larger
+        // than the result itself. In this case, we will manually return an empty
+        // response so that no objects are deceivingly included in the slice.
+        $objects = $index >= $total
+            ? (method_exists($this, 'newCollection') ? $this->newCollection() : [])
+            : $results;
+
+        return new Slice($objects, $total, $perPage, $page);
+    }
+    
+    /**
+     * Get the results of a query for a given page.
+     *
+     * @param integer $page
+     * @param integer $perPage
+     * @param string $orderBy
+     * 
+     * @return Collection|array
+     */
+    public function forPage($page = 1, $perPage = 100, $orderBy = 'cn')
+    {
+        $this->orderBy($orderBy);
+
+        $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
+            'before' => 0,
+            'after'	=> $perPage - 1,
+            'offset' => ($page * $perPage) - $perPage + 1,
+            'count' => 0,
+        ]);
+
+        return $this->get();
+    }
+
+    /**
      * Processes and converts the given LDAP results into models.
      *
      * @param array $results
@@ -1870,6 +1921,16 @@ class Builder
         return $this->connection->run(function (LdapInterface $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
             return $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn);
         });
+    }
+
+    /**
+     * Clone the query.
+     *
+     * @return static
+     */
+    public function clone()
+    {
+        return clone $this;
     }
 
     /**

@@ -579,8 +579,8 @@ class Builder
      *
      * @param int      $perPage
      * @param int|null $page
-     * @param string $orderBy
-     * @param string $orderByDir
+     * @param string   $orderBy
+     * @param string   $orderByDir
      *
      * @return Slice
      */
@@ -616,9 +616,9 @@ class Builder
     public function forPage($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
     {
         if (! $this->hasOrderBy()) {
-            $this->orderBy($orderBy, $orderByDir);    
+            $this->orderBy($orderBy, $orderByDir);
         }
-        
+
         $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
             'before' => 0,
             'after' => $perPage - 1,

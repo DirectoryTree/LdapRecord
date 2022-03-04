@@ -67,9 +67,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function items()
     {
-        return $this->items instanceof Collection
-            ? $this->items->all()
-            : $this->items;
+        return $this->items;
     }
 
     /**

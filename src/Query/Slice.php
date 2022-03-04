@@ -11,7 +11,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * All of the items being paginated.
      *
-     * @var \LdapRecord\Query\Collection
+     * @var \LdapRecord\Query\Collection|array
      */
     protected $items;
 
@@ -58,6 +58,18 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
         $this->perPage = $perPage;
         $this->lastPage = max((int) ceil($total / $perPage), 1);
         $this->currentPage = $currentPage;
+    }
+
+    /**
+     * Get the slice of items being paginated.
+     *
+     * @return array
+     */
+    public function items()
+    {
+        return $this->items instanceof Collection
+            ? $this->items->all()
+            : $this->items;
     }
 
     /**

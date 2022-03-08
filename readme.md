@@ -45,7 +45,7 @@
 
 ⏲ **Up and Running Fast**
 
-Connect to your LDAP servers and start running queries at lightning speed.
+Connect to your LDAP servers and start running queries in a matter of minutes.
 
 💡 **Fluent Filter Builder**
 

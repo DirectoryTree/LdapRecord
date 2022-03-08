@@ -3,6 +3,7 @@
 namespace LdapRecord\Query;
 
 use ArrayAccess;
+use ArrayIterator;
 use IteratorAggregate;
 use JsonSerializable;
 
@@ -63,7 +64,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Get the slice of items being paginated.
      *
-     * @return array
+     * @return \LdapRecord\Query\Collection|array
      */
     public function items()
     {
@@ -158,7 +159,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        return $this->items->getIterator();
+        return new ArrayIterator($this->items);
     }
 
     /**
@@ -168,7 +169,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function isEmpty()
     {
-        return $this->items->isEmpty();
+        return empty($this->items);
     }
 
     /**
@@ -178,7 +179,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function isNotEmpty()
     {
-        return $this->items->isNotEmpty();
+        return ! $this->isEmpty();
     }
 
     /**
@@ -189,7 +190,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function count()
     {
-        return $this->items->count();
+        return count($this->items);
     }
 
     /**
@@ -202,7 +203,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function offsetExists($key)
     {
-        return $this->items->has($key);
+        return array_key_exists($key, $this->items);
     }
 
     /**
@@ -215,7 +216,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
-        return $this->items->get($key);
+        return $this->items[$key] ?? null;
     }
 
     /**
@@ -229,7 +230,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
-        $this->items->put($key, $value);
+        $this->items[$key] = $value;
     }
 
     /**
@@ -242,7 +243,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
-        $this->items->forget($key);
+        unset($this->items[$key]);
     }
 
     /**
@@ -257,6 +258,18 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     }
 
     /**
+     * Get the arrayable items.
+     *
+     * @return array
+     */
+    public function getArrayableItems()
+    {
+        return $this->items instanceof Collection
+            ? $this->items->all()
+            : $this->items;
+    }
+
+    /**
      * Get the instance as an array.
      *
      * @return array
@@ -265,7 +278,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->items->toArray(),
+            'data' => $this->getArrayableItems(),
             'last_page' => $this->lastPage(),
             'per_page' => $this->perPage(),
             'total' => $this->total(),

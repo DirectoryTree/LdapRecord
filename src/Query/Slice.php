@@ -47,7 +47,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Constructor.
      *
-     * @param mixed    $items
+     * @param \LdapRecord\Query\Collection|array    $items
      * @param int      $total
      * @param int      $perPage
      * @param int|null $currentPage
@@ -58,7 +58,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
         $this->total = $total;
         $this->perPage = $perPage;
         $this->lastPage = max((int) ceil($total / $perPage), 1);
-        $this->currentPage = $currentPage;
+        $this->currentPage = $currentPage ?? 1;
     }
 
     /**

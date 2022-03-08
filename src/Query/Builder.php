@@ -595,7 +595,7 @@ class Builder
         // than the result itself. In this case, we will manually return an empty
         // response so that no objects are deceivingly included in the slice.
         $objects = $page > max((int) ceil($total / $perPage), 1)
-            ? (method_exists($this, 'newCollection') ? $this->newCollection() : [])
+            ? ($this instanceof ModelBuilder ? $this->model->newCollection() : [])
             : $results;
 
         return new Slice($objects, $total, $perPage, $page);

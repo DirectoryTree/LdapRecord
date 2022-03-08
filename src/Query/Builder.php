@@ -577,8 +577,8 @@ class Builder
     /**
      * Create a slice of the LDAP query into a page.
      *
-     * @param int $page
-     * @param int     $perPage
+     * @param int    $page
+     * @param int    $perPage
      * @param string $orderBy
      * @param string $orderByDir
      *

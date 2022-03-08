@@ -577,26 +577,24 @@ class Builder
     /**
      * Create a slice of the LDAP query into a page.
      *
-     * @param int      $perPage
-     * @param int|null $page
-     * @param string   $orderBy
-     * @param string   $orderByDir
+     * @param int $page
+     * @param int     $perPage
+     * @param string $orderBy
+     * @param string $orderByDir
      *
      * @return Slice
      */
-    public function slice($perPage = null, $page = null, $orderBy = 'cn', $orderByDir = 'asc')
+    public function slice($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
     {
         $results = $this->forPage($page, $perPage, $orderBy, $orderByDir);
 
-        $viewListData = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value'] ?? ['target' => 0, 'count' => 0];
-
-        ['target' => $index, 'count' => $total] = $viewListData;
+        $total = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value']['total'] ?? 0;
 
         // Some LDAP servers seem to have an issue where the last result in a virtual
         // list view will always be returned, regardless of the offset being larger
         // than the result itself. In this case, we will manually return an empty
         // response so that no objects are deceivingly included in the slice.
-        $objects = $index >= $total
+        $objects = $page > ceil($total / $perPage)
             ? (method_exists($this, 'newCollection') ? $this->newCollection() : [])
             : $results;
 

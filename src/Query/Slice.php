@@ -47,10 +47,10 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Constructor.
      *
-     * @param \LdapRecord\Query\Collection|array    $items
-     * @param int      $total
-     * @param int      $perPage
-     * @param int|null $currentPage
+     * @param \LdapRecord\Query\Collection|array $items
+     * @param int                                $total
+     * @param int                                $perPage
+     * @param int|null                           $currentPage
      */
     public function __construct($items, $total, $perPage, $currentPage = null)
     {

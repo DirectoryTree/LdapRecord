@@ -8,6 +8,8 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\MultipleObjectsFoundException;
 use LdapRecord\Query\ObjectsNotFoundException;
+use LdapRecord\Query\Slice;
+use LdapRecord\Testing\LdapExpectation;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
@@ -1379,6 +1381,91 @@ class BuilderTest extends TestCase
         });
 
         $this->assertTrue($result);
+    }
+
+    public function test_slice()
+    {
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setDn('ou=users,{base}');
+
+        $result = [
+            'count' => 1,
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => function (LdapExpectation $parseResult) use ($result) {
+                    return $parseResult->with([
+                        $resource = $result,
+                        $errorCode = 0,
+                        $dn = null,
+                        $errorMessage = null,
+                        $refs = null,
+                        function ($controls) {
+                            return array_key_exists(LDAP_CONTROL_SORTREQUEST, $controls)
+                                && array_key_exists(LDAP_CONTROL_VLVREQUEST, $controls)
+                                && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
+                                && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
+                        },
+                    ]);
+                },
+            ]);
+
+        $this->assertInstanceOf(Slice::class, $slice = $b->slice());
+        $this->assertTrue($slice->onFirstPage());
+        $this->assertTrue($slice->onLastPage());
+        $this->assertFalse($slice->hasPages());
+        $this->assertFalse($slice->hasMorePages());
+        $this->assertEquals(1, $slice->currentPage());
+        $this->assertEquals(1, $slice->lastPage());
+        $this->assertEquals([['count' => 1, 'objectclass' => ['foo']]], $slice->items());
+    }
+
+    public function test_for_page()
+    {
+        $b = $this->newBuilder()
+            ->setBaseDn('dc=base,dc=com')
+            ->setDn('ou=users,{base}');
+
+        $result = [
+            'count' => 1,
+            [
+                'count' => 1,
+                'objectclass' => ['foo'],
+            ],
+        ];
+
+        $b->getConnection()
+            ->getLdapConnection()
+            ->expect([
+                'bind' => true,
+                'search' => $result,
+                'parseResult' => function (LdapExpectation $parseResult) use ($result) {
+                    return $parseResult->with([
+                        $resource = $result,
+                        $errorCode = 0,
+                        $dn = null,
+                        $errorMessage = null,
+                        $refs = null,
+                        function ($controls) {
+                            return array_key_exists(LDAP_CONTROL_SORTREQUEST, $controls)
+                                && array_key_exists(LDAP_CONTROL_VLVREQUEST, $controls)
+                                && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
+                                && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
+                        },
+                    ]);
+                },
+            ]);
+
+        $this->assertEquals([['count' => 1, 'objectclass' => ['foo']]], $b->forPage());
     }
 
     public function test_setting_dn_with_base_substitutes_with_current_query_base()

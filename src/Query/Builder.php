@@ -594,7 +594,7 @@ class Builder
         // list view will always be returned, regardless of the offset being larger
         // than the result itself. In this case, we will manually return an empty
         // response so that no objects are deceivingly included in the slice.
-        $objects = $page > ceil($total / $perPage)
+        $objects = $page > max((int) ceil($total / $perPage), 1)
             ? (method_exists($this, 'newCollection') ? $this->newCollection() : [])
             : $results;
 

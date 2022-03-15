@@ -588,7 +588,7 @@ class Builder
     {
         $results = $this->forPage($page, $perPage, $orderBy, $orderByDir);
 
-        $total = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value']['total'] ?? 0;
+        $total = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value']['count'] ?? 0;
 
         // Some LDAP servers seem to have an issue where the last result in a virtual
         // list view will always be returned, regardless of the offset being larger

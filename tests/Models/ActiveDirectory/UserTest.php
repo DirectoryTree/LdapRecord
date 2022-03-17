@@ -126,8 +126,8 @@ class UserTest extends TestCase
             ['lockouttime' => [$lockoutTime]]
         );
 
-        $this->assertTrue($user->isLockedOut($lockoutDuration = 11));
-        $this->assertFalse($user->isLockedOut($lockoutDuration = 10));
+        $this->assertTrue($user->isLockedOut(null, $lockoutDuration = 11));
+        $this->assertFalse($user->isLockedOut(null, $lockoutDuration = 10));
     }
 }
 

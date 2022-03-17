@@ -20,10 +20,10 @@ class Domain extends Entry
      */
     public static function getLockoutDuration(): int
     {
-        $query = static::query();
-        $base = $query->getBaseDn();
-        $domain = $query->find($base);
-        $duration = $domain->getFirstAttribute('lockoutduration');
+        $rootDSE = Entry::query()->find('');
+        $base = $rootDSE->getFirstAttribute('defaultNamingContext');
+        $domain = static::query()->find($base);
+        $duration = $domain->getFirstAttribute('lockoutDuration');
 
         return -1 * round((int) $duration / 10000000);
     }

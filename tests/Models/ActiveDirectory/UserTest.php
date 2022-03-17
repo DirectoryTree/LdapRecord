@@ -105,29 +105,29 @@ class UserTest extends TestCase
     public function test_is_locked_out()
     {
         $lockoutTime = (new Timestamp('windows-int'))->fromDateTime(
-            Carbon::now()->subMinutes(10)
+            Carbon::now()->subSeconds(600)
         );
 
         $user = (new User)->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
-        $this->assertTrue($user->isLockedOut('UTC', $lockoutDuration = 11));
-        $this->assertFalse($user->isLockedOut('UTC', $lockoutDuration = 10));
+        $this->assertTrue($user->isLockedOut('UTC', $lockoutDuration = 660));
+        $this->assertFalse($user->isLockedOut('UTC', $lockoutDuration = 600));
     }
 
     public function test_is_locked_out_with_only_duration()
     {
         $lockoutTime = (new Timestamp('windows-int'))->fromDateTime(
-            Carbon::now()->subMinutes(10)
+            Carbon::now()->subSeconds(600)
         );
 
         $user = (new User)->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
-        $this->assertTrue($user->isLockedOut(null, $lockoutDuration = 11));
-        $this->assertFalse($user->isLockedOut(null, $lockoutDuration = 10));
+        $this->assertTrue($user->isLockedOut(null, $lockoutDuration = 660));
+        $this->assertFalse($user->isLockedOut(null, $lockoutDuration = 600));
     }
 }
 

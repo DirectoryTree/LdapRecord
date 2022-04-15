@@ -8,7 +8,7 @@ trait SerializesAndRestoresPropertyValues
      * Get the property value prepared for serialization.
      *
      * @param string $property
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -29,7 +29,7 @@ trait SerializesAndRestoresPropertyValues
      * Get the restored property value after deserialization.
      *
      * @param string $property
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return mixed
      */

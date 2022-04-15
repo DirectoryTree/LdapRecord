@@ -93,7 +93,8 @@ trait SerializesProperties
     /**
      * Restore the model after serialization.
      *
-     * @param  array  $values
+     * @param array $values
+     *
      * @return void
      */
     public function __unserialize(array $values)
@@ -131,7 +132,8 @@ trait SerializesProperties
     /**
      * Get the property value for the given property.
      *
-     * @param  \ReflectionProperty  $property
+     * @param \ReflectionProperty $property
+     *
      * @return mixed
      */
     protected function getPropertyValue(ReflectionProperty $property)

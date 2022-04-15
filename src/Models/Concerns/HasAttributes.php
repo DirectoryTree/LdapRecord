@@ -73,7 +73,7 @@ trait HasAttributes
      * @var array
      */
     protected static $mutatorCache = [];
-    
+
     /**
      * Convert the model's original attributes to an array.
      *

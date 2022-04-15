@@ -2,8 +2,8 @@
 
 namespace LdapRecord\Tests\Models;
 
-use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\ActiveDirectory\Entry;
+use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Tests\TestCase;
 

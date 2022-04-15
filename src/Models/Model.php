@@ -639,13 +639,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
-        // If the model has a GUID set, we need to convert
-        // it due to it being in binary. Otherwise we'll
-        // receive a JSON serialization exception.
+        // If the model has a GUID set, we need to convert it to its
+        // string format, due to it being in binary. Otherwise
+        // we will receive a JSON serialization exception.
         if (isset($attributes[$this->guidKey])) {
-            return array_replace($attributes, [
-                $this->guidKey => [$this->getConvertedGuid()],
-            ]);
+            $attributes[$this->guidKey] = [$this->getConvertedGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
         }
 
         return $attributes;
@@ -917,12 +917,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the model's string GUID.
      *
+     * @param string|null $guid
+     *
      * @return string|null
      */
-    public function getConvertedGuid()
+    public function getConvertedGuid($guid = null)
     {
         try {
-            return (string) $this->newObjectGuid($this->getObjectGuid());
+            return (string) $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            );
         } catch (InvalidArgumentException $e) {
             return;
         }
@@ -931,12 +935,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the model's binary GUID.
      *
+     * @param string|null $guid
+     *
      * @return string|null
      */
-    public function getBinaryGuid()
+    public function getBinaryGuid($guid = null)
     {
         try {
-            return $this->newObjectGuid($this->getObjectGuid())->getBinary();
+            return $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            )->getBinary();
         } catch (InvalidArgumentException $e) {
             return;
         }

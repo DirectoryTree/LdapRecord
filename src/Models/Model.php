@@ -27,6 +27,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     use Concerns\HasGlobalScopes;
     use Concerns\HidesAttributes;
     use Concerns\HasRelationships;
+    use Concerns\SerializesProperties;
 
     /**
      * Indicates if the model exists in the directory.

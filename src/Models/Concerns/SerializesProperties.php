@@ -132,7 +132,7 @@ trait SerializesProperties
     /**
      * Get the property value for the given property.
      *
-     * @param \ReflectionProperty $property
+     * @param ReflectionProperty $property
      *
      * @return mixed
      */

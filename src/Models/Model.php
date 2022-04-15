@@ -642,7 +642,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         // If the model has a GUID set, we need to convert
         // it due to it being in binary. Otherwise we'll
         // receive a JSON serialization exception.
-        if ($this->hasAttribute($this->guidKey)) {
+        if (isset($attributes[$this->guidKey])) {
             return array_replace($attributes, [
                 $this->guidKey => [$this->getConvertedGuid()],
             ]);
@@ -922,10 +922,36 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     public function getConvertedGuid()
     {
         try {
-            return (string) new Guid($this->getObjectGuid());
+            return (string) $this->newObjectGuid($this->getObjectGuid());
         } catch (InvalidArgumentException $e) {
             return;
         }
+    }
+
+    /**
+     * Get the model's binary GUID.
+     *
+     * @return string|null
+     */
+    public function getBinaryGuid()
+    {
+        try {
+            return $this->newObjectGuid($this->getObjectGuid())->getBinary();
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Make a new object Guid instance.
+     *
+     * @param string $value
+     *
+     * @return Guid
+     */
+    protected function newObjectGuid($value)
+    {
+        return new Guid($value);
     }
 
     /**

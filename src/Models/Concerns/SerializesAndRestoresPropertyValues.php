@@ -14,12 +14,12 @@ trait SerializesAndRestoresPropertyValues
      */
     protected function getSerializedPropertyValue($property, $value)
     {
-        if ($property === 'attributes') {
-            return $this->attributesToArray();
+        if ($property === 'original') {
+            return $this->originalToArray();
         }
 
-        if ($property === 'original') {
-            return;
+        if ($property === 'attributes') {
+            return $this->attributesToArray();
         }
 
         return $value;
@@ -35,19 +35,6 @@ trait SerializesAndRestoresPropertyValues
      */
     protected function getRestoredPropertyValue($property, $value)
     {
-        if ($property === 'original') {
-        }
-
         return $value;
-    }
-
-    public function restoreModel($value)
-    {
-        // ...
-    }
-
-    protected function getQueryForModelRestoration($model, $ids)
-    {
-        return $model->newQueryForRestoration($ids);
     }
 }

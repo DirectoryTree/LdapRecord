@@ -26,4 +26,11 @@ interface ActiveDirectory extends TypeInterface
      * @return string|null
      */
     public function getConvertedSid();
+
+    /**
+     * Returns the model's binary SID.
+     *
+     * @return string|null
+     */
+    public function getBinarySid();
 }

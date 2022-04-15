@@ -53,10 +53,34 @@ class Entry extends BaseEntry implements ActiveDirectory
     public function getConvertedSid()
     {
         try {
-            return (string) new Sid($this->getObjectSid());
+            return (string) $this->newObjectSid($this->getObjectSid());
         } catch (InvalidArgumentException $e) {
             return;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBinarySid()
+    {
+        try {
+            return $this->newObjectSid($this->getObjectSid())->getBinary();
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Make a new object Sid instance.
+     *
+     * @param string $value
+     *
+     * @return Sid
+     */
+    protected function newObjectSid($value)
+    {
+        return new Sid($value);
     }
 
     /**
@@ -153,7 +177,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     {
         $attributes = parent::convertAttributesForJson($attributes);
 
-        if ($this->hasAttribute($this->sidKey)) {
+        if (isset($attributes[$this->sidKey])) {
             // If the model has a SID set, we need to convert it due to it being in
             // binary. Otherwise we will receive a JSON serialization exception.
             return array_replace($attributes, [

@@ -10,6 +10,46 @@ trait SerializesProperties
     use SerializesAndRestoresPropertyValues;
 
     /**
+     * Prepare the attributes for serialization.
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        $properties = (new ReflectionClass($this))->getProperties();
+
+        foreach ($properties as $property) {
+            $property->setValue($this, $this->getSerializedPropertyValue(
+                $property->getName(),
+                $this->getPropertyValue($property)
+            ));
+        }
+
+        return array_values(array_filter(array_map(function ($p) {
+            return $p->isStatic() ? null : $p->getName();
+        }, $properties)));
+    }
+
+    /**
+     * Restore the attributes after serialization.
+     *
+     * @return void
+     */
+    public function __wakeup()
+    {
+        foreach ((new ReflectionClass($this))->getProperties() as $property) {
+            if ($property->isStatic()) {
+                continue;
+            }
+
+            $property->setValue($this, $this->getUnserializedPropertyValue(
+                $property->getName(),
+                $this->getPropertyValue($property)
+            ));
+        }
+    }
+
+    /**
      * Prepare the model for serialization.
      *
      * @return array

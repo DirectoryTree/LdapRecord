@@ -19,7 +19,7 @@ class ModelSerializationTest extends TestCase
             'objectsid' => [$sid->getBinary()],
         ]);
 
-        $encodedAndSerialized = json_encode(serialize($model));
+        $encodedAndSerialized = json_encode(serialize(clone $model));
 
         $this->assertIsString($encodedAndSerialized);
 

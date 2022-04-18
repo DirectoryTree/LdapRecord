@@ -26,14 +26,14 @@ trait SerializesAndRestoresPropertyValues
     }
 
     /**
-     * Get the restored property value after deserialization.
+     * Get the unserialized property value after deserialization.
      *
      * @param string $property
      * @param mixed  $value
      *
      * @return mixed
      */
-    protected function getRestoredPropertyValue($property, $value)
+    protected function getUnserializedPropertyValue($property, $value)
     {
         return $value;
     }

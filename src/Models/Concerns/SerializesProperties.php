@@ -90,12 +90,12 @@ trait SerializesProperties
     }
 
     /**
-    * Get the property value for the given property.
-    *
-    * @param ReflectionProperty $property
-    *
-    * @return mixed
-    */
+     * Get the property value for the given property.
+     *
+     * @param ReflectionProperty $property
+     *
+     * @return mixed
+     */
     protected function getPropertyValue(ReflectionProperty $property)
     {
         $property->setAccessible(true);

@@ -26,7 +26,7 @@ class Parser
             );
         }
 
-        preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", trim($string), $matches);
+        $matches = static::match($string);
 
         $extracted = $matches[1];
 
@@ -44,6 +44,20 @@ class Parser
             default:
                 return new GroupNode($filter);
         }
+    }
+
+    /**
+     * Perform a match for all filters in the string.
+     *
+     * @param string $string
+     *
+     * @return array
+     */
+    protected static function match($string)
+    {
+        preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", trim($string), $matches);
+
+        return $matches;
     }
 
     /**
@@ -79,7 +93,7 @@ class Parser
             case $node instanceof ConditionNode:
                 return static::wrap($node->getAttribute().$node->getOperator().$node->getValue());
             default:
-                throw new ParserException('Unable to assemble. Invalid node instance given.');
+                throw new ParserException('Unable to assemble filter. Invalid node instance given.');
         }
     }
 

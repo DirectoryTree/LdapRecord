@@ -43,22 +43,7 @@ class ConditionNode extends Node
     {
         $this->raw = $filter;
 
-        $components = Str::whenContains(
-            $filter,
-            $this->operators,
-            function ($operator, $filter) {
-                return explode($this->operator = $operator, $filter);
-            },
-            function ($filter) {
-                throw new ParserException("Invalid query condition. No operator found in [$filter]");
-            },
-        );
-
-        if (count($components) !== 2) {
-            throw new ParserException("Invalid query filter [$filter]");
-        }
-
-        [$this->attribute, $this->value] = $components;
+        [$this->attribute, $this->value] = $this->extractComponents($filter);
     }
 
     /**
@@ -89,5 +74,32 @@ class ConditionNode extends Node
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Extract the condition components from the filter.
+     *
+     * @param string $filter
+     *
+     * @return array
+     */
+    protected function extractComponents($filter)
+    {
+        $components = Str::whenContains(
+            $filter,
+            $this->operators,
+            function ($operator, $filter) {
+                return explode($this->operator = $operator, $filter);
+            },
+            function ($filter) {
+                throw new ParserException("Invalid query condition. No operator found in [$filter]");
+            },
+        );
+
+        if (count($components) !== 2) {
+            throw new ParserException("Invalid query filter [$filter]");
+        }
+
+        return $components;
     }
 }

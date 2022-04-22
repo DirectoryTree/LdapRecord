@@ -10,7 +10,7 @@ use LdapRecord\Tests\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function test_parse_basic()
+    public function test_parsing_basic_filter()
     {
         $group = Parser::parse('(|(foo=bar)(:baz:~=zal))');
 
@@ -30,7 +30,24 @@ class ParserTest extends TestCase
         $this->assertEquals('zal', $nodes[1]->getValue());
     }
 
-    public function test_parse_nested_groups()
+    public function test_parsing_badly_formatted_filter()
+    {
+        $nodes = Parser::parse('(foo=bar)_~@#-foobar-.~=(:baz:~=zal)');
+
+        $this->assertCount(2, $nodes);
+
+        $this->assertInstanceOf(ConditionNode::class, $nodes[0]);
+        $this->assertEquals('foo', $nodes[0]->getAttribute());
+        $this->assertEquals('=', $nodes[0]->getOperator());
+        $this->assertEquals('bar', $nodes[0]->getValue());
+
+        $this->assertInstanceOf(ConditionNode::class, $nodes[1]);
+        $this->assertEquals(':baz:', $nodes[1]->getAttribute());
+        $this->assertEquals('~=', $nodes[1]->getOperator());
+        $this->assertEquals('zal', $nodes[1]->getValue());
+    }
+
+    public function test_parsing_nested_filter_groups()
     {
         $group = Parser::parse('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))');
 
@@ -67,7 +84,7 @@ class ParserTest extends TestCase
         $this->assertEquals('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))', Parser::assemble($group));
     }
 
-    public function test_parse_throws_exception_when_missing_open_parenthesis_is_detected()
+    public function test_parser_throws_exception_when_missing_open_parenthesis_is_detected()
     {
         $this->expectException(ParserException::class);
         $this->expectExceptionMessage('Unclosed filter group. Missing "(" parenthesis');
@@ -75,7 +92,7 @@ class ParserTest extends TestCase
         Parser::parse('(|(foo=bar)(:baz:~=zal)))');
     }
 
-    public function test_parse_throws_exception_when_missing_close_parenthesis_is_detected()
+    public function test_parser_throws_exception_when_missing_close_parenthesis_is_detected()
     {
         $this->expectException(ParserException::class);
         $this->expectExceptionMessage('Unclosed filter group. Missing ")" parenthesis');
@@ -83,7 +100,7 @@ class ParserTest extends TestCase
         Parser::parse('((|(foo=bar)(:baz:~=zal))');
     }
 
-    public function test_parse_throws_exception_when_unclosed_nested_filter_is_detected()
+    public function test_parser_throws_exception_when_unclosed_nested_filter_is_detected()
     {
         $this->expectException(ParserException::class);
         $this->expectExceptionMessage('Unclosed filter group [:baz:~=zal]');
@@ -103,5 +120,21 @@ class ParserTest extends TestCase
         $group = Parser::parse('(((|(foo=bar)(:baz:~=zal))))');
 
         $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($group));
+    }
+
+    public function test_parser_can_accept_single_node()
+    {
+        $node = Parser::parse('(foo=bar)')[0];
+
+        $this->assertEquals('(foo=bar)', Parser::assemble($node));
+    }
+
+    public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()
+    {
+        $this->expectException(ParserException::class);
+        $this->expectExceptionMessage('Unable to assemble filter. Invalid node instance given.');
+
+
+        Parser::assemble(['foo', 'bar']);
     }
 }

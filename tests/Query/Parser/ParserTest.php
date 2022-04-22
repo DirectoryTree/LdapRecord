@@ -134,7 +134,6 @@ class ParserTest extends TestCase
         $this->expectException(ParserException::class);
         $this->expectExceptionMessage('Unable to assemble filter. Invalid node instance given.');
 
-
         Parser::assemble(['foo', 'bar']);
     }
 }

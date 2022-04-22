@@ -75,6 +75,18 @@ trait HasAttributes
     protected static $mutatorCache = [];
 
     /**
+     * Convert the model's original attributes to an array.
+     *
+     * @return array
+     */
+    public function originalToArray()
+    {
+        return $this->encodeAttributes(
+            $this->convertAttributesForJson($this->original)
+        );
+    }
+
+    /**
      * Convert the model's attributes to an array.
      *
      * @return array

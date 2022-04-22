@@ -51,6 +51,13 @@ class Builder
     public $controls = [];
 
     /**
+     * The LDAP server controls that were processed.
+     *
+     * @var array
+     */
+    public $controlsResponse = [];
+
+    /**
      * The size limit of the query.
      *
      * @var int
@@ -568,6 +575,59 @@ class Builder
     }
 
     /**
+     * Create a slice of the LDAP query into a page.
+     *
+     * @param int    $page
+     * @param int    $perPage
+     * @param string $orderBy
+     * @param string $orderByDir
+     *
+     * @return Slice
+     */
+    public function slice($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
+    {
+        $results = $this->forPage($page, $perPage, $orderBy, $orderByDir);
+
+        $total = $this->controlsResponse[LDAP_CONTROL_VLVRESPONSE]['value']['count'] ?? 0;
+
+        // Some LDAP servers seem to have an issue where the last result in a virtual
+        // list view will always be returned, regardless of the offset being larger
+        // than the result itself. In this case, we will manually return an empty
+        // response so that no objects are deceivingly included in the slice.
+        $objects = $page > max((int) ceil($total / $perPage), 1)
+            ? ($this instanceof ModelBuilder ? $this->model->newCollection() : [])
+            : $results;
+
+        return new Slice($objects, $total, $perPage, $page);
+    }
+
+    /**
+     * Get the results of a query for a given page.
+     *
+     * @param int    $page
+     * @param int    $perPage
+     * @param string $orderBy
+     * @param string $orderByDir
+     *
+     * @return Collection|array
+     */
+    public function forPage($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
+    {
+        if (! $this->hasOrderBy()) {
+            $this->orderBy($orderBy, $orderByDir);
+        }
+
+        $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
+            'before' => 0,
+            'after' => $perPage - 1,
+            'offset' => ($page * $perPage) - $perPage + 1,
+            'count' => 0,
+        ]);
+
+        return $this->get();
+    }
+
+    /**
      * Processes and converts the given LDAP results into models.
      *
      * @param array $results
@@ -672,6 +732,21 @@ class Builder
         }
 
         return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
+            $this->controlsResponse = $this->controls;
+
+            $errorCode = 0;
+            $dn = $errorMessage = $refs = null;
+
+            // Process the server controls response.
+            $ldap->parseResult(
+                $resource,
+                $errorCode,
+                $dn,
+                $errorMessage,
+                $refs,
+                $this->controlsResponse
+            );
+
             $entries = $ldap->getEntries($resource);
 
             // Free up memory.
@@ -975,6 +1050,43 @@ class Builder
         $this->columns = array_merge((array) $this->columns, $column);
 
         return $this;
+    }
+
+    /**
+     * Add an order by control to the query.
+     *
+     * @param string $attribute
+     * @param string $direction
+     *
+     * @return $this
+     */
+    public function orderBy($attribute, $direction = 'asc')
+    {
+        return $this->addControl(LDAP_CONTROL_SORTREQUEST, true, [
+            ['attr' => $attribute, 'reverse' => $direction === 'desc'],
+        ]);
+    }
+
+    /**
+     * Add an order by descending control to the query.
+     *
+     * @param string $attribute
+     *
+     * @return $this
+     */
+    public function orderByDesc($attribute)
+    {
+        return $this->orderBy($attribute, 'desc');
+    }
+
+    /**
+     * Determine if the query has a sotr request control header.
+     *
+     * @return bool
+     */
+    public function hasOrderBy()
+    {
+        return $this->hasControl(LDAP_CONTROL_SORTREQUEST);
     }
 
     /**
@@ -1821,6 +1933,16 @@ class Builder
         return $this->connection->run(function (LdapInterface $ldap) use ($dn, $rdn, $newParentDn, $deleteOldRdn) {
             return $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn);
         });
+    }
+
+    /**
+     * Clone the query.
+     *
+     * @return static
+     */
+    public function clone()
+    {
+        return clone $this;
     }
 
     /**

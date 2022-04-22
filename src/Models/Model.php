@@ -27,6 +27,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     use Concerns\HasGlobalScopes;
     use Concerns\HidesAttributes;
     use Concerns\HasRelationships;
+    use Concerns\SerializesProperties;
 
     /**
      * Indicates if the model exists in the directory.
@@ -638,13 +639,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
-        // If the model has a GUID set, we need to convert
-        // it due to it being in binary. Otherwise we'll
-        // receive a JSON serialization exception.
-        if ($this->hasAttribute($this->guidKey)) {
-            return array_replace($attributes, [
-                $this->guidKey => [$this->getConvertedGuid()],
-            ]);
+        // If the model has a GUID set, we need to convert it to its
+        // string format, due to it being in binary. Otherwise
+        // we will receive a JSON serialization exception.
+        if (isset($attributes[$this->guidKey])) {
+            $attributes[$this->guidKey] = [$this->getConvertedGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
         }
 
         return $attributes;
@@ -916,15 +917,49 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the model's string GUID.
      *
+     * @param string|null $guid
+     *
      * @return string|null
      */
-    public function getConvertedGuid()
+    public function getConvertedGuid($guid = null)
     {
         try {
-            return (string) new Guid($this->getObjectGuid());
+            return (string) $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            );
         } catch (InvalidArgumentException $e) {
             return;
         }
+    }
+
+    /**
+     * Get the model's binary GUID.
+     *
+     * @param string|null $guid
+     *
+     * @return string|null
+     */
+    public function getBinaryGuid($guid = null)
+    {
+        try {
+            return $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            )->getBinary();
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Make a new object Guid instance.
+     *
+     * @param string $value
+     *
+     * @return Guid
+     */
+    protected function newObjectGuid($value)
+    {
+        return new Guid($value);
     }
 
     /**

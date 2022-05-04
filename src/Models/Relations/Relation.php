@@ -316,6 +316,18 @@ abstract class Relation
             $related[$relation] = $relation::$objectClasses;
         }
 
+        // Sort related models by number of classes (largest to smallest)
+        uasort($related, function (array $a, array $b) {
+            $countA = count($a);
+            $countB = count($b);
+
+            if ($countA === $countB) {
+                return 0;
+            }
+
+            return ($countA > $countB) ? -1 : 1;
+        });
+
         return $results->transform(function (Model $entry) use ($related) {
             $model = $this->determineModelFromRelated($entry, $related);
 
@@ -346,10 +358,19 @@ abstract class Relation
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
         // determine the owning model from search results.
-        return array_search(
-            $this->normalizeObjectClasses($model->getObjectClasses()),
-            array_map([$this, 'normalizeObjectClasses'], $related)
-        );
+        $entryClasses = $this->normalizeObjectClasses($model->getObjectClasses());
+        $relatedClasses = array_map([$this, 'normalizeObjectClasses'], $related);
+
+        // Check if each relationship is a subset of the classes of the retreived entry
+        foreach ($relatedClasses as $modelName => $modelClasses) {
+            $classIntersection = array_values(array_intersect($entryClasses, $modelClasses));
+
+            if ($classIntersection == $modelClasses) {
+                return $modelName;
+            }
+        }
+
+        return false;
     }
 
     /**

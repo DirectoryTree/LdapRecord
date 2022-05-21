@@ -318,14 +318,14 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-    * Get the RootDSE (AD schema) record from the directory.
-    *
-    * @param string|null $connection
-    *
-    * @return Model
-    *
-    * @throws \LdapRecord\Models\ModelNotFoundException
-    */
+     * Get the RootDSE (AD schema) record from the directory.
+     *
+     * @param string|null $connection
+     *
+     * @return Model
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
+     */
     public static function getRootDse($connection = null)
     {
         $model = static::getRootDseModel();
@@ -1211,7 +1211,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         return $instance;
     }
-    
 
     /**
      * Create an attribute on the model.

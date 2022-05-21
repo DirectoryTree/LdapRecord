@@ -13,6 +13,10 @@ use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
+use LdapRecord\Models\Types\ActiveDirectory;
+use LdapRecord\Models\Types\DirectoryServer;
+use LdapRecord\Models\Types\FreeIPA;
+use LdapRecord\Models\Types\OpenLDAP;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
 use UnexpectedValueException;
@@ -302,15 +306,46 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Make a new model instance.
-     *
-     * @param array $attributes
-     *
-     * @return static
-     */
-    public static function make($attributes = [])
+    * Get the RootDSE (AD schema) record from the directory.
+    *
+    * @param string|null $connection
+    *
+    * @return Model
+    *
+    * @throws \LdapRecord\Models\ModelNotFoundException
+    */
+    public static function getRootDse($connection = null)
     {
-        return new static($attributes);
+        $model = static::getRootDseModel();
+
+        return $model::on($connection ?? (new $model)->getConnectionName())
+            ->in(null)
+            ->read()
+            ->whereHas('objectclass')
+            ->firstOrFail();
+    }
+
+    /**
+     * Get the root DSE model.
+     *
+     * @return string
+     */
+    protected static function getRootDseModel()
+    {
+        $instance = (new static);
+
+        switch (true) {
+            case $instance instanceof ActiveDirectory:
+                return ActiveDirectory\Entry::class;
+            case $instance instanceof DirectoryServer:
+                return OpenLDAP\Entry::class;
+            case $instance instanceof OpenLDAP:
+                return OpenLDAP\Entry::class;
+            case $instance instanceof FreeIPA:
+                return FreeIPA\Entry::class;
+            default:
+                return Entry::class;
+        }
     }
 
     /**
@@ -1164,6 +1199,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         return $instance;
     }
+    
 
     /**
      * Create an attribute on the model.

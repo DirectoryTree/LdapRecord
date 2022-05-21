@@ -278,6 +278,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
+     * Make a new model instance.
+     *
+     * @param array $attributes
+     *
+     * @return static
+     */
+    public static function make($attributes = [])
+    {
+        return new static($attributes);
+    }
+
+    /**
      * Begin querying the model on a given connection.
      *
      * @param string|null $connection

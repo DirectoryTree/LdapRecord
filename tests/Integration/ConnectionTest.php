@@ -32,7 +32,7 @@ class ConnectionTest extends TestCase
 
         $this->assertFalse($conn->isConnected());
 
-        $conn->auth()->attempt('cn=admin,dc=local,dc=com', 'secret');
+        $this->assertTrue($conn->auth()->attempt('cn=admin,dc=local,dc=com', 'secret'));
 
         $this->assertTrue($conn->isConnected());
     }

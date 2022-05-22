@@ -66,11 +66,11 @@ abstract class Relation
     /**
      * Constructor.
      *
-     * @param Builder $query
-     * @param Model   $parent
+     * @param Builder      $query
+     * @param Model        $parent
      * @param string|array $related
-     * @param string  $relationKey
-     * @param string  $foreignKey
+     * @param string       $relationKey
+     * @param string       $foreignKey
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {

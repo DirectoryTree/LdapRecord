@@ -59,7 +59,7 @@ abstract class Relation
     /**
      * The callback to use for resolving relation models.
      *
-     * @var \Closure
+     * @var Closure
      */
     protected static $modelResolver;
 

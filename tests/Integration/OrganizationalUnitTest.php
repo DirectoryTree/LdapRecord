@@ -35,7 +35,7 @@ class OrganizationalUnitTest extends TestCase
     public function test_it_can_be_created_inside_another_ou()
     {
         $foo = OrganizationalUnit::create(['ou' => 'foo']);
-        
+
         $bar = (new OrganizationalUnit(['ou' => 'bar']))->inside($foo);
 
         $bar->save();
@@ -44,7 +44,7 @@ class OrganizationalUnitTest extends TestCase
         $this->assertEquals('ou=bar,ou=foo,dc=local,dc=com', $bar->getDn());
 
         $this->assertCount(2, OrganizationalUnit::all());
- 
+
         $this->assertTrue($bar->isChildOf($foo));
         $this->assertTrue($bar->isDescendantOf($foo));
 
@@ -101,7 +101,7 @@ class OrganizationalUnitTest extends TestCase
     public function test_it_throws_exception_when_deleting_non_leaf_node()
     {
         $foo = OrganizationalUnit::create(['ou' => 'foo']);
-        
+
         $bar = (new OrganizationalUnit(['ou' => 'bar']))->inside($foo);
 
         $bar->save();
@@ -114,7 +114,7 @@ class OrganizationalUnitTest extends TestCase
     public function test_it_can_delete_non_leaf_node_with_recursive_delete_option()
     {
         $foo = OrganizationalUnit::create(['ou' => 'foo']);
-        
+
         $bar = (new OrganizationalUnit(['ou' => 'bar']))->inside($foo);
 
         $bar->save();

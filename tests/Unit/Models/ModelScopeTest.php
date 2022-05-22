@@ -100,9 +100,12 @@ class ModelScopeTest extends TestCase
     public function test_scopes_do_not_impact_model_refresh()
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
-            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
-                ['dn' => 'cn=John Doe,dc=local,dc=com'],
-            ])
+            [
+                LdapFake::operation('parseResult')->once(),
+                LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                    ['dn' => 'cn=John Doe,dc=local,dc=com'],
+                ]),
+            ]
         );
 
         $model = (new ModelWithDnScopeTestStub())
@@ -116,9 +119,12 @@ class ModelScopeTest extends TestCase
     public function test_scopes_do_not_impact_model_find()
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
-            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
-                ['dn' => 'cn=John Doe,dc=local,dc=com'],
-            ])
+            [
+                LdapFake::operation('parseResult')->once(),
+                LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                    ['dn' => 'cn=John Doe,dc=local,dc=com'],
+                ]),
+            ]
         );
 
         $model = ModelWithDnScopeTestStub::find('cn=John Doe,dc=local,dc=com');

@@ -27,6 +27,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     use Concerns\HasGlobalScopes;
     use Concerns\HidesAttributes;
     use Concerns\HasRelationships;
+    use Concerns\SerializesProperties;
 
     /**
      * Indicates if the model exists in the directory.
@@ -273,6 +274,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
+     * Make a new model instance.
+     *
+     * @param array $attributes
+     *
+     * @return static
+     */
+    public static function make($attributes = [])
+    {
+        return new static($attributes);
+    }
+
+    /**
      * Begin querying the model on a given connection.
      *
      * @param string|null $connection
@@ -301,15 +314,46 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Make a new model instance.
+     * Get the RootDSE (AD schema) record from the directory.
      *
-     * @param array $attributes
+     * @param string|null $connection
      *
-     * @return static
+     * @return Model
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public static function make($attributes = [])
+    public static function getRootDse($connection = null)
     {
-        return new static($attributes);
+        $model = static::getRootDseModel();
+
+        return $model::on($connection ?? (new $model)->getConnectionName())
+            ->in(null)
+            ->read()
+            ->whereHas('objectclass')
+            ->firstOrFail();
+    }
+
+    /**
+     * Get the root DSE model.
+     *
+     * @return class-string<Model>
+     */
+    protected static function getRootDseModel()
+    {
+        $instance = (new static);
+
+        switch (true) {
+            case $instance instanceof Types\ActiveDirectory:
+                return ActiveDirectory\Entry::class;
+            case $instance instanceof Types\DirectoryServer:
+                return OpenLDAP\Entry::class;
+            case $instance instanceof Types\OpenLDAP:
+                return OpenLDAP\Entry::class;
+            case $instance instanceof Types\FreeIPA:
+                return FreeIPA\Entry::class;
+            default:
+                return Entry::class;
+        }
     }
 
     /**
@@ -638,13 +682,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
-        // If the model has a GUID set, we need to convert
-        // it due to it being in binary. Otherwise we'll
-        // receive a JSON serialization exception.
-        if ($this->hasAttribute($this->guidKey)) {
-            return array_replace($attributes, [
-                $this->guidKey => [$this->getConvertedGuid()],
-            ]);
+        // If the model has a GUID set, we need to convert it to its
+        // string format, due to it being in binary. Otherwise
+        // we will receive a JSON serialization exception.
+        if (isset($attributes[$this->guidKey])) {
+            $attributes[$this->guidKey] = [$this->getConvertedGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
         }
 
         return $attributes;
@@ -916,15 +960,49 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the model's string GUID.
      *
+     * @param string|null $guid
+     *
      * @return string|null
      */
-    public function getConvertedGuid()
+    public function getConvertedGuid($guid = null)
     {
         try {
-            return (string) new Guid($this->getObjectGuid());
+            return (string) $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            );
         } catch (InvalidArgumentException $e) {
             return;
         }
+    }
+
+    /**
+     * Get the model's binary GUID.
+     *
+     * @param string|null $guid
+     *
+     * @return string|null
+     */
+    public function getBinaryGuid($guid = null)
+    {
+        try {
+            return $this->newObjectGuid(
+                $guid ?? $this->getObjectGuid()
+            )->getBinary();
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Make a new object Guid instance.
+     *
+     * @param string $value
+     *
+     * @return Guid
+     */
+    protected function newObjectGuid($value)
+    {
+        return new Guid($value);
     }
 
     /**

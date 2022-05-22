@@ -13,10 +13,6 @@ use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
-use LdapRecord\Models\Types\ActiveDirectory;
-use LdapRecord\Models\Types\DirectoryServer;
-use LdapRecord\Models\Types\FreeIPA;
-use LdapRecord\Models\Types\OpenLDAP;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
 use UnexpectedValueException;
@@ -340,20 +336,20 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the root DSE model.
      *
-     * @return string
+     * @return class-string<Model>
      */
     protected static function getRootDseModel()
     {
         $instance = (new static);
 
         switch (true) {
-            case $instance instanceof ActiveDirectory:
+            case $instance instanceof Types\ActiveDirectory:
                 return ActiveDirectory\Entry::class;
-            case $instance instanceof DirectoryServer:
+            case $instance instanceof Types\DirectoryServer:
                 return OpenLDAP\Entry::class;
-            case $instance instanceof OpenLDAP:
+            case $instance instanceof Types\OpenLDAP:
                 return OpenLDAP\Entry::class;
-            case $instance instanceof FreeIPA:
+            case $instance instanceof Types\FreeIPA:
                 return FreeIPA\Entry::class;
             default:
                 return Entry::class;

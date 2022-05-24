@@ -122,11 +122,28 @@ class ParserTest extends TestCase
         $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($group));
     }
 
-    public function test_parser_can_accept_single_node()
+    public function test_parser_can_process_multiple_root_nodes()
+    {
+        $nodes = Parser::parse('(cn=Steve)(sn=Bauman)');
+
+        $this->assertCount(2, $nodes);
+
+        $this->assertEquals($nodes[0]->getRaw(), 'cn=Steve');
+        $this->assertEquals($nodes[1]->getRaw(), 'sn=Bauman');
+    }
+
+    public function test_parser_can_process_single_node()
     {
         $node = Parser::parse('(foo=bar)')[0];
 
         $this->assertEquals('(foo=bar)', Parser::assemble($node));
+    }
+
+    public function test_parser_can_process_multiple_nodes()
+    {
+        $nodes = Parser::parse('(cn=Steve)(sn=Bauman)');
+
+        $this->assertEquals('(cn=Steve)(sn=Bauman)', Parser::assemble($nodes));
     }
 
     public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()

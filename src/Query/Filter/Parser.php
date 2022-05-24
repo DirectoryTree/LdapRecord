@@ -37,8 +37,6 @@ class Parser
                 return static::parse($filter);
             case ! static::isGroup($filter):
                 return static::buildNodes($extracted);
-            case count($extracted) > 1:
-                throw new ParserException(sprintf('Multiple root filters detected in [%s]', $string));
             case ! Str::endsWith($filter, ')'):
                 throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
             default:

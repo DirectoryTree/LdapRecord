@@ -38,7 +38,7 @@ jobs:
               run: composer update --prefer-dist --no-interaction
 
             - name: Execute tests
-              run: vendor/bin/phpunit
+              run: vendor/bin/phpunit --testsuite Unit
 
     run-analysis:
         runs-on: ${{ matrix.os }}

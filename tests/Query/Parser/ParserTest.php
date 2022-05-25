@@ -7,12 +7,13 @@ use LdapRecord\Query\Filter\GroupNode;
 use LdapRecord\Query\Filter\Parser;
 use LdapRecord\Query\Filter\ParserException;
 use LdapRecord\Tests\TestCase;
+use TypeError;
 
 class ParserTest extends TestCase
 {
     public function test_parsing_basic_filter()
     {
-        $group = Parser::parse('(|(foo=bar)(:baz:~=zal))');
+        $group = Parser::parse('(|(foo=bar)(:baz:~=zal))')[0];
 
         $this->assertInstanceOf(GroupNode::class, $group);
         $this->assertEquals('|', $group->getOperator());
@@ -49,7 +50,7 @@ class ParserTest extends TestCase
 
     public function test_parsing_nested_filter_groups()
     {
-        $group = Parser::parse('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))');
+        $group = Parser::parse('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))')[0];
 
         $this->assertInstanceOf(GroupNode::class, $group);
         $this->assertEquals('&', $group->getOperator());
@@ -122,7 +123,30 @@ class ParserTest extends TestCase
         $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($group));
     }
 
-    public function test_parser_can_accept_single_node()
+    public function test_parser_can_process_multiple_root_nodes()
+    {
+        $nodes = Parser::parse('(cn=Steve)(sn=Bauman)');
+
+        $this->assertCount(2, $nodes);
+
+        $this->assertEquals($nodes[0]->getRaw(), 'cn=Steve');
+        $this->assertEquals($nodes[1]->getRaw(), 'sn=Bauman');
+    }
+
+    public function test_parser_can_parse_multiple_root_group_nodes()
+    {
+        $nodes = Parser::parse('(|(foo=bar))(|(&(cn=Steve)(sn=Bauman))(mail=sbauman@local.com))');
+
+        $this->assertCount(2, $nodes);
+        
+        $this->assertInstanceOf(GroupNode::class, $nodes[0]);
+        $this->assertInstanceOf(GroupNode::class, $nodes[1]);
+
+        $this->assertEquals($nodes[0]->getRaw(), '|(foo=bar)');
+        $this->assertEquals($nodes[1]->getRaw(), '|(&(cn=Steve)(sn=Bauman))(mail=sbauman@local.com)');
+    }
+
+    public function test_parser_can_process_single_node()
     {
         $node = Parser::parse('(foo=bar)')[0];
 
@@ -131,9 +155,8 @@ class ParserTest extends TestCase
 
     public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()
     {
-        $this->expectException(ParserException::class);
-        $this->expectExceptionMessage('Unable to assemble filter. Invalid node instance given.');
-
+        $this->expectException(TypeError::class);
+        
         Parser::assemble(['foo', 'bar']);
     }
 }

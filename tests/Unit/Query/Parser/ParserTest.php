@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Tests\Query\Parser;
+namespace LdapRecord\Unit\Tests\Query\Parser;
 
 use LdapRecord\Query\Filter\ConditionNode;
 use LdapRecord\Query\Filter\GroupNode;

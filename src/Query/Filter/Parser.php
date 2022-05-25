@@ -12,9 +12,9 @@ class Parser
      *
      * @param string $string
      *
-     * @throws ParserException
-     *
      * @return (ConditionNode|GroupNode)[]
+     *
+     * @throws ParserException
      */
     public static function parse($string)
     {
@@ -85,9 +85,9 @@ class Parser
      *
      * @param string[] $filters
      *
-     * @throws ParserException
-     *
      * @return (ConditionNode|GroupNode)[]
+     *
+     * @throws ParserException
      */
     protected static function buildNodes(array $filters = [])
     {
@@ -145,7 +145,6 @@ class Parser
 
         return $unwrapped instanceof Node ? $unwrapped->getRaw() : $value;
     }
-
 
     /**
      * Determine if the filter is wrapped.

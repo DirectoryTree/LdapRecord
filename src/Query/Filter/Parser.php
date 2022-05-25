@@ -12,7 +12,9 @@ class Parser
      *
      * @param string $string
      *
-     * @return GroupNode|ConditionNode[]
+     * @throws ParserException
+     *
+     * @return (ConditionNode|GroupNode)[]
      */
     public static function parse($string)
     {
@@ -26,22 +28,9 @@ class Parser
             );
         }
 
-        $matches = static::match($string);
-
-        $extracted = $matches[1];
-
-        $filter = reset($extracted);
-
-        switch (true) {
-            case static::isWrapped($filter):
-                return static::parse($filter);
-            case ! static::isGroup($filter):
-                return static::buildNodes($extracted);
-            case ! Str::endsWith($filter, ')'):
-                throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
-            default:
-                return new GroupNode($filter);
-        }
+        return static::buildNodes(
+            static::match($string)
+        );
     }
 
     /**
@@ -55,7 +44,7 @@ class Parser
     {
         preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", trim($string), $matches);
 
-        return $matches;
+        return $matches[1] ?? [];
     }
 
     /**
@@ -67,13 +56,9 @@ class Parser
      */
     public static function assemble($nodes = [])
     {
-        $result = '';
-
-        foreach (Arr::wrap($nodes) as $node) {
-            $result .= static::compileNode($node);
-        }
-
-        return $result;
+        return array_reduce(Arr::wrap($nodes), function ($carry, Node $node) {
+            return $carry .= static::compileNode($node);
+        });
     }
 
     /**
@@ -83,7 +68,7 @@ class Parser
      *
      * @return string
      */
-    protected static function compileNode($node)
+    protected static function compileNode(Node $node)
     {
         switch (true) {
             case $node instanceof GroupNode:
@@ -91,7 +76,7 @@ class Parser
             case $node instanceof ConditionNode:
                 return static::wrap($node->getAttribute().$node->getOperator().$node->getValue());
             default:
-                throw new ParserException('Unable to assemble filter. Invalid node instance given.');
+                return $node->getRaw();
         }
     }
 
@@ -100,11 +85,21 @@ class Parser
      *
      * @param string[] $filters
      *
-     * @return GroupNode|ConditionNode[]
+     * @throws ParserException
+     *
+     * @return (ConditionNode|GroupNode)[]
      */
     protected static function buildNodes(array $filters = [])
     {
         return array_map(function ($filter) {
+            if (static::isWrapped($filter)) {
+                $filter = static::unwrap($filter);
+            }
+
+            if (static::isGroup($filter) && ! Str::endsWith($filter, ')')) {
+                throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
+            }
+
             return static::isGroup($filter)
                 ? new GroupNode($filter)
                 : new ConditionNode($filter);
@@ -136,6 +131,23 @@ class Parser
     }
 
     /**
+     * Recursively unwrwap the value from its parentheses.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected static function unwrap($value)
+    {
+        $nodes = static::parse($value);
+
+        $unwrapped = Arr::first($nodes);
+
+        return $unwrapped instanceof Node ? $unwrapped->getRaw() : $value;
+    }
+
+
+    /**
      * Determine if the filter is wrapped.
      *
      * @param string $filter
@@ -144,7 +156,7 @@ class Parser
      */
     protected static function isWrapped($filter)
     {
-        return Str::startsWith($filter, '(');
+        return Str::startsWith($filter, '(') && Str::endsWith($filter, ')');
     }
 
     /**

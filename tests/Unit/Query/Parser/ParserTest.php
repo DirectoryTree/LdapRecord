@@ -138,7 +138,7 @@ class ParserTest extends TestCase
         $nodes = Parser::parse('(|(foo=bar))(|(&(cn=Steve)(sn=Bauman))(mail=sbauman@local.com))');
 
         $this->assertCount(2, $nodes);
-        
+
         $this->assertInstanceOf(GroupNode::class, $nodes[0]);
         $this->assertInstanceOf(GroupNode::class, $nodes[1]);
 
@@ -156,7 +156,7 @@ class ParserTest extends TestCase
     public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()
     {
         $this->expectException(TypeError::class);
-        
+
         Parser::assemble(['foo', 'bar']);
     }
 }

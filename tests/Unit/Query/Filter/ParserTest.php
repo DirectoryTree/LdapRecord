@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Query\Parser;
+namespace LdapRecord\Unit\Tests\Query\Filter;
 
 use LdapRecord\Query\Filter\ConditionNode;
 use LdapRecord\Query\Filter\GroupNode;
@@ -111,16 +111,30 @@ class ParserTest extends TestCase
 
     public function test_assemble_can_rebuild_parsed_filter()
     {
-        $group = Parser::parse('(|(foo=bar)(:baz:~=zal))');
+        $nodes = Parser::parse('(|(foo=bar)(:baz:~=zal))');
 
-        $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($group));
+        $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($nodes));
     }
 
     public function test_parser_removes_unneeded_parentheses()
     {
-        $group = Parser::parse('(((|(foo=bar)(:baz:~=zal))))');
+        $nodes = Parser::parse('(((|(foo=bar)(:baz:~=zal))))');
 
-        $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($group));
+        $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($nodes));
+    }
+
+    public function test_parser_removes_unneeded_spaces()
+    {
+        $nodes = Parser::parse('   (  |( foo=bar)( :baz:~=zal )   )   ');
+
+        $this->assertEquals('(|(foo=bar)(:baz:~=zal))', Parser::assemble($nodes));
+    }
+
+    public function test_parser_preserves_value_spaces()
+    {
+        $nodes = Parser::parse('(|(foo=bar baz zal))');
+
+        $this->assertEquals('(|(foo=bar baz zal))', Parser::assemble($nodes));
     }
 
     public function test_parser_can_process_multiple_root_nodes()

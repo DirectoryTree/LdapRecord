@@ -167,6 +167,13 @@ class ParserTest extends TestCase
         $this->assertEquals('(foo=bar)', Parser::assemble($node));
     }
 
+    public function test_parser_throws_exception_with_invalid_filter_with_additional_equals()
+    {
+        $this->expectExceptionMessage('Invalid query filter [foo=bar=baz]');
+
+        Parser::parse('(foo=bar=baz)');
+    }
+
     public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()
     {
         $this->expectException(TypeError::class);

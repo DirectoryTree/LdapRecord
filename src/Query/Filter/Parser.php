@@ -29,7 +29,7 @@ class Parser
         }
 
         return static::buildNodes(
-            static::match($string)
+            array_map('trim', static::match($string))
         );
     }
 

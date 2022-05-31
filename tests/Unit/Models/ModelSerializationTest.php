@@ -12,17 +12,14 @@ use LdapRecord\Tests\TestCase;
 
 class ModelSerializationTest extends TestCase
 {
-    public function testModelWithTimestampsandBinaryValuesCanBeUnserializedAndRestored()
+    public function testModelWithTimestampsCanBeSerializedAndEncoded()
     {
-        $guid = new Guid('2bba564a-4f95-4cb0-97b0-94c0e3458621');
-        $sid = new Sid('S-1-5-21-1004336348-1177238915-682003330-512');
-
-        $timestamp = (new Timestamp('windows-int'))->fromDateTime(new DateTime());
-
+        $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime());
+        $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime());
+        
         $model = (new User())->setRawAttributes([
-            'lastlogon' => [(string) $timestamp],
-            'objectguid' => [$guid->getBinary()],
-            'objectsid' => [$sid->getBinary()],
+            'whenchanged' => [(string) $whenchanged],
+            'lastlogon' => [(string) $lastlogon],
         ]);
 
         $encodedAndSerialized = json_encode(serialize(clone $model));
@@ -36,13 +33,10 @@ class ModelSerializationTest extends TestCase
         $this->assertTrue($model->is($unserializedAndUnencoded));
 
         $this->assertEquals($model->getOriginal()['lastlogon'], $unserializedAndUnencoded->getOriginal()['lastlogon']);
+        $this->assertEquals($model->getOriginal()['whenchanged'], $unserializedAndUnencoded->getOriginal()['whenchanged']);
+
         $this->assertEquals($model->getAttributes()['lastlogon'], $unserializedAndUnencoded->getAttributes()['lastlogon']);
-
-        $this->assertEquals($model->getOriginal()['objectguid'], $unserializedAndUnencoded->getOriginal()['objectguid']);
-        $this->assertEquals($model->getOriginal()['objectsid'], $unserializedAndUnencoded->getOriginal()['objectsid']);
-
-        $this->assertEquals($model->getAttributes()['objectguid'], $unserializedAndUnencoded->getAttributes()['objectguid']);
-        $this->assertEquals($model->getAttributes()['objectsid'], $unserializedAndUnencoded->getAttributes()['objectsid']);
+        $this->assertEquals($model->getAttributes()['whenchanged'], $unserializedAndUnencoded->getAttributes()['whenchanged']);
     }
 
     public function testModelWithBinaryGuidAndSidCanBeSerializedAndEncoded()
@@ -65,10 +59,10 @@ class ModelSerializationTest extends TestCase
 
         $this->assertTrue($model->is($unserializedAndUnencoded));
 
-        $this->assertEquals($model->getConvertedGuid(), $unserializedAndUnencoded->getConvertedGuid());
         $this->assertEquals($model->getConvertedSid(), $unserializedAndUnencoded->getConvertedSid());
-
-        $this->assertNotEquals($model->getAttributes()['objectguid'], $unserializedAndUnencoded->getAttributes()['objectguid']);
-        $this->assertNotEquals($model->getAttributes()['objectsid'], $unserializedAndUnencoded->getAttributes()['objectsid']);
+        $this->assertEquals($model->getConvertedGuid(), $unserializedAndUnencoded->getConvertedGuid());
+        
+        $this->assertEquals($model->getAttributes()['objectsid'], $unserializedAndUnencoded->getAttributes()['objectsid']);
+        $this->assertEquals($model->getAttributes()['objectguid'], $unserializedAndUnencoded->getAttributes()['objectguid']);
     }
 }

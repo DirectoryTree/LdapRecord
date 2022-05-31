@@ -62,6 +62,9 @@ class ModelSerializationTest extends TestCase
         $this->assertEquals($model->getConvertedSid(), $unserializedAndUnencoded->getConvertedSid());
         $this->assertEquals($model->getConvertedGuid(), $unserializedAndUnencoded->getConvertedGuid());
 
+        $this->assertEquals($model->getOriginal()['objectsid'], $unserializedAndUnencoded->getOriginal()['objectsid']);
+        $this->assertEquals($model->getOriginal()['objectguid'], $unserializedAndUnencoded->getOriginal()['objectguid']);
+        
         $this->assertEquals($model->getAttributes()['objectsid'], $unserializedAndUnencoded->getAttributes()['objectsid']);
         $this->assertEquals($model->getAttributes()['objectguid'], $unserializedAndUnencoded->getAttributes()['objectguid']);
     }

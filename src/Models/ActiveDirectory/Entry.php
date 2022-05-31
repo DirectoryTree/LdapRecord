@@ -154,7 +154,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * Converts attributes for JSON serialization.
+     * Convert the attributes for JSON serialization.
      *
      * @param array $attributes
      *
@@ -164,11 +164,40 @@ class Entry extends BaseEntry implements ActiveDirectory
     {
         $attributes = parent::convertAttributesForJson($attributes);
 
+        // If the model has a SID set, we need to convert it to its
+        // string format, due to it being in binary. Otherwise
+        // we will receive a JSON serialization exception.
         if (isset($attributes[$this->sidKey])) {
-            // If the model has a SID set, we need to convert it to its
-            // string format, due to it being in binary. Otherwise
-            // we will receive a JSON serialization exception.
             $attributes[$this->sidKey] = [$this->getConvertedSid(
+                Arr::first($attributes[$this->sidKey])
+            )];
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Convert the attributes from JSON serialization.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    protected function convertAttributesFromJson(array $attributes = [])
+    {
+        $attributes = parent::convertAttributesFromJson($attributes);
+
+        // Here we are converting the model's GUID and SID attributes
+        // back to their original values from serialization, so that
+        // their original value may be used and compared against.
+        if (isset($attributes[$this->guidKey])) {
+            $attributes[$this->guidKey] = [$this->getBinaryGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
+        }
+
+        if (isset($attributes[$this->sidKey])) {
+            $attributes[$this->sidKey] = [$this->getBinarySid(
                 Arr::first($attributes[$this->sidKey])
             )];
         }

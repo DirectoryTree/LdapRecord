@@ -124,6 +124,36 @@ trait HasAttributes
     }
 
     /**
+     * Convert the model's serialized original attributes to their original form.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function arrayToOriginal(array $attributes)
+    {
+        return $this->decodeAttributes(
+            $this->convertAttributesFromJson($attributes)
+        );
+    }
+
+    /**
+     * Convert the model's serialized attributes to their original form.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function arrayToAttributes(array $attributes)
+    {
+        $attributes = $this->restoreDateAttributesFromArray($attributes);
+
+        return $this->decodeAttributes(
+            $this->convertAttributesFromJson($attributes)
+        );
+    }
+
+    /**
      * Add the date attributes to the attributes array.
      *
      * @param array $attributes
@@ -142,6 +172,28 @@ trait HasAttributes
             $attributes[$attribute] = $date instanceof Carbon
                 ? Arr::wrap($this->serializeDate($date))
                 : $attributes[$attribute];
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Restore the date attributes to their true value from serialized attributes.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    protected function restoreDateAttributesFromArray(array $attributes)
+    {
+        foreach ($this->getDates() as $attribute => $type) {
+            if (! isset($attributes[$attribute])) {
+                continue;
+            }
+
+            $date = $this->fromDateTime($type, $attributes[$attribute]);
+
+            $attributes[$attribute] = Arr::wrap($date);
         }
 
         return $attributes;
@@ -174,7 +226,23 @@ trait HasAttributes
     }
 
     /**
-     * Encode the given value for proper serialization.
+     * Recursively UTF-8 decode the given attributes.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function decodeAttributes($attributes)
+    {
+        array_walk_recursive($attributes, function (&$value) {
+            $value = $this->decodeValue($value);
+        });
+
+        return $attributes;
+    }
+
+    /**
+     * Encode the value for serialization.
      *
      * @param string $value
      *
@@ -185,7 +253,27 @@ trait HasAttributes
         // If we are able to detect the encoding, we will
         // encode only the attributes that need to be,
         // so that we do not double encode values.
-        return MbString::isLoaded() && MbString::isUtf8($value) ? $value : utf8_encode($value);
+        if (MbString::isLoaded() && MbString::isUtf8($value)) {
+            return $value;
+        }
+
+        return utf8_encode($value);
+    }
+
+    /**
+     * Decode the value from serialization.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function decodeValue($value)
+    {
+        if (MbString::isLoaded() && MbString::isUtf8($value)) {
+            return utf8_decode($value);
+        }
+
+        return $value;
     }
 
     /**

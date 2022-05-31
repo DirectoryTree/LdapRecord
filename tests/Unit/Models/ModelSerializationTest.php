@@ -16,7 +16,7 @@ class ModelSerializationTest extends TestCase
     {
         $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime());
         $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime());
-        
+
         $model = (new User())->setRawAttributes([
             'whenchanged' => [(string) $whenchanged],
             'lastlogon' => [(string) $lastlogon],
@@ -61,7 +61,7 @@ class ModelSerializationTest extends TestCase
 
         $this->assertEquals($model->getConvertedSid(), $unserializedAndUnencoded->getConvertedSid());
         $this->assertEquals($model->getConvertedGuid(), $unserializedAndUnencoded->getConvertedGuid());
-        
+
         $this->assertEquals($model->getAttributes()['objectsid'], $unserializedAndUnencoded->getAttributes()['objectsid']);
         $this->assertEquals($model->getAttributes()['objectguid'], $unserializedAndUnencoded->getAttributes()['objectguid']);
     }

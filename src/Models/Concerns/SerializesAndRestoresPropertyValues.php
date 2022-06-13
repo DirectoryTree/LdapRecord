@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
+/** @mixin HasAttributes */
 trait SerializesAndRestoresPropertyValues
 {
     /**
@@ -35,6 +36,14 @@ trait SerializesAndRestoresPropertyValues
      */
     protected function getUnserializedPropertyValue($property, $value)
     {
+        if ($property === 'original') {
+            return $this->arrayToOriginal($value);
+        }
+
+        if ($property === 'attributes') {
+            return $this->arrayToAttributes($value);
+        }
+
         return $value;
     }
 }

@@ -674,7 +674,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Converts extra attributes for JSON serialization.
+     * Convert the attributes for JSON serialization.
      *
      * @param array $attributes
      *
@@ -691,6 +691,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
             )];
         }
 
+        return $attributes;
+    }
+
+    /**
+     * Convert the attributes from JSON serialization.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    protected function convertAttributesFromJson(array $attributes = [])
+    {
         return $attributes;
     }
 

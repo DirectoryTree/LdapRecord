@@ -5,9 +5,9 @@ namespace LdapRecord\Models\Relations;
 use Closure;
 use LdapRecord\DetectsErrors;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
-use LdapRecord\Models\Collection;
 
 class HasMany extends OneToMany
 {
@@ -141,14 +141,14 @@ class HasMany extends OneToMany
         if ($this->recursive) {
             return $this->chunkRelationRecursively($pageSize, $callback);
         }
-        
+
         return $this->chunkRelation($pageSize, $callback);
     }
 
     /**
      * Execute the callback over chunks of relation results.
      *
-     * @param int $pageSize
+     * @param int     $pageSize
      * @param Closure $callback
      *
      * @return bool
@@ -165,9 +165,9 @@ class HasMany extends OneToMany
     /**
      * Execute the callback over chunks of relation results recursively.
      *
-     * @param int $pageSize
+     * @param int     $pageSize
      * @param Closure $callback
-     * @param array $loaded
+     * @param array   $loaded
      *
      * @return bool
      */

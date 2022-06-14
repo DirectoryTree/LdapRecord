@@ -7,7 +7,7 @@ use LdapRecord\DetectsErrors;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
-use LdapRecord\Query\Collection;
+use LdapRecord\Models\Collection;
 
 class HasMany extends OneToMany
 {
@@ -109,17 +109,86 @@ class HasMany extends OneToMany
     }
 
     /**
+     * Execute a callback over each result while chunking.
+     *
+     * @param Closure $callback
+     * @param int     $pageSize
+     *
+     * @return bool
+     */
+    public function each(Closure $callback, $pageSize = 1000)
+    {
+        $this->chunk($pageSize, function ($results) use ($callback) {
+            foreach ($results as $key => $value) {
+                if ($callback($value, $key) === false) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Chunk the relation results using the given callback.
      *
      * @param int     $pageSize
      * @param Closure $callback
+     * @param array   $loaded
      *
-     * @return void
+     * @return bool
      */
     public function chunk($pageSize, Closure $callback)
     {
-        $this->getRelationQuery()->chunk($pageSize, function ($entries) use ($callback) {
-            $callback($this->transformResults($entries));
+        if ($this->recursive) {
+            return $this->chunkRelationRecursively($pageSize, $callback);
+        }
+        
+        return $this->chunkRelation($pageSize, $callback);
+    }
+
+    /**
+     * Execute the callback over chunks of relation results.
+     *
+     * @param int $pageSize
+     * @param Closure $callback
+     *
+     * @return bool
+     */
+    protected function chunkRelation($pageSize, Closure $callback)
+    {
+        return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($callback) {
+            if ($callback($this->transformResults($results)) === false) {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Execute the callback over chunks of relation results recursively.
+     *
+     * @param int $pageSize
+     * @param Closure $callback
+     * @param array $loaded
+     *
+     * @return bool
+     */
+    protected function chunkRelationRecursively($pageSize, Closure $callback, $loaded = [])
+    {
+        return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($pageSize, $callback, &$loaded) {
+            $models = $this->transformResults($results)->reject(function (Model $model) use ($loaded) {
+                return in_array($model->getDn(), $loaded);
+            });
+
+            if ($callback($models) === false) {
+                return false;
+            }
+
+            $models->each(function (Model $model) use ($pageSize, $callback, &$loaded) {
+                if (method_exists($model, $this->relationName)) {
+                    $loaded[] = $model->getDn();
+
+                    return $model->{$this->relationName}()->chunkRelationRecursively($pageSize, $callback, $loaded);
+                }
+            });
         });
     }
 

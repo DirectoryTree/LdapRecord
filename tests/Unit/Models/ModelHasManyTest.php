@@ -2,9 +2,11 @@
 
 namespace LdapRecord\Unit\Tests\Models;
 
+use Closure;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Models\Collection as ModelsCollection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasMany;
@@ -73,6 +75,64 @@ class ModelHasManyTest extends TestCase
 
         $this->assertEquals($related, $results->first());
         $this->assertCount(2, $results);
+    }
+
+    public function test_chunk()
+    {
+        $relation = $this->getRelation();
+
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getDn')->andReturn('foo');
+
+        $query = $relation->getQuery();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
+            $related = m::mock(ModelHasManyStub::class);
+
+            $related->shouldReceive('getDn')->andReturn('bar');
+            $related->shouldReceive('convert')->once()->andReturnSelf();
+            $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
+
+            $callback(new ModelsCollection([$related]));
+
+            return true;
+        }));
+
+        $relation->chunk(1000, function () {
+        });
+    }
+
+    public function test_recursive_chunk()
+    {
+        $relation = $this->getRelation();
+
+        $parent = $relation->getParent();
+        $parent->shouldReceive('getDn')->andReturn('foo');
+
+        $query = $relation->getQuery();
+        $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
+        $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
+            $related = m::mock(ModelHasManyStub::class);
+
+            $related->shouldReceive('getDn')->andReturn('bar');
+            $related->shouldReceive('convert')->once()->andReturnSelf();
+            $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
+
+            $related->shouldReceive('relation')->once()->andReturnSelf();
+            $related->shouldReceive('recursive')->once()->andReturnSelf();
+            $related->shouldReceive('chunkRelation')->once()->with(1000, Closure::class, ['bar']);
+
+            $callback(new ModelsCollection([$related]));
+
+            return true;
+        }));
+
+        $relation->recursive()->chunk(1000, function () {
+        });
     }
 
     public function test_page_size_can_be_set()

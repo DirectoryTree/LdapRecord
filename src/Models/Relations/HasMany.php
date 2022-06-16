@@ -167,7 +167,7 @@ class HasMany extends OneToMany
                 $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
                     if (method_exists($model, $this->relationName)) {
                         $loaded[] = $model->getDn();
-                        
+
                         return $model->{$this->relationName}()->recursive()->chunkRelation($pageSize, $callback, $loaded);
                     }
                 });

@@ -513,13 +513,13 @@ class Builder
      * Execute a callback over each item while chunking.
      *
      * @param Closure $callback
-     * @param int     $count
+     * @param int     $pageSize
      *
      * @return bool
      */
-    public function each(Closure $callback, $count = 1000)
+    public function each(Closure $callback, $pageSize = 1000)
     {
-        return $this->chunk($count, function ($results) use ($callback) {
+        return $this->chunk($pageSize, function ($results) use ($callback) {
             foreach ($results as $key => $value) {
                 if ($callback($value, $key) === false) {
                     return false;

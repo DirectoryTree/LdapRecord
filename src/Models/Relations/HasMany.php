@@ -138,10 +138,6 @@ class HasMany extends OneToMany
      */
     public function chunk($pageSize, Closure $callback)
     {
-        if ($this->recursive) {
-            return $this->chunkRelationRecursively($pageSize, $callback);
-        }
-
         return $this->chunkRelation($pageSize, $callback);
     }
 
@@ -150,44 +146,31 @@ class HasMany extends OneToMany
      *
      * @param int     $pageSize
      * @param Closure $callback
-     *
-     * @return bool
-     */
-    protected function chunkRelation($pageSize, Closure $callback)
-    {
-        return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($callback) {
-            if ($callback($this->transformResults($results)) === false) {
-                return false;
-            }
-        });
-    }
-
-    /**
-     * Execute the callback over chunks of relation results recursively.
-     *
-     * @param int     $pageSize
-     * @param Closure $callback
      * @param array   $loaded
      *
      * @return bool
      */
-    protected function chunkRelationRecursively($pageSize, Closure $callback, $loaded = [])
+    protected function chunkRelation($pageSize, Closure $callback, $loaded = [])
     {
-        return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($pageSize, $callback, &$loaded) {
-            $models = $this->transformResults($results)->reject(function (Model $model) use ($loaded) {
-                return in_array($model->getDn(), $loaded);
+        return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($pageSize, $callback, $loaded) {
+            $models = $this->transformResults($results)->when($this->recursive, function (Collection $models) use ($loaded) {
+                return $models->reject(function (Model $model) use ($loaded) {
+                    return in_array($model->getDn(), $loaded);
+                });
             });
 
             if ($callback($models) === false) {
                 return false;
             }
 
-            $models->each(function (Model $model) use ($pageSize, $callback, &$loaded) {
-                if (method_exists($model, $this->relationName)) {
-                    $loaded[] = $model->getDn();
-
-                    return $model->{$this->relationName}()->chunkRelationRecursively($pageSize, $callback, $loaded);
-                }
+            $models->when($this->recursive, function (Collection $models) use ($pageSize, $callback, $loaded) {
+                $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
+                    if (method_exists($model, $this->relationName)) {
+                        $loaded[] = $model->getDn();
+                        
+                        return $model->{$this->relationName}()->recursive()->chunkRelation($pageSize, $callback, $loaded);
+                    }
+                });
             });
         });
     }

@@ -10,7 +10,7 @@ class TestCase extends BaseTestCase
     protected function makeConnection()
     {
         return new Connection([
-            'hosts' => ['localhost'],
+            'hosts' => ['127.0.0.1'],
             'base_dn' => 'dc=local,dc=com',
             'username' => 'cn=admin,dc=local,dc=com',
             'password' => 'secret',

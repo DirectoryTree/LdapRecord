@@ -29,9 +29,6 @@ jobs:
 
             - name: Setup OpenLDAP Test Server
               run: docker-compose up -d
-              ports:
-                  - 389:389
-                  - 636:636
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2

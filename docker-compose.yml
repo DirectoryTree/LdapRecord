@@ -15,3 +15,9 @@ services:
      ports:
        - "389:389"
        - "636:636"
+     networks:
+         - local
+
+networks:
+    local:
+        driver: bridge

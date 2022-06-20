@@ -33,7 +33,7 @@ class UserTest extends TestCase
 
         parent::tearDown();
     }
-    
+
     public function testUserCanBeCreatedWithPassword()
     {
         $user = (new User([

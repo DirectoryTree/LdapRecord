@@ -14,6 +14,7 @@ class TestCase extends BaseTestCase
             'base_dn' => 'dc=local,dc=com',
             'username' => 'cn=admin,dc=local,dc=com',
             'password' => 'secret',
+            'use_ssl' => true,
         ]);
     }
 }

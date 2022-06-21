@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Relations;
 
+use Closure;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
@@ -28,7 +29,7 @@ abstract class Relation
     protected $parent;
 
     /**
-     * The related models.
+     * The related model class names.
      *
      * @var array
      */
@@ -56,13 +57,20 @@ abstract class Relation
     protected $default = Entry::class;
 
     /**
+     * The callback to use for resolving relation models.
+     *
+     * @var Closure
+     */
+    protected static $modelResolver;
+
+    /**
      * Constructor.
      *
-     * @param Builder $query
-     * @param Model   $parent
-     * @param mixed   $related
-     * @param string  $relationKey
-     * @param string  $foreignKey
+     * @param Builder      $query
+     * @param Model        $parent
+     * @param string|array $related
+     * @param string       $relationKey
+     * @param string       $foreignKey
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
     {
@@ -71,6 +79,10 @@ abstract class Relation
         $this->related = (array) $related;
         $this->relationKey = $relationKey;
         $this->foreignKey = $foreignKey;
+
+        static::$modelResolver ??= function (array $modelObjectClasses, array $relationMap) {
+            return array_search($modelObjectClasses, $relationMap);
+        };
 
         $this->initRelation();
     }
@@ -96,6 +108,18 @@ abstract class Relation
         }
 
         return $result;
+    }
+
+    /**
+     * Set the callback to use for resolving models from relation results.
+     *
+     * @param Closure $callback
+     *
+     * @return void
+     */
+    public static function resolveModelsUsing(Closure $callback)
+    {
+        static::$modelResolver = $callback;
     }
 
     /**
@@ -310,14 +334,16 @@ abstract class Relation
      */
     protected function transformResults(Collection $results)
     {
-        $related = [];
+        $relationMap = [];
 
         foreach ($this->related as $relation) {
-            $related[$relation] = $relation::$objectClasses;
+            $relationMap[$relation] = $this->normalizeObjectClasses(
+                $relation::$objectClasses
+            );
         }
 
-        return $results->transform(function (Model $entry) use ($related) {
-            $model = $this->determineModelFromRelated($entry, $related);
+        return $results->transform(function (Model $entry) use ($relationMap) {
+            $model = $this->determineModelFromRelated($entry, $relationMap);
 
             return class_exists($model) ? $entry->convert(new $model()) : $entry;
         });
@@ -334,21 +360,27 @@ abstract class Relation
     }
 
     /**
-     * Determines the model from the given relations.
+     * Determines the model from the given relation map.
      *
      * @param Model $model
-     * @param array $related
+     * @param array $relationMap
      *
-     * @return string|bool
+     * @return class-string|bool
      */
-    protected function determineModelFromRelated(Model $model, array $related)
+    protected function determineModelFromRelated(Model $model, array $relationMap)
     {
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
         // determine the owning model from search results.
-        return array_search(
-            $this->normalizeObjectClasses($model->getObjectClasses()),
-            array_map([$this, 'normalizeObjectClasses'], $related)
+        $modelObjectClasses = $this->normalizeObjectClasses(
+            $model->getObjectClasses()
+        );
+
+        return call_user_func(
+            static::$modelResolver,
+            $modelObjectClasses,
+            $relationMap,
+            $model,
         );
     }
 

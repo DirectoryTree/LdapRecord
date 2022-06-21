@@ -57,7 +57,7 @@ class GroupTest extends TestCase
     public function test_it_can_attach_members()
     {
         $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo =  $this->createGroup(['cn' => 'Bar']);
+        $groupTwo = $this->createGroup(['cn' => 'Bar']);
 
         $groupOne->members()->attach($groupTwo);
 
@@ -70,7 +70,7 @@ class GroupTest extends TestCase
     public function test_it_can_detach_members()
     {
         $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo =  $this->createGroup(['cn' => 'Bar']);
+        $groupTwo = $this->createGroup(['cn' => 'Bar']);
 
         $groupOne->members()->attach($groupTwo);
 

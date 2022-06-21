@@ -73,14 +73,14 @@ class UserTest extends TestCase
     public function test_it_can_set_password()
     {
         $user = $this->createUser();
-        
+
         $user->fill(['password' => 'secret'])->save();
 
         $user->refresh();
 
         $conn = $this->makeConnection([
             'username' => $user->getDn(),
-            'password' => 'secret'
+            'password' => 'secret',
         ]);
 
         $conn->connect();
@@ -102,7 +102,7 @@ class UserTest extends TestCase
 
         $conn = $this->makeConnection([
             'username' => $user->getDn(),
-            'password' => 'super-secret'
+            'password' => 'super-secret',
         ]);
 
         $conn->connect();
@@ -120,12 +120,12 @@ class UserTest extends TestCase
         $user->fill(['password' => 'secret'])->save();
 
         $user->refresh();
-    
+
         try {
             $user->fill(['password' => ['invalid', 'super-secret']])->save();
         } catch (LdapRecordException $e) {
             $this->assertEquals('ldap_modify_batch(): Batch Modify: No such attribute', $e->getMessage());
-            
+
             $this->assertInstanceOf(DetailedError::class, $error = $e->getDetailedError());
 
             $this->assertEquals(16, $error->getErrorCode());

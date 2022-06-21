@@ -117,7 +117,7 @@ abstract class Relation
      *
      * @return void
      */
-    public static function setModelResolver(Closure $callback)
+    public static function resolveModelsUsing(Closure $callback)
     {
         static::$modelResolver = $callback;
     }

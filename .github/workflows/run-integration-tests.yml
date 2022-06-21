@@ -42,6 +42,9 @@ jobs:
                   path: ~/.composer/cache/files
                   key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
+            - name: File Permissions
+              run: sudo chown -R $USER:$USER /etc/ldap/ldap.conf
+
             - name: Create LDAP Config File
               run: sudo echo "TLS_REQCERT never" > "/etc/ldap/ldap.conf"
 

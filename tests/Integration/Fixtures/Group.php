@@ -8,7 +8,7 @@ class Group extends OpenLDAPGroup
 {
     public static $objectClasses = [
         'top',
-        'posixGroup'
+        'posixGroup',
     ];
 
     public function members()

@@ -28,6 +28,7 @@ class OrganizationalUnitTest extends TestCase
         $ou = OrganizationalUnit::create(['ou' => 'foo']);
 
         $this->assertTrue($ou->exists);
+        $this->assertTrue($ou->wasRecentlyCreated);
 
         $this->assertCount(1, OrganizationalUnit::all());
     }

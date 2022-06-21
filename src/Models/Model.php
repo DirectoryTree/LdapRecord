@@ -1133,6 +1133,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         $this->fireModelEvent(new Events\Saved($this));
 
+        $this->modifications = [];
+
         $this->in = null;
     }
 
@@ -1198,8 +1200,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         $this->fireModelEvent(new Events\Updated($this));
 
         $this->syncOriginal();
-
-        $this->modifications = [];
     }
 
     /**

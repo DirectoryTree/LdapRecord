@@ -120,6 +120,8 @@ class ModelQueryTest extends TestCase
         $model->save();
 
         $this->assertEquals($model->getOriginal(), $model->getAttributes());
+
+        $this->assertTrue($model->wasRecentlyCreated);
     }
 
     public function test_create_without_connection()
@@ -191,6 +193,9 @@ class ModelQueryTest extends TestCase
         ]);
 
         $model->update(['cn' => 'baz']);
+
+        $this->assertEmpty($model->getModifications());
+        $this->assertFalse($model->wasRecentlyCreated);
     }
 
     public function test_update_without_existing_model()

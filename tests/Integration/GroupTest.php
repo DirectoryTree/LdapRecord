@@ -30,14 +30,23 @@ class GroupTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_be_created()
+    protected function createGroup(array $attributes = [])
     {
-        $group = (new Group([
-            'cn' => 'Foo',
-            'gidNumber' => 500,
-        ]))->inside($this->ou);
+        $group = (new Group)
+            ->inside($this->ou)
+            ->fill(array_merge([
+                'cn' => 'Foo',
+                'gidNumber' => 500,
+            ], $attributes));
 
         $group->save();
+
+        return $group;
+    }
+
+    public function test_it_can_be_created()
+    {
+        $group = $this->createGroup();
 
         $this->assertTrue($group->exists);
         $this->assertTrue($group->wasRecentlyCreated);
@@ -47,19 +56,8 @@ class GroupTest extends TestCase
 
     public function test_it_can_attach_members()
     {
-        $groupOne = (new Group([
-            'cn' => 'Foo',
-            'gidNumber' => 500,
-        ]))->inside($this->ou);
-
-        $groupOne->save();
-
-        $groupTwo = (new Group([
-            'cn' => 'Bar',
-            'gidNumber' => 500,
-        ]))->inside($this->ou);
-
-        $groupTwo->save();
+        $groupOne = $this->createGroup(['cn' => 'Foo']);
+        $groupTwo =  $this->createGroup(['cn' => 'Bar']);
 
         $groupOne->members()->attach($groupTwo);
 
@@ -71,19 +69,8 @@ class GroupTest extends TestCase
 
     public function test_it_can_detach_members()
     {
-        $groupOne = (new Group([
-            'cn' => 'Foo',
-            'gidNumber' => 500,
-        ]))->inside($this->ou);
-
-        $groupOne->save();
-
-        $groupTwo = (new Group([
-            'cn' => 'Bar',
-            'gidNumber' => 500,
-        ]))->inside($this->ou);
-
-        $groupTwo->save();
+        $groupOne = $this->createGroup(['cn' => 'Foo']);
+        $groupTwo =  $this->createGroup(['cn' => 'Bar']);
 
         $groupOne->members()->attach($groupTwo);
 

@@ -18,8 +18,8 @@ class UserTest extends TestCase
 
         Container::addConnection($this->makeConnection());
 
-        $this->ou = OrganizationalUnit::query()->where('ou', 'Test OU')->firstOr(function () {
-            return OrganizationalUnit::create(['ou' => 'Test OU']);
+        $this->ou = OrganizationalUnit::query()->where('ou', 'User Test OU')->firstOr(function () {
+            return OrganizationalUnit::create(['ou' => 'User Test OU']);
         });
 
         $this->ou->deleteLeafNodes();
@@ -34,7 +34,7 @@ class UserTest extends TestCase
         parent::tearDown();
     }
 
-    public function testUserCanBeCreatedWithPassword()
+    public function test_it_can_be_created_with_password()
     {
         $user = (new User([
             'uid' => 'fbar',
@@ -49,7 +49,7 @@ class UserTest extends TestCase
 
         $user->save();
 
-        $this->assertEquals('cn=Foo,ou=Test OU,dc=local,dc=com', $user->getDn());
+        $this->assertEquals('cn=Foo,ou=User Test OU,dc=local,dc=com', $user->getDn());
 
         $this->assertEmpty($user->getObjectGuid());
         $this->assertEmpty($user->getModifications());

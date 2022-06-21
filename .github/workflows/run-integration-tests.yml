@@ -43,7 +43,7 @@ jobs:
                   key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
             - name: Create LDAP Config File
-              run: echo "TLS_REQCERT never" > "/etc/ldap/ldap.conf"
+              run: sudo echo "TLS_REQCERT never" > "/etc/ldap/ldap.conf"
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2

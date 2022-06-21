@@ -29,7 +29,7 @@ class GroupTest extends TestCase
 
         parent::tearDown();
     }
-        
+
     public function test_it_can_be_created()
     {
         $group = (new Group([
@@ -90,7 +90,7 @@ class GroupTest extends TestCase
         $this->assertCount(1, $groupOne->members()->get());
 
         $groupOne->members()->detach($groupTwo);
-        
+
         $this->assertCount(0, $groupOne->members()->get());
     }
 }

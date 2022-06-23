@@ -113,6 +113,31 @@ class UserTest extends TestCase
         $conn->disconnect();
     }
 
+    public function test_it_can_bind_and_then_change_password()
+    {
+        $user = $this->createUser();
+
+        $user->fill(['password' => 'secret'])->save();
+
+        $user->refresh();
+
+        $conn = $user->resolveConnection();
+
+        // Bind as the user to perform the password change underneath themselves.
+        $conn->auth()->bind($user->getDn(), 'secret');
+
+        $user->fill(['password' => ['secret', 'super-secret']])->save();
+
+        $conn->disconnect();
+
+        $conn->auth()->bind($user->getDn(), 'super-secret');
+
+        $this->assertTrue($conn->isConnected());
+        $this->assertFalse($conn->auth()->attempt($user->getDn(), 'secret'));
+
+        $conn->disconnect();
+    }
+
     public function test_it_throws_exception_when_providing_an_invalid_password_during_change()
     {
         $user = $this->createUser();

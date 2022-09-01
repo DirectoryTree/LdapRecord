@@ -75,7 +75,7 @@ class User extends Entry implements Authenticatable
     /**
      * Determine if the user's account is enabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -85,7 +85,7 @@ class User extends Entry implements Authenticatable
     /**
      * Determine if the user's account is disabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function isDisabled()
     {

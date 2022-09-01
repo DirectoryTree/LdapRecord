@@ -8,6 +8,7 @@ use LdapRecord\ConnectionException;
 use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
 use LdapRecord\Models\ActiveDirectory\User;
+use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Tests\TestCase;
@@ -108,7 +109,7 @@ class UserTest extends TestCase
             Carbon::now()->subMinutes(10)
         );
 
-        $user = (new User)->setRawAttributes(
+        $user = (new User())->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
@@ -122,12 +123,57 @@ class UserTest extends TestCase
             Carbon::now()->subMinutes(10)
         );
 
-        $user = (new User)->setRawAttributes(
+        $user = (new User())->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
         $this->assertTrue($user->isLockedOut($lockoutDuration = 11));
         $this->assertFalse($user->isLockedOut($lockoutDuration = 10));
+    }
+
+    public function test_user_with_no_account_control_returns_zero_value()
+    {
+        $this->assertEquals(0, (new User())->accountControl()->getValue());
+    }
+
+    public function test_user_with_account_control_returns_hydrated_account_control_instance()
+    {
+        $uac = (new User())->setRawAttribute('useraccountcontrol', '514')->accountControl();
+
+        $this->assertSame(514, $uac->getValue());
+        $this->assertTrue($uac->has(AccountControl::ACCOUNTDISABLE));
+        $this->assertTrue($uac->has(AccountControl::NORMAL_ACCOUNT));
+        $this->assertFalse($uac->has(AccountControl::DONT_EXPIRE_PASSWORD));
+    }
+
+    public function test_user_is_disabled()
+    {
+        $user = new User();
+
+        $this->assertFalse($user->isDisabled());
+
+        $user->setRawAttribute('useraccountcontrol', '514');
+
+        $this->assertTrue($user->isDisabled());
+
+        $user->setRawAttribute('useraccountcontrol', '512');
+
+        $this->assertFalse($user->isDisabled());
+    }
+
+    public function test_user_is_enabled()
+    {
+        $user = new User();
+
+        $this->assertTrue($user->isEnabled());
+
+        $user->setRawAttribute('useraccountcontrol', '514');
+
+        $this->assertFalse($user->isEnabled());
+
+        $user->setRawAttribute('useraccountcontrol', '512');
+
+        $this->assertTrue($user->isEnabled());
     }
 }
 

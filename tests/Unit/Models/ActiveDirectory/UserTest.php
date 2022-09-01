@@ -145,6 +145,36 @@ class UserTest extends TestCase
         $this->assertTrue($uac->has(AccountControl::NORMAL_ACCOUNT));
         $this->assertFalse($uac->has(AccountControl::DONT_EXPIRE_PASSWORD));
     }
+
+    public function test_user_is_disabled()
+    {
+        $user = new User();
+
+        $this->assertFalse($user->isDisabled());
+
+        $user->setRawAttribute('useraccountcontrol', '514');
+
+        $this->assertTrue($user->isDisabled());
+
+        $user->setRawAttribute('useraccountcontrol', '512');
+
+        $this->assertFalse($user->isDisabled());
+    }
+
+    public function test_user_is_enabled()
+    {
+        $user = new User();
+
+        $this->assertTrue($user->isEnabled());
+
+        $user->setRawAttribute('useraccountcontrol', '514');
+
+        $this->assertFalse($user->isEnabled());
+
+        $user->setRawAttribute('useraccountcontrol', '512');
+
+        $this->assertTrue($user->isEnabled());
+    }
 }
 
 class UserPasswordTestStub extends User

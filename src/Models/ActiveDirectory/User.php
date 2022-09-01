@@ -73,6 +73,26 @@ class User extends Entry implements Authenticatable
     }
 
     /**
+     * Determine if the user's account is enabled.
+     *
+     * @return boolean
+     */
+    public function isEnabled()
+    {
+        return ! $this->isDisabled();
+    }
+
+    /**
+     * Determine if the user's account is disabled.
+     *
+     * @return boolean
+     */
+    public function isDisabled()
+    {
+        return $this->accountControl()->has(AccountControl::ACCOUNTDISABLE);
+    }
+
+    /**
      * Get the user's account control.
      *
      * @return AccountControl

@@ -123,6 +123,22 @@ abstract class Relation
     }
 
     /**
+     * Only return objects matching the related object classes.
+     *
+     * @return $this
+     */
+    public function onlyRelated()
+    {
+        $this->query->andFilter(function (Builder $query) {
+            foreach ($this->related as $related) {
+                $query->whereIn('objectclass', $related::$objectClasses);
+            }
+        });
+
+        return $this;
+    }
+
+    /**
      * Get the results of the relationship.
      *
      * @return Collection

@@ -6,6 +6,7 @@ use Closure;
 use LdapRecord\Events\NullDispatcher;
 use LdapRecord\Models\Events\Event;
 
+/** @mixin \LdapRecord\Models\Model */
 trait HasEvents
 {
     /**

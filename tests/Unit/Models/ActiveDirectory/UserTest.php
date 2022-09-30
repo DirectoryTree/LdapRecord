@@ -11,6 +11,7 @@ use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 
 class UserTest extends TestCase
@@ -75,6 +76,19 @@ class UserTest extends TestCase
             'modtype' => LDAP_MODIFY_BATCH_REPLACE,
             'values' => [Password::encode('foo')],
         ], $mods[0]);
+    }
+
+    public function test_set_password_behaves_identically_on_non_user_models()
+    {
+        $user = new UserPasswordTestStub();
+
+        $user->unicodepwd = 'foo';
+
+        $nonUser = new NonUserPasswordTestStub();
+
+        $nonUser->unicodepwd = Password::encode('foo');
+
+        $this->assertEquals($user->getModifications(), $nonUser->getModifications());
     }
 
     public function test_password_mutator_alias_works()
@@ -201,6 +215,14 @@ class UserTest extends TestCase
 }
 
 class UserPasswordTestStub extends User
+{
+    protected function validateSecureConnection()
+    {
+        return true;
+    }
+}
+
+class NonUserPasswordTestStub extends Model
 {
     protected function validateSecureConnection()
     {

@@ -3,8 +3,11 @@
 namespace LdapRecord\Models\Concerns;
 
 use Closure;
+use LdapRecord\Models\Events;
 use LdapRecord\Events\NullDispatcher;
 use LdapRecord\Models\Events\Event;
+use LdapRecord\Support\Arr;
+use LdapRecord\Support\Str;
 
 /** @mixin \LdapRecord\Models\Model */
 trait HasEvents
@@ -38,7 +41,37 @@ trait HasEvents
     }
 
     /**
-     * Fires the specified model event.
+     * Dispatch the given model events.
+     * 
+     * @param string|array $events 
+     * @param array $args
+     * 
+     * @return void 
+     */
+    protected function dispatch($events, array $args = [])
+    {
+        foreach (Arr::wrap($events) as $name) {
+            $this->fireCustomModelEvent($name, $args);   
+        }
+    }
+
+    /**
+     * Fire a custom model event.
+     * 
+     * @param string $name 
+     * @param array $args
+     * 
+     * @return mixed 
+     */
+    protected function fireCustomModelEvent($name, array $args = [])
+    {
+        $event = implode('\\', [Events::class, ucfirst($name)]);
+
+        return $this->fireModelEvent(new $event($this, ...$args));
+    }
+
+    /**
+     * Fire a model event.
      *
      * @param Event $event
      *
@@ -50,7 +83,7 @@ trait HasEvents
     }
 
     /**
-     * Listens to a model event.
+     * Listen to a model event.
      *
      * @param string  $event
      * @param Closure $listener

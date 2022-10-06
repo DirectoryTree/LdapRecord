@@ -3,7 +3,6 @@
 namespace LdapRecord\Models;
 
 use ArrayAccess;
-use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -1393,7 +1392,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         $this->dispatch(['saving', 'updating']);
 
-        $this->newQuery()->deleteAttributes($this->dn, $attributes);        
+        $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
         foreach ($attributes as $attribute => $value) {
             // If the attribute value is empty, we can assume the
@@ -1630,7 +1629,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Throw an exception if the model does not exist.
-     * 
+     *
      * @deprecated
      *
      * @return void

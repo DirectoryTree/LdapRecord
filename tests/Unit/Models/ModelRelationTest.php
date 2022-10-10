@@ -162,6 +162,15 @@ class ModelRelationTest extends TestCase
         $this->assertFalse($relation->contains(['bar', 'baz']));
     }
 
+    public function test_count()
+    {
+        $relation = (new ModelRelationTestStub())->relation();
+
+        $relation->setResults([new Entry(), new Entry()]);
+
+        $this->assertEquals(2, $relation->count());
+    }
+
     public function test_relation_default_model_uses_parent_connection()
     {
         Container::addConnection(new Connection(), 'other');

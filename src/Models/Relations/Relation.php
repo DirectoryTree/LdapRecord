@@ -11,6 +11,7 @@ use LdapRecord\Query\Model\Builder;
 /**
  * @method bool exists($models = null) Determine if the relation contains all of the given models, or any models
  * @method bool contains($models)      Determine if any of the given models are contained in the relation
+ * @method bool count()                Retrieve the "count" result of the query.
  */
 abstract class Relation
 {
@@ -64,6 +65,13 @@ abstract class Relation
     protected static $modelResolver;
 
     /**
+     * The methods that should be passed along to a relation collection.
+     * 
+     * @var string[]
+     */
+    protected $passthru = ['count', 'exists', 'contains'];
+
+    /**
      * Constructor.
      *
      * @param Builder      $query
@@ -97,7 +105,7 @@ abstract class Relation
      */
     public function __call($method, $parameters)
     {
-        if (in_array($method, ['exists', 'contains'])) {
+        if (in_array($method, $this->passthru)) {
             return $this->get('objectclass')->$method(...$parameters);
         }
 

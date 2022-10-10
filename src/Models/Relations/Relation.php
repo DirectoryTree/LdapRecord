@@ -66,7 +66,7 @@ abstract class Relation
 
     /**
      * The methods that should be passed along to a relation collection.
-     * 
+     *
      * @var string[]
      */
     protected $passthru = ['count', 'exists', 'contains'];

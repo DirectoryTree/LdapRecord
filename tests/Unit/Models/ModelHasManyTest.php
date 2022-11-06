@@ -5,6 +5,8 @@ namespace LdapRecord\Unit\Tests\Models;
 use Closure;
 use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Models\ActiveDirectory\Group;
+use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Collection as ModelsCollection;
 use LdapRecord\Models\Entry;
@@ -23,7 +25,7 @@ class ModelHasManyTest extends TestCase
 
         Container::addConnection(new Connection());
     }
-
+    
     public function test_relation_name_is_guessed()
     {
         $this->assertEquals('relation', (new ModelHasManyStub())->relation()->getRelationName());
@@ -219,6 +221,22 @@ class ModelHasManyTest extends TestCase
         $this->assertEquals($relation->detachAll(), new Collection([$related]));
     }
 
+    public function test_only_related_with_many_relation_object_classes()
+    {
+        $this->assertEquals(
+            '(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group)))',
+            (new ModelHasManyStubWithManyRelated())->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
+        );
+    }
+    
+    public function test_only_related_with_no_relation_object_classes()
+    {
+        $this->assertEquals(
+            '(objectclass=*)',
+            (new ModelHasManyStub())->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
+        );
+    }
+
     protected function getRelation()
     {
         $mockBuilder = m::mock(Builder::class);
@@ -238,5 +256,13 @@ class ModelHasManyStub extends Model
     public function relation()
     {
         return $this->hasMany(Entry::class, 'foo');
+    }
+}
+
+class ModelHasManyStubWithManyRelated extends Model
+{
+    public function relation()
+    {
+        return $this->hasMany([User::class, Group::class], 'foo');
     }
 }

@@ -1302,7 +1302,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         $instance = new static();
 
         if (! $dns instanceof Collection) {
-            $dns = $instance->findMany($dns);
+            $dns = $instance->findMany((array) $dns);
         }
 
         $dns->each(function (Model $model) use (&$count, $recursive) {

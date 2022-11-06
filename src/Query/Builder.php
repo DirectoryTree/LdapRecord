@@ -935,7 +935,7 @@ class Builder
     /**
      * Find many records by distinguished name.
      *
-     * @param array $dns
+     * @param string|array $dns
      * @param array $columns
      *
      * @return array|Collection
@@ -948,7 +948,7 @@ class Builder
 
         $objects = [];
 
-        foreach ($dns as $dn) {
+        foreach ((array) $dns as $dn) {
             if (! is_null($object = $this->find($dn, $columns))) {
                 $objects[] = $object;
             }

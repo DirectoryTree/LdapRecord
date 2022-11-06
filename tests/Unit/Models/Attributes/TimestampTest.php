@@ -111,7 +111,7 @@ class TimestampTest extends TestCase
         $timestamp = new Timestamp('windows');
 
         $datetime = $timestamp->toDateTime($this->utcindowsTimestamp);
-        
+
         $this->assertEquals('UTC', $datetime->timezone->getName());
 
         date_default_timezone_set('UTC');

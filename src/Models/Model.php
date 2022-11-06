@@ -1299,19 +1299,17 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     {
         $count = 0;
 
-        $dns = is_string($dns) ? (array) $dns : $dns;
-
         $instance = new static();
 
-        foreach ($dns as $dn) {
-            if (! $model = $instance->find($dn)) {
-                continue;
-            }
+        if (! $dns instanceof Collection) {
+            $dns = $instance->findMany($dns);
+        }
 
+        $dns->each(function (Model $model) use (&$count, $recursive) {
             $model->delete($recursive);
 
             $count++;
-        }
+        });
 
         return $count;
     }

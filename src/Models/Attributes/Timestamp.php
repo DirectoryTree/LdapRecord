@@ -5,6 +5,7 @@ namespace LdapRecord\Models\Attributes;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
+use DateTimeZone;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Utilities;
 
@@ -190,7 +191,8 @@ class Timestamp
     {
         return DateTime::createFromFormat(
             str_contains($value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
-            $value
+            $value,
+            new DateTimeZone('UTC')
         );
     }
 

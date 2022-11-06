@@ -1299,11 +1299,17 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     {
         $count = 0;
 
-        $dns = is_string($dns) ? (array) $dns : $dns;
-
         $instance = new static();
 
-        foreach ($dns as $dn) {
+        if ($dns instanceof Collection) {
+            $dns = $dns->modelDns()->toArray();
+        }
+
+        // Here we are iterating through each distinguished name and locating
+        // the associated model. While it's more resource intensive, we must
+        // do this in case of leaf nodes being given alongside any parent
+        // node, ensuring they can be deleted inside of the directory.
+        foreach ((array) $dns as $dn) {
             if (! $model = $instance->find($dn)) {
                 continue;
             }

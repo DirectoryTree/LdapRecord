@@ -131,6 +131,34 @@ abstract class Relation
     }
 
     /**
+     * Only return objects matching the related model's object classes.
+     *
+     * @return $this
+     */
+    public function onlyRelated()
+    {
+        $relations = [];
+
+        foreach ($this->related as $related) {
+            $relations[$related] = $related::$objectClasses;
+        }
+
+        $relations = array_filter($relations);
+
+        if (empty($relations)) {
+            return $this;
+        }
+
+        $this->query->andFilter(function (Builder $query) use ($relations) {
+            foreach ($relations as $relation => $objectClasses) {
+                $query->whereIn('objectclass', $objectClasses);
+            }
+        });
+
+        return $this;
+    }
+
+    /**
      * Get the results of the relationship.
      *
      * @return Collection

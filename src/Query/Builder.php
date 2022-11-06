@@ -936,7 +936,7 @@ class Builder
      * Find many records by distinguished name.
      *
      * @param string|array $dns
-     * @param array $columns
+     * @param array        $columns
      *
      * @return array|Collection
      */

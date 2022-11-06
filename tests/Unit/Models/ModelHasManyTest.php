@@ -25,7 +25,7 @@ class ModelHasManyTest extends TestCase
 
         Container::addConnection(new Connection());
     }
-    
+
     public function test_relation_name_is_guessed()
     {
         $this->assertEquals('relation', (new ModelHasManyStub())->relation()->getRelationName());
@@ -228,7 +228,7 @@ class ModelHasManyTest extends TestCase
             (new ModelHasManyStubWithManyRelated())->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
         );
     }
-    
+
     public function test_only_related_with_no_relation_object_classes()
     {
         $this->assertEquals(

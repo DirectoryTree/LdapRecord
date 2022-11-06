@@ -148,7 +148,7 @@ abstract class Relation
         if (empty($relations)) {
             return $this;
         }
-        
+
         $this->query->andFilter(function (Builder $query) use ($relations) {
             foreach ($relations as $relation => $objectClasses) {
                 $query->whereIn('objectclass', $objectClasses);

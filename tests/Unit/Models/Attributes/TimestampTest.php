@@ -103,4 +103,17 @@ class TimestampTest extends TestCase
         $this->assertEquals('UTC', $datetime->timezone->getName());
         $this->assertEquals('Fri Oct 02 2020 02:22:09 GMT+0000', $datetime->toString());
     }
+
+    public function test_windows_time_to_date_time_always_has_utc_set_as_timezone()
+    {
+        date_default_timezone_set('Australia/Sydney');
+
+        $timestamp = new Timestamp('windows');
+
+        $datetime = $timestamp->toDateTime($this->utcindowsTimestamp);
+        
+        $this->assertEquals('UTC', $datetime->timezone->getName());
+
+        date_default_timezone_set('UTC');
+    }
 }

@@ -26,7 +26,7 @@ class GuidTest extends TestCase
             (new Guid($guid))->getEncodedHex()
         );
     }
-    
+
     public function test_get_binary()
     {
         $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';

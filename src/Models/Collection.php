@@ -29,7 +29,7 @@ class Collection extends QueryCollection
      * @return bool
      */
     public function exists($models = null)
-    {        
+    {
         $models = $this->getArrayableModels($models);
 
         // If any arguments were given and the result set is
@@ -99,7 +99,7 @@ class Collection extends QueryCollection
         if ($models instanceof QueryCollection) {
             return $models->all();
         }
-        
+
         return Arr::wrap($models);
     }
 

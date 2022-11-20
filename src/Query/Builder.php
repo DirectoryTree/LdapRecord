@@ -12,13 +12,13 @@ use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\LdapInterface;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
-use LdapRecord\Utilities;
 
 class Builder
 {
@@ -282,7 +282,7 @@ class Builder
      */
     public function getUnescapedQuery()
     {
-        return Utilities::unescape($this->getQuery());
+        return EscapedValue::unescape($this->getQuery());
     }
 
     /**

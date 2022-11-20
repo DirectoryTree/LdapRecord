@@ -108,12 +108,12 @@ class Guid
 
     /**
      * Get the encoded hexadecimal representation of the GUID string.
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getEncodedHex()
     {
-        return '\\' . implode('\\', str_split($this->getHex(), 2));
+        return '\\'.implode('\\', str_split($this->getHex(), 2));
     }
 
     /**
@@ -128,8 +128,8 @@ class Guid
 
     /**
      * Get the octect sections of the GUID.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     protected function getOctetSections()
     {
@@ -140,7 +140,7 @@ class Guid
         foreach ($this->octetSections as $section) {
             array_push($sections, $this->parseSection($guid, $section, $octet = true));
         }
-    
+
         return $sections;
     }
 

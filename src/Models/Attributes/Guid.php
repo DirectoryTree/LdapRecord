@@ -3,7 +3,6 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
 
 class Guid
 {
@@ -56,7 +55,7 @@ class Guid
      */
     public static function isValid($guid)
     {
-        return Utilities::isValidGuid($guid);
+        return (bool) preg_match('/^([0-9a-fA-F]){8}(-([0-9a-fA-F]){4}){3}-([0-9a-fA-F]){12}$/', (string) $guid);
     }
 
     /**
@@ -108,21 +107,41 @@ class Guid
     }
 
     /**
+     * Get the encoded hexadecimal representation of the GUID string.
+     * 
+     * @return string 
+     */
+    public function getEncodedHex()
+    {
+        return '\\' . implode('\\', str_split($this->getHex(), 2));
+    }
+
+    /**
      * Get the hexadecimal representation of the GUID string.
      *
      * @return string
      */
     public function getHex()
     {
-        $data = '';
+        return implode($this->getOctetSections());
+    }
+
+    /**
+     * Get the octect sections of the GUID.
+     * 
+     * @return array 
+     */
+    protected function getOctetSections()
+    {
+        $sections = [];
 
         $guid = str_replace('-', '', $this->value);
 
         foreach ($this->octetSections as $section) {
-            $data .= $this->parseSection($guid, $section, $octet = true);
+            array_push($sections, $this->parseSection($guid, $section, $octet = true));
         }
-
-        return $data;
+    
+        return $sections;
     }
 
     /**
@@ -134,7 +153,19 @@ class Guid
      */
     protected function binaryGuidToString($binary)
     {
-        return Utilities::binaryGuidToString($binary);
+        if (is_null($binary) || trim($binary) == '') {
+            return;
+        }
+
+        $hex = unpack('H*hex', $binary)['hex'];
+
+        $hex1 = substr($hex, -26, 2).substr($hex, -28, 2).substr($hex, -30, 2).substr($hex, -32, 2);
+        $hex2 = substr($hex, -22, 2).substr($hex, -24, 2);
+        $hex3 = substr($hex, -18, 2).substr($hex, -20, 2);
+        $hex4 = substr($hex, -16, 4);
+        $hex5 = substr($hex, -12, 12);
+
+        return sprintf('%s-%s-%s-%s-%s', $hex1, $hex2, $hex3, $hex4, $hex5);
     }
 
     /**

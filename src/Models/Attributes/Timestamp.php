@@ -7,10 +7,13 @@ use Carbon\CarbonInterface;
 use DateTime;
 use DateTimeZone;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Utilities;
 
 class Timestamp
 {
+    public const TYPE_LDAP = 'ldap';
+    public const TYPE_WINDOWS = 'windows';
+    public const TYPE_WINDOWS_INT = 'windows-int';
+
     /**
      * The current timestamp type.
      *
@@ -24,9 +27,9 @@ class Timestamp
      * @var array
      */
     protected $types = [
-        'ldap',
-        'windows',
-        'windows-int',
+        Timestamp::TYPE_LDAP,
+        Timestamp::TYPE_WINDOWS,
+        Timestamp::TYPE_WINDOWS_INT,
     ];
 
     /**
@@ -228,7 +231,7 @@ class Timestamp
         }
 
         return (new DateTime())->setTimestamp(
-            Utilities::convertWindowsTimeToUnixTime($value)
+            round($value / 10000000) - 11644473600
         );
     }
 
@@ -241,6 +244,6 @@ class Timestamp
      */
     protected function convertDateTimeToWindowsInteger(DateTime $date)
     {
-        return Utilities::convertUnixTimeToWindowsTime($date->getTimestamp());
+        return ($date->getTimestamp() + 11644473600) * 10000000;
     }
 }

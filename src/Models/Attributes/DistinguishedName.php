@@ -109,20 +109,6 @@ class DistinguishedName
     }
 
     /**
-     * Un-escapes a hexadecimal string into its original string representation.
-     *
-     * @param string $value
-     *
-     * @return string
-     */
-    public static function unescape($value)
-    {
-        return preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', function ($matches) {
-            return chr(hexdec($matches[1]));
-        }, $value);
-    }
-
-    /**
      * Explode the RDN into an attribute and value.
      *
      * @param string $rdn
@@ -180,7 +166,7 @@ class DistinguishedName
         $values = [];
 
         foreach ($this->multi() as [, $value]) {
-            $values[] = static::unescape($value);
+            $values[] = EscapedValue::unescape($value);
         }
 
         return $values;
@@ -216,7 +202,7 @@ class DistinguishedName
             // escaped. This cannot be opted out of. Here we will unescape
             // the attribute value, then re-escape it to its original
             // representation from the server using the "dn" flag.
-            $value = $this->escape(static::unescape($value))->dn();
+            $value = $this->escape(EscapedValue::unescape($value))->dn();
 
             $components[] = static::makeRdn([$attribute, $value]);
         }

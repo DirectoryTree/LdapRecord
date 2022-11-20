@@ -3,7 +3,6 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
 
 class Sid
 {
@@ -23,7 +22,7 @@ class Sid
      */
     public static function isValid($sid)
     {
-        return Utilities::isValidSid($sid);
+        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", (string) $sid);
     }
 
     /**
@@ -96,6 +95,42 @@ class Sid
      */
     protected function binarySidToString($binary)
     {
-        return Utilities::binarySidToString($binary);
+        // Revision - 8bit unsigned int (C1)
+        // Count - 8bit unsigned int (C1)
+        // 2 null bytes
+        // ID - 32bit unsigned long, big-endian order
+        $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
+
+        if (! isset($sid['id']) || ! isset($sid['rev'])) {
+            return;
+        }
+
+        $revisionLevel = $sid['rev'];
+
+        $identifierAuthority = $sid['id'];
+
+        $subs = isset($sid['count']) ? $sid['count'] : 0;
+
+        $sidHex = $subs ? bin2hex($binary) : '';
+
+        $subAuthorities = [];
+
+        // The sub-authorities depend on the count, so only get as
+        // many as the count, regardless of data beyond it.
+        for ($i = 0; $i < $subs; $i++) {
+            $data = implode(array_reverse(
+                str_split(
+                    substr($sidHex, 16 + ($i * 8), 8),
+                    2
+                )
+            ));
+
+            $subAuthorities[] = hexdec($data);
+        }
+
+        // Tack on the 'S-' and glue it all together...
+        return 'S-'.$revisionLevel.'-'.$identifierAuthority.implode(
+            preg_filter('/^/', '-', $subAuthorities)
+        );
     }
 }

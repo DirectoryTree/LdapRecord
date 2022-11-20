@@ -4,12 +4,12 @@ namespace LdapRecord\Query\Model;
 
 use Closure;
 use DateTime;
+use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
-use LdapRecord\Utilities;
 
 class Builder extends BaseBuilder
 {
@@ -278,7 +278,7 @@ class Builder extends BaseBuilder
     public function findByGuidOrFail($guid, $columns = ['*'])
     {
         if ($this->model instanceof ActiveDirectory) {
-            $guid = Utilities::stringGuidToHex($guid);
+            $guid = (new Guid($guid))->getEncodedHex();
         }
 
         return $this->whereRaw([

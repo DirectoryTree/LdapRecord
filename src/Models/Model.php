@@ -1636,20 +1636,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Throw an exception if the model does not exist.
      *
-     * @deprecated
-     *
-     * @return void
-     *
-     * @throws ModelDoesNotExistException
-     */
-    protected function requireExistence()
-    {
-        return $this->assertExists();
-    }
-
-    /**
-     * Throw an exception if the model does not exist.
-     *
      * @return void
      *
      * @throws ModelDoesNotExistException

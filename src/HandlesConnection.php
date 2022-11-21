@@ -212,18 +212,6 @@ trait HandlesConnection
     }
 
     /**
-     * Determine if the current PHP version supports server controls.
-     *
-     * @deprecated since v2.5.0
-     *
-     * @return bool
-     */
-    public function supportsServerControlsInMethods()
-    {
-        return version_compare(PHP_VERSION, '7.3.0') >= 0;
-    }
-
-    /**
      * Generates an LDAP connection string for each host given.
      *
      * @param string|array $hosts

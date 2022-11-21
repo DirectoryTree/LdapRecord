@@ -430,31 +430,6 @@ interface LdapInterface
     public function modDelete($dn, array $entry);
 
     /**
-     * Send LDAP pagination control.
-     *
-     * @see http://php.net/manual/en/function.ldap-control-paged-result.php
-     *
-     * @param int    $pageSize
-     * @param bool   $isCritical
-     * @param string $cookie
-     *
-     * @return bool
-     */
-    public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '');
-
-    /**
-     * Retrieve the LDAP pagination cookie.
-     *
-     * @see http://php.net/manual/en/function.ldap-control-paged-result-response.php
-     *
-     * @param resource $result
-     * @param string   $cookie
-     *
-     * @return bool
-     */
-    public function controlPagedResultResponse($result, &$cookie);
-
-    /**
      * Frees up the memory allocated internally to store the result.
      *
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
@@ -505,13 +480,4 @@ interface LdapInterface
      * @return string
      */
     public function getDiagnosticMessage();
-
-    /**
-     * Determine if the current PHP version supports server controls.
-     *
-     * @deprecated since v2.5.0
-     *
-     * @return bool
-     */
-    public function supportsServerControlsInMethods();
 }

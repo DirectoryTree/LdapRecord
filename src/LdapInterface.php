@@ -291,11 +291,11 @@ interface LdapInterface
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
      * @param \LDAP\Result $result
-     * @param int      $errorCode
-     * @param ?string  $dn
-     * @param ?string  $errorMessage
-     * @param ?array   $referrals
-     * @param ?array   $serverControls
+     * @param int          $errorCode
+     * @param ?string      $dn
+     * @param ?string      $errorMessage
+     * @param ?array       $referrals
+     * @param ?array       $serverControls
      *
      * @return bool
      */

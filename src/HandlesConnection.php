@@ -18,7 +18,7 @@ trait HandlesConnection
     /**
      * The LDAP connection resource.
      *
-     * @var resource|null
+     * @var \LDAP\Connection
      */
     protected $connection;
 
@@ -239,8 +239,8 @@ trait HandlesConnection
      */
     protected function assembleHostUris($hosts, $port)
     {
-        return array_map(function ($host) use ($port) {
-            return "{$this->getProtocol()}{$host}:{$port}";
-        }, (array) $hosts);
+        return array_map(fn ($host) => (
+            "{$this->getProtocol()}{$host}:{$port}"
+        ), (array) $hosts);
     }
 }

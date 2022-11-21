@@ -217,9 +217,9 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function getEntries($searchResults)
+    public function getEntries($result)
     {
-        return $searchResults;
+        return $result;
     }
 
     /**

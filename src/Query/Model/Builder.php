@@ -422,7 +422,7 @@ class Builder extends BaseBuilder
                 );
             }
 
-            $value = $this->model->fromDateTime($this->model->getDates()[$field], $value);
+            $value = $this->model->fromDateTime($value, $this->model->getDates()[$field]);
         }
 
         return parent::prepareWhereValue($field, $value, $raw);

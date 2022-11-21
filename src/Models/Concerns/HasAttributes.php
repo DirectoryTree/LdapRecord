@@ -411,7 +411,7 @@ trait HasAttributes
      * Convert the given date value to an LDAP compatible value.
      *
      * @param mixed  $value
-     * @param string $type 
+     * @param string $type
      *
      * @return float|string
      *

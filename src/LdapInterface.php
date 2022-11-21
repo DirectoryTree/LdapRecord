@@ -127,9 +127,9 @@ interface LdapInterface
     public function getHost();
 
     /**
-     * Get the underlying connection resource.
+     * Get the underlying raw LDAP connection.
      *
-     * @return resource|null
+     * @return \LDAP\Connection|null
      */
     public function getConnection();
 
@@ -138,11 +138,11 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param resource $searchResults
+     * @param \LDAP\Result $result
      *
      * @return array
      */
-    public function getEntries($searchResults);
+    public function getEntries($result);
 
     /**
      * Retrieve the last error on the current connection.
@@ -216,7 +216,7 @@ interface LdapInterface
      * @param string|array $hosts
      * @param int          $port
      *
-     * @return resource|false
+     * @return \LDAP\Connection|false
      */
     public function connect($hosts = [], $port = 389);
 
@@ -247,7 +247,7 @@ interface LdapInterface
      *
      * @return resource
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
 
     /**
      * Performs a single level search on the current connection.
@@ -265,7 +265,7 @@ interface LdapInterface
      *
      * @return resource
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
 
     /**
      * Reads an entry on the current connection.
@@ -281,16 +281,16 @@ interface LdapInterface
      * @param int    $deref
      * @param array  $serverControls
      *
-     * @return resource
+     * @return \LDAP\Result
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
 
     /**
      * Extract information from an LDAP result.
      *
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
-     * @param resource $result
+     * @param \LDAP\Result $result
      * @param int      $errorCode
      * @param ?string  $dn
      * @param ?string  $errorMessage
@@ -299,7 +299,7 @@ interface LdapInterface
      *
      * @return bool
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = []);
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$serverControls = null);
 
     /**
      * Binds to the current connection using the specified username and password.
@@ -434,7 +434,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
-     * @param resource $result
+     * @param \LDAP\Result $result
      *
      * @return bool
      */

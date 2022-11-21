@@ -211,7 +211,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function encodeAttributes($attributes)
+    protected function encodeAttributes($attributes)
     {
         array_walk_recursive($attributes, function (&$value) {
             $value = $this->encodeValue($value);

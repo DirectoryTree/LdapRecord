@@ -191,7 +191,7 @@ trait HasAttributes
                 continue;
             }
 
-            $date = $this->fromDateTime($type, $attributes[$attribute]);
+            $date = $this->fromDateTime($attributes[$attribute], $type);
 
             $attributes[$attribute] = Arr::wrap($date);
         }
@@ -410,14 +410,14 @@ trait HasAttributes
     /**
      * Convert the given date value to an LDAP compatible value.
      *
-     * @param string $type
      * @param mixed  $value
+     * @param string $type 
      *
      * @return float|string
      *
      * @throws LdapRecordException
      */
-    public function fromDateTime($type, $value)
+    public function fromDateTime($value, $type)
     {
         return (new Timestamp($type))->fromDateTime($value);
     }
@@ -828,7 +828,7 @@ trait HasAttributes
             $this->isDateAttribute($key) &&
             ! $this->valueIsResetInteger($value)
         ) {
-            $value = $this->fromDateTime($this->getDates()[$key], $value);
+            $value = $this->fromDateTime($value, $this->getDates()[$key]);
         }
 
         if ($this->isJsonCastable($key) && ! is_null($value)) {

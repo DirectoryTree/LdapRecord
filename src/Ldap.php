@@ -388,26 +388,6 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
-    {
-        return $this->executeFailableOperation(function () use ($pageSize, $isCritical, $cookie) {
-            return ldap_control_paged_result($this->connection, $pageSize, $isCritical, $cookie);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function controlPagedResultResponse($result, &$cookie, &$estimated = null)
-    {
-        return $this->executeFailableOperation(function () use ($result, &$cookie, &$estimated) {
-            return ldap_control_paged_result_response($this->connection, $result, $cookie, $estimated);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function freeResult($result)
     {
         return ldap_free_result($result);

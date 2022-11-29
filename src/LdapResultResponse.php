@@ -6,13 +6,14 @@ class LdapResultResponse
 {
     /**
      * Constructor.
-     * 
-     * @param int $errorCode 
-     * @param string|null $matchedDn 
-     * @param string $errorMessage 
-     * @param array $referrals 
-     * @param array $controls 
-     * @return void 
+     *
+     * @param int         $errorCode
+     * @param string|null $matchedDn
+     * @param string      $errorMessage
+     * @param array       $referrals
+     * @param array       $controls
+     *
+     * @return void
      */
     public function __construct(
         protected $errorCode,
@@ -20,12 +21,13 @@ class LdapResultResponse
         protected $errorMessage,
         protected $referrals,
         protected $controls
-    ) {}
+    ) {
+    }
 
     /**
      * Get the LDAP error code. "0" if no error occurred.
-     * 
-     * @return int 
+     *
+     * @return int
      */
     public function getErrorCode()
     {
@@ -34,8 +36,8 @@ class LdapResultResponse
 
     /**
      * Get the matched DN if one was recognised within the request, otherwise it will be set to null.
-     * 
-     * @return string|null 
+     *
+     * @return string|null
      */
     public function getMatchedDn()
     {
@@ -44,8 +46,8 @@ class LdapResultResponse
 
     /**
      * Get the LDAP error message in the result, or an empty string if no error occurred.
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getErrorMessage()
     {
@@ -54,8 +56,8 @@ class LdapResultResponse
 
     /**
      * Get the array of the referral strings in the result, or an empty array if no referrals were returned.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getReferrals()
     {
@@ -64,8 +66,8 @@ class LdapResultResponse
 
     /**
      * Get the array of LDAP Controls which have been sent with the response.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getControls()
     {
@@ -74,8 +76,8 @@ class LdapResultResponse
 
     /**
      * Determine if the LDAP response indicates a successful status.
-     * 
-     * @return bool 
+     *
+     * @return bool
      */
     public function successful()
     {
@@ -84,8 +86,8 @@ class LdapResultResponse
 
     /**
      * Determine if the LDAP response indicates a failed status.
-     * 
-     * @return bool 
+     *
+     * @return bool
      */
     public function failed()
     {

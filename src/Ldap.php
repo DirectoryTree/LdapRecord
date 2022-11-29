@@ -254,7 +254,7 @@ class Ldap implements LdapInterface
     public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null)
     {
         $success = ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $controls);
-        
+
         if ($success) {
             return new LdapResultResponse(
                 $errorCode, $dn, $errorMessage, $referrals, $controls

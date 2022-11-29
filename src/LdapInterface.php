@@ -243,11 +243,11 @@ interface LdapInterface
      * @param int    $size
      * @param int    $time
      * @param int    $deref
-     * @param array  $serverControls
+     * @param array  $controls
      *
-     * @return resource
+     * @return \LDAP\Result
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
 
     /**
      * Performs a single level search on the current connection.
@@ -261,11 +261,11 @@ interface LdapInterface
      * @param int    $size
      * @param int    $time
      * @param int    $deref
-     * @param array  $serverControls
+     * @param array  $controls
      *
-     * @return resource
+     * @return \LDAP\Result
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
+    public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
 
     /**
      * Reads an entry on the current connection.
@@ -279,11 +279,11 @@ interface LdapInterface
      * @param int    $size
      * @param int    $time
      * @param int    $deref
-     * @param array  $serverControls
+     * @param array  $controls
      *
      * @return \LDAP\Result
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null);
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
 
     /**
      * Extract information from an LDAP result.
@@ -295,11 +295,11 @@ interface LdapInterface
      * @param ?string      $dn
      * @param ?string      $errorMessage
      * @param ?array       $referrals
-     * @param ?array       $serverControls
+     * @param ?array       $controls
      *
-     * @return bool
+     * @return false|LdapResultResponse
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$serverControls = null);
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null);
 
     /**
      * Binds to the current connection using the specified username and password.
@@ -307,14 +307,15 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-bind.php
      *
-     * @param string $username
-     * @param string $password
+     * @param string|null $username
+     * @param string|null $password
+     * @param array|null $controls
      *
-     * @return bool
+     * @return LdapResultResponse
      *
      * @throws LdapRecordException
      */
-    public function bind($username, $password);
+    public function bind($username = null, $password = null, array $controls = null);
 
     /**
      * Adds an entry to the current connection.

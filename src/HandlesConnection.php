@@ -6,6 +6,7 @@ use Closure;
 use ErrorException;
 use Exception;
 
+/** @mixin Ldap */
 trait HandlesConnection
 {
     /**

@@ -318,7 +318,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function bind($username, $password)
+    public function bind($username = null, $password = null, array $controls = null)
     {
         return $this->bound = $this->resolveExpectation('bind', func_get_args());
     }
@@ -326,7 +326,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->resolveExpectation('search', func_get_args());
     }
@@ -334,7 +334,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->resolveExpectation('listing', func_get_args());
     }
@@ -342,7 +342,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->resolveExpectation('read', func_get_args());
     }
@@ -350,7 +350,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null)
     {
         return $this->resolveExpectation('parseResult', func_get_args());
     }

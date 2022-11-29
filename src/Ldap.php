@@ -221,51 +221,63 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null)
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->executeFailableOperation(
-            fn () => ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+            fn () => ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
         );
     }
 
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null)
+    public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->executeFailableOperation(
-            fn () => ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+            fn () => ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
         );
     }
 
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $serverControls = null)
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
         return $this->executeFailableOperation(
-            fn () => ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
+            fn () => ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
         );
     }
 
     /**
      * @inheritdoc
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$serverControls = null)
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls)
-        );
+        $success = ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $controls);
+        
+        if ($success) {
+            return new LdapResultResponse(
+                $errorCode, $dn, $errorMessage, $referrals, $controls
+            );
+        }
+
+        return $success;
     }
 
     /**
      * @inheritdoc
      */
-    public function bind($username, $password)
+    public function bind($username = null, $password = null, $controls = null)
     {
-        return $this->bound = $this->executeFailableOperation(
-            fn () => ldap_bind($this->connection, $username, $password ? html_entity_decode($password) : null)
+        $result = $this->executeFailableOperation(
+            fn () => ldap_bind_ext($this->connection, $username, $password ? html_entity_decode($password) : null, $controls)
         );
+
+        $response = $this->parseResult($result, $errorCode, $dn, $errorMessage, $refs);
+
+        $this->bound = $response && $response->successful();
+
+        return $response;
     }
 
     /**

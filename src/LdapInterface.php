@@ -309,7 +309,7 @@ interface LdapInterface
      *
      * @param string|null $username
      * @param string|null $password
-     * @param array|null $controls
+     * @param array|null  $controls
      *
      * @return LdapResultResponse
      *

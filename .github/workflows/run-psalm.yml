@@ -7,15 +7,15 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  run-tests:
+  run-analysis:
     runs-on: ${{ matrix.os }}
+    name: Static code analysis (PHP ${{ matrix.php }})
+
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.1, 8.0, 7.4]
-
-    name: ${{ matrix.os }} - P${{ matrix.php }}
+        os: [ubuntu-latest]
+        php: [8.0]
 
     steps:
       - name: Checkout code
@@ -33,9 +33,13 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: ldap, json
           coverage: none
+          tools: psalm
+
+      - name: Validate composer.json
+        run: composer validate
 
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction
 
-      - name: Execute tests
-        run: vendor/bin/phpunit --testsuite Unit
+      - name: Run Psalm
+        run: psalm

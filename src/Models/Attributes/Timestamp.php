@@ -161,7 +161,7 @@ class Timestamp
     protected function convertLdapTimeToDateTime($value)
     {
         return DateTime::createFromFormat(
-            str_contains($value, 'Z') ? 'YmdHis\Z' : 'YmdHisT',
+            str_contains((string) $value, 'Z') ? 'YmdHis\Z' : 'YmdHisT',
             $value
         );
     }
@@ -190,7 +190,7 @@ class Timestamp
     protected function convertWindowsTimeToDateTime($value)
     {
         return DateTime::createFromFormat(
-            str_contains($value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
+            str_contains((string) $value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
             $value,
             new DateTimeZone('UTC')
         );

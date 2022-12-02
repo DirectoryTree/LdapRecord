@@ -106,7 +106,7 @@ class Str
         }
 
         foreach ((array) $needles as $needle) {
-            if ($needle !== '' && str_contains($haystack, $needle)) {
+            if ($needle !== '' && str_contains((string) $haystack, $needle)) {
                 return true;
             }
         }

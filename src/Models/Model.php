@@ -519,9 +519,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * @return null|string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->getDn();
+        return (string) $this->getDn();
     }
 
     /**

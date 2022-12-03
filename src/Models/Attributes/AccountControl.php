@@ -74,7 +74,7 @@ class AccountControl
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->getValue();
     }
@@ -84,7 +84,7 @@ class AccountControl
      *
      * @return int
      */
-    public function __toInt()
+    public function __toInt(): int
     {
         return $this->getValue();
     }

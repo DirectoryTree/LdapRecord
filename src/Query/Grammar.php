@@ -76,14 +76,11 @@ class Grammar
             .$this->compileWheres($query)
             .$this->compileOrWheres($query);
 
-        switch ($this->wrapper) {
-            case 'and':
-                return $this->compileAnd($filter);
-            case 'or':
-                return $this->compileOr($filter);
-            default:
-                return $filter;
-        }
+        return match ($this->wrapper) {
+            'and' => $this->compileAnd($filter),
+            'or' => $this->compileOr($filter),
+            default => $filter,
+        };
     }
 
     /**

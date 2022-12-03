@@ -11,8 +11,6 @@ use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
-use LdapRecord\Models\Events\Renamed;
-use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
 use UnexpectedValueException;

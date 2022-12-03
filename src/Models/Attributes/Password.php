@@ -250,16 +250,12 @@ class Password
      */
     protected static function makeCryptPrefixAndLength($type)
     {
-        switch ($type) {
-            case static::CRYPT_SALT_TYPE_MD5:
-                return ['$1$', 12];
-            case static::CRYPT_SALT_TYPE_SHA256:
-                return ['$5$', 16];
-            case static::CRYPT_SALT_TYPE_SHA512:
-                return ['$6$', 16];
-            default:
-                throw new InvalidArgumentException("Invalid crypt type [$type].");
-        }
+        return match ((int) $type) {
+            static::CRYPT_SALT_TYPE_MD5 => ['$1$', 12],
+            static::CRYPT_SALT_TYPE_SHA256 => ['$5$', 16],
+            static::CRYPT_SALT_TYPE_SHA512 => ['$6$', 16],
+            default => throw new InvalidArgumentException("Invalid crypt type [$type]."),
+        };
     }
 
     /**
@@ -325,7 +321,7 @@ class Password
      *
      * @throws \ReflectionException
      */
-    public static function hashMethodRequiresSalt($method): bool
+    public static function hashMethodRequiresSalt($method)
     {
         $parameters = (new ReflectionMethod(static::class, $method))->getParameters();
 

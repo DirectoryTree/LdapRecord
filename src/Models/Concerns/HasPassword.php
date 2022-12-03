@@ -242,15 +242,11 @@ trait HasPassword
             $value = null
         );
 
-        switch ($algo) {
-            case Password::CRYPT_SALT_TYPE_MD5:
-                return 'md5'.$method;
-            case Password::CRYPT_SALT_TYPE_SHA256:
-                return 'sha256'.$method;
-            case Password::CRYPT_SALT_TYPE_SHA512:
-                return 'sha512'.$method;
-            default:
-                return $method;
-        }
+        return match ((int) $algo) {
+            Password::CRYPT_SALT_TYPE_MD5 => 'md5'.$method,
+            Password::CRYPT_SALT_TYPE_SHA256 => 'sha256'.$method,
+            Password::CRYPT_SALT_TYPE_SHA512 => 'sha512'.$method,
+            default => $method,
+        };
     }
 }

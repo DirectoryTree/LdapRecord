@@ -2079,23 +2079,13 @@ class Builder
     {
         $args = [$query, $time];
 
-        switch ($type) {
-            case 'listing':
-                $event = new Events\Listing(...$args);
-                break;
-            case 'read':
-                $event = new Events\Read(...$args);
-                break;
-            case 'chunk':
-                $event = new Events\Chunk(...$args);
-                break;
-            case 'paginate':
-                $event = new Events\Paginate(...$args);
-                break;
-            default:
-                $event = new Events\Search(...$args);
-                break;
-        }
+        $event = match ($type) {
+            'read' => new Events\Read(...$args),
+            'chunk' => new Events\Chunk(...$args),
+            'listing' => new Events\Listing(...$args),
+            'paginate' => new Events\Paginate(...$args),
+            default => new Events\Search(...$args),
+        };
 
         $this->fireQueryEvent($event);
     }

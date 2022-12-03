@@ -91,21 +91,12 @@ class Timestamp
             $value = Carbon::instance($value);
         }
 
-        switch ($this->type) {
-            case 'ldap':
-                $value = $this->convertDateTimeToLdapTime($value);
-                break;
-            case 'windows':
-                $value = $this->convertDateTimeToWindows($value);
-                break;
-            case 'windows-int':
-                $value = $this->convertDateTimeToWindowsInteger($value);
-                break;
-            default:
-                throw new LdapRecordException("Unrecognized date type [{$this->type}]");
-        }
-
-        return $value;
+        return match ($this->type) {
+            'ldap' => $this->convertDateTimeToLdapTime($value),
+            'windows' => $this->convertDateTimeToWindows($value),
+            'windows-int' => $this->convertDateTimeToWindowsInteger($value),
+            default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
+        };
     }
 
     /**
@@ -137,19 +128,12 @@ class Timestamp
             return Carbon::instance($value);
         }
 
-        switch ($this->type) {
-            case 'ldap':
-                $value = $this->convertLdapTimeToDateTime($value);
-                break;
-            case 'windows':
-                $value = $this->convertWindowsTimeToDateTime($value);
-                break;
-            case 'windows-int':
-                $value = $this->convertWindowsIntegerTimeToDateTime($value);
-                break;
-            default:
-                throw new LdapRecordException("Unrecognized date type [{$this->type}]");
-        }
+        $value = match ($this->type) {
+            'ldap' => $this->convertLdapTimeToDateTime($value),
+            'windows' => $this->convertWindowsTimeToDateTime($value),
+            'windows-int' => $this->convertWindowsIntegerTimeToDateTime($value),
+            default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
+        };
 
         return $value instanceof DateTime ? Carbon::instance($value) : $value;
     }

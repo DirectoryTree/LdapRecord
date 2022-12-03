@@ -364,7 +364,7 @@ class Connection
      *
      * @param LdapRecordException $e
      *
-     * @return mixed
+     * @return LdapRecordException|null
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e)
     {
@@ -375,8 +375,6 @@ class Connection
                 return Exceptions\InsufficientAccessException::withDetailedError($e, $e->getDetailedError());
             case $this->errorContainsMessage($e->getMessage(), 'Constraint violation'):
                 return Exceptions\ConstraintViolationException::withDetailedError($e, $e->getDetailedError());
-            default:
-                return;
         }
     }
 

@@ -265,7 +265,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
+    public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
 
     /**
      * Reads an entry on the current connection.

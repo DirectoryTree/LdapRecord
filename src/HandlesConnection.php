@@ -175,7 +175,7 @@ trait HandlesConnection
 
             // If the failed query operation was a based on a query being executed
             // -- such as a search, read, or listing, then we can safely return
-            // the failed response here and prevent throwning an exception.
+            // the failed response here and prevent throwing an exception.
             if ($this->shouldBypassFailure($method = debug_backtrace()[1]['function'])) {
                 return $result;
             }

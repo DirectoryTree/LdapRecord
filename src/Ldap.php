@@ -14,9 +14,9 @@ class Ldap implements LdapInterface
      */
     public function getEntries($result)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_get_entries($this->connection, $result)
-        );
+        return $this->executeFailableOperation(function () use ($result) {
+            return ldap_get_entries($this->connection, $result);
+        });
     }
 
     /**
@@ -30,9 +30,9 @@ class Ldap implements LdapInterface
      */
     public function getFirstEntry($result)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_first_entry($this->connection, $result)
-        );
+        return $this->executeFailableOperation(function () use ($result) {
+            return ldap_first_entry($this->connection, $result);
+        });
     }
 
     /**
@@ -46,9 +46,9 @@ class Ldap implements LdapInterface
      */
     public function getNextEntry($entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_next_entry($this->connection, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_next_entry($this->connection, $entry);
+        });
     }
 
     /**
@@ -62,9 +62,9 @@ class Ldap implements LdapInterface
      */
     public function getAttributes($entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_get_attributes($this->connection, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_get_attributes($this->connection, $entry);
+        });
     }
 
     /**
@@ -78,9 +78,9 @@ class Ldap implements LdapInterface
      */
     public function countEntries($result)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_count_entries($this->connection, $result)
-        );
+        return $this->executeFailableOperation(function () use ($result) {
+            return ldap_count_entries($this->connection, $result);
+        });
     }
 
     /**
@@ -96,9 +96,10 @@ class Ldap implements LdapInterface
      */
     public function compare($dn, $attribute, $value)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_compare($this->connection, $dn, $attribute, $value)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $attribute, $value) {
+            return ldap_compare($this->connection, $dn, $attribute, $value);
+        });
+
     }
 
     /**
@@ -132,16 +133,16 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-values-len.php
      *
-     * @param $entry
-     * @param $attribute
+     * @param \LDAP\ResultEntry $entry
+     * @param string $attribute
      *
      * @return array
      */
     public function getValuesLen($entry, $attribute)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_get_values_len($this->connection, $entry, $attribute)
-        );
+        return $this->executeFailableOperation(function () use ($entry, $attribute) {
+            return ldap_get_values_len($this->connection, $entry, $attribute);
+        });
     }
 
     /**
@@ -181,9 +182,9 @@ class Ldap implements LdapInterface
      */
     public function startTLS()
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_start_tls($this->connection)
-        );
+        return $this->executeFailableOperation(function () {
+            return ldap_start_tls($this->connection);
+        });
     }
 
     /**
@@ -195,9 +196,9 @@ class Ldap implements LdapInterface
 
         $this->host = $this->makeConnectionUris($hosts, $port);
 
-        return $this->connection = $this->executeFailableOperation(
-            fn () => ldap_connect($this->host)
-        );
+        return $this->connection = $this->executeFailableOperation(function () {
+            return ldap_connect($this->host);
+        });
     }
 
     /**
@@ -223,19 +224,37 @@ class Ldap implements LdapInterface
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $controls
+        ) {
+            return ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+        });
     }
 
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
+    public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $controls
+        ) {
+            return  ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+        });
     }
 
     /**
@@ -243,9 +262,18 @@ class Ldap implements LdapInterface
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls)
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $controls
+        ) {
+            return ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+        });
     }
 
     /**
@@ -261,7 +289,7 @@ class Ldap implements LdapInterface
             );
         }
 
-        return $success;
+        return false;
     }
 
     /**
@@ -269,9 +297,9 @@ class Ldap implements LdapInterface
      */
     public function bind($username = null, $password = null, $controls = null)
     {
-        $result = $this->executeFailableOperation(
-            fn () => ldap_bind_ext($this->connection, $username, $password ? html_entity_decode($password) : null, $controls)
-        );
+        $result = $this->executeFailableOperation(function () use ($username, $password, $controls) {
+            return ldap_bind_ext($this->connection, $username, $password ? html_entity_decode($password) : null, $controls);
+        });
 
         $response = $this->parseResult($result, $errorCode, $dn, $errorMessage, $refs);
 
@@ -285,9 +313,9 @@ class Ldap implements LdapInterface
      */
     public function add($dn, array $entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_add($this->connection, $dn, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_add($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -295,9 +323,9 @@ class Ldap implements LdapInterface
      */
     public function delete($dn)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_delete($this->connection, $dn)
-        );
+        return $this->executeFailableOperation(function () use ($dn) {
+            return ldap_delete($this->connection, $dn);
+        });
     }
 
     /**
@@ -305,9 +333,14 @@ class Ldap implements LdapInterface
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_rename($this->connection, $dn, $newRdn, $newParent, $deleteOldRdn)
-        );
+        return $this->executeFailableOperation(function () use (
+            $dn,
+            $newRdn,
+            $newParent,
+            $deleteOldRdn
+        ) {
+            return ldap_rename($this->connection, $dn, $newRdn, $newParent, $deleteOldRdn);
+        });
     }
 
     /**
@@ -315,9 +348,9 @@ class Ldap implements LdapInterface
      */
     public function modify($dn, array $entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_modify($this->connection, $dn, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_modify($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -325,9 +358,9 @@ class Ldap implements LdapInterface
      */
     public function modifyBatch($dn, array $values)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_modify_batch($this->connection, $dn, $values)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $values) {
+            return ldap_modify_batch($this->connection, $dn, $values);
+        });
     }
 
     /**
@@ -335,9 +368,9 @@ class Ldap implements LdapInterface
      */
     public function modAdd($dn, array $entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_mod_add($this->connection, $dn, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_add($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -345,9 +378,9 @@ class Ldap implements LdapInterface
      */
     public function modReplace($dn, array $entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_mod_replace($this->connection, $dn, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_replace($this->connection, $dn, $entry);
+        });
     }
 
     /**
@@ -355,9 +388,9 @@ class Ldap implements LdapInterface
      */
     public function modDelete($dn, array $entry)
     {
-        return $this->executeFailableOperation(
-            fn () => ldap_mod_del($this->connection, $dn, $entry)
-        );
+        return $this->executeFailableOperation(function () use ($dn, $entry) {
+            return ldap_mod_del($this->connection, $dn, $entry);
+        });
     }
 
     /**

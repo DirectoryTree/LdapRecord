@@ -99,7 +99,6 @@ class Ldap implements LdapInterface
         return $this->executeFailableOperation(function () use ($dn, $attribute, $value) {
             return ldap_compare($this->connection, $dn, $attribute, $value);
         });
-
     }
 
     /**
@@ -134,7 +133,7 @@ class Ldap implements LdapInterface
      * @see http://php.net/manual/en/function.ldap-get-values-len.php
      *
      * @param \LDAP\ResultEntry $entry
-     * @param string $attribute
+     * @param string            $attribute
      *
      * @return array
      */

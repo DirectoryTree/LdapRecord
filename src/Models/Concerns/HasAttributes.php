@@ -383,7 +383,8 @@ trait HasAttributes
      * Get the model's raw attribute value.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function getRawAttribute($key, $default = null)
@@ -1079,7 +1080,8 @@ trait HasAttributes
      * Get the model's raw original attribute values.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function getRawOriginal($key, $default = null)

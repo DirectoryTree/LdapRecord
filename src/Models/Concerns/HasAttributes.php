@@ -352,7 +352,7 @@ trait HasAttributes
     }
 
     /**
-     * Get an attributes value.
+     * Get an attribute's value.
      *
      * @param string $key
      * @param mixed  $default
@@ -377,6 +377,18 @@ trait HasAttributes
         }
 
         return is_null($value) ? $default : $value;
+    }
+
+    /**
+     * Get the model's raw attribute value.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getRawAttribute($key, $default = null)
+    {
+        return Arr::get($this->attributes, $key, $default);
     }
 
     /**
@@ -796,7 +808,7 @@ trait HasAttributes
     }
 
     /**
-     * Returns all of the models attributes.
+     * Returns all the model's attributes.
      *
      * @return array
      */
@@ -1054,13 +1066,25 @@ trait HasAttributes
     }
 
     /**
-     * Returns the models original attributes.
+     * Get the model's original attributes.
      *
      * @return array
      */
     public function getOriginal()
     {
         return $this->original;
+    }
+
+    /**
+     * Get the model's raw original attribute values.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getRawOriginal($key, $default = null)
+    {
+        return Arr::get($this->original, $key, $default);
     }
 
     /**

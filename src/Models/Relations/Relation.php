@@ -88,7 +88,7 @@ abstract class Relation
         $this->relationKey = $relationKey;
         $this->foreignKey = $foreignKey;
 
-        static::$modelResolver ??= function (array $modelObjectClasses, array $relationMap) {
+        static::$modelResolver = static::$modelResolver ?? function (array $modelObjectClasses, array $relationMap) {
             return array_search($modelObjectClasses, $relationMap);
         };
 

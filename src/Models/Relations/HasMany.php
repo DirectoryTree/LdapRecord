@@ -290,6 +290,22 @@ class HasMany extends OneToMany
     }
 
     /**
+     * Detach the model or delete the parent if the relation is empty.
+     *
+     * @param Model|string $model
+     *
+     * @return void
+     */
+    public function detachOrDeleteParent($model)
+    {
+        if ($this->count() <= 1) {
+            return $this->getParent()->delete();
+        }
+
+        return $this->detach($model);
+    }
+
+    /**
      * Build the detach callback.
      *
      * @param Model|string $model

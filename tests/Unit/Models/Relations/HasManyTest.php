@@ -3,10 +3,9 @@
 namespace LdapRecord\Tests\Unit\Models\Relations;
 
 use LdapRecord\Models\Entry;
-use Mockery as m;
 use LdapRecord\Models\Relations\HasMany;
-
 use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class HasManyTest extends TestCase
 {

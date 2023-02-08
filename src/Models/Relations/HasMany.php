@@ -298,7 +298,11 @@ class HasMany extends OneToMany
      */
     public function detachOrDeleteParent($model)
     {
-        if ($this->count() <= 1) {
+        $count = $this->onceWithoutMerging(function () {
+            return $this->count();
+        });
+
+        if ($count <= 1) {
             return $this->getParent()->delete();
         }
 
@@ -406,6 +410,27 @@ class HasMany extends OneToMany
         return $this->onceWithoutMerging(function () {
             return $this->get()->each(function (Model $model) {
                 $this->detach($model);
+            });
+        });
+    }
+
+    /**
+     * Detach all relation models or delete the model if its relation is empty.
+     *
+     * @return Collection
+     */
+    public function detachAllOrDelete()
+    {
+        return $this->onceWithoutMerging(function () {
+            return $this->get()->each(function (Model $model) {
+                if (
+                    method_exists($model, $this->relationName)
+                 && ($model->{$this->relationName}())->count() >= 1
+                ) {
+                    $model->delete();
+                } else {
+                    $this->detach($model);
+                }
             });
         });
     }

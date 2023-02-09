@@ -134,6 +134,14 @@ class PasswordTest extends TestCase
         );
     }
 
+    public function test_nthash()
+    {
+        $this->assertEquals(
+            '{NTHASH}8846F7EAEE8FB117AD06BDD830B7586C',
+            Password::nthash('password')
+        );
+    }
+
     // Utility tests. //
 
     public function test_get_hash_method()

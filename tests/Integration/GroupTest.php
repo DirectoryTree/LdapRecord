@@ -8,6 +8,9 @@ use LdapRecord\Tests\Integration\Fixtures\Group;
 
 class GroupTest extends TestCase
 {
+    /** @var OrganizationalUnit */
+    protected $ou;
+
     protected function setUp(): void
     {
         parent::setUp();

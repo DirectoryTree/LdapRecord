@@ -7,7 +7,6 @@ use Closure;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
-use LdapRecord\Models\Model;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;
 use Psr\SimpleCache\CacheInterface;
@@ -90,7 +89,7 @@ class Connection
      * Constructor.
      *
      * @param array|DomainConfiguration $config
-     * @param LdapInterface|null $ldap
+     * @param LdapInterface|null        $ldap
      */
     public function __construct($config = [], LdapInterface $ldap = null)
     {

@@ -540,17 +540,19 @@ class Builder
     {
         $start = microtime(true);
 
-        $query = $this->getQuery();
+        $this->connection->isolate(function (Connection $replicate) use ($pageSize, $callback, $isCritical) {
+            $page = 1;
 
-        $page = 1;
+            $query = $this->clone()->setConnection($replicate);
 
-        foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
-            if ($callback($this->process($chunk), $page) === false) {
-                return false;
+            foreach ($query->runChunk($this->getQuery(), $pageSize, $isCritical) as $chunk) {
+                if ($callback($this->process($chunk), $page) === false) {
+                    return false;
+                }
+
+                $page++;
             }
-
-            $page++;
-        }
+        });
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
 
@@ -564,11 +566,11 @@ class Builder
      * @param int    $perPage
      * @param bool   $isCritical
      *
-     * @return array
+     * @return \Generator
      */
     protected function runChunk($filter, $perPage, $isCritical)
     {
-        return $this->connection->runInIsolation(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             return (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap);
         });
     }

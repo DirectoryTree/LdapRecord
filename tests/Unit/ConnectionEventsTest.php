@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests;
+namespace LdapRecord\Tests\Unit;
 
 use LdapRecord\Connection;
 use LdapRecord\Events\Connected;

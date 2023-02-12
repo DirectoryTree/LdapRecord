@@ -7,6 +7,7 @@ use Closure;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
+use LdapRecord\Models\Model;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;
 use Psr\SimpleCache\CacheInterface;
@@ -104,6 +105,18 @@ class Connection
         $this->authGuardResolver = function () {
             return new Guard($this->ldap, $this->configuration);
         };
+    }
+
+    /**
+     * Prepare the cloned instance.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->attempted = [];
+        $this->ldap = new $this->ldap;
+        $this->retryingInitialConnection = false;
     }
 
     /**
@@ -299,6 +312,16 @@ class Connection
     }
 
     /**
+     * Clone the connection.
+     *
+     * @return static
+     */
+    public function replicate()
+    {
+        return clone $this;
+    }
+
+    /**
      * Disconnect from the LDAP server.
      *
      * @return void
@@ -356,6 +379,24 @@ class Connection
             }
 
             return $this->tryAgainIfCausedByLostConnection($e, $operation);
+        }
+    }
+
+    /**
+     * Perform the operation on a new, isolated LDAP connection.
+     *
+     * @param Closure $operation
+     *
+     * @return mixed
+     */
+    public function runInIsolation(Closure $operation)
+    {
+        $connection = $this->replicate();
+
+        try {
+            return $connection->run($operation);
+        } finally {
+            $connection->disconnect();
         }
     }
 

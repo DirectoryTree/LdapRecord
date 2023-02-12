@@ -568,7 +568,7 @@ class Builder
      */
     protected function runChunk($filter, $perPage, $isCritical)
     {
-        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+        return $this->connection->runInIsolation(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
             return (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap);
         });
     }

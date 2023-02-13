@@ -513,10 +513,12 @@ class Builder
      *
      * @param Closure $callback
      * @param int     $pageSize
+     * @param bool    $isCritical
+     * @param bool    $isolate
      *
      * @return bool
      */
-    public function each(Closure $callback, $pageSize = 1000)
+    public function each(Closure $callback, $pageSize = 1000, $isCritical = false, $isolate = false)
     {
         return $this->chunk($pageSize, function ($results) use ($callback) {
             foreach ($results as $key => $value) {
@@ -524,7 +526,7 @@ class Builder
                     return false;
                 }
             }
-        });
+        }, $isCritical, $isolate);
     }
 
     /**
@@ -533,17 +535,16 @@ class Builder
      * @param int     $pageSize
      * @param Closure $callback
      * @param bool    $isCritical
+     * @param bool    $isolate
      *
      * @return bool
      */
-    public function chunk($pageSize, Closure $callback, $isCritical = false)
+    public function chunk($pageSize, Closure $callback, $isCritical = false, $isolate = false)
     {
         $start = microtime(true);
 
-        $this->connection->isolate(function (Connection $replicate) use ($pageSize, $callback, $isCritical) {
+        $chunk = function (Builder $query) use ($pageSize, $callback, $isCritical) {
             $page = 1;
-
-            $query = $this->clone()->setConnection($replicate);
 
             foreach ($query->runChunk($this->getQuery(), $pageSize, $isCritical) as $chunk) {
                 if ($callback($this->process($chunk), $page) === false) {
@@ -552,7 +553,11 @@ class Builder
 
                 $page++;
             }
-        });
+        };
+
+        $isolate ? $this->connection->isolate(function (Connection $replicate) use ($chunk) {
+            $chunk($this->clone()->setConnection($replicate));
+        }) : $chunk($this);
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
 

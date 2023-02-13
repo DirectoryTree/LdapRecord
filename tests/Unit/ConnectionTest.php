@@ -86,6 +86,20 @@ class ConnectionTest extends TestCase
         $this->assertInstanceOf(Builder::class, (new Connection())->query());
     }
 
+    public function test_connections_can_be_replicated()
+    {
+        $conn = new Connection();
+
+        $replicate = $conn->replicate();
+
+        $this->assertInstanceOf(Connection::class, $replicate);
+
+        $this->assertFalse($conn === $replicate);
+
+        $this->assertTrue($conn->getConfiguration() === $replicate->getConfiguration());
+        $this->assertFalse($conn->getLdapConnection() === $replicate->getLdapConnection());
+    }
+
     public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => false]);

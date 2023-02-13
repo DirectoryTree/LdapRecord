@@ -339,13 +339,11 @@ class ModelQueryTest extends TestCase
 
         $leaf->shouldReceive('delete')->once()->andReturnTrue();
 
-        $shouldBeDeleted = new Collection([$leaf]);
-
         $query = m::mock(Builder::class);
         $query->shouldReceive('listing')->once()->andReturnSelf();
         $query->shouldReceive('in')->once()->with('foo')->andReturnSelf();
-        $query->shouldReceive('chunk')->once()->with(250, m::on(function ($callback) use ($shouldBeDeleted) {
-            $callback($shouldBeDeleted);
+        $query->shouldReceive('each')->once()->with(m::on(function ($callback) use ($leaf) {
+            $callback($leaf);
 
             return $callback instanceof Closure;
         }));
@@ -355,7 +353,7 @@ class ModelQueryTest extends TestCase
 
         $model->setRawAttributes(['dn' => 'foo', 'cn' => 'bar']);
         $this->assertNull($model->deleteLeafNodes());
-        $this->assertFalse($shouldBeDeleted->first()->exists);
+        $this->assertFalse($leaf->exists);
     }
 
     public function test_destroy()

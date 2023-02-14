@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Unit\Models\Relations;
 
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Tests\TestCase;
@@ -49,5 +50,43 @@ class HasManyTest extends TestCase
         $relation->shouldReceive('getParent')->once()->andReturn($related);
 
         $relation->detachOrDeleteParent($model);
+    }
+
+    public function test_detach_all_or_delete_with_missing_relation()
+    {
+        $model = m::mock(Entry::class);
+        $model->shouldReceive('delete')->never();
+        $model->shouldReceive('getRelation')->once()->andReturnNull();
+
+        $relation = m::mock(HasMany::class)->makePartial();
+
+        $relation->shouldReceive('get')->once()->andReturn(
+            new Collection([$model])
+        );
+
+        $relation->shouldReceive('detach')->once()->with($model);
+
+        $relation->detachAllOrDelete();
+    }
+
+    public function test_detach_all_or_delete_with_existing_relation()
+    {
+        $model = m::mock(Entry::class);
+        $model->shouldReceive('delete')->once();
+
+        $subRelation = m::mock(HasMany::class);
+        $subRelation->shouldReceive('count')->once()->andReturn(2);
+
+        $model->shouldReceive('getRelation')->once()->andReturn($subRelation);
+
+        $relation = m::mock(HasMany::class)->makePartial();
+
+        $relation->shouldReceive('get')->once()->andReturn(
+            new Collection([$model])
+        );
+
+        $relation->shouldReceive('detach')->never();
+
+        $relation->detachAllOrDelete();
     }
 }

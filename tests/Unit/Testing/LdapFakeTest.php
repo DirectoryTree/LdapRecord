@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Testing;
+namespace LdapRecord\Tests\Unit\Testing;
 
 use Exception;
 use LdapRecord\Testing\LdapExpectation;

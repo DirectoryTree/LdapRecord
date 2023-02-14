@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests;
+namespace LdapRecord\Tests\Unit;
 
 use Carbon\Carbon;
 use LdapRecord\Auth\BindException;

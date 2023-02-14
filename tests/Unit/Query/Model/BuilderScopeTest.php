@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Query\Model;
+namespace LdapRecord\Tests\Unit\Query\Model;
 
 use LdapRecord\Connection;
 use LdapRecord\Models\Entry;

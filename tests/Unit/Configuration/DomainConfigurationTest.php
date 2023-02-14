@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Configuration;
+namespace LdapRecord\Tests\Unit\Configuration;
 
 use LdapRecord\Configuration\ConfigurationException;
 use LdapRecord\Configuration\DomainConfiguration;

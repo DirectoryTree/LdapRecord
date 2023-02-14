@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models\OpenLDAP;
+namespace LdapRecord\Tests\Unit\Models\OpenLDAP;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;

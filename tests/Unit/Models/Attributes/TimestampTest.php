@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Unit\Models\Attributes;
 
 use DateTime;
 use LdapRecord\LdapRecordException;

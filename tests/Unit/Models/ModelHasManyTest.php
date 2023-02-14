@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models;
+namespace LdapRecord\Tests\Unit\Models;
 
 use Closure;
 use LdapRecord\Connection;
@@ -12,6 +12,7 @@ use LdapRecord\Models\Collection as ModelsCollection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
@@ -54,17 +55,17 @@ class ModelHasManyTest extends TestCase
     public function test_get_recursive_results()
     {
         $relation = $this->getRelation();
-
+        
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
-        $related = m::mock(ModelHasManyStub::class);
+        $related = m::mock(ModelHasManyStub::class)->makePartial();
         $related->shouldReceive('getDn')->andReturn('bar');
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('relation')->once()->andReturnSelf();
-        $related->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([$child = new Entry()]));
+        $related->shouldReceive('getRelation')->once()->with('relation')->andReturnSelf();
+        $related->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([new Entry()]));
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once();
@@ -124,7 +125,7 @@ class ModelHasManyTest extends TestCase
             $related->shouldReceive('convert')->once()->andReturnSelf();
             $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
 
-            $related->shouldReceive('relation')->once()->andReturnSelf();
+            $related->shouldReceive('getRelation')->once()->andReturnSelf();
             $related->shouldReceive('recursive')->once()->andReturnSelf();
             $related->shouldReceive('chunkRelation')->once()->with(1000, Closure::class, ['bar']);
 

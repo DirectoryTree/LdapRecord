@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Exceptions;
+namespace LdapRecord\Tests\Unit\Exceptions;
 
 use LdapRecord\DetailedError;
 use LdapRecord\Exceptions\ConstraintViolationException;

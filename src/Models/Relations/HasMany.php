@@ -165,10 +165,10 @@ class HasMany extends OneToMany
 
             $models->when($this->recursive, function (Collection $models) use ($pageSize, $callback, $loaded) {
                 $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
-                    if (method_exists($model, $this->relationName)) {
+                    if ($relation = $model->getRelation($this->relationName)) {
                         $loaded[] = $model->getDn();
 
-                        return $model->{$this->relationName}()->recursive()->chunkRelation($pageSize, $callback, $loaded);
+                        return $relation->recursive()->chunkRelation($pageSize, $callback, $loaded);
                     }
                 });
             });
@@ -423,10 +423,9 @@ class HasMany extends OneToMany
     {
         return $this->onceWithoutMerging(function () {
             return $this->get()->each(function (Model $model) {
-                if (
-                    method_exists($model, $this->relationName)
-                 && ($model->{$this->relationName}())->count() >= 1
-                ) {
+                $relation = $model->getRelation($this->relationName);
+
+                if ($relation && $relation->count() >= 1) {
                     $model->delete();
                 } else {
                     $this->detach($model);

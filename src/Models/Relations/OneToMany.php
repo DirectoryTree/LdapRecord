@@ -179,8 +179,8 @@ abstract class OneToMany extends Relation
      */
     protected function getRecursiveRelationResults(Model $model, array $loaded)
     {
-        return method_exists($model, $this->relationName)
-            ? $model->{$this->relationName}()->getRecursiveResults($loaded)
+        return ($relation = $model->getRelation($this->relationName))
+            ? $relation->getRecursiveResults($loaded)
             : $model->newCollection();
     }
 }

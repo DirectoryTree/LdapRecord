@@ -12,7 +12,6 @@ use LdapRecord\Models\Collection as ModelsCollection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasMany;
-use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
@@ -55,7 +54,7 @@ class ModelHasManyTest extends TestCase
     public function test_get_recursive_results()
     {
         $relation = $this->getRelation();
-        
+
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());

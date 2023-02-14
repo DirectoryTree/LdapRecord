@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Events;
+namespace LdapRecord\Tests\Unit\Events;
 
 use Exception;
 use LdapRecord\Events\Dispatcher;

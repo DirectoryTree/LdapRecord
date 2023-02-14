@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Auth;
+namespace LdapRecord\Tests\Unit\Auth;
 
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Attempting;

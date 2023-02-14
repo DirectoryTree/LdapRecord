@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models;
+namespace LdapRecord\Tests\Unit\Models;
 
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;

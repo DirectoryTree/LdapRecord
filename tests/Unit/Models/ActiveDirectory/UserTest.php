@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models\ActiveDirectory;
+namespace LdapRecord\Tests\Unit\Models\ActiveDirectory;
 
 use Carbon\Carbon;
 use LdapRecord\Connection;

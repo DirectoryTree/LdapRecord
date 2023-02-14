@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models;
+namespace LdapRecord\Tests\Unit\Models;
 
 use Carbon\Carbon;
 use DateTime;

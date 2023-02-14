@@ -223,6 +223,22 @@ abstract class Relation
     }
 
     /**
+     * Set the underlying query for the relation.
+     *
+     * @param Builder $query
+     *
+     * @return $this
+     */
+    public function setQuery(Builder $query)
+    {
+        $this->query = $query;
+
+        $this->initRelation();
+
+        return $this;
+    }
+
+    /**
      * Get the underlying query for the relation.
      *
      * @return Builder

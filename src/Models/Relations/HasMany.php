@@ -165,10 +165,10 @@ class HasMany extends OneToMany
 
             $models->when($this->recursive, function (Collection $models) use ($pageSize, $callback, $loaded) {
                 $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
-                    if (method_exists($model, $this->relationName)) {
+                    if ($relation = $model->getRelation($this->relationName)) {
                         $loaded[] = $model->getDn();
 
-                        return $model->{$this->relationName}()->recursive()->chunkRelation($pageSize, $callback, $loaded);
+                        return $relation->recursive()->chunkRelation($pageSize, $callback, $loaded);
                     }
                 });
             });
@@ -290,6 +290,26 @@ class HasMany extends OneToMany
     }
 
     /**
+     * Detach the model or delete the parent if the relation is empty.
+     *
+     * @param Model|string $model
+     *
+     * @return void
+     */
+    public function detachOrDeleteParent($model)
+    {
+        $count = $this->onceWithoutMerging(function () {
+            return $this->count();
+        });
+
+        if ($count <= 1) {
+            return $this->getParent()->delete();
+        }
+
+        return $this->detach($model);
+    }
+
+    /**
      * Build the detach callback.
      *
      * @param Model|string $model
@@ -390,6 +410,26 @@ class HasMany extends OneToMany
         return $this->onceWithoutMerging(function () {
             return $this->get()->each(function (Model $model) {
                 $this->detach($model);
+            });
+        });
+    }
+
+    /**
+     * Detach all relation models or delete the model if its relation is empty.
+     *
+     * @return Collection
+     */
+    public function detachAllOrDelete()
+    {
+        return $this->onceWithoutMerging(function () {
+            return $this->get()->each(function (Model $model) {
+                $relation = $model->getRelation($this->relationName);
+
+                if ($relation && $relation->count() >= 1) {
+                    $model->delete();
+                } else {
+                    $this->detach($model);
+                }
             });
         });
     }

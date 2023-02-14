@@ -5,6 +5,7 @@ namespace LdapRecord\Models\Concerns;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\HasManyIn;
 use LdapRecord\Models\Relations\HasOne;
+use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Support\Arr;
 
 trait HasRelationships
@@ -49,6 +50,30 @@ trait HasRelationships
     public function hasManyIn($related, $relationKey, $foreignKey = 'dn')
     {
         return new HasManyIn($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
+    }
+
+    /**
+     * Get a relationship by its name.
+     *
+     * @param string $relationName
+     *
+     * @return Relation|null
+     */
+    public function getRelation($relationName)
+    {
+        if (! method_exists($this, $relationName)) {
+            return;
+        }
+
+        if (! $relation = $this->{$relationName}()) {
+            return;
+        }
+
+        if (! $relation instanceof Relation) {
+            return;
+        }
+
+        return $relation;
     }
 
     /**

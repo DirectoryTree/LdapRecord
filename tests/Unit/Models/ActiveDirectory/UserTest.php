@@ -212,6 +212,26 @@ class UserTest extends TestCase
 
         $this->assertTrue($user->isEnabled());
     }
+
+    public function test_account_expires_with_maximum()
+    {
+        $user = new User();
+
+        $max = 9223372036854775807;
+
+        $user->accountExpires = 9223372036854775807;
+
+        $this->assertSame($max, $user->accountExpires);
+    }
+
+    public function test_account_expires_with_minimum()
+    {
+        $user = new User();
+
+        $user->accountExpires = 0;
+
+        $this->assertSame(0, $user->accountExpires);
+    }
 }
 
 class UserPasswordTestStub extends User

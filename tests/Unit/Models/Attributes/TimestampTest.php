@@ -116,4 +116,24 @@ class TimestampTest extends TestCase
 
         date_default_timezone_set('UTC');
     }
+
+    public function test_windows_int_type_properly_handles_maximum()
+    {
+        $timestamp = new Timestamp('windows-int');
+
+        $max = 9223372036854775807;
+
+        $this->assertSame($max, $timestamp->toDateTime($max));
+        $this->assertSame($max, $timestamp->toDateTime((string) $max));
+    }
+
+    public function test_windows_int_type_properly_handles_minimum()
+    {
+        $timestamp = new Timestamp('windows-int');
+
+        $min = 0;
+
+        $this->assertSame($min, $timestamp->toDateTime($min));
+        $this->assertSame($min, $timestamp->toDateTime((string) $min));
+    }
 }

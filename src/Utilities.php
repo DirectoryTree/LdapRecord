@@ -149,9 +149,9 @@ class Utilities
      * Round a Windows timestamp down to seconds and remove
      * the seconds between 1601-01-01 and 1970-01-01.
      *
-     * @param float $windowsTime
+     * @param int $windowsTime
      *
-     * @return float
+     * @return int
      */
     public static function convertWindowsTimeToUnixTime($windowsTime)
     {
@@ -161,9 +161,9 @@ class Utilities
     /**
      * Convert a Unix timestamp to Windows timestamp.
      *
-     * @param float $unixTime
+     * @param int $unixTime
      *
-     * @return float
+     * @return int
      */
     public static function convertUnixTimeToWindowsTime($unixTime)
     {

@@ -217,9 +217,9 @@ class UserTest extends TestCase
     {
         $user = new User();
 
-        $max = 9223372036854775807;
+        $max = Timestamp::WINDOWS_INT_MAX;
 
-        $user->accountExpires = 9223372036854775807;
+        $user->accountExpires = $max;
 
         $this->assertSame($max, $user->accountExpires);
     }

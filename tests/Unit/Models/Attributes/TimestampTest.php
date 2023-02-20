@@ -121,7 +121,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp('windows-int');
 
-        $max = 9223372036854775807;
+        $max = Timestamp::WINDOWS_INT_MAX;
 
         $this->assertSame($max, $timestamp->toDateTime($max));
         $this->assertSame($max, $timestamp->toDateTime((string) $max));

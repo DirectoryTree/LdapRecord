@@ -11,6 +11,8 @@ use LdapRecord\Utilities;
 
 class Timestamp
 {
+    public const WINDOWS_INT_MAX = 9223372036854775807;
+
     /**
      * The current timestamp type.
      *
@@ -229,7 +231,7 @@ class Timestamp
             return (int) $value;
         }
 
-        if ($value == 9223372036854775807) {
+        if ($value == static::WINDOWS_INT_MAX) {
             return (int) $value;
         }
 

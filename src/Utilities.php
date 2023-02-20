@@ -155,7 +155,7 @@ class Utilities
      */
     public static function convertWindowsTimeToUnixTime($windowsTime)
     {
-        return round($windowsTime / 10000000) - 11644473600;
+        return (int) (round($windowsTime / 10000000) - 11644473600);
     }
 
     /**

@@ -114,7 +114,7 @@ class Timestamp
      */
     protected function valueIsWindowsIntegerType($value)
     {
-        return is_numeric($value) && strlen((string) $value) === 18;
+        return is_numeric($value) && in_array(strlen((string) $value), [18, 19]);
     }
 
     /**
@@ -122,7 +122,7 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return Carbon|false
+     * @return Carbon|int|false
      *
      * @throws LdapRecordException
      */
@@ -215,16 +215,22 @@ class Timestamp
      *
      * @param int $value
      *
-     * @return DateTime|false
+     * @return DateTime|int|false
      *
      * @throws \Exception
      */
     protected function convertWindowsIntegerTimeToDateTime($value)
     {
-        // ActiveDirectory dates that contain integers may return
-        // "0" when they are not set. We will validate that here.
-        if (! $value) {
+        if (is_null($value) || $value === '') {
             return false;
+        }
+
+        if ($value == 0) {
+            return (int) $value;
+        }
+
+        if ($value == 9223372036854775807) {
+            return (int) $value;
         }
 
         return (new DateTime())->setTimestamp(

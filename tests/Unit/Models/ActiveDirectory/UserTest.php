@@ -11,6 +11,7 @@ use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 
@@ -56,7 +57,7 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             'attrib' => 'unicodepwd',
-            'modtype' => LDAP_MODIFY_BATCH_ADD,
+            'modtype' => LDAP_MODIFY_BATCH_REPLACE,
             'values' => [Password::encode('foo')],
         ], $mods[0]);
     }
@@ -78,7 +79,7 @@ class UserTest extends TestCase
         ], $mods[0]);
     }
 
-    public function test_set_password_behaves_identically_on_non_user_models()
+    public function test_set_password_behaves_differently_on_non_user_models()
     {
         $user = new UserPasswordTestStub();
 
@@ -86,7 +87,7 @@ class UserTest extends TestCase
 
         $nonUser = new NonUserPasswordTestStub();
 
-        $nonUser->unicodepwd = Password::encode('foo');
+        $nonUser->unicodepwd = 'foo';
 
         $this->assertEquals($user->getModifications(), $nonUser->getModifications());
     }
@@ -244,6 +245,13 @@ class UserPasswordTestStub extends User
 
 class NonUserPasswordTestStub extends Model
 {
+    use HasPassword;
+
+    protected $passwordAttribute = 'unicodepwd';
+
+    protected $passwordHashMethod = 'encode';
+
+
     protected function validateSecureConnection()
     {
         return true;

@@ -251,7 +251,6 @@ class NonUserPasswordTestStub extends Model
 
     protected $passwordHashMethod = 'encode';
 
-
     protected function validateSecureConnection()
     {
         return true;

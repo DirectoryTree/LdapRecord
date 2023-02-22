@@ -144,14 +144,10 @@ trait HasPassword
      */
     protected function setPassword($password, $attribute)
     {
-        $modtype = $this->exists
-            ? LDAP_MODIFY_BATCH_REPLACE
-            : LDAP_MODIFY_BATCH_ADD;
-
         $this->addModification(
             $this->newBatchModification(
                 $attribute,
-                $modtype,
+                LDAP_MODIFY_BATCH_REPLACE,
                 [$password]
             )
         );

@@ -75,7 +75,7 @@ class Guard
             $authenticated = true;
 
             $this->firePassedEvent($username, $password);
-        } catch (BindException $e) {
+        } catch (BindException) {
             $authenticated = false;
         }
 
@@ -107,7 +107,7 @@ class Guard
         }
 
         try {
-            if (! $this->connection->bind($username, $password)) {
+            if ($this->connection->bind($username, $password)->failed()) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 

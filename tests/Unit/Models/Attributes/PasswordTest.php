@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Models\Attributes;
+namespace LdapRecord\Tests\Unit\Models\Attributes;
 
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Tests\TestCase;
@@ -131,6 +131,14 @@ class PasswordTest extends TestCase
         $this->assertEquals(
             '{MD5}X03MO1qnZdYdgyfeuILPmQ==',
             Password::md5('password')
+        );
+    }
+
+    public function test_nthash()
+    {
+        $this->assertEquals(
+            '{NTHASH}8846F7EAEE8FB117AD06BDD830B7586C',
+            Password::nthash('password')
         );
     }
 

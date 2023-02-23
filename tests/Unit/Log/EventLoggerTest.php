@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Log;
+namespace LdapRecord\Tests\Unit\Log;
 
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;

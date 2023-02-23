@@ -8,6 +8,9 @@ use LdapRecord\Tests\Integration\Fixtures\Group;
 
 class GroupTest extends TestCase
 {
+    /** @var OrganizationalUnit */
+    protected $ou;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -79,5 +82,32 @@ class GroupTest extends TestCase
         $groupOne->members()->detach($groupTwo);
 
         $this->assertCount(0, $groupOne->members()->get());
+    }
+
+    public function test_it_can_detach_or_delete()
+    {
+        $groupOne = $this->createGroup(['cn' => 'Foo']);
+        $groupTwo = $this->createGroup(['cn' => 'Bar']);
+
+        $groupOne->members()->attach($groupTwo);
+
+        $this->assertTrue($groupOne->exists);
+
+        $groupOne->members()->detachOrDeleteParent($groupTwo);
+
+        $this->assertFalse($groupOne->exists);
+    }
+
+    public function test_it_can_detach_or_delete_with_multiple_groups()
+    {
+        $groupOne = $this->createGroup(['cn' => 'Foo']);
+        $groupTwo = $this->createGroup(['cn' => 'Bar']);
+        $groupThree = $this->createGroup(['cn' => 'Baz']);
+
+        $groupOne->members()->attachMany([$groupTwo, $groupThree]);
+
+        $groupOne->members()->detachOrDeleteParent($groupTwo);
+
+        $this->assertTrue($groupOne->exists);
     }
 }

@@ -150,6 +150,18 @@ class Password
     }
 
     /**
+     * Make a non-salted NThash password.
+     *
+     * @param string $password
+     *
+     * @return string
+     */
+    public static function nthash($password)
+    {
+        return '{NTHASH}'.strtoupper(hash('md4', iconv('UTF-8', 'UTF-16LE', $password)));
+    }
+
+    /**
      * Crypt password with an MD5 salt.
      *
      * @param string $password

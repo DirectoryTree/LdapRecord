@@ -13,6 +13,22 @@ class ConnectionTest extends TestCase
         $this->assertTrue($conn->isConnected());
     }
 
+    public function test_replicate()
+    {
+        $conn = $this->makeConnection();
+
+        $conn->connect();
+
+        $clone = $conn->replicate();
+
+        $this->assertTrue($conn->isConnected());
+        $this->assertFalse($clone->isConnected());
+
+        $clone->connect();
+
+        $this->assertTrue($clone->isConnected());
+    }
+
     public function test_disconnect()
     {
         $conn = $this->makeConnection();

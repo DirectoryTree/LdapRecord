@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests;
+namespace LdapRecord\Tests\Unit;
 
 use Carbon\Carbon;
 use LdapRecord\Auth\BindException;
@@ -84,6 +84,20 @@ class ConnectionTest extends TestCase
     public function test_connections_can_create_queries()
     {
         $this->assertInstanceOf(Builder::class, (new Connection())->query());
+    }
+
+    public function test_connections_can_be_replicated()
+    {
+        $conn = new Connection();
+
+        $replicate = $conn->replicate();
+
+        $this->assertInstanceOf(Connection::class, $replicate);
+
+        $this->assertFalse($conn === $replicate);
+
+        $this->assertTrue($conn->getConfiguration() === $replicate->getConfiguration());
+        $this->assertFalse($conn->getLdapConnection() === $replicate->getLdapConnection());
     }
 
     public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()

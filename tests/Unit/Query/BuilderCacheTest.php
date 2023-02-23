@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Unit\Tests\Query;
+namespace LdapRecord\Tests\Unit\Query;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;

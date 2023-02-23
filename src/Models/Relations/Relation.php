@@ -88,7 +88,7 @@ abstract class Relation
         $this->relationKey = $relationKey;
         $this->foreignKey = $foreignKey;
 
-        static::$modelResolver ??= function (array $modelObjectClasses, array $relationMap) {
+        static::$modelResolver = static::$modelResolver ?? function (array $modelObjectClasses, array $relationMap) {
             return array_search($modelObjectClasses, $relationMap);
         };
 
@@ -218,6 +218,22 @@ abstract class Relation
             ->clearFilters()
             ->withoutGlobalScopes()
             ->setModel($this->getNewDefaultModel());
+
+        return $this;
+    }
+
+    /**
+     * Set the underlying query for the relation.
+     *
+     * @param Builder $query
+     *
+     * @return $this
+     */
+    public function setQuery(Builder $query)
+    {
+        $this->query = $query;
+
+        $this->initRelation();
 
         return $this;
     }

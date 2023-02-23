@@ -64,7 +64,6 @@ trait HasEvents
      */
     protected function fireCustomModelEvent($name, array $args = [])
     {
-        /** @psalm-suppress UndefinedClass */
         $event = implode('\\', [Events::class, ucfirst($name)]);
 
         return $this->fireModelEvent(new $event($this, ...$args));

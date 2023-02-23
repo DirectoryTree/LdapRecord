@@ -18,7 +18,7 @@ trait CanAuthenticate
     /**
      * Get the unique identifier for the user.
      *
-     * @return mixed
+     * @return string
      */
     public function getAuthIdentifier()
     {

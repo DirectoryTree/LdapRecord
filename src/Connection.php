@@ -88,8 +88,8 @@ class Connection
     /**
      * Constructor.
      *
-     * @param array              $config
-     * @param LdapInterface|null $ldap
+     * @param array|DomainConfiguration $config
+     * @param LdapInterface|null        $ldap
      */
     public function __construct($config = [], LdapInterface $ldap = null)
     {
@@ -109,7 +109,7 @@ class Connection
     /**
      * Set the connection configuration.
      *
-     * @param array $config
+     * @param array|DomainConfiguration $config
      *
      * @return $this
      *
@@ -117,7 +117,11 @@ class Connection
      */
     public function setConfiguration($config = [])
     {
-        $this->configuration = new DomainConfiguration($config);
+        if (! $config instanceof DomainConfiguration) {
+            $config = new DomainConfiguration($config);
+        }
+
+        $this->configuration = $config;
 
         $this->hosts = $this->configuration->get('hosts');
 
@@ -299,6 +303,16 @@ class Connection
     }
 
     /**
+     * Clone the connection.
+     *
+     * @return static
+     */
+    public function replicate()
+    {
+        return new static($this->configuration, new $this->ldap);
+    }
+
+    /**
      * Disconnect from the LDAP server.
      *
      * @return void
@@ -356,6 +370,24 @@ class Connection
             }
 
             return $this->tryAgainIfCausedByLostConnection($e, $operation);
+        }
+    }
+
+    /**
+     * Perform the operation on an isolated LDAP connection.
+     *
+     * @param Closure $operation
+     *
+     * @return mixed
+     */
+    public function isolate(Closure $operation)
+    {
+        $connection = $this->replicate();
+
+        try {
+            return $operation($connection);
+        } finally {
+            $connection->disconnect();
         }
     }
 

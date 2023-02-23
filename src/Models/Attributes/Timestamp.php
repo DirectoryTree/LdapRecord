@@ -13,6 +13,8 @@ class Timestamp
     public const TYPE_LDAP = 'ldap';
     public const TYPE_WINDOWS = 'windows';
     public const TYPE_WINDOWS_INT = 'windows-int';
+    
+    public const WINDOWS_INT_MAX = 9223372036854775807;
 
     /**
      * The current timestamp type.
@@ -108,7 +110,7 @@ class Timestamp
      */
     protected function valueIsWindowsIntegerType($value)
     {
-        return is_numeric($value) && strlen((string) $value) === 18;
+        return is_numeric($value) && in_array(strlen((string) $value), [18, 19]);
     }
 
     /**
@@ -116,7 +118,7 @@ class Timestamp
      *
      * @param mixed $value
      *
-     * @return Carbon|false
+     * @return Carbon|int|false
      *
      * @throws LdapRecordException
      */
@@ -202,16 +204,22 @@ class Timestamp
      *
      * @param int $value
      *
-     * @return DateTime|false
+     * @return DateTime|int|false
      *
      * @throws \Exception
      */
     protected function convertWindowsIntegerTimeToDateTime($value)
     {
-        // ActiveDirectory dates that contain integers may return
-        // "0" when they are not set. We will validate that here.
-        if (! $value) {
+        if (is_null($value) || $value === '') {
             return false;
+        }
+
+        if ($value == 0) {
+            return (int) $value;
+        }
+
+        if ($value == static::WINDOWS_INT_MAX) {
+            return (int) $value;
         }
 
         return (new DateTime())->setTimestamp(

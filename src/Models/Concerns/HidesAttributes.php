@@ -40,8 +40,7 @@ trait HidesAttributes
     /**
      * Set the hidden attributes for the model.
      *
-     * @param array $hidden
-     *
+     * @param  array  $hidden
      * @return $this
      */
     public function setHidden(array $hidden)
@@ -54,8 +53,7 @@ trait HidesAttributes
     /**
      * Add hidden attributes for the model.
      *
-     * @param array|string|null $attributes
-     *
+     * @param  array|string|null  $attributes
      * @return void
      */
     public function addHidden($attributes = null)
@@ -81,8 +79,7 @@ trait HidesAttributes
     /**
      * Set the visible attributes for the model.
      *
-     * @param array $visible
-     *
+     * @param  array  $visible
      * @return $this
      */
     public function setVisible(array $visible)
@@ -95,8 +92,7 @@ trait HidesAttributes
     /**
      * Add visible attributes for the model.
      *
-     * @param array|string|null $attributes
-     *
+     * @param  array|string|null  $attributes
      * @return void
      */
     public function addVisible($attributes = null)
@@ -110,8 +106,7 @@ trait HidesAttributes
     /**
      * Make the given, typically hidden, attributes visible.
      *
-     * @param array|string $attributes
-     *
+     * @param  array|string  $attributes
      * @return $this
      */
     public function makeVisible($attributes)
@@ -128,8 +123,7 @@ trait HidesAttributes
     /**
      * Make the given, typically visible, attributes hidden.
      *
-     * @param array|string $attributes
-     *
+     * @param  array|string  $attributes
      * @return $this
      */
     public function makeHidden($attributes)

@@ -143,7 +143,7 @@ class Builder
     /**
      * Constructor.
      *
-     * @param Connection $connection
+     * @param  Connection  $connection
      */
     public function __construct(Connection $connection)
     {
@@ -154,8 +154,7 @@ class Builder
     /**
      * Set the current connection.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return $this
      */
     public function setConnection(Connection $connection)
@@ -168,8 +167,7 @@ class Builder
     /**
      * Set the current filter grammar.
      *
-     * @param Grammar $grammar
-     *
+     * @param  Grammar  $grammar
      * @return $this
      */
     public function setGrammar(Grammar $grammar)
@@ -182,8 +180,7 @@ class Builder
     /**
      * Set the cache to store query results.
      *
-     * @param Cache|null $cache
-     *
+     * @param  Cache|null  $cache
      * @return $this
      */
     public function setCache(Cache $cache = null)
@@ -196,8 +193,7 @@ class Builder
     /**
      * Returns a new Query Builder instance.
      *
-     * @param string $baseDn
-     *
+     * @param  string  $baseDn
      * @return $this
      */
     public function newInstance($baseDn = null)
@@ -212,8 +208,7 @@ class Builder
     /**
      * Returns a new nested Query Builder instance.
      *
-     * @param Closure|null $closure
-     *
+     * @param  Closure|null  $closure
      * @return $this
      */
     public function newNestedInstance(Closure $closure = null)
@@ -230,8 +225,7 @@ class Builder
     /**
      * Executes the LDAP query.
      *
-     * @param string|array $columns
-     *
+     * @param  string|array  $columns
      * @return Collection|array
      */
     public function get($columns = ['*'])
@@ -246,9 +240,8 @@ class Builder
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param array   $columns
-     * @param Closure $callback
-     *
+     * @param  array  $columns
+     * @param  Closure  $callback
      * @return mixed
      */
     protected function onceWithColumns($columns, Closure $callback)
@@ -335,8 +328,7 @@ class Builder
     /**
      * Set the base distinguished name of the query.
      *
-     * @param Model|string $dn
-     *
+     * @param  Model|string  $dn
      * @return $this
      */
     public function setBaseDn($dn)
@@ -369,8 +361,7 @@ class Builder
     /**
      * Set the distinguished name for the query.
      *
-     * @param string|Model|null $dn
-     *
+     * @param  string|Model|null  $dn
      * @return $this
      */
     public function setDn($dn = null)
@@ -383,8 +374,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      *
-     * @param Model|string $dn
-     *
+     * @param  Model|string  $dn
      * @return string
      */
     protected function substituteBaseInDn($dn)
@@ -399,8 +389,7 @@ class Builder
     /**
      * Alias for setting the distinguished name for the query.
      *
-     * @param string|Model|null $dn
-     *
+     * @param  string|Model|null  $dn
      * @return $this
      */
     public function in($dn = null)
@@ -411,8 +400,7 @@ class Builder
     /**
      * Set the size limit of the current query.
      *
-     * @param int $limit
-     *
+     * @param  int  $limit
      * @return $this
      */
     public function limit($limit = 0)
@@ -425,8 +413,7 @@ class Builder
     /**
      * Returns a new query for the given model.
      *
-     * @param Model $model
-     *
+     * @param  Model  $model
      * @return ModelBuilder
      */
     public function model(Model $model)
@@ -440,8 +427,7 @@ class Builder
     /**
      * Performs the specified query on the current LDAP connection.
      *
-     * @param string $query
-     *
+     * @param  string  $query
      * @return Collection|array
      */
     public function query($query)
@@ -465,9 +451,8 @@ class Builder
     /**
      * Paginates the current LDAP query.
      *
-     * @param int  $pageSize
-     * @param bool $isCritical
-     *
+     * @param  int  $pageSize
+     * @param  bool  $isCritical
      * @return Collection|array
      */
     public function paginate($pageSize = 1000, $isCritical = false)
@@ -495,10 +480,9 @@ class Builder
     /**
      * Runs the paginate operation with the given filter.
      *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
+     * @param  string  $filter
+     * @param  int  $perPage
+     * @param  bool  $isCritical
      * @return array
      */
     protected function runPaginate($filter, $perPage, $isCritical)
@@ -511,11 +495,10 @@ class Builder
     /**
      * Execute a callback over each item while chunking.
      *
-     * @param Closure $callback
-     * @param int     $pageSize
-     * @param bool    $isCritical
-     * @param bool    $isolate
-     *
+     * @param  Closure  $callback
+     * @param  int  $pageSize
+     * @param  bool  $isCritical
+     * @param  bool  $isolate
      * @return bool
      */
     public function each(Closure $callback, $pageSize = 1000, $isCritical = false, $isolate = false)
@@ -532,11 +515,10 @@ class Builder
     /**
      * Chunk the results of a paginated LDAP query.
      *
-     * @param int     $pageSize
-     * @param Closure $callback
-     * @param bool    $isCritical
-     * @param bool    $isolate
-     *
+     * @param  int  $pageSize
+     * @param  Closure  $callback
+     * @param  bool  $isCritical
+     * @param  bool  $isolate
      * @return bool
      */
     public function chunk($pageSize, Closure $callback, $isCritical = false, $isolate = false)
@@ -567,10 +549,9 @@ class Builder
     /**
      * Runs the chunk operation with the given filter.
      *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
+     * @param  string  $filter
+     * @param  int  $perPage
+     * @param  bool  $isCritical
      * @return \Generator
      */
     protected function runChunk($filter, $perPage, $isCritical)
@@ -583,11 +564,10 @@ class Builder
     /**
      * Create a slice of the LDAP query into a page.
      *
-     * @param int    $page
-     * @param int    $perPage
-     * @param string $orderBy
-     * @param string $orderByDir
-     *
+     * @param  int  $page
+     * @param  int  $perPage
+     * @param  string  $orderBy
+     * @param  string  $orderByDir
      * @return Slice
      */
     public function slice($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
@@ -610,11 +590,10 @@ class Builder
     /**
      * Get the results of a query for a given page.
      *
-     * @param int    $page
-     * @param int    $perPage
-     * @param string $orderBy
-     * @param string $orderByDir
-     *
+     * @param  int  $page
+     * @param  int  $perPage
+     * @param  string  $orderBy
+     * @param  string  $orderByDir
      * @return Collection|array
      */
     public function forPage($page = 1, $perPage = 100, $orderBy = 'cn', $orderByDir = 'asc')
@@ -636,8 +615,7 @@ class Builder
     /**
      * Processes and converts the given LDAP results into models.
      *
-     * @param array $results
-     *
+     * @param  array  $results
      * @return array
      */
     protected function process(array $results)
@@ -654,8 +632,7 @@ class Builder
     /**
      * Flattens LDAP paged results into a single array.
      *
-     * @param array $pages
-     *
+     * @param  array  $pages
      * @return array
      */
     protected function flattenPages(array $pages)
@@ -674,9 +651,8 @@ class Builder
     /**
      * Get the cached response or execute and cache the callback value.
      *
-     * @param string  $query
-     * @param Closure $callback
-     *
+     * @param  string  $query
+     * @param  Closure  $callback
      * @return mixed
      */
     protected function getCachedResponse($query, Closure $callback)
@@ -697,8 +673,7 @@ class Builder
     /**
      * Runs the query operation with the given filter.
      *
-     * @param string $filter
-     *
+     * @param  string  $filter
      * @return resource
      */
     public function run($filter)
@@ -727,8 +702,7 @@ class Builder
     /**
      * Parses the given LDAP resource by retrieving its entries.
      *
-     * @param resource $resource
-     *
+     * @param  resource  $resource
      * @return array
      */
     public function parse($resource)
@@ -767,8 +741,7 @@ class Builder
     /**
      * Returns the cache key.
      *
-     * @param string $query
-     *
+     * @param  string  $query
      * @return string
      */
     protected function getCacheKey($query)
@@ -789,8 +762,7 @@ class Builder
     /**
      * Returns the first entry in a search result.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return Model|null
      */
     public function first($columns = ['*'])
@@ -805,8 +777,7 @@ class Builder
      *
      * If no entry is found, an exception is thrown.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return Model|array
      *
      * @throws ObjectNotFoundException
@@ -823,8 +794,7 @@ class Builder
     /**
      * Return the first entry in a result, or execute the callback.
      *
-     * @param Closure $callback
-     *
+     * @param  Closure  $callback
      * @return Model|mixed
      */
     public function firstOr(Closure $callback)
@@ -835,8 +805,7 @@ class Builder
     /**
      * Execute the query and get the first result if it's the sole matching record.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return Model|array
      *
      * @throws ObjectsNotFoundException
@@ -880,8 +849,7 @@ class Builder
     /**
      * Execute the given callback if no rows exist for the current query.
      *
-     * @param Closure $callback
-     *
+     * @param  Closure  $callback
      * @return bool|mixed
      */
     public function existsOr(Closure $callback)
@@ -892,8 +860,8 @@ class Builder
     /**
      * Throws a not found exception.
      *
-     * @param string $query
-     * @param string $dn
+     * @param  string  $query
+     * @param  string  $dn
      *
      * @throws ObjectNotFoundException
      */
@@ -905,10 +873,9 @@ class Builder
     /**
      * Finds a record by the specified attribute and value.
      *
-     * @param string       $attribute
-     * @param string       $value
-     * @param array|string $columns
-     *
+     * @param  string  $attribute
+     * @param  string  $value
+     * @param  array|string  $columns
      * @return Model|static|null
      */
     public function findBy($attribute, $value, $columns = ['*'])
@@ -925,10 +892,9 @@ class Builder
      *
      * If no record is found an exception is thrown.
      *
-     * @param string       $attribute
-     * @param string       $value
-     * @param array|string $columns
-     *
+     * @param  string  $attribute
+     * @param  string  $value
+     * @param  array|string  $columns
      * @return Model
      *
      * @throws ObjectNotFoundException
@@ -941,9 +907,8 @@ class Builder
     /**
      * Find many records by distinguished name.
      *
-     * @param string|array $dns
-     * @param array        $columns
-     *
+     * @param  string|array  $dns
+     * @param  array  $columns
      * @return array|Collection
      */
     public function findMany($dns, $columns = ['*'])
@@ -966,10 +931,9 @@ class Builder
     /**
      * Finds many records by the specified attribute.
      *
-     * @param string $attribute
-     * @param array  $values
-     * @param array  $columns
-     *
+     * @param  string  $attribute
+     * @param  array  $values
+     * @param  array  $columns
      * @return Collection
      */
     public function findManyBy($attribute, array $values = [], $columns = ['*'])
@@ -986,9 +950,8 @@ class Builder
     /**
      * Finds a record by its distinguished name.
      *
-     * @param string|array $dn
-     * @param array|string $columns
-     *
+     * @param  string|array  $dn
+     * @param  array|string  $columns
      * @return Model|static|array|Collection|null
      */
     public function find($dn, $columns = ['*'])
@@ -1009,9 +972,8 @@ class Builder
      *
      * Fails upon no records returned.
      *
-     * @param string       $dn
-     * @param array|string $columns
-     *
+     * @param  string  $dn
+     * @param  array|string  $columns
      * @return Model|static
      *
      * @throws ObjectNotFoundException
@@ -1027,8 +989,7 @@ class Builder
     /**
      * Adds the inserted fields to query on the current LDAP connection.
      *
-     * @param array|string $columns
-     *
+     * @param  array|string  $columns
      * @return $this
      */
     public function select($columns = ['*'])
@@ -1045,8 +1006,7 @@ class Builder
     /**
      * Add a new select column to the query.
      *
-     * @param array|mixed $column
-     *
+     * @param  array|mixed  $column
      * @return $this
      */
     public function addSelect($column)
@@ -1061,9 +1021,8 @@ class Builder
     /**
      * Add an order by control to the query.
      *
-     * @param string $attribute
-     * @param string $direction
-     *
+     * @param  string  $attribute
+     * @param  string  $direction
      * @return $this
      */
     public function orderBy($attribute, $direction = 'asc')
@@ -1076,8 +1035,7 @@ class Builder
     /**
      * Add an order by descending control to the query.
      *
-     * @param string $attribute
-     *
+     * @param  string  $attribute
      * @return $this
      */
     public function orderByDesc($attribute)
@@ -1098,8 +1056,7 @@ class Builder
     /**
      * Adds a raw filter to the current query.
      *
-     * @param array|string $filters
-     *
+     * @param  array|string  $filters
      * @return $this
      */
     public function rawFilter($filters = [])
@@ -1116,8 +1073,7 @@ class Builder
     /**
      * Adds a nested 'and' filter to the current query.
      *
-     * @param Closure $closure
-     *
+     * @param  Closure  $closure
      * @return $this
      */
     public function andFilter(Closure $closure)
@@ -1132,8 +1088,7 @@ class Builder
     /**
      * Adds a nested 'or' filter to the current query.
      *
-     * @param Closure $closure
-     *
+     * @param  Closure  $closure
      * @return $this
      */
     public function orFilter(Closure $closure)
@@ -1148,8 +1103,7 @@ class Builder
     /**
      * Adds a nested 'not' filter to the current query.
      *
-     * @param Closure $closure
-     *
+     * @param  Closure  $closure
      * @return $this
      */
     public function notFilter(Closure $closure)
@@ -1164,12 +1118,11 @@ class Builder
     /**
      * Adds a where clause to the current query.
      *
-     * @param string|array $field
-     * @param string       $operator
-     * @param string       $value
-     * @param string       $boolean
-     * @param bool         $raw
-     *
+     * @param  string|array  $field
+     * @param  string  $operator
+     * @param  string  $value
+     * @param  string  $boolean
+     * @param  bool  $raw
      * @return $this
      *
      * @throws InvalidArgumentException
@@ -1207,10 +1160,9 @@ class Builder
     /**
      * Prepare the value for being queried.
      *
-     * @param string $field
-     * @param string $value
-     * @param bool   $raw
-     *
+     * @param  string  $field
+     * @param  string  $value
+     * @param  bool  $raw
      * @return string
      */
     protected function prepareWhereValue($field, $value, $raw = false)
@@ -1223,10 +1175,9 @@ class Builder
      *
      * Values given to this method are not escaped.
      *
-     * @param string|array $field
-     * @param string       $operator
-     * @param string       $value
-     *
+     * @param  string|array  $field
+     * @param  string  $operator
+     * @param  string  $value
      * @return $this
      */
     public function whereRaw($field, $operator = null, $value = null)
@@ -1237,9 +1188,8 @@ class Builder
     /**
      * Adds a 'where equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereEquals($field, $value)
@@ -1250,9 +1200,8 @@ class Builder
     /**
      * Adds a 'where not equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereNotEquals($field, $value)
@@ -1263,9 +1212,8 @@ class Builder
     /**
      * Adds a 'where approximately equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereApproximatelyEquals($field, $value)
@@ -1276,8 +1224,7 @@ class Builder
     /**
      * Adds a 'where has' clause to the current query.
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return $this
      */
     public function whereHas($field)
@@ -1288,8 +1235,7 @@ class Builder
     /**
      * Adds a 'where not has' clause to the current query.
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return $this
      */
     public function whereNotHas($field)
@@ -1300,9 +1246,8 @@ class Builder
     /**
      * Adds a 'where contains' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereContains($field, $value)
@@ -1313,9 +1258,8 @@ class Builder
     /**
      * Adds a 'where contains' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereNotContains($field, $value)
@@ -1326,9 +1270,8 @@ class Builder
     /**
      * Query for entries that match any of the values provided for the given field.
      *
-     * @param string $field
-     * @param array  $values
-     *
+     * @param  string  $field
+     * @param  array  $values
      * @return $this
      */
     public function whereIn($field, array $values)
@@ -1343,9 +1286,8 @@ class Builder
     /**
      * Adds a 'between' clause to the current query.
      *
-     * @param string $field
-     * @param array  $values
-     *
+     * @param  string  $field
+     * @param  array  $values
      * @return $this
      */
     public function whereBetween($field, array $values)
@@ -1359,9 +1301,8 @@ class Builder
     /**
      * Adds a 'where starts with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereStartsWith($field, $value)
@@ -1372,9 +1313,8 @@ class Builder
     /**
      * Adds a 'where *not* starts with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereNotStartsWith($field, $value)
@@ -1385,9 +1325,8 @@ class Builder
     /**
      * Adds a 'where ends with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereEndsWith($field, $value)
@@ -1398,9 +1337,8 @@ class Builder
     /**
      * Adds a 'where *not* ends with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function whereNotEndsWith($field, $value)
@@ -1431,10 +1369,9 @@ class Builder
     /**
      * Add a server control to the query.
      *
-     * @param string $oid
-     * @param bool   $isCritical
-     * @param mixed  $value
-     *
+     * @param  string  $oid
+     * @param  bool  $isCritical
+     * @param  mixed  $value
      * @return $this
      */
     public function addControl($oid, $isCritical = false, $value = null)
@@ -1447,8 +1384,7 @@ class Builder
     /**
      * Determine if the server control exists on the query.
      *
-     * @param string $oid
-     *
+     * @param  string  $oid
      * @return bool
      */
     public function hasControl($oid)
@@ -1459,10 +1395,9 @@ class Builder
     /**
      * Adds an 'or where' clause to the current query.
      *
-     * @param array|string $field
-     * @param string|null  $operator
-     * @param string|null  $value
-     *
+     * @param  array|string  $field
+     * @param  string|null  $operator
+     * @param  string|null  $value
      * @return $this
      */
     public function orWhere($field, $operator = null, $value = null)
@@ -1475,10 +1410,9 @@ class Builder
      *
      * Values given to this method are not escaped.
      *
-     * @param string $field
-     * @param string $operator
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $operator
+     * @param  string  $value
      * @return $this
      */
     public function orWhereRaw($field, $operator = null, $value = null)
@@ -1489,8 +1423,7 @@ class Builder
     /**
      * Adds an 'or where has' clause to the current query.
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return $this
      */
     public function orWhereHas($field)
@@ -1501,8 +1434,7 @@ class Builder
     /**
      * Adds a 'where not has' clause to the current query.
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return $this
      */
     public function orWhereNotHas($field)
@@ -1513,9 +1445,8 @@ class Builder
     /**
      * Adds an 'or where equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereEquals($field, $value)
@@ -1526,9 +1457,8 @@ class Builder
     /**
      * Adds an 'or where not equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereNotEquals($field, $value)
@@ -1539,9 +1469,8 @@ class Builder
     /**
      * Adds a 'or where approximately equals' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereApproximatelyEquals($field, $value)
@@ -1552,9 +1481,8 @@ class Builder
     /**
      * Adds an 'or where contains' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereContains($field, $value)
@@ -1565,9 +1493,8 @@ class Builder
     /**
      * Adds an 'or where *not* contains' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereNotContains($field, $value)
@@ -1578,9 +1505,8 @@ class Builder
     /**
      * Adds an 'or where starts with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereStartsWith($field, $value)
@@ -1591,9 +1517,8 @@ class Builder
     /**
      * Adds an 'or where *not* starts with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereNotStartsWith($field, $value)
@@ -1604,9 +1529,8 @@ class Builder
     /**
      * Adds an 'or where ends with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereEndsWith($field, $value)
@@ -1617,9 +1541,8 @@ class Builder
     /**
      * Adds an 'or where *not* ends with' clause to the current query.
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
     public function orWhereNotEndsWith($field, $value)
@@ -1630,9 +1553,8 @@ class Builder
     /**
      * Adds a filter binding onto the current query.
      *
-     * @param string $type     The type of filter to add.
-     * @param array  $bindings The bindings of the filter.
-     *
+     * @param  string  $type  The type of filter to add.
+     * @param  array  $bindings  The bindings of the filter.
      * @return $this
      *
      * @throws InvalidArgumentException
@@ -1660,8 +1582,7 @@ class Builder
     /**
      * Extract any missing required binding keys.
      *
-     * @param array $bindings
-     *
+     * @param  array  $bindings
      * @return array
      */
     protected function missingBindingKeys($bindings)
@@ -1773,8 +1694,7 @@ class Builder
     /**
      * Whether to mark the current query as nested.
      *
-     * @param bool $nested
-     *
+     * @param  bool  $nested
      * @return $this
      */
     public function nested($nested = true)
@@ -1789,9 +1709,8 @@ class Builder
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      *
-     * @param DateTimeInterface $until When to expire the query cache.
-     * @param bool              $flush Whether to force-flush the query cache.
-     *
+     * @param  DateTimeInterface  $until  When to expire the query cache.
+     * @param  bool  $flush  Whether to force-flush the query cache.
      * @return $this
      */
     public function cache(DateTimeInterface $until = null, $flush = false)
@@ -1826,9 +1745,8 @@ class Builder
     /**
      * Insert an entry into the directory.
      *
-     * @param string $dn
-     * @param array  $attributes
-     *
+     * @param  string  $dn
+     * @param  array  $attributes
      * @return bool
      *
      * @throws LdapRecordException
@@ -1853,9 +1771,8 @@ class Builder
     /**
      * Create attributes on the entry in the directory.
      *
-     * @param string $dn
-     * @param array  $attributes
-     *
+     * @param  string  $dn
+     * @param  array  $attributes
      * @return bool
      */
     public function insertAttributes($dn, array $attributes)
@@ -1868,9 +1785,8 @@ class Builder
     /**
      * Update the entry with the given modifications.
      *
-     * @param string $dn
-     * @param array  $modifications
-     *
+     * @param  string  $dn
+     * @param  array  $modifications
      * @return bool
      */
     public function update($dn, array $modifications)
@@ -1883,9 +1799,8 @@ class Builder
     /**
      * Update an entries attribute in the directory.
      *
-     * @param string $dn
-     * @param array  $attributes
-     *
+     * @param  string  $dn
+     * @param  array  $attributes
      * @return bool
      */
     public function updateAttributes($dn, array $attributes)
@@ -1898,8 +1813,7 @@ class Builder
     /**
      * Delete an entry from the directory.
      *
-     * @param string $dn
-     *
+     * @param  string  $dn
      * @return bool
      */
     public function delete($dn)
@@ -1912,9 +1826,8 @@ class Builder
     /**
      * Delete attributes on the entry in the directory.
      *
-     * @param string $dn
-     * @param array  $attributes
-     *
+     * @param  string  $dn
+     * @param  array  $attributes
      * @return bool
      */
     public function deleteAttributes($dn, array $attributes)
@@ -1927,11 +1840,10 @@ class Builder
     /**
      * Rename an entry in the directory.
      *
-     * @param string $dn
-     * @param string $rdn
-     * @param string $newParentDn
-     * @param bool   $deleteOldRdn
-     *
+     * @param  string  $dn
+     * @param  string  $rdn
+     * @param  string  $newParentDn
+     * @param  bool  $deleteOldRdn
      * @return bool
      */
     public function rename($dn, $rdn, $newParentDn, $deleteOldRdn = true)
@@ -1954,9 +1866,8 @@ class Builder
     /**
      * Handle dynamic method calls on the query builder.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      *
      * @throws BadMethodCallException
@@ -1980,9 +1891,8 @@ class Builder
     /**
      * Handles dynamic "where" clauses to the query.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
+     * @param  string  $method
+     * @param  array  $parameters
      * @return $this
      */
     public function dynamicWhere($method, $parameters)
@@ -2022,10 +1932,9 @@ class Builder
     /**
      * Adds an array of wheres to the current query.
      *
-     * @param array  $wheres
-     * @param string $boolean
-     * @param bool   $raw
-     *
+     * @param  array  $wheres
+     * @param  string  $boolean
+     * @param  bool  $raw
      * @return $this
      */
     protected function addArrayOfWheres($wheres, $boolean, $raw)
@@ -2054,11 +1963,10 @@ class Builder
     /**
      * Add a single dynamic where clause statement to the query.
      *
-     * @param string $segment
-     * @param string $connector
-     * @param array  $parameters
-     * @param int    $index
-     *
+     * @param  string  $segment
+     * @param  string  $connector
+     * @param  array  $parameters
+     * @param  int  $index
      * @return void
      */
     protected function addDynamic($segment, $connector, $parameters, $index)
@@ -2075,10 +1983,9 @@ class Builder
     /**
      * Logs the given executed query information by firing its query event.
      *
-     * @param Builder    $query
-     * @param string     $type
-     * @param null|float $time
-     *
+     * @param  Builder  $query
+     * @param  string  $type
+     * @param  null|float  $time
      * @return void
      */
     protected function logQuery($query, $type, $time = null)
@@ -2099,8 +2006,7 @@ class Builder
     /**
      * Fires the given query event.
      *
-     * @param QueryExecuted $event
-     *
+     * @param  QueryExecuted  $event
      * @return void
      */
     protected function fireQueryEvent(QueryExecuted $event)
@@ -2111,8 +2017,7 @@ class Builder
     /**
      * Get the elapsed time since a given starting point.
      *
-     * @param int $start
-     *
+     * @param  int  $start
      * @return float
      */
     protected function getElapsedTime($start)

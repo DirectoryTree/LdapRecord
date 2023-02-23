@@ -6,6 +6,7 @@ use Closure;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
@@ -15,7 +16,6 @@ use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
-use LdapRecord\LdapResultResponse;
 
 class ModelQueryTest extends TestCase
 {

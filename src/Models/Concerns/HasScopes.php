@@ -12,7 +12,7 @@ trait HasScopes
      */
     public function descendants()
     {
-        return $this->in($this->getDn())->listing();
+        return $this->in($this->getDn())->list();
     }
 
     /**
@@ -24,7 +24,7 @@ trait HasScopes
     {
         $parent = $this->getParentDn($this->getDn());
 
-        return $this->in($this->getParentDn($parent))->listing();
+        return $this->in($this->getParentDn($parent))->list();
     }
 
     /**
@@ -34,6 +34,6 @@ trait HasScopes
      */
     public function siblings()
     {
-        return $this->in($this->getParentDn($this->getDn()))->listing();
+        return $this->in($this->getParentDn($this->getDn()))->list();
     }
 }

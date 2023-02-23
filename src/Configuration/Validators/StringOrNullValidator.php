@@ -6,8 +6,6 @@ class StringOrNullValidator extends Validator
 {
     /**
      * The validation exception message.
-     *
-     * @var string
      */
     protected string $message = 'Option [:option] must be a string or null.';
 

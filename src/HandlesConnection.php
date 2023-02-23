@@ -174,7 +174,7 @@ trait HandlesConnection
             }
 
             // If the failed query operation was a based on a query being executed
-            // -- such as a search, read, or listing, then we can safely return
+            // -- such as a search, read, or list, then we can safely return
             // the failed response here and prevent throwing an exception.
             if ($this->shouldBypassFailure($method = debug_backtrace()[1]['function'])) {
                 return $result;
@@ -197,7 +197,7 @@ trait HandlesConnection
      */
     protected function shouldBypassFailure($method)
     {
-        return in_array($method, ['search', 'read', 'listing']);
+        return in_array($method, ['search', 'read', 'list']);
     }
 
     /**

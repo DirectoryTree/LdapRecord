@@ -1751,9 +1751,9 @@ class Builder
      *
      * @return $this
      */
-    public function listing()
+    public function list()
     {
-        $this->type = 'listing';
+        $this->type = 'list';
 
         return $this;
     }

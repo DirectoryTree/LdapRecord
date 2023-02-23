@@ -67,7 +67,7 @@ class GuardTest extends TestCase
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
-        $this->assertNull($guard->bind(null, null));
+        $this->assertNull($guard->bind());
     }
 
     public function test_bind_always_throws_exception_on_invalid_credentials()

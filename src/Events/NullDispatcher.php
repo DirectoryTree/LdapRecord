@@ -6,10 +6,8 @@ class NullDispatcher implements DispatcherInterface
 {
     /**
      * The underlying dispatcher instance.
-     *
-     * @var DispatcherInterface
      */
-    protected $dispatcher;
+    protected DispatcherInterface $dispatcher;
 
     /**
      * Constructor.
@@ -25,7 +23,7 @@ class NullDispatcher implements DispatcherInterface
      * @param  string|array  $events
      * @return void
      */
-    public function listen($events, $listener)
+    public function listen(string|array $events, mixed $listener): void
     {
         $this->dispatcher->listen($events, $listener);
     }
@@ -36,9 +34,9 @@ class NullDispatcher implements DispatcherInterface
      * @param  string  $eventName
      * @return bool
      */
-    public function hasListeners($eventName)
+    public function hasListeners(string $event): bool
     {
-        return $this->dispatcher->hasListeners($eventName);
+        return $this->dispatcher->hasListeners($event);
     }
 
     /**
@@ -47,7 +45,7 @@ class NullDispatcher implements DispatcherInterface
      * @param  string|object  $event
      * @return null
      */
-    public function until($event, $payload = [])
+    public function until(string|object $event, mixed $payload = []): ?array
     {
         return null;
     }
@@ -59,19 +57,14 @@ class NullDispatcher implements DispatcherInterface
      * @param  bool  $halt
      * @return null
      */
-    public function fire($event, $payload = [], $halt = false)
+    public function fire(string|object $event, mixed $payload = [], bool $halt = false): void
     {
-        return null;
     }
 
     /**
      * Fire an event and call the listeners.
-     *
-     * @param  string|object  $event
-     * @param  bool  $halt
-     * @return null
      */
-    public function dispatch($event, $payload = [], $halt = false)
+    public function dispatch(string|object $event, mixed $payload = [], $halt = false): mixed
     {
         return null;
     }
@@ -79,12 +72,12 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Get all of the listeners for a given event name.
      *
-     * @param  string  $eventName
+     * @param  string  $event
      * @return array
      */
-    public function getListeners($eventName)
+    public function getListeners(string $event): array
     {
-        return $this->dispatcher->getListeners($eventName);
+        return $this->dispatcher->getListeners($event);
     }
 
     /**
@@ -93,7 +86,7 @@ class NullDispatcher implements DispatcherInterface
      * @param  string  $event
      * @return void
      */
-    public function forget($event)
+    public function forget(string $event): void
     {
         $this->dispatcher->forget($event);
     }

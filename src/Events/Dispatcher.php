@@ -3,6 +3,7 @@
 namespace LdapRecord\Events;
 
 use LdapRecord\Support\Arr;
+use LdapRecord\Support\Str;
 
 /**
  * Class Dispatcher.
@@ -21,29 +22,23 @@ class Dispatcher implements DispatcherInterface
 {
     /**
      * The registered event listeners.
-     *
-     * @var array
      */
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * The wildcard listeners.
-     *
-     * @var array
      */
-    protected $wildcards = [];
+    protected array $wildcards = [];
 
     /**
      * The cached wildcard listeners.
-     *
-     * @var array
      */
-    protected $wildcardsCache = [];
+    protected array $wildcardsCache = [];
 
     /**
      * @inheritdoc
      */
-    public function listen($events, $listener)
+    public function listen(string|array $events, mixed $listener): void
     {
         foreach ((array) $events as $event) {
             if (str_contains((string) $event, '*')) {
@@ -56,11 +51,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Setup a wildcard listener callback.
-     *
-     * @param  string  $event
-     * @return void
      */
-    protected function setupWildcardListen($event, $listener)
+    protected function setupWildcardListen(string $event, mixed $listener): void
     {
         $this->wildcards[$event][] = $this->makeListener($listener, true);
 
@@ -70,7 +62,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * @inheritdoc
      */
-    public function hasListeners($eventName)
+    public function hasListeners(string $eventName): bool
     {
         return isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]);
     }
@@ -78,7 +70,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * @inheritdoc
      */
-    public function until($event, $payload = [])
+    public function until(string|object $event, mixed $payload = []): mixed
     {
         return $this->dispatch($event, $payload, true);
     }
@@ -86,15 +78,15 @@ class Dispatcher implements DispatcherInterface
     /**
      * @inheritdoc
      */
-    public function fire($event, $payload = [], $halt = false)
+    public function fire(string|object $event, mixed $payload = [], bool $halt = false): void
     {
-        return $this->dispatch($event, $payload, $halt);
+        $this->dispatch($event, $payload, $halt);
     }
 
     /**
      * @inheritdoc
      */
-    public function dispatch($event, $payload = [], $halt = false)
+    public function dispatch(string|object $event, mixed $payload = [], $halt = false): mixed
     {
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
@@ -131,10 +123,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Parse the given event and payload and prepare them for dispatching.
-     *
-     * @return array
      */
-    protected function parseEventAndPayload($event, $payload)
+    protected function parseEventAndPayload(string|object $event, mixed $payload): array
     {
         if (is_object($event)) {
             [$payload, $event] = [[$event], get_class($event)];
@@ -146,77 +136,34 @@ class Dispatcher implements DispatcherInterface
     /**
      * @inheritdoc
      */
-    public function getListeners($eventName)
+    public function getListeners(string $event): array
     {
-        $listeners = $this->listeners[$eventName] ?? [];
+        $listeners = $this->listeners[$event] ?? [];
 
         $listeners = array_merge(
             $listeners,
-            $this->wildcardsCache[$eventName] ?? $this->getWildcardListeners($eventName)
+            $this->wildcardsCache[$event] ?? $this->getWildcardListeners($event)
         );
 
-        return class_exists($eventName, false)
-            ? $this->addInterfaceListeners($eventName, $listeners)
+        return class_exists($event, false)
+            ? $this->addInterfaceListeners($event, $listeners)
             : $listeners;
     }
 
     /**
      * Get the wildcard listeners for the event.
-     *
-     * @param  string  $eventName
-     * @return array
      */
-    protected function getWildcardListeners($eventName)
+    protected function getWildcardListeners(string $event): array
     {
         $wildcards = [];
 
         foreach ($this->wildcards as $key => $listeners) {
-            if ($this->wildcardContainsEvent($key, $eventName)) {
+            if (Str::is($key, $event)) {
                 $wildcards = array_merge($wildcards, $listeners);
             }
         }
 
-        return $this->wildcardsCache[$eventName] = $wildcards;
-    }
-
-    /**
-     * Determine if the wildcard matches or contains the given event.
-     *
-     * This function is a direct excerpt from Laravel's Str::is().
-     *
-     * @param  string  $wildcard
-     * @param  string  $eventName
-     * @return bool
-     */
-    protected function wildcardContainsEvent($wildcard, $eventName)
-    {
-        $patterns = Arr::wrap($wildcard);
-
-        if (empty($patterns)) {
-            return false;
-        }
-
-        foreach ($patterns as $pattern) {
-            // If the given event is an exact match we can of course return true right
-            // from the beginning. Otherwise, we will translate asterisks and do an
-            // actual pattern match against the two strings to see if they match.
-            if ($pattern == $eventName) {
-                return true;
-            }
-
-            $pattern = preg_quote($pattern, '#');
-
-            // Asterisks are translated into zero-or-more regular expression wildcards
-            // to make it convenient to check if the strings starts with the given
-            // pattern such as "library/*", making any string check convenient.
-            $pattern = str_replace('\*', '.*', $pattern);
-
-            if (preg_match('#^'.$pattern.'\z#u', $eventName) === 1) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->wildcardsCache[$event] = $wildcards;
     }
 
     /**
@@ -310,7 +257,7 @@ class Dispatcher implements DispatcherInterface
     /**
      * @inheritdoc
      */
-    public function forget($event)
+    public function forget(string $event): void
     {
         if (str_contains((string) $event, '*')) {
             unset($this->wildcards[$event]);

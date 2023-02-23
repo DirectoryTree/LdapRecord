@@ -9,12 +9,12 @@ class IntegerValidator extends Validator
      *
      * @var string
      */
-    protected $message = 'Option [:option] must be an integer.';
+    protected string $message = 'Option [:option] must be an integer.';
 
     /**
      * @inheritdoc
      */
-    public function passes()
+    public function passes(): bool
     {
         return is_numeric($this->value);
     }

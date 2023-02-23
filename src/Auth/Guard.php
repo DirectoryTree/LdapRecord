@@ -3,11 +3,6 @@
 namespace LdapRecord\Auth;
 
 use Exception;
-use LdapRecord\Auth\Events\Attempting;
-use LdapRecord\Auth\Events\Binding;
-use LdapRecord\Auth\Events\Bound;
-use LdapRecord\Auth\Events\Failed;
-use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapInterface;
@@ -16,24 +11,18 @@ class Guard
 {
     /**
      * The connection to bind to.
-     *
-     * @var LdapInterface
      */
-    protected $connection;
+    protected LdapInterface $connection;
 
     /**
      * The domain configuration to utilize.
-     *
-     * @var DomainConfiguration
      */
-    protected $configuration;
+    protected DomainConfiguration $configuration;
 
     /**
      * The event dispatcher.
-     *
-     * @var DispatcherInterface
      */
-    protected $events;
+    protected DispatcherInterface $events;
 
     /**
      * Constructor.
@@ -47,15 +36,10 @@ class Guard
     /**
      * Attempt binding a user to the LDAP server.
      *
-     * @param  string  $username
-     * @param  string  $password
-     * @param  bool  $stayBound
-     * @return bool
-     *
      * @throws UsernameRequiredException
      * @throws PasswordRequiredException
      */
-    public function attempt($username, $password, $stayBound = false)
+    public function attempt(string $username, string $password, bool $stayBound = false): bool
     {
         switch (true) {
             case empty($username):
@@ -64,14 +48,14 @@ class Guard
                 throw new PasswordRequiredException('A password must be specified.');
         }
 
-        $this->fireAttemptingEvent($username, $password);
+        $this->fireAuthEvent('attempting', $username, $password);
 
         try {
             $this->bind($username, $password);
 
             $authenticated = true;
 
-            $this->firePassedEvent($username, $password);
+            $this->fireAuthEvent('passed', $username, $password);
         } catch (BindException) {
             $authenticated = false;
         }
@@ -86,15 +70,12 @@ class Guard
     /**
      * Attempt binding a user to the LDAP server. Supports anonymous binding.
      *
-     * @param  string|null  $username
-     * @param  string|null  $password
-     *
      * @throws BindException
      * @throws \LdapRecord\ConnectionException
      */
-    public function bind($username = null, $password = null)
+    public function bind(string $username = null, string $password = null): void
     {
-        $this->fireBindingEvent($username, $password);
+        $this->fireAuthEvent('binding', $username, $password);
 
         // Prior to binding, we will upgrade our connectivity to TLS on our current
         // connection and ensure we are not already bound before upgrading.
@@ -108,9 +89,9 @@ class Guard
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 
-            $this->fireBoundEvent($username, $password);
+            $this->fireAuthEvent('bound', $username, $password);
         } catch (Exception $e) {
-            $this->fireFailedEvent($username, $password);
+            $this->fireAuthEvent('failed', $username, $password);
 
             throw BindException::withDetailedError($e, $this->connection->getDetailedError());
         }
@@ -123,7 +104,7 @@ class Guard
      * @throws \LdapRecord\ConnectionException
      * @throws \LdapRecord\Configuration\ConfigurationException
      */
-    public function bindAsConfiguredUser()
+    public function bindAsConfiguredUser(): void
     {
         $this->bind(
             $this->configuration->get('username'),
@@ -133,91 +114,29 @@ class Guard
 
     /**
      * Get the event dispatcher instance.
-     *
-     * @return DispatcherInterface
      */
-    public function getDispatcher()
+    public function getDispatcher(): DispatcherInterface
     {
         return $this->events;
     }
 
     /**
      * Set the event dispatcher instance.
-     *
-     * @return void
      */
-    public function setDispatcher(DispatcherInterface $dispatcher)
+    public function setDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->events = $dispatcher;
     }
 
     /**
-     * Fire the attempting event.
-     *
-     * @param  string  $username
-     * @param  string  $password
-     * @return void
+     * Fire an authentication event.
      */
-    protected function fireAttemptingEvent($username, $password)
+    protected function fireAuthEvent(string $name, string $username = null, string $password = null): void
     {
         if (isset($this->events)) {
-            $this->events->fire(new Attempting($this->connection, $username, $password));
-        }
-    }
+            $event = implode('\\', [Events::class, ucfirst($name)]);
 
-    /**
-     * Fire the passed event.
-     *
-     * @param  string  $username
-     * @param  string  $password
-     * @return void
-     */
-    protected function firePassedEvent($username, $password)
-    {
-        if (isset($this->events)) {
-            $this->events->fire(new Passed($this->connection, $username, $password));
-        }
-    }
-
-    /**
-     * Fire the failed event.
-     *
-     * @param  string  $username
-     * @param  string  $password
-     * @return void
-     */
-    protected function fireFailedEvent($username, $password)
-    {
-        if (isset($this->events)) {
-            $this->events->fire(new Failed($this->connection, $username, $password));
-        }
-    }
-
-    /**
-     * Fire the binding event.
-     *
-     * @param  string  $username
-     * @param  string  $password
-     * @return void
-     */
-    protected function fireBindingEvent($username, $password)
-    {
-        if (isset($this->events)) {
-            $this->events->fire(new Binding($this->connection, $username, $password));
-        }
-    }
-
-    /**
-     * Fire the bound event.
-     *
-     * @param  string  $username
-     * @param  string  $password
-     * @return void
-     */
-    protected function fireBoundEvent($username, $password)
-    {
-        if (isset($this->events)) {
-            $this->events->fire(new Bound($this->connection, $username, $password));
+            $this->events->fire(new $event($this->connection, $username, $password));
         }
     }
 }

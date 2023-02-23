@@ -75,8 +75,6 @@ class LdapExpectation
 
     /**
      * Set the arguments that the operation should receive.
-     *
-     * @return $this
      */
     public function with(mixed $args): static
     {
@@ -97,8 +95,6 @@ class LdapExpectation
 
     /**
      * Set the expected value to return.
-     *
-     * @return $this
      */
     public function andReturn(mixed $value): static
     {
@@ -109,8 +105,6 @@ class LdapExpectation
 
     /**
      * The error message to return from the expectation.
-     *
-     * @return $this
      */
     public function andReturnError(int $errorCode = 1, string $errorMessage = '', string $diagnosticMessage = ''): static
     {
@@ -162,8 +156,6 @@ class LdapExpectation
 
     /**
      * Set the expectation to be only called once.
-     *
-     * @return $this
      */
     public function once(): static
     {
@@ -172,8 +164,6 @@ class LdapExpectation
 
     /**
      * Set the expectation to be only called twice.
-     *
-     * @return $this
      */
     public function twice(): static
     {
@@ -182,8 +172,6 @@ class LdapExpectation
 
     /**
      * Set the expectation to be called the given number of times.
-     *
-     * @return $this
      */
     public function times(int $count = 1): static
     {
@@ -251,7 +239,7 @@ class LdapExpectation
     }
 
     /**
-     * @return int
+     * Get the expected error code.
      */
     public function getExpectedErrorCode(): ?int
     {
@@ -259,7 +247,7 @@ class LdapExpectation
     }
 
     /**
-     * @return string
+     * Get the expected error message.
      */
     public function getExpectedErrorMessage(): ?string
     {
@@ -267,7 +255,7 @@ class LdapExpectation
     }
 
     /**
-     * @return string
+     * Get the expected diagnostic message.
      */
     public function getExpectedErrorDiagnosticMessage(): ?string
     {
@@ -276,8 +264,6 @@ class LdapExpectation
 
     /**
      * Decrement the call count of the expectation.
-     *
-     * @return $this
      */
     public function decrementCallCount(): static
     {

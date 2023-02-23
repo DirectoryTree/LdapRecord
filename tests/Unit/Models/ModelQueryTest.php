@@ -15,6 +15,7 @@ use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
+use LdapRecord\LdapResultResponse;
 
 class ModelQueryTest extends TestCase
 {
@@ -147,7 +148,7 @@ class ModelQueryTest extends TestCase
             ->with('foo', ['bar' => ['baz']])
             ->andReturn(true);
 
-        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -180,7 +181,7 @@ class ModelQueryTest extends TestCase
             ->with('foo', [$mod])
             ->andReturn(true);
 
-        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -225,7 +226,7 @@ class ModelQueryTest extends TestCase
             ->with(['foo', ['bar' => ['baz']]])
             ->andReturn(true);
 
-        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -253,7 +254,7 @@ class ModelQueryTest extends TestCase
             ->with('foo')
             ->andReturn(true);
 
-        $ldap = (new LdapFake())->expect(['bind' => true, $expectation]);
+        $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -279,7 +280,7 @@ class ModelQueryTest extends TestCase
     public function test_delete_attribute()
     {
         $ldap = (new LdapFake())->expect([
-            'bind' => true,
+            'bind' => new LdapResultResponse(),
             LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturn(true),
             LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true),
         ]);
@@ -310,7 +311,7 @@ class ModelQueryTest extends TestCase
     {
         $ldap = (new LdapFake())
             ->expect([
-                'bind' => true,
+                'bind' => new LdapResultResponse(),
                 LdapFake::operation('modDelete')->once()->with('dn', ['foo' => [], 'bar' => ['zar']])->andReturn(true),
             ]);
 
@@ -340,7 +341,7 @@ class ModelQueryTest extends TestCase
         $leaf->shouldReceive('delete')->once()->andReturnTrue();
 
         $query = m::mock(Builder::class);
-        $query->shouldReceive('listing')->once()->andReturnSelf();
+        $query->shouldReceive('list')->once()->andReturnSelf();
         $query->shouldReceive('in')->once()->with('foo')->andReturnSelf();
         $query->shouldReceive('each')->once()->with(m::on(function ($callback) use ($leaf) {
             $callback($leaf);
@@ -376,7 +377,7 @@ class ModelQueryTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertEquals('ou=Users,dc=acme,dc=org', $query->getDn());
-        $this->assertEquals('listing', $query->getType());
+        $this->assertEquals('list', $query->getType());
     }
 
     public function test_ancestors_scope()
@@ -390,7 +391,7 @@ class ModelQueryTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertEquals('dc=acme,dc=org', $query->getDn());
-        $this->assertEquals('listing', $query->getType());
+        $this->assertEquals('list', $query->getType());
     }
 
     public function test_siblings_scope()
@@ -404,7 +405,7 @@ class ModelQueryTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertEquals('dc=acme,dc=org', $query->getDn());
-        $this->assertEquals('listing', $query->getType());
+        $this->assertEquals('list', $query->getType());
     }
 
     public function test_all()

@@ -13,7 +13,7 @@ class Timestamp
     public const TYPE_LDAP = 'ldap';
     public const TYPE_WINDOWS = 'windows';
     public const TYPE_WINDOWS_INT = 'windows-int';
-    
+
     public const WINDOWS_INT_MAX = 9223372036854775807;
 
     /**

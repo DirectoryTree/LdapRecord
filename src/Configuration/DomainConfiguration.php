@@ -8,8 +8,6 @@ class DomainConfiguration
 {
     /**
      * The extended configuration options.
-     *
-     * @var array
      */
     protected static array $extended = [];
 
@@ -17,8 +15,6 @@ class DomainConfiguration
      * The configuration options array.
      *
      * The default values for each key indicate the type of value it requires.
-     *
-     * @var array
      */
     protected array $options = [
         // An array of LDAP hosts.

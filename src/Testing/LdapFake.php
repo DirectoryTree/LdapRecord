@@ -8,6 +8,7 @@ use LdapRecord\DetailedError;
 use LdapRecord\DetectsErrors;
 use LdapRecord\HandlesConnection;
 use LdapRecord\LdapInterface;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -66,7 +67,7 @@ class LdapFake implements LdapInterface
     public function shouldAuthenticateWith($dn)
     {
         return $this->expect(
-            static::operation('bind')->with($dn, PHPUnit::anything())->andReturn(true)
+            static::operation('bind')->with($dn, PHPUnit::anything())->andReturnResponse()
         );
     }
 
@@ -320,7 +321,11 @@ class LdapFake implements LdapInterface
      */
     public function bind($username = null, $password = null, array $controls = null)
     {
-        return $this->bound = $this->resolveExpectation('bind', func_get_args());
+        $result = $this->resolveExpectation('bind', func_get_args());
+
+        $this->bound = $result->successful();
+
+        return $result;
     }
 
     /**

@@ -1364,7 +1364,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     {
         $this->newQueryWithoutScopes()
             ->in($this->dn)
-            ->listing()
+            ->list()
             ->each(function (Model $model) {
                 $model->delete($recursive = true);
             });

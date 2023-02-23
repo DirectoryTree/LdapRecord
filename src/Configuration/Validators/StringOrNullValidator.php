@@ -9,12 +9,12 @@ class StringOrNullValidator extends Validator
      *
      * @var string
      */
-    protected $message = 'Option [:option] must be a string or null.';
+    protected string $message = 'Option [:option] must be a string or null.';
 
     /**
      * @inheritdoc
      */
-    public function passes()
+    public function passes(): bool
     {
         return is_string($this->value) || is_null($this->value);
     }

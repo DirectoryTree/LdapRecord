@@ -9,12 +9,12 @@ class ArrayValidator extends Validator
      *
      * @var string
      */
-    protected $message = 'Option [:option] must be an array.';
+    protected string $message = 'Option [:option] must be an array.';
 
     /**
      * @inheritdoc
      */
-    public function passes()
+    public function passes(): bool
     {
         return is_array($this->value);
     }

@@ -74,8 +74,6 @@ abstract class Relation
     /**
      * Constructor.
      *
-     * @param  Builder  $query
-     * @param  Model  $parent
      * @param  string|array  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
@@ -100,7 +98,6 @@ abstract class Relation
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -120,7 +117,6 @@ abstract class Relation
     /**
      * Set the callback to use for resolving models from relation results.
      *
-     * @param  Closure  $callback
      * @return void
      */
     public static function resolveModelsUsing(Closure $callback)
@@ -220,7 +216,6 @@ abstract class Relation
     /**
      * Set the underlying query for the relation.
      *
-     * @param  Builder  $query
      * @return $this
      */
     public function setQuery(Builder $query)
@@ -322,7 +317,6 @@ abstract class Relation
     /**
      * Returns the escaped foreign key value for use in an LDAP filter from the model.
      *
-     * @param  Model  $model
      * @return string
      */
     protected function getEscapedForeignValueFromModel(Model $model)
@@ -345,7 +339,6 @@ abstract class Relation
     /**
      * Get the foreign key value from the model.
      *
-     * @param  Model  $model
      * @return string
      */
     protected function getForeignValueFromModel(Model $model)
@@ -358,7 +351,6 @@ abstract class Relation
     /**
      * Get the first attribute value from the model.
      *
-     * @param  Model  $model
      * @param  string  $attribute
      * @return string|null
      */
@@ -370,7 +362,6 @@ abstract class Relation
     /**
      * Transforms the results by converting the models into their related.
      *
-     * @param  Collection  $results
      * @return Collection
      */
     protected function transformResults(Collection $results)
@@ -403,8 +394,6 @@ abstract class Relation
     /**
      * Determines the model from the given relation map.
      *
-     * @param  Model  $model
-     * @param  array  $relationMap
      * @return class-string|bool
      */
     protected function determineModelFromRelated(Model $model, array $relationMap)

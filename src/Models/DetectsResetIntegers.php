@@ -11,7 +11,6 @@ trait DetectsResetIntegers
      * LDAP attributes to instruct the server to reset the
      * value to an 'unset' or 'cleared' state.
      *
-     * @param  mixed  $value
      * @return bool
      */
     protected function valueIsResetInteger($value)

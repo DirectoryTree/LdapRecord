@@ -44,7 +44,6 @@ class Entry extends BaseEntry implements FreeIPA
     /**
      * Create a new query builder.
      *
-     * @param  Connection  $connection
      * @return FreeIpaBuilder
      */
     public function newQueryBuilder(Connection $connection)

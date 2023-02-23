@@ -15,8 +15,6 @@ abstract class Validator
 
     /**
      * The configuration value under validation.
-     *
-     * @var mixed
      */
     protected $value;
 
@@ -31,7 +29,6 @@ abstract class Validator
      * Constructor.
      *
      * @param  string  $key
-     * @param  mixed  $value
      */
     public function __construct($key, $value)
     {

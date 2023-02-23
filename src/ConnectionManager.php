@@ -82,8 +82,6 @@ class ConnectionManager
      * Forward missing method calls onto the instance.
      *
      * @param  string  $method
-     * @param  mixed  $args
-     * @return mixed
      */
     public function __call($method, $args)
     {
@@ -103,7 +101,6 @@ class ConnectionManager
     /**
      * Add a new connection.
      *
-     * @param  Connection  $connection
      * @param  string|null  $name
      * @return $this
      */
@@ -231,7 +228,6 @@ class ConnectionManager
     /**
      * Set the event logger to use.
      *
-     * @param  LoggerInterface  $logger
      * @return void
      */
     public function setLogger(LoggerInterface $logger)
@@ -292,7 +288,6 @@ class ConnectionManager
     /**
      * Set the event dispatcher.
      *
-     * @param  DispatcherInterface  $dispatcher
      * @return void
      */
     public function setDispatcher(DispatcherInterface $dispatcher)

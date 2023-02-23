@@ -25,7 +25,6 @@ class ConnectionFake extends Connection
     /**
      * Make a new fake LDAP connection instance.
      *
-     * @param  array  $config
      * @param  string  $ldap
      * @return static
      */

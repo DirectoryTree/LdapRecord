@@ -27,7 +27,6 @@ class Sid
     /**
      * Constructor.
      *
-     * @param  mixed  $value
      *
      * @throws InvalidArgumentException
      */
@@ -44,8 +43,6 @@ class Sid
 
     /**
      * Returns the string value of the SID.
-     *
-     * @return string
      */
     public function __toString(): string
     {

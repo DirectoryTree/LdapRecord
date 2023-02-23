@@ -25,8 +25,6 @@ class DistinguishedNameBuilder
 
     /**
      * Constructor.
-     *
-     * @param  string|null  $value
      */
     public function __construct($dn = null)
     {
@@ -40,7 +38,6 @@ class DistinguishedNameBuilder
      *
      * @param  string  $method
      * @param  array  $args
-     * @return mixed
      */
     public function __call($method, $args)
     {
@@ -49,8 +46,6 @@ class DistinguishedNameBuilder
 
     /**
      * Get the distinguished name value.
-     *
-     * @return string
      */
     public function __toString(): string
     {

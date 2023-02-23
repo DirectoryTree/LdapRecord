@@ -63,7 +63,6 @@ class Grammar
     /**
      * Compiles the Builder instance into an LDAP query string.
      *
-     * @param  Builder  $query
      * @return string
      */
     public function compile(Builder $query)
@@ -86,7 +85,6 @@ class Grammar
     /**
      * Determine if the query must be wrapped in an encapsulating statement.
      *
-     * @param  Builder  $query
      * @return bool
      */
     protected function queryMustBeWrapped(Builder $query)
@@ -97,7 +95,6 @@ class Grammar
     /**
      * Assembles all of the "raw" filters on the query.
      *
-     * @param  Builder  $builder
      * @return string
      */
     protected function compileRaws(Builder $builder)
@@ -108,7 +105,6 @@ class Grammar
     /**
      * Assembles all where clauses in the current wheres property.
      *
-     * @param  Builder  $builder
      * @param  string  $type
      * @return string
      */
@@ -126,7 +122,6 @@ class Grammar
     /**
      * Assembles all or where clauses in the current orWheres property.
      *
-     * @param  Builder  $query
      * @return string
      */
     protected function compileOrWheres(Builder $query)
@@ -152,7 +147,6 @@ class Grammar
     /**
      * Determine if the query can be wrapped in a single or statement.
      *
-     * @param  Builder  $query
      * @return bool
      */
     protected function queryCanBeWrappedInSingleOrStatement(Builder $query)
@@ -165,7 +159,6 @@ class Grammar
     /**
      * Concatenates filters into a single string.
      *
-     * @param  array  $bindings
      * @return string
      */
     public function concatenate(array $bindings = [])
@@ -190,7 +183,6 @@ class Grammar
     /**
      * Determine if the query is using multiple filters.
      *
-     * @param  Builder  $query
      * @return bool
      */
     protected function hasMultipleFilters(Builder $query)
@@ -201,7 +193,6 @@ class Grammar
     /**
      * Determine if the query contains the given filter statement type.
      *
-     * @param  Builder  $query
      * @param  string|array  $type
      * @param  string  $operator
      * @param  int  $count
@@ -473,7 +464,6 @@ class Grammar
     /**
      * Assembles a single where query.
      *
-     * @param  array  $where
      * @return string
      *
      * @throws UnexpectedValueException

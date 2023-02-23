@@ -67,7 +67,6 @@ interface LdapInterface
     /**
      * Set the current connection to use SSL.
      *
-     * @param  bool  $enabled
      * @return $this
      */
     public function ssl();
@@ -82,7 +81,6 @@ interface LdapInterface
     /**
      * Set the current connection to use TLS.
      *
-     * @param  bool  $enabled
      * @return $this
      */
     public function tls();
@@ -167,7 +165,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-set-option.php
      *
      * @param  int  $option
-     * @param  mixed  $value
      * @return bool
      */
     public function setOption($option, $value);
@@ -175,7 +172,6 @@ interface LdapInterface
     /**
      * Set options on the current connection.
      *
-     * @param  array  $options
      * @return void
      */
     public function setOptions(array $options = []);
@@ -186,8 +182,6 @@ interface LdapInterface
      * @see https://www.php.net/manual/en/function.ldap-get-option.php
      *
      * @param  int  $option
-     * @param  mixed  $value
-     * @return mixed
      */
     public function getOption($option, &$value = null);
 
@@ -231,7 +225,6 @@ interface LdapInterface
      *
      * @param  string  $dn
      * @param  string  $filter
-     * @param  array  $fields
      * @param  bool  $onlyAttributes
      * @param  int  $size
      * @param  int  $time
@@ -248,7 +241,6 @@ interface LdapInterface
      *
      * @param  string  $dn
      * @param  string  $filter
-     * @param  array  $fields
      * @param  bool  $onlyAttributes
      * @param  int  $size
      * @param  int  $time
@@ -265,7 +257,6 @@ interface LdapInterface
      *
      * @param  string  $dn
      * @param  string  $filter
-     * @param  array  $fields
      * @param  bool  $onlyAttributes
      * @param  int  $size
      * @param  int  $time
@@ -298,7 +289,6 @@ interface LdapInterface
      *
      * @param  string|null  $username
      * @param  string|null  $password
-     * @param  array|null  $controls
      * @return LdapResultResponse
      *
      * @throws LdapRecordException
@@ -311,7 +301,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-add.php
      *
      * @param  string  $dn
-     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -351,7 +340,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-modify.php
      *
      * @param  string  $dn
-     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -364,7 +352,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-modify-batch.php
      *
      * @param  string  $dn
-     * @param  array  $values
      * @return bool
      *
      * @throws LdapRecordException
@@ -377,7 +364,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-mod-add.php
      *
      * @param  string  $dn
-     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -390,7 +376,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-mod-replace.php
      *
      * @param  string  $dn
-     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -403,7 +388,6 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-mod-del.php
      *
      * @param  string  $dn
-     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException

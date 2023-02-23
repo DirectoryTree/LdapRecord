@@ -208,7 +208,6 @@ class ActiveDirectoryBuilder extends Builder
     /**
      * Execute the callback with a nested match attribute.
      *
-     * @param  Closure  $callback
      * @param  string  $attribute
      * @param  bool  $nested
      * @return $this

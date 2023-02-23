@@ -13,8 +13,6 @@ trait HasGlobalScopes
      * Register a new global scope on the model.
      *
      * @param  Scope|Closure|string  $scope
-     * @param  Closure|null  $implementation
-     * @return mixed
      *
      * @throws InvalidArgumentException
      */

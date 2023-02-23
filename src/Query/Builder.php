@@ -142,8 +142,6 @@ class Builder
 
     /**
      * Constructor.
-     *
-     * @param  Connection  $connection
      */
     public function __construct(Connection $connection)
     {
@@ -154,7 +152,6 @@ class Builder
     /**
      * Set the current connection.
      *
-     * @param  Connection  $connection
      * @return $this
      */
     public function setConnection(Connection $connection)
@@ -167,7 +164,6 @@ class Builder
     /**
      * Set the current filter grammar.
      *
-     * @param  Grammar  $grammar
      * @return $this
      */
     public function setGrammar(Grammar $grammar)
@@ -180,7 +176,6 @@ class Builder
     /**
      * Set the cache to store query results.
      *
-     * @param  Cache|null  $cache
      * @return $this
      */
     public function setCache(Cache $cache = null)
@@ -208,7 +203,6 @@ class Builder
     /**
      * Returns a new nested Query Builder instance.
      *
-     * @param  Closure|null  $closure
      * @return $this
      */
     public function newNestedInstance(Closure $closure = null)
@@ -241,8 +235,6 @@ class Builder
      * After running the callback, the columns are reset to the original value.
      *
      * @param  array  $columns
-     * @param  Closure  $callback
-     * @return mixed
      */
     protected function onceWithColumns($columns, Closure $callback)
     {
@@ -413,7 +405,6 @@ class Builder
     /**
      * Returns a new query for the given model.
      *
-     * @param  Model  $model
      * @return ModelBuilder
      */
     public function model(Model $model)
@@ -495,7 +486,6 @@ class Builder
     /**
      * Execute a callback over each item while chunking.
      *
-     * @param  Closure  $callback
      * @param  int  $pageSize
      * @param  bool  $isCritical
      * @param  bool  $isolate
@@ -516,7 +506,6 @@ class Builder
      * Chunk the results of a paginated LDAP query.
      *
      * @param  int  $pageSize
-     * @param  Closure  $callback
      * @param  bool  $isCritical
      * @param  bool  $isolate
      * @return bool
@@ -615,7 +604,6 @@ class Builder
     /**
      * Processes and converts the given LDAP results into models.
      *
-     * @param  array  $results
      * @return array
      */
     protected function process(array $results)
@@ -632,7 +620,6 @@ class Builder
     /**
      * Flattens LDAP paged results into a single array.
      *
-     * @param  array  $pages
      * @return array
      */
     protected function flattenPages(array $pages)
@@ -652,8 +639,6 @@ class Builder
      * Get the cached response or execute and cache the callback value.
      *
      * @param  string  $query
-     * @param  Closure  $callback
-     * @return mixed
      */
     protected function getCachedResponse($query, Closure $callback)
     {
@@ -794,7 +779,6 @@ class Builder
     /**
      * Return the first entry in a result, or execute the callback.
      *
-     * @param  Closure  $callback
      * @return Model|mixed
      */
     public function firstOr(Closure $callback)
@@ -849,7 +833,6 @@ class Builder
     /**
      * Execute the given callback if no rows exist for the current query.
      *
-     * @param  Closure  $callback
      * @return bool|mixed
      */
     public function existsOr(Closure $callback)
@@ -932,7 +915,6 @@ class Builder
      * Finds many records by the specified attribute.
      *
      * @param  string  $attribute
-     * @param  array  $values
      * @param  array  $columns
      * @return Collection
      */
@@ -1073,7 +1055,6 @@ class Builder
     /**
      * Adds a nested 'and' filter to the current query.
      *
-     * @param  Closure  $closure
      * @return $this
      */
     public function andFilter(Closure $closure)
@@ -1088,7 +1069,6 @@ class Builder
     /**
      * Adds a nested 'or' filter to the current query.
      *
-     * @param  Closure  $closure
      * @return $this
      */
     public function orFilter(Closure $closure)
@@ -1103,7 +1083,6 @@ class Builder
     /**
      * Adds a nested 'not' filter to the current query.
      *
-     * @param  Closure  $closure
      * @return $this
      */
     public function notFilter(Closure $closure)
@@ -1271,7 +1250,6 @@ class Builder
      * Query for entries that match any of the values provided for the given field.
      *
      * @param  string  $field
-     * @param  array  $values
      * @return $this
      */
     public function whereIn($field, array $values)
@@ -1287,7 +1265,6 @@ class Builder
      * Adds a 'between' clause to the current query.
      *
      * @param  string  $field
-     * @param  array  $values
      * @return $this
      */
     public function whereBetween($field, array $values)
@@ -1371,7 +1348,6 @@ class Builder
      *
      * @param  string  $oid
      * @param  bool  $isCritical
-     * @param  mixed  $value
      * @return $this
      */
     public function addControl($oid, $isCritical = false, $value = null)
@@ -1746,7 +1722,6 @@ class Builder
      * Insert an entry into the directory.
      *
      * @param  string  $dn
-     * @param  array  $attributes
      * @return bool
      *
      * @throws LdapRecordException
@@ -1772,7 +1747,6 @@ class Builder
      * Create attributes on the entry in the directory.
      *
      * @param  string  $dn
-     * @param  array  $attributes
      * @return bool
      */
     public function insertAttributes($dn, array $attributes)
@@ -1786,7 +1760,6 @@ class Builder
      * Update the entry with the given modifications.
      *
      * @param  string  $dn
-     * @param  array  $modifications
      * @return bool
      */
     public function update($dn, array $modifications)
@@ -1800,7 +1773,6 @@ class Builder
      * Update an entries attribute in the directory.
      *
      * @param  string  $dn
-     * @param  array  $attributes
      * @return bool
      */
     public function updateAttributes($dn, array $attributes)
@@ -1827,7 +1799,6 @@ class Builder
      * Delete attributes on the entry in the directory.
      *
      * @param  string  $dn
-     * @param  array  $attributes
      * @return bool
      */
     public function deleteAttributes($dn, array $attributes)
@@ -1868,7 +1839,6 @@ class Builder
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      *
      * @throws BadMethodCallException
      */
@@ -2006,7 +1976,6 @@ class Builder
     /**
      * Fires the given query event.
      *
-     * @param  QueryExecuted  $event
      * @return void
      */
     protected function fireQueryEvent(QueryExecuted $event)

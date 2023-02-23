@@ -51,7 +51,6 @@ class HasMany extends OneToMany
     /**
      * Set the model and attribute to use for attaching / detaching.
      *
-     * @param  Model  $using
      * @param  string  $usingKey
      * @return $this
      */
@@ -107,7 +106,6 @@ class HasMany extends OneToMany
     /**
      * Execute a callback over each result while chunking.
      *
-     * @param  Closure  $callback
      * @param  int  $pageSize
      * @return bool
      */
@@ -126,8 +124,6 @@ class HasMany extends OneToMany
      * Chunk the relation results using the given callback.
      *
      * @param  int  $pageSize
-     * @param  Closure  $callback
-     * @param  array  $loaded
      * @return bool
      */
     public function chunk($pageSize, Closure $callback)
@@ -139,7 +135,6 @@ class HasMany extends OneToMany
      * Execute the callback over chunks of relation results.
      *
      * @param  int  $pageSize
-     * @param  Closure  $callback
      * @param  array  $loaded
      * @return bool
      */
@@ -364,8 +359,6 @@ class HasMany extends OneToMany
      *
      * @param  callable  $operation
      * @param  string|array  $bypass
-     * @param  mixed  $value
-     * @return mixed
      *
      * @throws LdapRecordException
      */

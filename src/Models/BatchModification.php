@@ -48,7 +48,6 @@ class BatchModification
      *
      * @param  string|null  $attribute
      * @param  string|int|null  $type
-     * @param  array  $values
      */
     public function __construct($attribute = null, $type = null, array $values = [])
     {
@@ -106,7 +105,6 @@ class BatchModification
     /**
      * Set the values of the modification.
      *
-     * @param  array  $values
      * @return $this
      */
     public function setValues(array $values = [])

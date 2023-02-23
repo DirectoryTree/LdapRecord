@@ -70,8 +70,6 @@ class TSPropertyArray
      *   - Pass an array of TSProperty key => value pairs (See DEFAULTS constant).
      *   - Pass the userParameters binary value. The object representation of that will be decoded and constructed.
      *   - Pass nothing and a default set of TSProperty key => value pairs will be used (See DEFAULTS constant).
-     *
-     * @param  mixed  $tsPropertyArray
      */
     public function __construct($tsPropertyArray = null)
     {
@@ -117,7 +115,6 @@ class TSPropertyArray
     /**
      * Add a TSProperty object. If it already exists, it will be overwritten.
      *
-     * @param  TSProperty  $tsProperty
      * @return $this
      */
     public function add(TSProperty $tsProperty)
@@ -148,7 +145,6 @@ class TSPropertyArray
      * Set the value for a specific TSProperty by its name.
      *
      * @param  string  $propName
-     * @param  mixed  $propValue
      * @return $this
      */
     public function set($propName, $propValue)

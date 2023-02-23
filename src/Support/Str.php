@@ -72,7 +72,6 @@ class Str
      * @param  string|string[]  $needles
      * @param  \Closure|mixed  $callback
      * @param  \Closure|mixed  $default
-     * @return mixed
      */
     public static function whenContains($haystack, $needles, $callback, $default = null)
     {

@@ -16,8 +16,6 @@ class LdapRecordException extends Exception
     /**
      * Create a new Bind Exception with a detailed connection error.
      *
-     * @param  Exception  $e
-     * @param  DetailedError|null  $error
      * @return $this
      */
     public static function withDetailedError(Exception $e, DetailedError $error = null)
@@ -28,7 +26,6 @@ class LdapRecordException extends Exception
     /**
      * Set the detailed error.
      *
-     * @param  DetailedError|null  $error
      * @return $this
      */
     public function setDetailedError(DetailedError $error = null)

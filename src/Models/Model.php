@@ -113,8 +113,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Constructor.
-     *
-     * @param  array  $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -164,7 +162,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -180,7 +177,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      */
     public static function __callStatic($method, $parameters)
     {
@@ -381,7 +377,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create a new query builder.
      *
-     * @param  Connection  $connection
      * @return Builder
      */
     public function newQueryBuilder(Connection $connection)
@@ -392,7 +387,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Create a new model instance.
      *
-     * @param  array  $attributes
      * @return static
      */
     public function newInstance(array $attributes = [])
@@ -434,7 +428,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the connection container.
      *
-     * @param  Container  $container
      * @return void
      */
     public static function setConnectionContainer(Container $container)
@@ -485,7 +478,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Apply the model object class scopes to the given builder instance.
      *
-     * @param  Builder  $query
      * @return void
      */
     public function applyObjectClassScopes(Builder $query)
@@ -521,7 +513,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Returns a new collection with the specified items.
      *
-     * @param  mixed  $items
      * @return Collection
      */
     public function newCollection($items = [])
@@ -532,7 +523,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically retrieve attributes on the object.
      *
-     * @param  mixed  $key
      * @return bool
      */
     public function __get($key)
@@ -543,8 +533,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically set attributes on the object.
      *
-     * @param  mixed  $key
-     * @param  mixed  $value
      * @return $this
      */
     public function __set($key, $value)
@@ -647,7 +635,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Convert the attributes for JSON serialization.
      *
-     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesForJson(array $attributes = [])
@@ -667,7 +654,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Convert the attributes from JSON serialization.
      *
-     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesFromJson(array $attributes = [])
@@ -781,7 +767,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the models batch modifications.
      *
-     * @param  array  $modifications
      * @return $this
      */
     public function setModifications(array $modifications = [])
@@ -1050,7 +1035,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Save the model to the directory without raising any events.
      *
-     * @param  array  $attributes
      * @return void
      *
      * @throws \LdapRecord\LdapRecordException
@@ -1527,7 +1511,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determines if the given modification is valid.
      *
-     * @param  mixed  $mod
      * @return bool
      */
     protected function isValidModification($mod)

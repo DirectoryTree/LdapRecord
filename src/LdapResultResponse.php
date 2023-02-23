@@ -10,9 +10,9 @@ class LdapResultResponse
      * @return void
      */
     public function __construct(
-        public readonly int $errorCode,
-        public readonly string|null $matchedDn,
-        public readonly string|null $errorMessage,
+        public readonly int $errorCode = 0,
+        public readonly string|null $matchedDn = null,
+        public readonly string|null $errorMessage = null,
         public readonly array $referrals = [],
         public readonly array $controls = []
     ) {

@@ -50,10 +50,9 @@ class Grammar
      *
      * Produces: (query)
      *
-     * @param string $query
-     * @param string $prefix
-     * @param string $suffix
-     *
+     * @param  string  $query
+     * @param  string  $prefix
+     * @param  string  $suffix
      * @return string
      */
     public function wrap($query, $prefix = '(', $suffix = ')')
@@ -64,8 +63,7 @@ class Grammar
     /**
      * Compiles the Builder instance into an LDAP query string.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return string
      */
     public function compile(Builder $query)
@@ -88,8 +86,7 @@ class Grammar
     /**
      * Determine if the query must be wrapped in an encapsulating statement.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return bool
      */
     protected function queryMustBeWrapped(Builder $query)
@@ -100,8 +97,7 @@ class Grammar
     /**
      * Assembles all of the "raw" filters on the query.
      *
-     * @param Builder $builder
-     *
+     * @param  Builder  $builder
      * @return string
      */
     protected function compileRaws(Builder $builder)
@@ -112,9 +108,8 @@ class Grammar
     /**
      * Assembles all where clauses in the current wheres property.
      *
-     * @param Builder $builder
-     * @param string  $type
-     *
+     * @param  Builder  $builder
+     * @param  string  $type
      * @return string
      */
     protected function compileWheres(Builder $builder, $type = 'and')
@@ -131,8 +126,7 @@ class Grammar
     /**
      * Assembles all or where clauses in the current orWheres property.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return string
      */
     protected function compileOrWheres(Builder $query)
@@ -158,8 +152,7 @@ class Grammar
     /**
      * Determine if the query can be wrapped in a single or statement.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return bool
      */
     protected function queryCanBeWrappedInSingleOrStatement(Builder $query)
@@ -172,8 +165,7 @@ class Grammar
     /**
      * Concatenates filters into a single string.
      *
-     * @param array $bindings
-     *
+     * @param  array  $bindings
      * @return string
      */
     public function concatenate(array $bindings = [])
@@ -187,8 +179,7 @@ class Grammar
     /**
      * Determine if the binding value is not empty.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return bool
      */
     protected function bindingValueIsNotEmpty($value)
@@ -199,8 +190,7 @@ class Grammar
     /**
      * Determine if the query is using multiple filters.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return bool
      */
     protected function hasMultipleFilters(Builder $query)
@@ -211,11 +201,10 @@ class Grammar
     /**
      * Determine if the query contains the given filter statement type.
      *
-     * @param Builder      $query
-     * @param string|array $type
-     * @param string       $operator
-     * @param int          $count
-     *
+     * @param  Builder  $query
+     * @param  string|array  $type
+     * @param  string  $operator
+     * @param  int  $count
      * @return bool
      */
     protected function has(Builder $query, $type, $operator = '>=', $count = 1)
@@ -247,9 +236,8 @@ class Grammar
      *
      * Produces: (field=value)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileEquals($field, $value)
@@ -262,9 +250,8 @@ class Grammar
      *
      * Produces: (!(field=value))
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileDoesNotEqual($field, $value)
@@ -279,9 +266,8 @@ class Grammar
      *
      * Produces: (!(field=value))
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileDoesNotEqualAlias($field, $value)
@@ -294,9 +280,8 @@ class Grammar
      *
      * Produces: (field>=value)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileGreaterThanOrEquals($field, $value)
@@ -309,9 +294,8 @@ class Grammar
      *
      * Produces: (field<=value)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileLessThanOrEquals($field, $value)
@@ -324,9 +308,8 @@ class Grammar
      *
      * Produces: (field~=value)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileApproximatelyEquals($field, $value)
@@ -339,9 +322,8 @@ class Grammar
      *
      * Produces: (field=value*)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileStartsWith($field, $value)
@@ -354,9 +336,8 @@ class Grammar
      *
      * Produces: (!(field=*value))
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileNotStartsWith($field, $value)
@@ -371,9 +352,8 @@ class Grammar
      *
      * Produces: (field=*value)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileEndsWith($field, $value)
@@ -386,9 +366,8 @@ class Grammar
      *
      * Produces: (!(field=value*))
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileNotEndsWith($field, $value)
@@ -401,9 +380,8 @@ class Grammar
      *
      * Produces: (field=*value*)
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileContains($field, $value)
@@ -416,9 +394,8 @@ class Grammar
      *
      * Produces: (!(field=*value*))
      *
-     * @param string $field
-     * @param string $value
-     *
+     * @param  string  $field
+     * @param  string  $value
      * @return string
      */
     public function compileNotContains($field, $value)
@@ -433,8 +410,7 @@ class Grammar
      *
      * Produces: (field=*)
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return string
      */
     public function compileHas($field)
@@ -447,8 +423,7 @@ class Grammar
      *
      * Produces: (!(field=*))
      *
-     * @param string $field
-     *
+     * @param  string  $field
      * @return string
      */
     public function compileNotHas($field)
@@ -463,8 +438,7 @@ class Grammar
      *
      * Produces: (&query)
      *
-     * @param string $query
-     *
+     * @param  string  $query
      * @return string
      */
     public function compileAnd($query)
@@ -477,8 +451,7 @@ class Grammar
      *
      * Produces: (|query)
      *
-     * @param string $query
-     *
+     * @param  string  $query
      * @return string
      */
     public function compileOr($query)
@@ -489,8 +462,7 @@ class Grammar
     /**
      * Wraps the inserted query inside an NOT operator.
      *
-     * @param string $query
-     *
+     * @param  string  $query
      * @return string
      */
     public function compileNot($query)
@@ -501,8 +473,7 @@ class Grammar
     /**
      * Assembles a single where query.
      *
-     * @param array $where
-     *
+     * @param  array  $where
      * @return string
      *
      * @throws UnexpectedValueException
@@ -517,8 +488,7 @@ class Grammar
     /**
      * Make the compile method name for the operator.
      *
-     * @param string $operator
-     *
+     * @param  string  $operator
      * @return string
      *
      * @throws UnexpectedValueException
@@ -535,8 +505,7 @@ class Grammar
     /**
      * Determine if the operator exists.
      *
-     * @param string $operator
-     *
+     * @param  string  $operator
      * @return bool
      */
     protected function operatorExists($operator)

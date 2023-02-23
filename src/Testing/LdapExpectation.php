@@ -78,7 +78,7 @@ class LdapExpectation
     /**
      * Constructor.
      *
-     * @param string $method
+     * @param  string  $method
      */
     public function __construct(string $method)
     {
@@ -88,8 +88,7 @@ class LdapExpectation
     /**
      * Set the arguments that the operation should receive.
      *
-     * @param mixed $args
-     *
+     * @param  mixed  $args
      * @return $this
      */
     public function with(mixed $args): static
@@ -112,8 +111,7 @@ class LdapExpectation
     /**
      * Set the expected value to return.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return $this
      */
     public function andReturn(mixed $value): static
@@ -126,10 +124,9 @@ class LdapExpectation
     /**
      * The error message to return from the expectation.
      *
-     * @param int    $errorCode
-     * @param string $errorMessage
-     * @param string $diagnosticMessage
-     *
+     * @param  int  $errorCode
+     * @param  string  $errorMessage
+     * @param  string  $diagnosticMessage
      * @return $this
      */
     public function andReturnError(int $errorCode = 1, string $errorMessage = '', string $diagnosticMessage = ''): static
@@ -160,8 +157,7 @@ class LdapExpectation
         string|null $errorMessage = null,
         array $referrals = [],
         array $controls = []
-    ): static
-    {
+    ): static {
         return $this->andReturn(
             new LdapResultResponse($errorCode, $matchedDn, $errorMessage, $referrals, $controls)
         );
@@ -204,8 +200,7 @@ class LdapExpectation
     /**
      * Set the expectation to be called the given number of times.
      *
-     * @param int $count
-     *
+     * @param  int  $count
      * @return $this
      */
     public function times(int $count = 1): static

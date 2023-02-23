@@ -28,9 +28,9 @@ class EscapedValue
     /**
      * Constructor.
      *
-     * @param string $value
-     * @param string $ignore
-     * @param int    $flags
+     * @param  string  $value
+     * @param  string  $ignore
+     * @param  int  $flags
      */
     public function __construct($value, $ignore = '', $flags = 0)
     {
@@ -42,8 +42,7 @@ class EscapedValue
     /**
      * Un-escapes a hexadecimal string into its original string representation.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return string
      */
     public static function unescape($value)
@@ -86,8 +85,7 @@ class EscapedValue
     /**
      * Set the characters to exclude from being escaped.
      *
-     * @param string $characters
-     *
+     * @param  string  $characters
      * @return $this
      */
     public function ignore($characters)

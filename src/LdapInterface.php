@@ -67,8 +67,7 @@ interface LdapInterface
     /**
      * Set the current connection to use SSL.
      *
-     * @param bool $enabled
-     *
+     * @param  bool  $enabled
      * @return $this
      */
     public function ssl();
@@ -83,8 +82,7 @@ interface LdapInterface
     /**
      * Set the current connection to use TLS.
      *
-     * @param bool $enabled
-     *
+     * @param  bool  $enabled
      * @return $this
      */
     public function tls();
@@ -138,8 +136,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param \LDAP\Result $result
-     *
+     * @param  \LDAP\Result  $result
      * @return array
      */
     public function getEntries($result);
@@ -169,9 +166,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-set-option.php
      *
-     * @param int   $option
-     * @param mixed $value
-     *
+     * @param  int  $option
+     * @param  mixed  $value
      * @return bool
      */
     public function setOption($option, $value);
@@ -179,8 +175,7 @@ interface LdapInterface
     /**
      * Set options on the current connection.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return void
      */
     public function setOptions(array $options = []);
@@ -190,9 +185,8 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-get-option.php
      *
-     * @param int   $option
-     * @param mixed $value
-     *
+     * @param  int  $option
+     * @param  mixed  $value
      * @return mixed
      */
     public function getOption($option, &$value = null);
@@ -213,9 +207,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @param string|array $hosts
-     * @param int          $port
-     *
+     * @param  string|array  $hosts
+     * @param  int  $port
      * @return \LDAP\Connection|false
      */
     public function connect($hosts = [], $port = 389);
@@ -236,15 +229,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-search.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $controls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $controls
      * @return \LDAP\Result
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
@@ -254,15 +246,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-list.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $controls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $controls
      * @return \LDAP\Result
      */
     public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
@@ -272,15 +263,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-read.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $controls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $controls
      * @return \LDAP\Result
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
@@ -290,13 +280,12 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
-     * @param \LDAP\Result $result
-     * @param int          $errorCode
-     * @param ?string      $dn
-     * @param ?string      $errorMessage
-     * @param ?array       $referrals
-     * @param ?array       $controls
-     *
+     * @param  \LDAP\Result  $result
+     * @param  int  $errorCode
+     * @param  ?string  $dn
+     * @param  ?string  $errorMessage
+     * @param  ?array  $referrals
+     * @param  ?array  $controls
      * @return false|LdapResultResponse
      */
     public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null);
@@ -307,10 +296,9 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-bind.php
      *
-     * @param string|null $username
-     * @param string|null $password
-     * @param array|null  $controls
-     *
+     * @param  string|null  $username
+     * @param  string|null  $password
+     * @param  array|null  $controls
      * @return LdapResultResponse
      *
      * @throws LdapRecordException
@@ -322,9 +310,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-add.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -336,8 +323,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-delete.php
      *
-     * @param string $dn
-     *
+     * @param  string  $dn
      * @return bool
      *
      * @throws LdapRecordException
@@ -349,11 +335,10 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-rename.php
      *
-     * @param string $dn
-     * @param string $newRdn
-     * @param string $newParent
-     * @param bool   $deleteOldRdn
-     *
+     * @param  string  $dn
+     * @param  string  $newRdn
+     * @param  string  $newParent
+     * @param  bool  $deleteOldRdn
      * @return bool
      *
      * @throws LdapRecordException
@@ -365,9 +350,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-modify.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -379,9 +363,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-modify-batch.php
      *
-     * @param string $dn
-     * @param array  $values
-     *
+     * @param  string  $dn
+     * @param  array  $values
      * @return bool
      *
      * @throws LdapRecordException
@@ -393,9 +376,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-add.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -407,9 +389,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-replace.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -421,9 +402,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-del.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -435,8 +415,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
-     * @param \LDAP\Result $result
-     *
+     * @param  \LDAP\Result  $result
      * @return bool
      */
     public function freeResult($result);
@@ -455,8 +434,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-err2str.php
      *
-     * @param int $number
-     *
+     * @param  int  $number
      * @return string
      */
     public function err2Str($number);

@@ -47,10 +47,10 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Constructor.
      *
-     * @param \LdapRecord\Query\Collection|array $items
-     * @param int                                $total
-     * @param int                                $perPage
-     * @param int|null                           $currentPage
+     * @param  \LdapRecord\Query\Collection|array  $items
+     * @param  int  $total
+     * @param  int  $perPage
+     * @param  int|null  $currentPage
      */
     public function __construct($items, $total, $perPage, $currentPage = null)
     {
@@ -196,8 +196,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Determine if the given item exists.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return bool
      */
     #[\ReturnTypeWillChange]
@@ -209,8 +208,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Get the item at the given offset.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return mixed
      */
     #[\ReturnTypeWillChange]
@@ -222,9 +220,8 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Set the item at the given offset.
      *
-     * @param mixed $key
-     * @param mixed $value
-     *
+     * @param  mixed  $key
+     * @param  mixed  $value
      * @return void
      */
     #[\ReturnTypeWillChange]
@@ -236,8 +233,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Unset the item at the given key.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return void
      */
     #[\ReturnTypeWillChange]

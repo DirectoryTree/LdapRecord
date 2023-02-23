@@ -21,7 +21,7 @@ class GroupNode extends Node
     /**
      * Constructor.
      *
-     * @param string $filter
+     * @param  string  $filter
      */
     public function __construct($filter)
     {

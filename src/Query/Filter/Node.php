@@ -14,7 +14,7 @@ abstract class Node
     /**
      * Create a new filter node.
      *
-     * @param string $filter
+     * @param  string  $filter
      */
     abstract public function __construct($filter);
 

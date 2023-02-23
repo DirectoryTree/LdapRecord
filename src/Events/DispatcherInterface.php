@@ -6,9 +6,6 @@ interface DispatcherInterface
 {
     /**
      * Register an event listener with the dispatcher.
-     *
-     * @param  string|array  $events
-     * @return void
      */
     public function listen(string|array $events, mixed $listener): void;
 

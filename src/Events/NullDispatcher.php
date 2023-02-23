@@ -19,9 +19,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Register an event listener with the dispatcher.
-     *
-     * @param  string|array  $events
-     * @return void
      */
     public function listen(string|array $events, mixed $listener): void
     {
@@ -30,9 +27,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Determine if a given event has listeners.
-     *
-     * @param  string  $eventName
-     * @return bool
      */
     public function hasListeners(string $event): bool
     {
@@ -42,7 +36,6 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Fire an event until the first non-null response is returned.
      *
-     * @param  string|object  $event
      * @return null
      */
     public function until(string|object $event, mixed $payload = []): ?array
@@ -53,8 +46,6 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Fire an event and call the listeners.
      *
-     * @param  string|object  $event
-     * @param  bool  $halt
      * @return null
      */
     public function fire(string|object $event, mixed $payload = [], bool $halt = false): void
@@ -71,9 +62,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Get all of the listeners for a given event name.
-     *
-     * @param  string  $event
-     * @return array
      */
     public function getListeners(string $event): array
     {
@@ -82,9 +70,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Remove a set of listeners from the dispatcher.
-     *
-     * @param  string  $event
-     * @return void
      */
     public function forget(string $event): void
     {

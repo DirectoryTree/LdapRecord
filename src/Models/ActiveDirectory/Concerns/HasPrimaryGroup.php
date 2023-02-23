@@ -9,7 +9,6 @@ trait HasPrimaryGroup
     /**
      * Returns a new has one primary group relationship.
      *
-     * @param  mixed  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
      * @return HasOnePrimaryGroup

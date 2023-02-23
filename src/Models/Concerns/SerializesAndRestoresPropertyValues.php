@@ -9,8 +9,6 @@ trait SerializesAndRestoresPropertyValues
      * Get the property value prepared for serialization.
      *
      * @param  string  $property
-     * @param  mixed  $value
-     * @return mixed
      */
     protected function getSerializedPropertyValue($property, $value)
     {
@@ -29,8 +27,6 @@ trait SerializesAndRestoresPropertyValues
      * Get the unserialized property value after deserialization.
      *
      * @param  string  $property
-     * @param  mixed  $value
-     * @return mixed
      */
     protected function getUnserializedPropertyValue($property, $value)
     {

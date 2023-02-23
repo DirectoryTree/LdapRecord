@@ -37,9 +37,6 @@ class Guard
 
     /**
      * Constructor.
-     *
-     * @param  LdapInterface  $connection
-     * @param  DomainConfiguration  $configuration
      */
     public function __construct(LdapInterface $connection, DomainConfiguration $configuration)
     {
@@ -147,7 +144,6 @@ class Guard
     /**
      * Set the event dispatcher instance.
      *
-     * @param  DispatcherInterface  $dispatcher
      * @return void
      */
     public function setDispatcher(DispatcherInterface $dispatcher)

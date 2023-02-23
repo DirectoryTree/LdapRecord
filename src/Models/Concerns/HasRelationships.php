@@ -13,7 +13,6 @@ trait HasRelationships
     /**
      * Returns a new has one relationship.
      *
-     * @param  mixed  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
      * @return HasOne
@@ -26,7 +25,6 @@ trait HasRelationships
     /**
      * Returns a new has many relationship.
      *
-     * @param  mixed  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
      * @return HasMany
@@ -39,7 +37,6 @@ trait HasRelationships
     /**
      * Returns a new has many in relationship.
      *
-     * @param  mixed  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
      * @return HasManyIn

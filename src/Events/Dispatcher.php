@@ -58,7 +58,6 @@ class Dispatcher implements DispatcherInterface
      * Setup a wildcard listener callback.
      *
      * @param  string  $event
-     * @param  mixed  $listener
      * @return void
      */
     protected function setupWildcardListen($event, $listener)
@@ -133,8 +132,6 @@ class Dispatcher implements DispatcherInterface
     /**
      * Parse the given event and payload and prepare them for dispatching.
      *
-     * @param  mixed  $event
-     * @param  mixed  $payload
      * @return array
      */
     protected function parseEventAndPayload($event, $payload)
@@ -226,7 +223,6 @@ class Dispatcher implements DispatcherInterface
      * Add the listeners for the event's interfaces to the given array.
      *
      * @param  string  $eventName
-     * @param  array  $listeners
      * @return array
      */
     protected function addInterfaceListeners($eventName, array $listeners = [])

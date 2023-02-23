@@ -54,8 +54,6 @@ class EscapedValue
 
     /**
      * Get the escaped value.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -64,8 +62,6 @@ class EscapedValue
 
     /**
      * Get the escaped value.
-     *
-     * @return mixed
      */
     public function get()
     {
@@ -74,8 +70,6 @@ class EscapedValue
 
     /**
      * Get the raw (unescaped) value.
-     *
-     * @return mixed
      */
     public function raw()
     {

@@ -30,7 +30,6 @@ abstract class Event
     /**
      * Constructor.
      *
-     * @param  LdapInterface  $connection
      * @param  string  $username
      * @param  string  $password
      */

@@ -25,7 +25,6 @@ class HasOnePrimaryGroup extends HasOne
      *
      * Retrieves the last RID from the models Object SID.
      *
-     * @param  Model  $model
      * @return string
      */
     protected function getForeignValueFromModel(Model $model)

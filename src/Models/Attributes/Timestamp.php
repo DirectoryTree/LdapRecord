@@ -62,7 +62,6 @@ class Timestamp
     /**
      * Converts the value to an LDAP date string.
      *
-     * @param  mixed  $value
      * @return float|string
      *
      * @throws LdapRecordException
@@ -111,7 +110,6 @@ class Timestamp
     /**
      * Converts the LDAP timestamp value to a Carbon instance.
      *
-     * @param  mixed  $value
      * @return Carbon|int|false
      *
      * @throws LdapRecordException
@@ -151,7 +149,6 @@ class Timestamp
     /**
      * Converts date objects to a standard LDAP timestamp.
      *
-     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToLdapTime(DateTime $date)
@@ -179,7 +176,6 @@ class Timestamp
     /**
      * Converts date objects to a windows timestamp.
      *
-     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToWindows(DateTime $date)
@@ -219,7 +215,6 @@ class Timestamp
     /**
      * Converts date objects to a windows integer timestamp.
      *
-     * @param  DateTime  $date
      * @return float
      */
     protected function convertDateTimeToWindowsInteger(DateTime $date)

@@ -149,8 +149,6 @@ trait HandlesConnection
     /**
      * Convert warnings to exceptions for the given operation.
      *
-     * @param  Closure  $operation
-     * @return mixed
      *
      * @throws LdapRecordException
      */

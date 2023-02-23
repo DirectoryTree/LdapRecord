@@ -24,7 +24,6 @@ class Collection extends QueryCollection
     /**
      * Determine if the collection contains all of the given models, or any models.
      *
-     * @param  mixed  $models
      * @return bool
      */
     public function exists($models = null)
@@ -58,9 +57,6 @@ class Collection extends QueryCollection
     /**
      * Determine if any of the given models are contained in the collection.
      *
-     * @param  mixed  $key
-     * @param  mixed  $operator
-     * @param  mixed  $value
      * @return bool
      */
     public function contains($key, $operator = null, $value = null)
@@ -88,7 +84,6 @@ class Collection extends QueryCollection
     /**
      * Get the provided models as an array.
      *
-     * @param  mixed  $models
      * @return array
      */
     protected function getArrayableModels($models = null)

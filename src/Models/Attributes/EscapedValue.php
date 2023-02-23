@@ -42,8 +42,7 @@ class EscapedValue
     /**
      * Un-escapes a hexadecimal string into its original string representation.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return string
      */
     public static function unescape($value)

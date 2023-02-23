@@ -8,7 +8,6 @@ use LdapRecord\DetailedError;
 use LdapRecord\DetectsErrors;
 use LdapRecord\HandlesConnection;
 use LdapRecord\LdapInterface;
-use LdapRecord\LdapResultResponse;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;

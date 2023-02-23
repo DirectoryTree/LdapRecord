@@ -143,7 +143,6 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to exchange mailbox users.
      *
-     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasMailbox(Builder $query)
@@ -154,7 +153,6 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to users having a lockout value set.
      *
-     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasLockout(Builder $query)

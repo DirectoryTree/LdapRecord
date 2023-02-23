@@ -28,8 +28,6 @@ class DistinguishedName
 
     /**
      * Get the distinguished name value.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -117,7 +115,6 @@ class DistinguishedName
     /**
      * Implode the component attribute and value into an RDN.
      *
-     * @param  string  $rdn
      * @return string
      */
     public static function makeRdn(array $component)
@@ -381,8 +378,6 @@ class DistinguishedName
     /**
      * Compare whether the two distinguished name values are equal.
      *
-     * @param  array  $values
-     * @param  array  $other
      * @return bool
      */
     protected function compare(array $values, array $other)
@@ -393,7 +388,6 @@ class DistinguishedName
     /**
      * Recase the array values.
      *
-     * @param  array  $values
      * @return array
      */
     protected function recase(array $values)

@@ -13,8 +13,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Constructor.
-     *
-     * @param  DispatcherInterface  $dispatcher
      */
     public function __construct(DispatcherInterface $dispatcher)
     {
@@ -25,7 +23,6 @@ class NullDispatcher implements DispatcherInterface
      * Register an event listener with the dispatcher.
      *
      * @param  string|array  $events
-     * @param  mixed  $listener
      * @return void
      */
     public function listen($events, $listener)
@@ -48,7 +45,6 @@ class NullDispatcher implements DispatcherInterface
      * Fire an event until the first non-null response is returned.
      *
      * @param  string|object  $event
-     * @param  mixed  $payload
      * @return null
      */
     public function until($event, $payload = [])
@@ -60,7 +56,6 @@ class NullDispatcher implements DispatcherInterface
      * Fire an event and call the listeners.
      *
      * @param  string|object  $event
-     * @param  mixed  $payload
      * @param  bool  $halt
      * @return null
      */
@@ -73,7 +68,6 @@ class NullDispatcher implements DispatcherInterface
      * Fire an event and call the listeners.
      *
      * @param  string|object  $event
-     * @param  mixed  $payload
      * @param  bool  $halt
      * @return null
      */

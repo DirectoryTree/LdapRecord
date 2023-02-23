@@ -86,7 +86,6 @@ class Ldap implements LdapInterface
      * @param  string  $dn
      * @param  string  $attribute
      * @param  string  $value
-     * @return mixed
      */
     public function compare($dn, $attribute, $value)
     {
@@ -160,7 +159,6 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-set-rebind-proc.php
      *
-     * @param  callable  $callback
      * @return bool
      */
     public function setRebindCallback(callable $callback)

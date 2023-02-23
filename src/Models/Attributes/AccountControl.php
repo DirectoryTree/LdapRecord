@@ -71,8 +71,6 @@ class AccountControl
 
     /**
      * Get the value when casted to string.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -81,8 +79,6 @@ class AccountControl
 
     /**
      * Get the value when casted to int.
-     *
-     * @return int
      */
     public function __toInt(): int
     {

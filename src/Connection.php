@@ -89,7 +89,6 @@ class Connection
      * Constructor.
      *
      * @param  array|DomainConfiguration  $config
-     * @param  LdapInterface|null  $ldap
      */
     public function __construct($config = [], LdapInterface $ldap = null)
     {
@@ -132,7 +131,6 @@ class Connection
     /**
      * Set the LDAP connection.
      *
-     * @param  LdapInterface  $ldap
      * @return $this
      */
     public function setLdapConnection(LdapInterface $ldap)
@@ -145,7 +143,6 @@ class Connection
     /**
      * Set the event dispatcher.
      *
-     * @param  DispatcherInterface  $dispatcher
      * @return $this
      */
     public function setDispatcher(DispatcherInterface $dispatcher)
@@ -193,7 +190,6 @@ class Connection
     /**
      * Set the cache store.
      *
-     * @param  CacheInterface  $store
      * @return $this
      */
     public function setCache(CacheInterface $store)
@@ -342,9 +338,6 @@ class Connection
 
     /**
      * Perform the operation on the LDAP connection.
-     *
-     * @param  Closure  $operation
-     * @return mixed
      */
     public function run(Closure $operation)
     {
@@ -368,9 +361,6 @@ class Connection
 
     /**
      * Perform the operation on an isolated LDAP connection.
-     *
-     * @param  Closure  $operation
-     * @return mixed
      */
     public function isolate(Closure $operation)
     {
@@ -386,7 +376,6 @@ class Connection
     /**
      * Attempt to get an exception for the cause of failure.
      *
-     * @param  LdapRecordException  $e
      * @return LdapRecordException|null
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e)
@@ -404,8 +393,6 @@ class Connection
     /**
      * Run the operation callback on the current LDAP connection.
      *
-     * @param  Closure  $operation
-     * @return mixed
      *
      * @throws LdapRecordException
      */
@@ -459,9 +446,6 @@ class Connection
     /**
      * Attempt to retry an LDAP operation if due to a lost connection.
      *
-     * @param  LdapRecordException  $e
-     * @param  Closure  $operation
-     * @return mixed
      *
      * @throws LdapRecordException
      */
@@ -480,8 +464,6 @@ class Connection
     /**
      * Retry the operation on the current host.
      *
-     * @param  Closure  $operation
-     * @return mixed
      *
      * @throws LdapRecordException
      */
@@ -501,9 +483,6 @@ class Connection
     /**
      * Attempt the operation again on the next host.
      *
-     * @param  LdapRecordException  $e
-     * @param  Closure  $operation
-     * @return mixed
      *
      * @throws LdapRecordException
      */

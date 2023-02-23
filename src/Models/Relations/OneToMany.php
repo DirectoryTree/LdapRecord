@@ -32,8 +32,6 @@ abstract class OneToMany extends Relation
     /**
      * Constructor.
      *
-     * @param  Builder  $query
-     * @param  Model  $parent
      * @param  string  $related
      * @param  string  $relationKey
      * @param  string  $foreignKey
@@ -49,7 +47,6 @@ abstract class OneToMany extends Relation
     /**
      * Set the relation to load with its parent.
      *
-     * @param  Relation  $relation
      * @return $this
      */
     public function with(Relation $relation)
@@ -99,7 +96,6 @@ abstract class OneToMany extends Relation
      * Execute the callback excluding the merged query result.
      *
      * @param  callable  $callback
-     * @return mixed
      */
     protected function onceWithoutMerging($callback)
     {
@@ -168,8 +164,6 @@ abstract class OneToMany extends Relation
     /**
      * Get the recursive relation results for given model.
      *
-     * @param  Model  $model
-     * @param  array  $loaded
      * @return Collection
      */
     protected function getRecursiveRelationResults(Model $model, array $loaded)

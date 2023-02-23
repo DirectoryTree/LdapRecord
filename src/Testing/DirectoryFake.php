@@ -41,7 +41,6 @@ class DirectoryFake
     /**
      * Make a connection fake.
      *
-     * @param  array  $config
      * @return ConnectionFake
      */
     public static function makeConnectionFake(array $config = [])

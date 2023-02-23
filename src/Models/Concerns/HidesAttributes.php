@@ -40,7 +40,6 @@ trait HidesAttributes
     /**
      * Set the hidden attributes for the model.
      *
-     * @param  array  $hidden
      * @return $this
      */
     public function setHidden(array $hidden)
@@ -79,7 +78,6 @@ trait HidesAttributes
     /**
      * Set the visible attributes for the model.
      *
-     * @param  array  $visible
      * @return $this
      */
     public function setVisible(array $visible)

@@ -60,7 +60,6 @@ class Guid
     /**
      * Constructor.
      *
-     * @param  mixed  $value
      *
      * @throws InvalidArgumentException
      */
@@ -77,8 +76,6 @@ class Guid
 
     /**
      * Returns the string value of the GUID.
-     *
-     * @return string
      */
     public function __toString(): string
     {

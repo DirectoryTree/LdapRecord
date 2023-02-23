@@ -25,36 +25,26 @@ class LdapExpectation
 
     /**
      * The amount of times the expectation should be called.
-     *
-     * @var int
      */
     protected int $count = 1;
 
     /**
      * The method that the expectation belongs to.
-     *
-     * @var string
      */
     protected string $method;
 
     /**
      * The methods argument's.
-     *
-     * @var array
      */
     protected array $args = [];
 
     /**
      * Whether the same expectation should be returned indefinitely.
-     *
-     * @var bool
      */
     protected bool $indefinitely = true;
 
     /**
      * Whether the expectation should return errors.
-     *
-     * @var bool
      */
     protected bool $errors = false;
 
@@ -77,8 +67,6 @@ class LdapExpectation
 
     /**
      * Constructor.
-     *
-     * @param  string  $method
      */
     public function __construct(string $method)
     {
@@ -88,7 +76,6 @@ class LdapExpectation
     /**
      * Set the arguments that the operation should receive.
      *
-     * @param  mixed  $args
      * @return $this
      */
     public function with(mixed $args): static
@@ -111,7 +98,6 @@ class LdapExpectation
     /**
      * Set the expected value to return.
      *
-     * @param  mixed  $value
      * @return $this
      */
     public function andReturn(mixed $value): static
@@ -124,9 +110,6 @@ class LdapExpectation
     /**
      * The error message to return from the expectation.
      *
-     * @param  int  $errorCode
-     * @param  string  $errorMessage
-     * @param  string  $diagnosticMessage
      * @return $this
      */
     public function andReturnError(int $errorCode = 1, string $errorMessage = '', string $diagnosticMessage = ''): static
@@ -200,7 +183,6 @@ class LdapExpectation
     /**
      * Set the expectation to be called the given number of times.
      *
-     * @param  int  $count
      * @return $this
      */
     public function times(int $count = 1): static
@@ -214,8 +196,6 @@ class LdapExpectation
 
     /**
      * Get the method the expectation belongs to.
-     *
-     * @return string
      */
     public function getMethod(): string
     {
@@ -228,8 +208,6 @@ class LdapExpectation
 
     /**
      * Get the expected call count.
-     *
-     * @return int
      */
     public function getExpectedCount(): int
     {
@@ -258,8 +236,6 @@ class LdapExpectation
 
     /**
      * Get the expected value.
-     *
-     * @return mixed
      */
     public function getExpectedValue(): mixed
     {
@@ -268,8 +244,6 @@ class LdapExpectation
 
     /**
      * Determine whether the expectation is returning an error.
-     *
-     * @return bool
      */
     public function isReturningError(): bool
     {

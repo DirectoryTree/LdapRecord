@@ -46,7 +46,6 @@ class Builder extends BaseBuilder
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -60,9 +59,7 @@ class Builder extends BaseBuilder
     /**
      * Apply the given scope on the current builder instance.
      *
-     * @param  callable  $scope
      * @param  array  $parameters
-     * @return mixed
      */
     protected function callScope(callable $scope, $parameters = [])
     {
@@ -89,7 +86,6 @@ class Builder extends BaseBuilder
     /**
      * Set the model instance for the model being queried.
      *
-     * @param  Model  $model
      * @return $this
      */
     public function setModel(Model $model)
@@ -203,7 +199,6 @@ class Builder extends BaseBuilder
     /**
      * Finds multiple records using ambiguous name resolution.
      *
-     * @param  array  $values
      * @param  array  $columns
      * @return \LdapRecord\Query\Collection
      */
@@ -287,9 +282,6 @@ class Builder extends BaseBuilder
 
     /**
      * Apply the query scopes and execute the callback.
-     *
-     * @param  Closure  $callback
-     * @return mixed
      */
     protected function afterScopes(Closure $callback)
     {
@@ -360,7 +352,6 @@ class Builder extends BaseBuilder
     /**
      * Remove all or passed registered global scopes.
      *
-     * @param  array|null  $scopes
      * @return $this
      */
     public function withoutGlobalScopes(array $scopes = null)
@@ -399,7 +390,6 @@ class Builder extends BaseBuilder
     /**
      * Processes and converts the given LDAP results into models.
      *
-     * @param  array  $results
      * @return \LdapRecord\Query\Collection
      */
     protected function process(array $results)

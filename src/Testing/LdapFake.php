@@ -450,8 +450,6 @@ class LdapFake implements LdapInterface
      * Resolve the methods expectations.
      *
      * @param  string  $method
-     * @param  array  $args
-     * @return mixed
      *
      * @throws Exception
      */
@@ -483,7 +481,6 @@ class LdapFake implements LdapInterface
     /**
      * Apply the expectation error to the fake.
      *
-     * @param  LdapExpectation  $expectation
      * @return void
      */
     protected function applyExpectationError(LdapExpectation $expectation)
@@ -498,7 +495,6 @@ class LdapFake implements LdapInterface
      *
      * @param  string  $method
      * @param  Constraint[]  $expectedArgs
-     * @param  array  $methodArgs
      * @return void
      */
     protected function assertMethodArgumentsMatch($method, array $expectedArgs = [], array $methodArgs = [])

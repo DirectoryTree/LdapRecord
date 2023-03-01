@@ -3,7 +3,6 @@
 namespace LdapRecord\Tests\Integration;
 
 use Carbon\Carbon;
-use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\OpenLDAP\OrganizationalUnit;
 use LdapRecord\Query\ArrayCacheStore;

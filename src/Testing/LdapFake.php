@@ -264,6 +264,16 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
+    public function getHost()
+    {
+        return $this->hasExpectations('getHost')
+            ? $this->resolveExpectation('getHost')
+            : $this->host;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setOption($option, $value)
     {
         return $this->hasExpectations('setOption')

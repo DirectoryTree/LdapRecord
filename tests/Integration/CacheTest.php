@@ -28,7 +28,16 @@ class CacheTest extends TestCase
         $this->ou->deleteLeafNodes();
     }
 
-    protected function resetConnection(array $params = [], CacheInterface $cache = null): Connection
+    protected function tearDown(): void
+    {
+        $this->ou->delete(true);
+
+        Container::reset();
+
+        parent::tearDown();
+    }
+
+    protected function resetConnection(array $params = [], CacheInterface $cache = null)
     {
         Container::reset();
 
@@ -43,16 +52,8 @@ class CacheTest extends TestCase
         return $connection;
     }
 
-    protected function tearDown(): void
-    {
-        $this->ou->delete(true);
-
-        Container::reset();
-
-        parent::tearDown();
-    }
-
-    protected function createUser(string $cn): User
+    /** @return User */
+    protected function createUser(string $cn)
     {
         $user = (new User())
             ->inside($this->ou)
@@ -71,7 +72,8 @@ class CacheTest extends TestCase
         return $user;
     }
 
-    protected function getUserCnsFromCache(int $ttl = 30): array
+    /** @return array */
+    protected function getUserCnsFromCache(int $ttl = 30)
     {
         $cache = Carbon::now()->addSeconds($ttl);
 

@@ -2,12 +2,15 @@
 
 namespace LdapRecord\Tests\Unit\Query;
 
+use Carbon\Carbon;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\Entry;
 use LdapRecord\Query\ArrayCacheStore;
 use LdapRecord\Query\Cache;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class BuilderCacheTest extends TestCase
 {
@@ -37,5 +40,38 @@ class BuilderCacheTest extends TestCase
 
         $this->assertInstanceOf(Cache::class, $query->getCache());
         $this->assertInstanceOf(ArrayCacheStore::class, $query->getCache()->store());
+    }
+
+    public function test_cache_key_generation_connects_to_server_when_not_connected()
+    {
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->andReturn(true))
+            ->expect(LdapFake::operation('getHost')->andReturn($host = 'localhost'));
+
+        $conn = new Connection([], $ldap);
+
+        $conn->setCache(
+            $cache = m::mock(ArrayCacheStore::class)
+        );
+
+        $container = Container::getInstance();
+        $container->setDefault('default');
+        $container->add($conn, 'default');
+
+        $query = Entry::cache(Carbon::now()->addDay());
+
+        $expectedKey = md5(implode([
+            $host,
+            $query->getType(),
+            $query->getDn(),
+            $query->getQuery(),
+            implode($query->getSelects()),
+            $query->limit,
+            $query->paginated,
+        ]));
+
+        $cache->shouldReceive('get')->with($expectedKey)->andReturn([]);
+
+        $this->assertEmpty($query->get());
     }
 }

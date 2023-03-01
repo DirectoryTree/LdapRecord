@@ -33,6 +33,7 @@ class CacheTest extends TestCase
         Container::reset();
 
         $connection = parent::makeConnection($params);
+
         if ($cache) {
             $connection->setCache($cache);
         }
@@ -70,40 +71,42 @@ class CacheTest extends TestCase
         return $user;
     }
 
-    protected function listUserCNsUsingCache(int $ttl = 30): array
+    protected function getUserCnsFromCache(int $ttl = 30): array
     {
-        $cache = Carbon::now()->addSecond($ttl);
+        $cache = Carbon::now()->addSeconds($ttl);
 
-        $result = [];
-        foreach (User::cache($cache)->get() as $user) {
-            $result[] = $user->cn[0];
-        }
-        sort($result);
-
-        return $result;
+        return User::cache($cache)
+            ->get()
+            ->sortBy(function (User $user) {
+                return $user->getName();
+            })->map(function (User $user) {
+                return $user->getName();
+            })
+            ->values()
+            ->all();
     }
 
     public function test_that_results_are_fetched_from_cache()
     {
         $cache = new ArrayCacheStore();
-        $c = $this->resetConnection([], $cache);
+        $this->resetConnection([], $cache);
 
-        $this->assertEquals([], $this->listUserCNsUsingCache());
-        $user = $this->createUser('foo');
+        $this->assertEquals([], $this->getUserCnsFromCache());
+        $this->createUser('foo');
 
-        $this->assertEquals([], $this->listUserCNsUsingCache());
+        $this->assertEquals([], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_are_fetched_from_cache2()
     {
         $cache = new ArrayCacheStore();
-        $c = $this->resetConnection([], $cache);
+        $this->resetConnection([], $cache);
 
-        $user = $this->createUser('foo');
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache());
-        $user = $this->createUser('bar');
+        $this->createUser('foo');
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache());
+        $this->createUser('bar');
 
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache());
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_expire_from_cache()
@@ -111,13 +114,13 @@ class CacheTest extends TestCase
         $cache = new ArrayCacheStore();
         $this->resetConnection([], $cache);
 
-        $user = $this->createUser('foo');
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache(1));
-        $user = $this->createUser('bar');
+        $this->createUser('foo');
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache(1));
+        $this->createUser('bar');
 
         sleep(2);
 
-        $this->assertEquals(['bar', 'foo'], $this->listUserCNsUsingCache());
+        $this->assertEquals(['bar', 'foo'], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_stay_in_cache_even_if_connection_is_reset()
@@ -125,13 +128,13 @@ class CacheTest extends TestCase
         $cache = new ArrayCacheStore();
         $this->resetConnection([], $cache);
 
-        $user = $this->createUser('foo');
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache());
-        $user = $this->createUser('bar');
+        $this->createUser('foo');
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache());
+        $this->createUser('bar');
 
         $this->resetConnection([], $cache);
 
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache());
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_are_not_reused_if_hostname_changes()
@@ -139,12 +142,12 @@ class CacheTest extends TestCase
         $cache = new ArrayCacheStore();
         $this->resetConnection([], $cache);
 
-        $user = $this->createUser('foo');
-        $this->assertEquals(['foo'], $this->listUserCNsUsingCache());
-        $user = $this->createUser('bar');
+        $this->createUser('foo');
+        $this->assertEquals(['foo'], $this->getUserCnsFromCache());
+        $this->createUser('bar');
 
         $this->resetConnection(['hosts' => ['127.0.0.1']], $cache);
 
-        $this->assertEquals(['bar', 'foo'], $this->listUserCNsUsingCache());
+        $this->assertEquals(['bar', 'foo'], $this->getUserCnsFromCache());
     }
 }

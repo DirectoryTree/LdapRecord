@@ -4,19 +4,22 @@ namespace LdapRecord\Support;
 
 class Str
 {
-    public static function is(string $wildcard, string $subject)
+    /**
+     * Determine if a given string matches a given pattern.
+     */
+    public static function is(string|iterable $pattern, string $value)
     {
-        $patterns = Arr::wrap($wildcard);
-
-        if (empty($patterns)) {
-            return false;
+        if (! is_iterable($pattern)) {
+            $pattern = [$pattern];
         }
 
-        foreach ($patterns as $pattern) {
-            // If the given event is an exact match we can of course return true right
+        foreach ($pattern as $pattern) {
+            $pattern = (string) $pattern;
+
+            // If the given value is an exact match we can of course return true right
             // from the beginning. Otherwise, we will translate asterisks and do an
             // actual pattern match against the two strings to see if they match.
-            if ($pattern == $subject) {
+            if ($pattern === $value) {
                 return true;
             }
 
@@ -27,7 +30,7 @@ class Str
             // pattern such as "library/*", making any string check convenient.
             $pattern = str_replace('\*', '.*', $pattern);
 
-            if (preg_match('#^'.$pattern.'\z#u', $subject) === 1) {
+            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
                 return true;
             }
         }

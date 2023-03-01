@@ -72,7 +72,7 @@ class CacheTest extends TestCase
     }
 
     /** @return array */
-    protected function getUserCnsFromCache(int $ttl = 30)
+    protected function getUserCnsFromCache($ttl = 30)
     {
         $cache = Carbon::now()->addSeconds($ttl);
 

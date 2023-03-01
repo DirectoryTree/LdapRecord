@@ -773,11 +773,9 @@ class Builder
      */
     protected function getCacheKey($query)
     {
-        $host = $this->connection->getLdapConnection()->getHost();
-        if (! $host) {
-            $this->connection->connect();
-            $host = $this->connection->getLdapConnection()->getHost();
-        }
+        $host = $this->connection->run(function (LdapInterface $ldap) {
+            return $ldap->getHost();
+        });
 
         $key = $host
             .$this->type

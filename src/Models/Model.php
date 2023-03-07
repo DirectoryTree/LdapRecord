@@ -551,7 +551,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically retrieve attributes on the object.
      *
-     * @param mixed $key
+     * @param string $key
      *
      * @return mixed
      */

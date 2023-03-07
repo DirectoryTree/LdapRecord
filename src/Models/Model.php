@@ -553,7 +553,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * @param mixed $key
      *
-     * @return bool
+     * @return mixed
      */
     public function __get($key)
     {

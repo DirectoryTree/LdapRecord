@@ -564,7 +564,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Dynamically set attributes on the object.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return $this
      */

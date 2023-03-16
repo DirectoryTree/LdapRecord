@@ -12,7 +12,7 @@ class ActiveDirectoryTest extends TestCase
 {
     protected function newBuilder()
     {
-        return (new ActiveDirectoryBuilder(new Connection([], (new LdapFake()))))->setModel(new Entry());
+        return (new ActiveDirectoryBuilder(new Connection([], new LdapFake())))->setModel(new Entry());
     }
 
     public function test_where_member_of()

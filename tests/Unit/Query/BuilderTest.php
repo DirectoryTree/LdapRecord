@@ -18,7 +18,7 @@ class BuilderTest extends TestCase
 {
     protected function newBuilder()
     {
-        return new Builder(new Connection([], (new LdapFake())));
+        return new Builder(new Connection([], new LdapFake()));
     }
 
     public function test_builder_always_has_default_filter()

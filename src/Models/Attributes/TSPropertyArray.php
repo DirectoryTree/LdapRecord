@@ -249,7 +249,7 @@ class TSPropertyArray
         // Reserved data length + (count and sig length == 4) + the added lengths of the TSPropertyArray
         // This saves anything after that variable TSPropertyArray data, so as to not squash anything stored there
         if (strlen($userParameters) > (96 + 4 + $length)) {
-            $this->postBinary = hex2bin(substr($userParameters, (96 + 4 + $length)));
+            $this->postBinary = hex2bin(substr($userParameters, 96 + 4 + $length));
         }
     }
 

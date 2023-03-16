@@ -53,7 +53,7 @@ class ModelTest extends TestCase
         $this->assertNull((new Entry())->getAttribute(null));
         $this->assertEquals(['foo' => ['bar']], (new Entry(['foo' => 'bar']))->getAttributes());
         $this->assertEquals(['bar' => ['baz']], (new Entry())->fill(['bar' => 'baz'])->getAttributes());
-        $this->assertEquals(2, ((new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes()));
+        $this->assertEquals(2, (new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes());
     }
 
     public function test_getting_object_guid_key()

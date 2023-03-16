@@ -175,7 +175,7 @@ class BatchModificationTest extends TestCase
         $modification = new BatchModification('attribute', 1, [
             (int) 500,
             (float) 10.5,
-            (new $class()),
+            new $class(),
         ]);
 
         $this->assertIsString($modification->getValues()[0]);

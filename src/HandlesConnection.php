@@ -236,8 +236,8 @@ trait HandlesConnection
      */
     protected function assembleHostUris($hosts, $port)
     {
-        return array_map(fn ($host) => (
+        return array_map(fn ($host) =>
             "{$this->getProtocol()}{$host}:{$port}"
-        ), (array) $hosts);
+        , (array) $hosts);
     }
 }

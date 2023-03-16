@@ -11,10 +11,8 @@ trait HandlesConnection
 {
     /**
      * The LDAP host that is currently connected.
-     *
-     * @var string|null
      */
-    protected $host;
+    protected ?string $host;
 
     /**
      * The LDAP connection resource.
@@ -45,7 +43,7 @@ trait HandlesConnection
     protected $useTLS = false;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isUsingSSL()
     {
@@ -53,7 +51,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isUsingTLS()
     {
@@ -61,7 +59,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isBound()
     {
@@ -69,7 +67,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isConnected()
     {
@@ -77,7 +75,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function canChangePasswords()
     {
@@ -85,7 +83,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function ssl($enabled = true)
     {
@@ -95,7 +93,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function tls($enabled = true)
     {
@@ -105,7 +103,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setOptions(array $options = [])
     {
@@ -115,7 +113,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getHost()
     {
@@ -123,7 +121,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection()
     {
@@ -131,7 +129,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getProtocol()
     {
@@ -139,7 +137,7 @@ trait HandlesConnection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getExtendedError()
     {

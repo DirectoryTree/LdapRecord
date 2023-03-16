@@ -2,94 +2,53 @@
 
 namespace LdapRecord;
 
-/**
- * @method static $this reset()
- * @method static Connection[] all()
- * @method static Connection[] allConnections()
- * @method static Connection getDefaultConnection()
- * @method static Connection get(string|null $name = null)
- * @method static Connection getConnection(string|null $name = null)
- * @method static bool exists(string $name)
- * @method static $this remove(string|null $name = null)
- * @method static $this removeConnection(string|null $name = null)
- * @method static $this setDefault(string|null $name = null)
- * @method static $this setDefaultConnection(string|null $name = null)
- * @method static $this add(Connection $connection, string|null $name = null)
- * @method static $this addConnection(Connection $connection, string|null $name = null)
- */
+/** @mixin ConnectionManager */
 class Container
 {
     /**
      * The current container instance.
-     *
-     * @var Container
      */
-    protected static $instance;
+    protected static Container $instance;
 
     /**
      * The connection manager instance.
-     *
-     * @var ConnectionManager
      */
-    protected $manager;
-
-    /**
-     * The methods to passthru, for compatibility.
-     *
-     * @var array
-     */
-    protected $passthru = [
-        'reset', 'flush',
-        'add', 'addConnection',
-        'remove', 'removeConnection',
-        'setDefault', 'setDefaultConnection',
-    ];
+    protected ConnectionManager $manager;
 
     /**
      * Forward missing static calls onto the current instance.
-     *
-     * @param  string  $method
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic(string $method, array $parameters): mixed
     {
-        return static::getInstance()->{$method}(...$args);
+        return static::getInstance()->{$method}(...$parameters);
     }
 
     /**
      * Get or set the current instance of the container.
-     *
-     * @return Container
      */
-    public static function getInstance()
+    public static function getInstance(): static
     {
         return static::$instance ?? static::getNewInstance();
     }
 
     /**
      * Set the container instance.
-     *
-     * @param  Container|null  $container
-     * @return Container|null
      */
-    public static function setInstance(self $container = null)
+    public static function setInstance(self $container = null): ?static
     {
         return static::$instance = $container;
     }
 
     /**
      * Set and get a new instance of the container.
-     *
-     * @return Container
      */
-    public static function getNewInstance()
+    public static function getNewInstance(): static
     {
         return static::setInstance(new static());
     }
 
     /**
      * Constructor.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -98,22 +57,16 @@ class Container
 
     /**
      * Forward missing method calls onto the connection manager.
-     *
-     * @param  string  $method
      */
-    public function __call($method, $args)
+    public function __call(string $method, array $parameters): mixed
     {
-        $value = $this->manager->{$method}(...$args);
-
-        return in_array($method, $this->passthru) ? $this : $value;
+        return $this->manager->{$method}(...$parameters);
     }
 
     /**
      * Get the connection manager.
-     *
-     * @return ConnectionManager
      */
-    public function manager()
+    public function manager(): ConnectionManager
     {
         return $this->manager;
     }

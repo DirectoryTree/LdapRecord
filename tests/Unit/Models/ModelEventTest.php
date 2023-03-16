@@ -164,12 +164,12 @@ class ModelEventSaveStub extends Model
 
 class ModelQueryBuilderSaveStub extends Builder
 {
-    public function insert($dn, array $attributes)
+    public function insert(string $dn, array $attributes): bool
     {
         return true;
     }
 
-    public function update($dn, array $modifications)
+    public function update(string $dn, array $modifications): bool
     {
         return true;
     }

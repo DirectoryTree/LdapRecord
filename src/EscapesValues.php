@@ -8,13 +8,8 @@ trait EscapesValues
 {
     /**
      * Prepare a value to be escaped.
-     *
-     * @param  string  $value
-     * @param  string  $ignore
-     * @param  int  $flags
-     * @return EscapedValue
      */
-    public function escape($value, $ignore = '', $flags = 0)
+    public function escape(string $value, string $ignore = '', int $flags = 0): EscapedValue
     {
         return new EscapedValue($value, $ignore, $flags);
     }

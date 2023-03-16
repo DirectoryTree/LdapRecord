@@ -185,7 +185,7 @@ class ScopeTestStub implements Scope
 
 class ModelBuilderTestStub extends Builder
 {
-    protected function runPaginate($filter, $perPage, $isCritical)
+    protected function runPaginate(string $filter, int $perPage, bool $isCritical): array
     {
         return [];
     }

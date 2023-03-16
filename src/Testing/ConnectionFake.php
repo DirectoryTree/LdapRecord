@@ -4,6 +4,7 @@ namespace LdapRecord\Testing;
 
 use LdapRecord\Auth\Guard;
 use LdapRecord\Connection;
+use LdapRecord\LdapInterface;
 use LdapRecord\Models\Model;
 
 class ConnectionFake extends Connection
@@ -13,22 +14,17 @@ class ConnectionFake extends Connection
      *
      * @var LdapFake
      */
-    protected $ldap;
+    protected LdapInterface $ldap;
 
     /**
      * Whether the fake is connected.
-     *
-     * @var bool
      */
-    protected $connected = false;
+    protected bool $connected = false;
 
     /**
      * Make a new fake LDAP connection instance.
-     *
-     * @param  string  $ldap
-     * @return static
      */
-    public static function make(array $config = [], $ldap = LdapFake::class)
+    public static function make(array $config = [], string $ldap = LdapFake::class): static
     {
         $connection = new static($config, new $ldap());
 
@@ -39,11 +35,8 @@ class ConnectionFake extends Connection
 
     /**
      * Set the user to authenticate as.
-     *
-     * @param  Model|string  $user
-     * @return $this
      */
-    public function actingAs($user)
+    public function actingAs(Model|string $user): static
     {
         $this->ldap->shouldAuthenticateWith(
             $user instanceof Model ? $user->getDn() : $user
@@ -54,10 +47,8 @@ class ConnectionFake extends Connection
 
     /**
      * Set the connection to bypass bind attempts as the configured user.
-     *
-     * @return $this
      */
-    public function shouldBeConnected()
+    public function shouldBeConnected(): static
     {
         $this->connected = true;
 
@@ -70,10 +61,8 @@ class ConnectionFake extends Connection
 
     /**
      * Set the connection to attempt binding as the configured user.
-     *
-     * @return $this
      */
-    public function shouldNotBeConnected()
+    public function shouldNotBeConnected(): static
     {
         $this->connected = false;
 
@@ -85,9 +74,9 @@ class ConnectionFake extends Connection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function isConnected()
+    public function isConnected(): bool
     {
         return $this->connected ?: parent::isConnected();
     }

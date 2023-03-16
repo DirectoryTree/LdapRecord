@@ -568,7 +568,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Get the value for a given offset.
      *
      * @param  string  $offset
-     * @return mixed
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -580,7 +579,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * Set the value at the given offset.
      *
      * @param  string  $offset
-     * @param  mixed  $value
      * @return void
      */
     #[\ReturnTypeWillChange]
@@ -731,7 +729,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Converts the current model into the given model.
      *
-     * @param  Model  $into
      * @return Model
      */
     public function convert(self $into)

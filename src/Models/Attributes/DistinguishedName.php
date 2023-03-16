@@ -325,7 +325,6 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a parent of the given child.
      *
-     * @param  DistinguishedName  $child
      * @return bool
      */
     public function isParentOf(self $child)
@@ -336,7 +335,6 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a child of the given parent.
      *
-     * @param  DistinguishedName  $parent
      * @return bool
      */
     public function isChildOf(self $parent)
@@ -356,7 +354,6 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is an ancestor of the descendant.
      *
-     * @param  DistinguishedName  $descendant
      * @return bool
      */
     public function isAncestorOf(self $descendant)
@@ -367,7 +364,6 @@ class DistinguishedName
     /**
      * Determine if the current distinguished name is a descendant of the ancestor.
      *
-     * @param  DistinguishedName  $ancestor
      * @return bool
      */
     public function isDescendantOf(self $ancestor)

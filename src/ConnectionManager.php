@@ -2,7 +2,6 @@
 
 namespace LdapRecord;
 
-use BadMethodCallException;
 use LdapRecord\Events\Dispatcher;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Events\Logger;
@@ -11,32 +10,16 @@ use Psr\Log\LoggerInterface;
 class ConnectionManager
 {
     /**
-     * The logger instance.
-     *
-     * @var LoggerInterface|null
-     */
-    protected $logger;
-
-    /**
-     * The event dispatcher instance.
-     *
-     * @var DispatcherInterface|null
-     */
-    protected $dispatcher;
-
-    /**
      * The added LDAP connections.
      *
      * @var Connection[]
      */
-    protected $connections = [];
+    protected array $connections = [];
 
     /**
      * The name of the default connection.
-     *
-     * @var string
      */
-    protected $default = 'default';
+    protected string $default = 'default';
 
     /**
      * The events to register listeners for during initialization.
@@ -50,61 +33,27 @@ class ConnectionManager
     ];
 
     /**
-     * The method calls to proxy for compatibility.
-     *
-     * To be removed in the next major version.
-     *
-     * @var array
+     * The logger instance.
      */
-    protected $proxy = [
-        'reset' => 'flush',
-        'addConnection' => 'add',
-        'getConnection' => 'get',
-        'allConnections' => 'all',
-        'removeConnection' => 'remove',
-        'getDefaultConnection' => 'getDefault',
-        'setDefaultConnection' => 'setDefault',
-        'getEventDispatcher' => 'dispatcher',
-        'setEventDispatcher' => 'setDispatcher',
-    ];
+    protected ?LoggerInterface $logger = null;
+
+    /**
+     * The event dispatcher instance.
+     */
+    protected ?DispatcherInterface $dispatcher = null;
 
     /**
      * Constructor.
-     *
-     * @return void
      */
-    public function __construct()
+    public function __construct($dispatcher = new Dispatcher())
     {
-        $this->dispatcher = new Dispatcher();
-    }
-
-    /**
-     * Forward missing method calls onto the instance.
-     *
-     * @param  string  $method
-     */
-    public function __call($method, $args)
-    {
-        $method = $this->proxy[$method] ?? $method;
-
-        if (! method_exists($this, $method)) {
-            throw new BadMethodCallException(sprintf(
-                'Call to undefined method %s::%s()',
-                static::class,
-                $method
-            ));
-        }
-
-        return $this->{$method}(...$args);
+        $this->dispatcher = $dispatcher;
     }
 
     /**
      * Add a new connection.
-     *
-     * @param  string|null  $name
-     * @return $this
      */
-    public function add(Connection $connection, $name = null)
+    public function addConnection(Connection $connection, ?string $name = null): static
     {
         $this->connections[$name ?? $this->default] = $connection;
 
@@ -116,12 +65,9 @@ class ConnectionManager
     }
 
     /**
-     * Remove a connection.
-     *
-     * @param $name
-     * @return $this
+     * Remove a connection by its name.
      */
-    public function remove($name)
+    public function removeConnection(string $name): static
     {
         unset($this->connections[$name]);
 
@@ -129,26 +75,23 @@ class ConnectionManager
     }
 
     /**
-     * Get all of the connections.
+     * Get all the registered connections.
      *
      * @return Connection[]
      */
-    public function all()
+    public function all(): array
     {
         return $this->connections;
     }
 
     /**
-     * Get a connection by name or return the default.
-     *
-     * @param  string|null  $name
-     * @return Connection
+     * Get a connection by its name or return the default.
      *
      * @throws ContainerException If the given connection does not exist.
      */
-    public function get($name = null)
+    public function getConnection(?string $name = null): Connection
     {
-        if ($this->exists($name = $name ?? $this->default)) {
+        if ($this->hasConnection($name = $name ?? $this->default)) {
             return $this->connections[$name];
         }
 
@@ -156,43 +99,17 @@ class ConnectionManager
     }
 
     /**
-     * Return the default connection.
-     *
-     * @return Connection
+     * Get the default connection.
      */
-    public function getDefault()
+    public function getDefaultConnection(): Connection
     {
-        return $this->get($this->default);
+        return $this->getConnection($this->default);
     }
 
     /**
-     * Get the default connection name.
-     *
-     * @return string
+     * Set the default connection by its name.
      */
-    public function getDefaultConnectionName()
-    {
-        return $this->default;
-    }
-
-    /**
-     * Checks if the connection exists.
-     *
-     * @param  string  $name
-     * @return bool
-     */
-    public function exists($name)
-    {
-        return array_key_exists($name, $this->connections);
-    }
-
-    /**
-     * Set the default connection name.
-     *
-     * @param  string  $name
-     * @return $this
-     */
-    public function setDefault($name = null)
+    public function setDefaultConnection(string $name): static
     {
         $this->default = $name;
 
@@ -200,11 +117,25 @@ class ConnectionManager
     }
 
     /**
-     * Flush the manager of all instances and connections.
-     *
-     * @return $this
+     * Get the default connection name.
      */
-    public function flush()
+    public function getDefaultConnectionName(): string
+    {
+        return $this->default;
+    }
+
+    /**
+     * Determine if a connection exists.
+     */
+    public function hasConnection(string $name): bool
+    {
+        return array_key_exists($name, $this->connections);
+    }
+
+    /**
+     * Flush the manager of all instances and connections.
+     */
+    public function flush(): static
     {
         $this->logger = null;
 
@@ -217,20 +148,16 @@ class ConnectionManager
 
     /**
      * Get the logger instance.
-     *
-     * @return LoggerInterface|null
      */
-    public function getLogger()
+    public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }
 
     /**
      * Set the event logger to use.
-     *
-     * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
 
@@ -239,10 +166,8 @@ class ConnectionManager
 
     /**
      * Initialize the event logger.
-     *
-     * @return void
      */
-    public function initEventLogger()
+    public function initEventLogger(): void
     {
         $logger = $this->newEventLogger();
 
@@ -257,50 +182,40 @@ class ConnectionManager
 
     /**
      * Make a new event logger instance.
-     *
-     * @return Logger
      */
-    protected function newEventLogger()
+    protected function newEventLogger(): Logger
     {
         return new Logger($this->logger);
     }
 
     /**
      * Unset the logger instance.
-     *
-     * @return void
      */
-    public function unsetLogger()
+    public function unsetLogger(): void
     {
         $this->logger = null;
     }
 
     /**
      * Get the event dispatcher.
-     *
-     * @return DispatcherInterface|null
      */
-    public function dispatcher()
+    public function getDispatcher(): ?DispatcherInterface
     {
         return $this->dispatcher;
     }
 
     /**
      * Set the event dispatcher.
-     *
-     * @return void
      */
-    public function setDispatcher(DispatcherInterface $dispatcher)
+    public function setDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;
     }
 
     /**
      * Unset the event dispatcher.
-     *
-     * @return void
      */
-    public function unsetEventDispatcher()
+    public function unsetEventDispatcher(): void
     {
         $this->dispatcher = null;
     }

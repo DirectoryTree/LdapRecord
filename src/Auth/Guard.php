@@ -107,8 +107,11 @@ class Guard
             $this->connection->startTLS();
         }
 
+        $sasl = $this->configuration->get('use_sasl');
+        $saslOptions = $this->configuration->get('sasl_options');
+
         try {
-            if (! $this->connection->bind($username, $password)) {
+            if (! $this->connection->bind($username, $password, $sasl, $saslOptions)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 

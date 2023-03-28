@@ -57,6 +57,10 @@ class DomainConfigurationTest extends TestCase
             'password' => 'password',
             'use_ssl' => true,
             'use_tls' => false,
+            'use_sasl' => true,
+            'sasl_options' => [
+                'mech' => 'GSSAPI',
+            ],
             'options' => [
                 LDAP_OPT_SIZELIMIT => 1000,
             ],
@@ -69,6 +73,8 @@ class DomainConfigurationTest extends TestCase
         $this->assertEquals('password', $config->get('password'));
         $this->assertTrue($config->get('use_ssl'));
         $this->assertFalse($config->get('use_tls'));
+        $this->assertTrue($config->get('use_sasl'));
+        $this->assertEquals(['mech' => 'GSSAPI'], $config->get('sasl_options'));
         $this->assertEquals(
             [
                 LDAP_OPT_SIZELIMIT => 1000,
@@ -92,6 +98,14 @@ class DomainConfigurationTest extends TestCase
             'use_ssl' => false,
             'use_tls' => false,
             'follow_referrals' => false,
+            'use_sasl' => false,
+            'sasl_options' => [
+                'mech' => null,
+                'realm' => null,
+                'authc_id' => null,
+                'authz_id' => null,
+                'props' => null,
+            ],
             'options' => [],
         ], $config->all());
     }

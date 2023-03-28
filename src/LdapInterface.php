@@ -303,18 +303,30 @@ interface LdapInterface
 
     /**
      * Binds to the current connection using the specified username and password.
-     * If sasl is true, the current connection is bound using SASL.
+     * If sasl is true, the current connection is bound using SASL. saslOptions specifies
+     * the different options for SASL.
      *
-     * @see http://php.net/manual/en/function.ldap-bind.php
+     * SASL options:
+     *  - mech: Mechanism (Defaults: null)
+     *  - realm: Realm (Defaults: null)
+     *  - authc_id: Verification Identity (Defaults: null)
+     *  - authz_id: Authorization Identity (Defaults: null)
+     *  - props: Options for Authorization Identity (Defaults: null)
+     *
+     * @see https://php.net/manual/en/function.ldap-bind.php
+     * @see https://php.net/manual/en/function.ldap-sasl-bind.php
+     * @see https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
      *
      * @param string $username
      * @param string $password
+     * @param bool   $sasl
+     * @param array  $saslOptions
      *
      * @return bool
      *
      * @throws LdapRecordException
      */
-    public function bind($username, $password);
+    public function bind($username, $password, $sasl = false, $saslOptions = []);
 
     /**
      * Adds an entry to the current connection.

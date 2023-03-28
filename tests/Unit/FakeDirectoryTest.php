@@ -46,6 +46,14 @@ class FakeDirectoryTest extends TestCase
             'timeout' => 5,
             'version' => 3,
             'follow_referrals' => false,
+            'use_sasl' => false,
+            'sasl_options' => [
+                'mech' => null,
+                'realm' => null,
+                'authc_id' => null,
+                'authz_id' => null,
+                'props' => null,
+            ],
             'options' => ['foo'],
         ];
 
@@ -53,7 +61,7 @@ class FakeDirectoryTest extends TestCase
 
         $fake = DirectoryFake::setup('local');
 
-        $this->assertEquals($fake->getConfiguration()->all(), $config);
+        $this->assertEquals($config, $fake->getConfiguration()->all());
     }
 
     public function test_auth_fails()

@@ -328,7 +328,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function bind($username, $password)
+    public function bind($username, $password, $sasl = false, $saslOptions = [])
     {
         return $this->bound = $this->resolveExpectation('bind', func_get_args());
     }

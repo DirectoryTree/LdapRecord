@@ -300,10 +300,23 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function bind($username, $password)
+    public function bind($username, $password, $sasl = false, $saslOptions = [])
     {
-        return $this->bound = $this->executeFailableOperation(function () use ($username, $password) {
-            return ldap_bind($this->connection, $username, $password ? html_entity_decode($password) : null);
+        if ($sasl) {
+            $defaultSaslOptions = [
+                'mech' => null,
+                'realm' => null,
+                'authc_id' => null,
+                'authz_id' => null,
+                'props' => null,
+            ];
+            $saslOptions = array_merge($defaultSaslOptions, $saslOptions);
+        }
+
+        return $this->bound = $this->executeFailableOperation(function () use ($username, $password, $sasl, $saslOptions) {
+            return $sasl ?
+                ldap_sasl_bind($this->connection, $username, $password, $saslOptions['mech'], $saslOptions['realm'], $saslOptions['authc_id'], $saslOptions['authz_id'], $saslOptions['props'])
+                : ldap_bind($this->connection, $username, $password ? html_entity_decode($password) : null);
         });
     }
 

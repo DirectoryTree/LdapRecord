@@ -10,8 +10,7 @@ class Parser
     /**
      * Parse an LDAP filter into nodes.
      *
-     * @param string $string
-     *
+     * @param  string  $string
      * @return (ConditionNode|GroupNode)[]
      *
      * @throws ParserException
@@ -36,8 +35,7 @@ class Parser
     /**
      * Perform a match for all filters in the string.
      *
-     * @param string $string
-     *
+     * @param  string  $string
      * @return array
      */
     protected static function match($string)
@@ -50,8 +48,7 @@ class Parser
     /**
      * Assemble the parsed nodes into a single filter.
      *
-     * @param Node|Node[] $nodes
-     *
+     * @param  Node|Node[]  $nodes
      * @return string
      */
     public static function assemble($nodes = [])
@@ -64,8 +61,7 @@ class Parser
     /**
      * Assemble the node into its string based format.
      *
-     * @param GroupNode|ConditionNode $node
-     *
+     * @param  GroupNode|ConditionNode  $node
      * @return string
      */
     protected static function compileNode(Node $node)
@@ -83,8 +79,7 @@ class Parser
     /**
      * Build an array of nodes from the given filters.
      *
-     * @param string[] $filters
-     *
+     * @param  string[]  $filters
      * @return (ConditionNode|GroupNode)[]
      *
      * @throws ParserException
@@ -109,8 +104,7 @@ class Parser
     /**
      * Count the open and close parenthesis of the sting.
      *
-     * @param string $string
-     *
+     * @param  string  $string
      * @return array
      */
     protected static function countParenthesis($string)
@@ -121,8 +115,7 @@ class Parser
     /**
      * Wrap the value in parentheses.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return string
      */
     protected static function wrap($value)
@@ -133,8 +126,7 @@ class Parser
     /**
      * Recursively unwrwap the value from its parentheses.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return string
      */
     protected static function unwrap($value)
@@ -149,8 +141,7 @@ class Parser
     /**
      * Determine if the filter is wrapped.
      *
-     * @param string $filter
-     *
+     * @param  string  $filter
      * @return bool
      */
     protected static function isWrapped($filter)
@@ -161,8 +152,7 @@ class Parser
     /**
      * Determine if the filter is a group.
      *
-     * @param string $filter
-     *
+     * @param  string  $filter
      * @return bool
      */
     protected static function isGroup($filter)

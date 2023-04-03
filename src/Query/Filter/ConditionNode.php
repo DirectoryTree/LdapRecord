@@ -37,7 +37,7 @@ class ConditionNode extends Node
     /**
      * Constructor.
      *
-     * @param string $filter
+     * @param  string  $filter
      */
     public function __construct($filter)
     {
@@ -79,8 +79,7 @@ class ConditionNode extends Node
     /**
      * Extract the condition components from the filter.
      *
-     * @param string $filter
-     *
+     * @param  string  $filter
      * @return array
      */
     protected function extractComponents($filter)

@@ -5,6 +5,7 @@ namespace LdapRecord;
 use Closure;
 use ErrorException;
 use Exception;
+use LDAP\Connection;
 
 /** @mixin Ldap */
 trait HandlesConnection
@@ -16,36 +17,28 @@ trait HandlesConnection
 
     /**
      * The LDAP connection resource.
-     *
-     * @var \LDAP\Connection
      */
-    protected $connection;
+    protected ?Connection $connection = null;
 
     /**
      * The bound status of the connection.
-     *
-     * @var bool
      */
-    protected $bound = false;
+    protected bool $bound = false;
 
     /**
      * Whether the connection must be bound over SSL.
-     *
-     * @var bool
      */
-    protected $useSSL = false;
+    protected bool $useSSL = false;
 
     /**
      * Whether the connection must be bound over TLS.
-     *
-     * @var bool
      */
-    protected $useTLS = false;
+    protected bool $useTLS = false;
 
     /**
      * {@inheritdoc}
      */
-    public function isUsingSSL()
+    public function isUsingSSL(): bool
     {
         return $this->useSSL;
     }
@@ -53,7 +46,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function isUsingTLS()
+    public function isUsingTLS(): bool
     {
         return $this->useTLS;
     }
@@ -61,7 +54,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function isBound()
+    public function isBound(): bool
     {
         return $this->bound;
     }
@@ -69,7 +62,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function isConnected()
+    public function isConnected(): bool
     {
         return ! is_null($this->connection);
     }
@@ -77,7 +70,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function canChangePasswords()
+    public function canChangePasswords(): bool
     {
         return $this->isUsingSSL() || $this->isUsingTLS();
     }
@@ -85,7 +78,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function ssl($enabled = true)
+    public function ssl($enabled = true): static
     {
         $this->useSSL = $enabled;
 
@@ -95,7 +88,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function tls($enabled = true)
+    public function tls($enabled = true): static
     {
         $this->useTLS = $enabled;
 
@@ -105,7 +98,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function setOptions(array $options = [])
+    public function setOptions(array $options = []): void
     {
         foreach ($options as $option => $value) {
             $this->setOption($option, $value);
@@ -115,7 +108,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
@@ -123,7 +116,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
@@ -139,7 +132,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function getExtendedError()
+    public function getExtendedError(): ?string
     {
         return $this->getDiagnosticMessage();
     }
@@ -236,8 +229,8 @@ trait HandlesConnection
      */
     protected function assembleHostUris($hosts, $port)
     {
-        return array_map(fn ($host) =>
+        return array_map(fn ($host) => (
             "{$this->getProtocol()}{$host}:{$port}"
-        , (array) $hosts);
+        ), (array) $hosts);
     }
 }

@@ -39,22 +39,39 @@ interface LdapInterface
      * @see http://msdn.microsoft.com/en-us/library/cc223359.aspx
      */
     public const OID_SERVER_START_TLS = '1.3.6.1.4.1.1466.20037';
+
     public const OID_SERVER_PAGED_RESULTS = '1.2.840.113556.1.4.319';
+
     public const OID_SERVER_SHOW_DELETED = '1.2.840.113556.1.4.417';
+
     public const OID_SERVER_SORT = '1.2.840.113556.1.4.473';
+
     public const OID_SERVER_CROSSDOM_MOVE_TARGET = '1.2.840.113556.1.4.521';
+
     public const OID_SERVER_NOTIFICATION = '1.2.840.113556.1.4.528';
+
     public const OID_SERVER_EXTENDED_DN = '1.2.840.113556.1.4.529';
+
     public const OID_SERVER_LAZY_COMMIT = '1.2.840.113556.1.4.619';
+
     public const OID_SERVER_SD_FLAGS = '1.2.840.113556.1.4.801';
+
     public const OID_SERVER_TREE_DELETE = '1.2.840.113556.1.4.805';
+
     public const OID_SERVER_DIRSYNC = '1.2.840.113556.1.4.841';
+
     public const OID_SERVER_VERIFY_NAME = '1.2.840.113556.1.4.1338';
+
     public const OID_SERVER_DOMAIN_SCOPE = '1.2.840.113556.1.4.1339';
+
     public const OID_SERVER_SEARCH_OPTIONS = '1.2.840.113556.1.4.1340';
+
     public const OID_SERVER_PERMISSIVE_MODIFY = '1.2.840.113556.1.4.1413';
+
     public const OID_SERVER_ASQ = '1.2.840.113556.1.4.1504';
+
     public const OID_SERVER_FAST_BIND = '1.2.840.113556.1.4.1781';
+
     public const OID_SERVER_CONTROL_VLVREQUEST = '2.16.840.1.113730.3.4.9';
 
     /**

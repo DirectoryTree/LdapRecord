@@ -10,7 +10,7 @@ class IntegerValidator extends Validator
     protected string $message = 'Option [:option] must be an integer.';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function passes(): bool
     {

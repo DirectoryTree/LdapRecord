@@ -10,7 +10,7 @@ class BooleanValidator extends Validator
     protected string $message = 'Option [:option] must be a boolean.';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function passes(): bool
     {

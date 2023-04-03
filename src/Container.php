@@ -16,14 +16,6 @@ class Container
     protected ConnectionManager $manager;
 
     /**
-     * Forward missing static calls onto the current instance.
-     */
-    public static function __callStatic(string $method, array $parameters): mixed
-    {
-        return static::getInstance()->{$method}(...$parameters);
-    }
-
-    /**
      * Get or set the current instance of the container.
      */
     public static function getInstance(): static
@@ -48,11 +40,19 @@ class Container
     }
 
     /**
+     * Forward missing static calls onto the current instance.
+     */
+    public static function __callStatic(string $method, array $parameters): mixed
+    {
+        return static::getInstance()->{$method}(...$parameters);
+    }
+
+    /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(ConnectionManager $manager = new ConnectionManager())
     {
-        $this->manager = new ConnectionManager();
+        $this->manager = $manager;
     }
 
     /**
@@ -60,7 +60,7 @@ class Container
      */
     public function __call(string $method, array $parameters): mixed
     {
-        return $this->manager->{$method}(...$parameters);
+        return $this->manager()->{$method}(...$parameters);
     }
 
     /**

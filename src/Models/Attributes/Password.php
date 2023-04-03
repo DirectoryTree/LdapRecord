@@ -9,7 +9,9 @@ use ReflectionMethod;
 class Password
 {
     public const CRYPT_SALT_TYPE_MD5 = 1;
+
     public const CRYPT_SALT_TYPE_SHA256 = 5;
+
     public const CRYPT_SALT_TYPE_SHA512 = 6;
 
     /**

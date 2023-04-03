@@ -16,7 +16,7 @@ class ArrayCacheStore implements CacheInterface
     protected $storage = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -38,7 +38,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
@@ -73,7 +73,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete(string $key): bool
     {
@@ -83,7 +83,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function clear(): bool
     {
@@ -93,7 +93,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
@@ -107,7 +107,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
     {
@@ -119,7 +119,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function deleteMultiple(iterable $keys): bool
     {
@@ -131,7 +131,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function has(string $key): bool
     {

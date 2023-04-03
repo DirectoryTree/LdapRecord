@@ -10,7 +10,7 @@ class ArrayValidator extends Validator
     protected string $message = 'Option [:option] must be an array.';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function passes(): bool
     {

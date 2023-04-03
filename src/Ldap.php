@@ -9,7 +9,7 @@ class Ldap implements LdapInterface
     use HandlesConnection, DetectsErrors;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getEntries($result)
     {
@@ -95,7 +95,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getLastError()
     {
@@ -107,7 +107,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDetailedError()
     {
@@ -137,7 +137,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setOption($option, $value)
     {
@@ -145,7 +145,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOption($option, &$value = null)
     {
@@ -167,7 +167,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTLS()
     {
@@ -177,7 +177,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function connect($hosts = [], $port = 389)
     {
@@ -191,7 +191,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -209,7 +209,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
@@ -228,7 +228,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
@@ -247,7 +247,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null)
     {
@@ -266,7 +266,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null)
     {
@@ -282,7 +282,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function bind($username = null, $password = null, $controls = null)
     {
@@ -298,7 +298,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function add($dn, array $entry)
     {
@@ -308,7 +308,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete($dn)
     {
@@ -318,7 +318,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
@@ -333,7 +333,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function modify($dn, array $entry)
     {
@@ -343,7 +343,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function modifyBatch($dn, array $values)
     {
@@ -353,7 +353,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function modAdd($dn, array $entry)
     {
@@ -363,7 +363,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function modReplace($dn, array $entry)
     {
@@ -373,7 +373,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function modDelete($dn, array $entry)
     {
@@ -383,7 +383,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function freeResult($result)
     {
@@ -391,7 +391,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function errNo()
     {
@@ -399,7 +399,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function err2Str($number)
     {
@@ -442,7 +442,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDiagnosticMessage()
     {

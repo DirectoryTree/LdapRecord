@@ -36,7 +36,7 @@ class Dispatcher implements DispatcherInterface
     protected array $wildcardsCache = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function listen(string|array $events, mixed $listener): void
     {
@@ -60,7 +60,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function hasListeners(string $eventName): bool
     {
@@ -68,7 +68,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function until(string|object $event, mixed $payload = []): mixed
     {
@@ -76,7 +76,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function fire(string|object $event, mixed $payload = [], bool $halt = false): void
     {
@@ -84,7 +84,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function dispatch(string|object $event, mixed $payload = [], $halt = false): mixed
     {
@@ -134,7 +134,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getListeners(string $event): array
     {
@@ -255,7 +255,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function forget(string $event): void
     {

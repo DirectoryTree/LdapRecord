@@ -12,9 +12,11 @@ class TimestampTest extends TestCase
     protected $unixTimestamp = 1601605329;
 
     protected $utcLdapTimestamp = '20201002021244Z';
+
     protected $offsetLdapTimestamp = '20201002021244-0500';
 
     protected $utcWindowsTimestamp = '20201002021618.0Z';
+
     protected $offsetWindowsTimestamp = '20201002021618.0-0500';
 
     protected $windowsIntegerTime = '132460789290000000';

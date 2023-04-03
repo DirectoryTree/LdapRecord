@@ -33,7 +33,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     protected $sidKey = 'objectsid';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getObjectSidKey()
     {
@@ -41,7 +41,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getObjectSid()
     {
@@ -49,7 +49,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConvertedSid($sid = null)
     {
@@ -63,7 +63,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getBinarySid($sid = null)
     {

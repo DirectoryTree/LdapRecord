@@ -8,7 +8,7 @@ use LdapRecord\Models\Model;
 class Collection extends BaseCollection
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function valueRetriever($value)
     {

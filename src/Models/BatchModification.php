@@ -12,7 +12,9 @@ class BatchModification
      * The array keys to be used in batch modifications.
      */
     public const KEY_ATTRIB = 'attrib';
+
     public const KEY_MODTYPE = 'modtype';
+
     public const KEY_VALUES = 'values';
 
     /**

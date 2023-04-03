@@ -143,8 +143,7 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to exchange mailbox users.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasMailbox(Builder $query)
@@ -155,8 +154,7 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to users having a lockout value set.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasLockout(Builder $query)
@@ -170,9 +168,8 @@ class User extends Entry implements Authenticatable
      * @see https://ldapwiki.com/wiki/Active%20Directory%20Account%20Lockout
      * @see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-lockout-duration
      *
-     * @param string|int $localTimezone
-     * @param int|null   $durationInMinutes
-     *
+     * @param  string|int  $localTimezone
+     * @param  int|null  $durationInMinutes
      * @return bool
      */
     public function isLockedOut($localTimezone, $durationInMinutes = null)

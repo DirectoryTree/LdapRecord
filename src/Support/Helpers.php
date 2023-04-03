@@ -9,9 +9,8 @@ class Helpers
     /**
      * Return the default value of the given value.
      *
-     * @param mixed $value
-     * @param mixed $args
-     *
+     * @param  mixed  $value
+     * @param  mixed  $args
      * @return mixed
      */
     public static function value($value, ...$args)

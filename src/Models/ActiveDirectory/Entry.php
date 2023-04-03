@@ -79,8 +79,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Make a new object Sid instance.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return Sid
      */
     protected function newObjectSid($value)
@@ -91,8 +90,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Create a new query builder.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return ActiveDirectoryBuilder
      */
     public function newQueryBuilder(Connection $connection)
@@ -113,8 +111,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Restore a deleted object.
      *
-     * @param string|null $newParentDn
-     *
+     * @param  string|null  $newParentDn
      * @return bool
      *
      * @throws \LdapRecord\LdapRecordException
@@ -156,8 +153,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Convert the attributes for JSON serialization.
      *
-     * @param array $attributes
-     *
+     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesForJson(array $attributes = [])
@@ -179,8 +175,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Convert the attributes from JSON serialization.
      *
-     * @param array $attributes
-     *
+     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesFromJson(array $attributes = [])

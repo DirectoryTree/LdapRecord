@@ -34,7 +34,7 @@ class Timestamp
     /**
      * Constructor.
      *
-     * @param string $type
+     * @param  string  $type
      *
      * @throws LdapRecordException
      */
@@ -46,7 +46,7 @@ class Timestamp
     /**
      * Set the type of timestamp to convert from / to.
      *
-     * @param string $type
+     * @param  string  $type
      *
      * @throws LdapRecordException
      */
@@ -62,8 +62,7 @@ class Timestamp
     /**
      * Converts the value to an LDAP date string.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return float|string
      *
      * @throws LdapRecordException
@@ -110,8 +109,7 @@ class Timestamp
     /**
      * Determine if the value given is in Windows Integer (NTFS Filetime) format.
      *
-     * @param int|string $value
-     *
+     * @param  int|string  $value
      * @return bool
      */
     protected function valueIsWindowsIntegerType($value)
@@ -122,8 +120,7 @@ class Timestamp
     /**
      * Converts the LDAP timestamp value to a Carbon instance.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return Carbon|int|false
      *
      * @throws LdapRecordException
@@ -156,8 +153,7 @@ class Timestamp
     /**
      * Converts standard LDAP timestamps to a date time object.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return DateTime|false
      */
     protected function convertLdapTimeToDateTime($value)
@@ -171,8 +167,7 @@ class Timestamp
     /**
      * Converts date objects to a standard LDAP timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToLdapTime(DateTime $date)
@@ -185,8 +180,7 @@ class Timestamp
     /**
      * Converts standard windows timestamps to a date time object.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return DateTime|false
      */
     protected function convertWindowsTimeToDateTime($value)
@@ -201,8 +195,7 @@ class Timestamp
     /**
      * Converts date objects to a windows timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToWindows(DateTime $date)
@@ -215,8 +208,7 @@ class Timestamp
     /**
      * Converts standard windows integer dates to a date time object.
      *
-     * @param int $value
-     *
+     * @param  int  $value
      * @return DateTime|int|false
      *
      * @throws \Exception
@@ -243,8 +235,7 @@ class Timestamp
     /**
      * Converts date objects to a windows integer timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return float
      */
     protected function convertDateTimeToWindowsInteger(DateTime $date)

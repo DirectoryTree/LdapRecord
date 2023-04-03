@@ -14,8 +14,7 @@ trait HasEvents
     /**
      * Execute the callback without raising any events.
      *
-     * @param Closure $callback
-     *
+     * @param  Closure  $callback
      * @return mixed
      */
     protected static function withoutEvents(Closure $callback)
@@ -42,9 +41,8 @@ trait HasEvents
     /**
      * Dispatch the given model events.
      *
-     * @param string|array $events
-     * @param array        $args
-     *
+     * @param  string|array  $events
+     * @param  array  $args
      * @return void
      */
     protected function dispatch($events, array $args = [])
@@ -57,9 +55,8 @@ trait HasEvents
     /**
      * Fire a custom model event.
      *
-     * @param string $name
-     * @param array  $args
-     *
+     * @param  string  $name
+     * @param  array  $args
      * @return mixed
      */
     protected function fireCustomModelEvent($name, array $args = [])
@@ -72,8 +69,7 @@ trait HasEvents
     /**
      * Fire a model event.
      *
-     * @param Event $event
-     *
+     * @param  Event  $event
      * @return mixed
      */
     protected function fireModelEvent(Event $event)
@@ -84,9 +80,8 @@ trait HasEvents
     /**
      * Listen to a model event.
      *
-     * @param string  $event
-     * @param Closure $listener
-     *
+     * @param  string  $event
+     * @param  Closure  $listener
      * @return mixed
      */
     protected function listenForModelEvent($event, Closure $listener)

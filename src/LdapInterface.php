@@ -21,14 +21,14 @@ interface LdapInterface
     /**
      * The LDAP SSL port number.
      *
-     * @var string
+     * @var int
      */
     public const PORT_SSL = 636;
 
     /**
      * The standard LDAP port number.
      *
-     * @var string
+     * @var int
      */
     public const PORT = 389;
 
@@ -83,68 +83,52 @@ interface LdapInterface
 
     /**
      * Set the current connection to use SSL.
-     *
-     * @return $this
      */
-    public function ssl();
+    public function ssl(): static;
 
     /**
      * Determine if the current connection instance is using SSL.
-     *
-     * @return bool
      */
-    public function isUsingSSL();
+    public function isUsingSSL(): bool;
 
     /**
      * Set the current connection to use TLS.
-     *
-     * @return $this
      */
-    public function tls();
+    public function tls(): static;
 
     /**
      * Determine if the current connection instance is using TLS.
-     *
-     * @return bool
      */
-    public function isUsingTLS();
+    public function isUsingTLS(): bool;
 
     /**
      * Determine if the connection is bound.
-     *
-     * @return bool
      */
-    public function isBound();
+    public function isBound(): bool;
 
     /**
      * Determine if the connection has been created.
-     *
-     * @return bool
      */
-    public function isConnected();
+    public function isConnected(): bool;
 
     /**
      * Determine the connection is able to modify passwords.
-     *
-     * @return bool
      */
-    public function canChangePasswords();
+    public function canChangePasswords(): bool;
 
     /**
      * Returns the full LDAP host URL.
      *
      * Ex: ldap://192.168.1.1:386
-     *
-     * @return string|null
      */
-    public function getHost();
+    public function getHost(): ?string;
 
     /**
      * Get the underlying raw LDAP connection.
      *
      * @return \LDAP\Connection|null
      */
-    public function getConnection();
+    public function getConnection(): ?Connection;
 
     /**
      * Retrieve the entries from a search result.
@@ -152,18 +136,23 @@ interface LdapInterface
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
      * @param  \LDAP\Result  $result
-     * @return array
      */
-    public function getEntries($result);
+    public function getEntries(mixed $result): array;
+
+    public function getFirstEntry(mixed $result): mixed;
+
+    public function getNextEntry(mixed $entry): mixed;
+
+    public function getAttributes(mixed $entry): array|false;
+
+    public function getValuesLen(mixed $entry, string $attribute): array|false;
 
     /**
      * Retrieve the last error on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-error.php
-     *
-     * @return string|null
      */
-    public function getLastError();
+    public function getLastError(): ?string;
 
     /**
      * Return detailed information about an error.
@@ -171,58 +160,51 @@ interface LdapInterface
      * Returns null when there was a successful last request.
      *
      * Returns DetailedError when there was an error.
-     *
-     * @return DetailedError|null
      */
-    public function getDetailedError();
+    public function getDetailedError(): ?DetailedError;
+
+    public function countEntries($result);
+
+    public function compare($dn, $attribute, $value);
 
     /**
      * Set an option on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-set-option.php
-     *
-     * @param  int  $option
-     * @return bool
      */
-    public function setOption($option, $value);
+    public function setOption(int $option, mixed $value): bool;
 
     /**
      * Set options on the current connection.
-     *
-     * @return void
      */
-    public function setOptions(array $options = []);
+    public function setOptions(array $options = []): void;
+
+    public function setRebindCallback(callable $callback);
 
     /**
      * Get the value for the LDAP option.
      *
      * @see https://www.php.net/manual/en/function.ldap-get-option.php
-     *
-     * @param  int  $option
      */
-    public function getOption($option, &$value = null);
+    public function getOption(int $option, mixed &$value = null): bool;
 
     /**
      * Starts a connection using TLS.
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function startTLS();
+    public function startTLS(): bool;
 
     /**
      * Connects to the specified hostname using the specified port.
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @param  string|array  $hosts
-     * @param  int  $port
      * @return \LDAP\Connection|false
      */
-    public function connect($hosts = [], $port = 389);
+    public function connect(string|array $hosts = [], int $port = 389): Connection|false;
 
     /**
      * Closes the current connection.
@@ -230,58 +212,35 @@ interface LdapInterface
      * Returns false if no connection is present.
      *
      * @see http://php.net/manual/en/function.ldap-close.php
-     *
-     * @return bool
      */
-    public function close();
+    public function close(): bool;
 
     /**
      * Performs a search on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-search.php
      *
-     * @param  string  $dn
-     * @param  string  $filter
-     * @param  bool  $onlyAttributes
-     * @param  int  $size
-     * @param  int  $time
-     * @param  int  $deref
-     * @param  array  $controls
      * @return \LDAP\Result
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
+    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed;
 
     /**
      * Performs a single level search on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-list.php
      *
-     * @param  string  $dn
-     * @param  string  $filter
-     * @param  bool  $onlyAttributes
-     * @param  int  $size
-     * @param  int  $time
-     * @param  int  $deref
-     * @param  array  $controls
      * @return \LDAP\Result
      */
-    public function list($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
+    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed;
 
     /**
      * Reads an entry on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-read.php
      *
-     * @param  string  $dn
-     * @param  string  $filter
-     * @param  bool  $onlyAttributes
-     * @param  int  $size
-     * @param  int  $time
-     * @param  int  $deref
-     * @param  array  $controls
      * @return \LDAP\Result
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, array $controls = null);
+    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed;
 
     /**
      * Extract information from an LDAP result.
@@ -289,14 +248,8 @@ interface LdapInterface
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
      * @param  \LDAP\Result  $result
-     * @param  int  $errorCode
-     * @param  ?string  $dn
-     * @param  ?string  $errorMessage
-     * @param  ?array  $referrals
-     * @param  ?array  $controls
-     * @return false|LdapResultResponse
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, array &$controls = null);
+    public function parseResult(mixed $result, int &$errorCode, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false;
 
     /**
      * Binds to the current connection using the specified username and password.
@@ -304,112 +257,81 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-bind.php
      *
-     * @param  string|null  $username
-     * @param  string|null  $password
-     * @return LdapResultResponse
-     *
      * @throws LdapRecordException
      */
-    public function bind($username = null, $password = null, array $controls = null);
+    public function bind(string $username = null, string $password = null, array $controls = null): LdapResultResponse;
 
     /**
      * Adds an entry to the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-add.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function add($dn, array $entry);
+    public function add(string $dn, array $entry): bool;
 
     /**
      * Deletes an entry on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-delete.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function delete($dn);
+    public function delete(string $dn): bool;
 
     /**
      * Modify the name of an entry on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-rename.php
      *
-     * @param  string  $dn
-     * @param  string  $newRdn
-     * @param  string  $newParent
-     * @param  bool  $deleteOldRdn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false);
+    public function rename(string $dn, string $newRdn, string $newParent, bool $deleteOldRdn = false): bool;
 
     /**
      * Modifies an existing entry on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-modify.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function modify($dn, array $entry);
+    public function modify(string $dn, array $entry): bool;
 
     /**
      * Batch modifies an existing entry on the current connection.
      *
      * @see http://php.net/manual/en/function.ldap-modify-batch.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function modifyBatch($dn, array $values);
+    public function modifyBatch(string $dn, array $values): bool;
 
     /**
      * Add attribute values to current attributes.
      *
      * @see http://php.net/manual/en/function.ldap-mod-add.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function modAdd($dn, array $entry);
+    public function modAdd(string $dn, array $entry): bool;
 
     /**
      * Replaces attribute values with new ones.
      *
      * @see http://php.net/manual/en/function.ldap-mod-replace.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function modReplace($dn, array $entry);
+    public function modReplace(string $dn, array $entry): bool;
 
     /**
      * Delete attribute values from current attributes.
      *
      * @see http://php.net/manual/en/function.ldap-mod-del.php
      *
-     * @param  string  $dn
-     * @return bool
-     *
      * @throws LdapRecordException
      */
-    public function modDelete($dn, array $entry);
+    public function modDelete(string $dn, array $entry): bool;
 
     /**
      * Frees up the memory allocated internally to store the result.
@@ -417,47 +339,35 @@ interface LdapInterface
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
      * @param  \LDAP\Result  $result
-     * @return bool
      */
-    public function freeResult($result);
+    public function freeResult(mixed $result): bool;
 
     /**
      * Returns the error number of the last command executed.
      *
      * @see http://php.net/manual/en/function.ldap-errno.php
-     *
-     * @return int|null
      */
-    public function errNo();
+    public function errNo(): ?int;
 
     /**
      * Returns the error string of the specified error number.
      *
      * @see http://php.net/manual/en/function.ldap-err2str.php
-     *
-     * @param  int  $number
-     * @return string
      */
-    public function err2Str($number);
+    public function err2Str(int $number): string;
 
     /**
      * Returns the LDAP protocol to utilize for the current connection.
-     *
-     * @return string
      */
-    public function getProtocol();
+    public function getProtocol(): string;
 
     /**
      * Returns the extended error code of the last command.
-     *
-     * @return string
      */
-    public function getExtendedError();
+    public function getExtendedError(): ?string;
 
     /**
      * Return the diagnostic Message.
-     *
-     * @return string
      */
-    public function getDiagnosticMessage();
+    public function getDiagnosticMessage(): ?string;
 }

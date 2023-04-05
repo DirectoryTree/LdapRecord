@@ -239,6 +239,9 @@ class ModelTest extends TestCase
         $model->foo = '';
         $this->assertTrue($model->hasAttribute('foo'));
 
+        $model->foo = false;
+        $this->assertTrue($model->hasAttribute('foo'));
+
         $model->foo = [''];
         $this->assertTrue($model->hasAttribute('foo'));
 

@@ -29,38 +29,28 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Indicates if the model exists in the directory.
-     *
-     * @var bool
      */
-    public $exists = false;
+    public bool $exists = false;
 
     /**
      * Indicates whether the model was created during the current request lifecycle.
-     *
-     * @var bool
      */
-    public $wasRecentlyCreated = false;
+    public bool $wasRecentlyCreated = false;
 
     /**
      * Indicates whether the model was renamed during the current request lifecycle.
-     *
-     * @var bool
      */
-    public $wasRecentlyRenamed = false;
+    public bool $wasRecentlyRenamed = false;
 
     /**
      * The models distinguished name.
-     *
-     * @var string|null
      */
-    protected $dn;
+    protected ?string $dn = null;
 
     /**
      * The base DN of where the model should be created in.
-     *
-     * @var string|null
      */
-    protected $in;
+    protected ?string $in = null;
 
     /**
      * The object classes of the model.
@@ -78,38 +68,28 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * The connection name for the model.
-     *
-     * @var string|null
      */
-    protected $connection;
+    protected ?string $connection = null;
 
     /**
      * The attribute key that contains the models object GUID.
-     *
-     * @var string
      */
-    protected $guidKey = 'objectguid';
+    protected string $guidKey = 'objectguid';
 
     /**
      * Contains the models modifications.
-     *
-     * @var array
      */
-    protected $modifications = [];
+    protected array $modifications = [];
 
     /**
      * The array of global scopes on the model.
-     *
-     * @var array
      */
-    protected static $globalScopes = [];
+    protected static array $globalScopes = [];
 
     /**
      * The array of booted models.
-     *
-     * @var array
      */
-    protected static $booted = [];
+    protected static array $booted = [];
 
     /**
      * Constructor.

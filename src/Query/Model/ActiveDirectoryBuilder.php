@@ -5,23 +5,20 @@ namespace LdapRecord\Query\Model;
 use Closure;
 use LdapRecord\LdapInterface;
 use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 
 class ActiveDirectoryBuilder extends Builder
 {
     /**
      * Finds a record by its Object SID.
-     *
-     * @param  string  $sid
-     * @param  array|string  $columns
-     * @return \LdapRecord\Models\ActiveDirectory\Entry|static|null
      */
-    public function findBySid($sid, $columns = [])
+    public function findBySid(string $sid, array|string $columns = ['*']): ?Model
     {
         try {
             return $this->findBySidOrFail($sid, $columns);
-        } catch (ModelNotFoundException $e) {
-            return;
+        } catch (ModelNotFoundException) {
+            return null;
         }
     }
 
@@ -30,23 +27,17 @@ class ActiveDirectoryBuilder extends Builder
      *
      * Fails upon no records returned.
      *
-     * @param  string  $sid
-     * @param  array|string  $columns
-     * @return \LdapRecord\Models\ActiveDirectory\Entry|static
-     *
      * @throws ModelNotFoundException
      */
-    public function findBySidOrFail($sid, $columns = [])
+    public function findBySidOrFail(string $sid, array $columns = ['*']): Model
     {
         return $this->findByOrFail('objectsid', $sid, $columns);
     }
 
     /**
      * Adds a enabled filter to the current query.
-     *
-     * @return $this
      */
-    public function whereEnabled()
+    public function whereEnabled(): static
     {
         return $this->notFilter(function ($query) {
             return $query->whereDisabled();
@@ -55,10 +46,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a disabled filter to the current query.
-     *
-     * @return $this
      */
-    public function whereDisabled()
+    public function whereDisabled(): static
     {
         return $this->rawFilter(
             (new AccountControl())->accountIsDisabled()->filter()
@@ -67,12 +56,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'where member' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function whereMember($dn, $nested = false)
+    public function whereMember(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->whereEquals($attribute, $dn);
@@ -81,12 +66,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds an 'or where member' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function orWhereMember($dn, $nested = false)
+    public function orWhereMember(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->orWhereEquals($attribute, $dn);
@@ -95,12 +76,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'where member of' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function whereMemberOf($dn, $nested = false)
+    public function whereMemberOf(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->whereEquals($attribute, $dn);
@@ -109,12 +86,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'where not member of' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function whereNotMemberof($dn, $nested = false)
+    public function whereNotMemberof(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->whereNotEquals($attribute, $dn);
@@ -123,12 +96,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds an 'or where member of' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function orWhereMemberOf($dn, $nested = false)
+    public function orWhereMemberOf(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->orWhereEquals($attribute, $dn);
@@ -137,12 +106,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'or where not member of' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function orWhereNotMemberof($dn, $nested = false)
+    public function orWhereNotMemberof(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->orWhereNotEquals($attribute, $dn);
@@ -151,12 +116,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'where manager' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function whereManager($dn, $nested = false)
+    public function whereManager(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->whereEquals($attribute, $dn);
@@ -165,12 +126,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds a 'where not manager' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function whereNotManager($dn, $nested = false)
+    public function whereNotManager(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->whereNotEquals($attribute, $dn);
@@ -179,12 +136,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds an 'or where manager' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function orWhereManager($dn, $nested = false)
+    public function orWhereManager(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->orWhereEquals($attribute, $dn);
@@ -193,12 +146,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Adds an 'or where not manager' filter to the current query.
-     *
-     * @param  string  $dn
-     * @param  bool  $nested
-     * @return $this
      */
-    public function orWhereNotManager($dn, $nested = false)
+    public function orWhereNotManager(string $dn, bool $nested = false): static
     {
         return $this->nestedMatchQuery(function ($attribute) use ($dn) {
             return $this->orWhereNotEquals($attribute, $dn);
@@ -207,12 +156,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Execute the callback with a nested match attribute.
-     *
-     * @param  string  $attribute
-     * @param  bool  $nested
-     * @return $this
      */
-    protected function nestedMatchQuery(Closure $callback, $attribute, $nested = false)
+    protected function nestedMatchQuery(Closure $callback, string $attribute, bool $nested = false): static
     {
         return $callback(
             $nested ? $this->makeNestedMatchAttribute($attribute) : $attribute
@@ -221,11 +166,8 @@ class ActiveDirectoryBuilder extends Builder
 
     /**
      * Make a "nested match" filter attribute for querying descendants.
-     *
-     * @param  string  $attribute
-     * @return string
      */
-    protected function makeNestedMatchAttribute($attribute)
+    protected function makeNestedMatchAttribute(string $attribute): string
     {
         return sprintf('%s:%s:', $attribute, LdapInterface::OID_MATCHING_RULE_IN_CHAIN);
     }

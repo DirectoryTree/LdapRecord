@@ -61,14 +61,9 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * Returns the number of entries from a search result.
-     *
-     * @see http://php.net/manual/en/function.ldap-count-entries.php
-     *
-     * @param  \Ldap\Result  $result
-     * @return int
+     * {@inheritDoc}
      */
-    public function countEntries($result)
+    public function countEntries(mixed $result): int
     {
         return $this->executeFailableOperation(function () use ($result) {
             return ldap_count_entries($this->connection, $result);
@@ -76,18 +71,12 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * Compare value of attribute found in entry specified with DN.
-     *
-     * @see http://php.net/manual/en/function.ldap-compare.php
-     *
-     * @param  string  $dn
-     * @param  string  $attribute
-     * @param  string  $value
+     * {@inheritDoc}
      */
-    public function compare($dn, $attribute, $value)
+    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int
     {
-        return $this->executeFailableOperation(function () use ($dn, $attribute, $value) {
-            return ldap_compare($this->connection, $dn, $attribute, $value);
+        return $this->executeFailableOperation(function () use ($dn, $attribute, $value, $controls) {
+            return ldap_compare($this->connection, $dn, $attribute, $value, $controls);
         });
     }
 
@@ -118,12 +107,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * Get all binary values from the specified result entry.
-     *
-     * @see http://php.net/manual/en/function.ldap-get-values-len.php
-     *
-     * @param  \LDAP\ResultEntry  $entry
-     * @return array
+     * {@inheritDoc}
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
@@ -154,10 +138,8 @@ class Ldap implements LdapInterface
      * Set a callback function to do re-binds on referral chasing.
      *
      * @see http://php.net/manual/en/function.ldap-set-rebind-proc.php
-     *
-     * @return bool
      */
-    public function setRebindCallback(callable $callback)
+    public function setRebindCallback(callable $callback): bool
     {
         return ldap_set_rebind_proc($this->connection, $callback);
     }
@@ -175,7 +157,7 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function connect(string|array $hosts = [], int $port = 389): Connection|false
+    public function connect(string|array $hosts = [], int $port = 389): object|false
     {
         $this->bound = false;
 
@@ -238,7 +220,7 @@ class Ldap implements LdapInterface
             $deref,
             $controls
         ) {
-            return  ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+            return ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
         });
     }
 

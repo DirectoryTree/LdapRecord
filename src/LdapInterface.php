@@ -2,6 +2,8 @@
 
 namespace LdapRecord;
 
+use LDAP\Connection;
+
 interface LdapInterface
 {
     /**
@@ -125,8 +127,6 @@ interface LdapInterface
 
     /**
      * Get the underlying raw LDAP connection.
-     *
-     * @return \LDAP\Connection|null
      */
     public function getConnection(): ?Connection;
 
@@ -139,12 +139,38 @@ interface LdapInterface
      */
     public function getEntries(mixed $result): array;
 
+    /**
+     * Returns the entry identifier for first entry in the result.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-first-entry.php
+     *
+     * @param  \LDAP\Result  $result
+     */
     public function getFirstEntry(mixed $result): mixed;
 
+    /**
+     * Retrieve the next result entry.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-next-entry.php
+     *
+     * @param  \LDAP\Result  $entry
+     */
     public function getNextEntry(mixed $entry): mixed;
 
+    /**
+     * Reads attributes and values from an entry in the search result.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-get-attributes.php
+     *
+     * @param  \LDAP\Result  $entry
+     */
     public function getAttributes(mixed $entry): array|false;
 
+    /**
+     * Reads all the values of the attribute in the entry in the result.
+     *
+     * @param  \LDAP\Result  $entry
+     */
     public function getValuesLen(mixed $entry, string $attribute): array|false;
 
     /**
@@ -163,9 +189,19 @@ interface LdapInterface
      */
     public function getDetailedError(): ?DetailedError;
 
-    public function countEntries($result);
+    /**
+     * Count the number of entries in a search
+     *
+     * @see https://www.php.net/manual/en/function.ldap-count-entries.php
+     *
+     * @param  \LDAP\Result  $result
+     */
+    public function countEntries(mixed $result): int;
 
-    public function compare($dn, $attribute, $value);
+    /**
+     * Compare value of attribute found in entry specified with DN.
+     */
+    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int;
 
     /**
      * Set an option on the current connection.
@@ -175,11 +211,16 @@ interface LdapInterface
     public function setOption(int $option, mixed $value): bool;
 
     /**
-     * Set options on the current connection.
+     * Set multiple options on the current connection.
      */
     public function setOptions(array $options = []): void;
 
-    public function setRebindCallback(callable $callback);
+    /**
+     * Set a callback function to do re-binds on referral chasing.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-set-rebind-proc.php
+     */
+    public function setRebindCallback(callable $callback): bool;
 
     /**
      * Get the value for the LDAP option.
@@ -201,10 +242,8 @@ interface LdapInterface
      * Connects to the specified hostname using the specified port.
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
-     *
-     * @return \LDAP\Connection|false
      */
-    public function connect(string|array $hosts = [], int $port = 389): Connection|false;
+    public function connect(string|array $hosts = [], int $port = 389): object|false;
 
     /**
      * Closes the current connection.

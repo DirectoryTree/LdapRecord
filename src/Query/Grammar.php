@@ -8,10 +8,8 @@ class Grammar
 {
     /**
      * The query operators and their method names.
-     *
-     * @var array
      */
-    public $operators = [
+    public array $operators = [
         '*' => 'has',
         '!*' => 'notHas',
         '=' => 'equals',
@@ -30,17 +28,13 @@ class Grammar
 
     /**
      * The query wrapper.
-     *
-     * @var string|null
      */
-    protected $wrapper;
+    protected ?string $wrapper = null;
 
     /**
      * Get all the available operators.
-     *
-     * @return array
      */
-    public function getOperators()
+    public function getOperators(): array
     {
         return array_keys($this->operators);
     }
@@ -49,23 +43,16 @@ class Grammar
      * Wraps a query string in brackets.
      *
      * Produces: (query)
-     *
-     * @param  string  $query
-     * @param  string  $prefix
-     * @param  string  $suffix
-     * @return string
      */
-    public function wrap($query, $prefix = '(', $suffix = ')')
+    public function wrap(string $query, ?string $prefix = '(', ?string $suffix = ')'): string
     {
         return $prefix.$query.$suffix;
     }
 
     /**
      * Compiles the Builder instance into an LDAP query string.
-     *
-     * @return string
      */
-    public function compile(Builder $query)
+    public function compile(Builder $query): string
     {
         if ($this->queryMustBeWrapped($query)) {
             $this->wrapper = 'and';
@@ -84,31 +71,24 @@ class Grammar
 
     /**
      * Determine if the query must be wrapped in an encapsulating statement.
-     *
-     * @return bool
      */
-    protected function queryMustBeWrapped(Builder $query)
+    protected function queryMustBeWrapped(Builder $query): bool
     {
         return ! $query->isNested() && $this->hasMultipleFilters($query);
     }
 
     /**
      * Assembles all of the "raw" filters on the query.
-     *
-     * @return string
      */
-    protected function compileRaws(Builder $builder)
+    protected function compileRaws(Builder $builder): string
     {
         return $this->concatenate($builder->filters['raw']);
     }
 
     /**
      * Assembles all where clauses in the current wheres property.
-     *
-     * @param  string  $type
-     * @return string
      */
-    protected function compileWheres(Builder $builder, $type = 'and')
+    protected function compileWheres(Builder $builder, string $type = 'and'): string
     {
         $filter = '';
 
@@ -121,10 +101,8 @@ class Grammar
 
     /**
      * Assembles all or where clauses in the current orWheres property.
-     *
-     * @return string
      */
-    protected function compileOrWheres(Builder $query)
+    protected function compileOrWheres(Builder $query): string
     {
         $filter = $this->compileWheres($query, 'or');
 
@@ -146,10 +124,8 @@ class Grammar
 
     /**
      * Determine if the query can be wrapped in a single or statement.
-     *
-     * @return bool
      */
-    protected function queryCanBeWrappedInSingleOrStatement(Builder $query)
+    protected function queryCanBeWrappedInSingleOrStatement(Builder $query): bool
     {
         return $this->has($query, 'or', '>=', 1) &&
             $this->has($query, 'and', '<=', 1) &&
@@ -158,10 +134,8 @@ class Grammar
 
     /**
      * Concatenates filters into a single string.
-     *
-     * @return string
      */
-    public function concatenate(array $bindings = [])
+    public function concatenate(array $bindings = []): string
     {
         // Filter out empty query segments.
         return implode(
@@ -171,34 +145,24 @@ class Grammar
 
     /**
      * Determine if the binding value is not empty.
-     *
-     * @param  string  $value
-     * @return bool
      */
-    protected function bindingValueIsNotEmpty($value)
+    protected function bindingValueIsNotEmpty(string $value): bool
     {
         return ! empty($value);
     }
 
     /**
      * Determine if the query is using multiple filters.
-     *
-     * @return bool
      */
-    protected function hasMultipleFilters(Builder $query)
+    protected function hasMultipleFilters(Builder $query): bool
     {
         return $this->has($query, ['and', 'or', 'raw'], '>', 1);
     }
 
     /**
      * Determine if the query contains the given filter statement type.
-     *
-     * @param  string|array  $type
-     * @param  string  $operator
-     * @param  int  $count
-     * @return bool
      */
-    protected function has(Builder $query, $type, $operator = '>=', $count = 1)
+    protected function has(Builder $query, array|string $type, string $operator = '>=', int $count = 1): bool
     {
         $types = (array) $type;
 
@@ -226,12 +190,8 @@ class Grammar
      * Returns a query string for equals.
      *
      * Produces: (field=value)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileEquals($field, $value)
+    public function compileEquals(string $field, string $value): string
     {
         return $this->wrap($field.'='.$value);
     }
@@ -240,12 +200,8 @@ class Grammar
      * Returns a query string for does not equal.
      *
      * Produces: (!(field=value))
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileDoesNotEqual($field, $value)
+    public function compileDoesNotEqual(string $field, string $value): string
     {
         return $this->compileNot(
             $this->compileEquals($field, $value)
@@ -256,12 +212,8 @@ class Grammar
      * Alias for does not equal operator (!=) operator.
      *
      * Produces: (!(field=value))
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileDoesNotEqualAlias($field, $value)
+    public function compileDoesNotEqualAlias(string $field, string $value): string
     {
         return $this->compileDoesNotEqual($field, $value);
     }
@@ -270,12 +222,8 @@ class Grammar
      * Returns a query string for greater than or equals.
      *
      * Produces: (field>=value)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileGreaterThanOrEquals($field, $value)
+    public function compileGreaterThanOrEquals(string $field, string $value): string
     {
         return $this->wrap("$field>=$value");
     }
@@ -284,12 +232,8 @@ class Grammar
      * Returns a query string for less than or equals.
      *
      * Produces: (field<=value)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileLessThanOrEquals($field, $value)
+    public function compileLessThanOrEquals(string $field, string $value): string
     {
         return $this->wrap("$field<=$value");
     }
@@ -298,12 +242,8 @@ class Grammar
      * Returns a query string for approximately equals.
      *
      * Produces: (field~=value)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileApproximatelyEquals($field, $value)
+    public function compileApproximatelyEquals(string $field, string $value): string
     {
         return $this->wrap("$field~=$value");
     }
@@ -312,12 +252,8 @@ class Grammar
      * Returns a query string for starts with.
      *
      * Produces: (field=value*)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileStartsWith($field, $value)
+    public function compileStartsWith(string $field, string $value): string
     {
         return $this->wrap("$field=$value*");
     }
@@ -326,12 +262,8 @@ class Grammar
      * Returns a query string for does not start with.
      *
      * Produces: (!(field=*value))
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileNotStartsWith($field, $value)
+    public function compileNotStartsWith(string $field, string $value): string
     {
         return $this->compileNot(
             $this->compileStartsWith($field, $value)
@@ -342,12 +274,8 @@ class Grammar
      * Returns a query string for ends with.
      *
      * Produces: (field=*value)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileEndsWith($field, $value)
+    public function compileEndsWith(string $field, string $value): string
     {
         return $this->wrap("$field=*$value");
     }
@@ -356,12 +284,8 @@ class Grammar
      * Returns a query string for does not end with.
      *
      * Produces: (!(field=value*))
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileNotEndsWith($field, $value)
+    public function compileNotEndsWith(string $field, string $value): string
     {
         return $this->compileNot($this->compileEndsWith($field, $value));
     }
@@ -370,12 +294,8 @@ class Grammar
      * Returns a query string for contains.
      *
      * Produces: (field=*value*)
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileContains($field, $value)
+    public function compileContains(string $field, string $value): string
     {
         return $this->wrap("$field=*$value*");
     }
@@ -384,12 +304,8 @@ class Grammar
      * Returns a query string for does not contain.
      *
      * Produces: (!(field=*value*))
-     *
-     * @param  string  $field
-     * @param  string  $value
-     * @return string
      */
-    public function compileNotContains($field, $value)
+    public function compileNotContains(string $field, string $value): string
     {
         return $this->compileNot(
             $this->compileContains($field, $value)
@@ -400,11 +316,8 @@ class Grammar
      * Returns a query string for a where has.
      *
      * Produces: (field=*)
-     *
-     * @param  string  $field
-     * @return string
      */
-    public function compileHas($field)
+    public function compileHas(string $field): string
     {
         return $this->wrap("$field=*");
     }
@@ -413,11 +326,8 @@ class Grammar
      * Returns a query string for a where does not have.
      *
      * Produces: (!(field=*))
-     *
-     * @param  string  $field
-     * @return string
      */
-    public function compileNotHas($field)
+    public function compileNotHas(string $field): string
     {
         return $this->compileNot(
             $this->compileHas($field)
@@ -428,11 +338,8 @@ class Grammar
      * Wraps the inserted query inside an AND operator.
      *
      * Produces: (&query)
-     *
-     * @param  string  $query
-     * @return string
      */
-    public function compileAnd($query)
+    public function compileAnd(string $query): string
     {
         return $query ? $this->wrap($query, '(&') : '';
     }
@@ -441,22 +348,16 @@ class Grammar
      * Wraps the inserted query inside an OR operator.
      *
      * Produces: (|query)
-     *
-     * @param  string  $query
-     * @return string
      */
-    public function compileOr($query)
+    public function compileOr(string $query): string
     {
         return $query ? $this->wrap($query, '(|') : '';
     }
 
     /**
      * Wraps the inserted query inside an NOT operator.
-     *
-     * @param  string  $query
-     * @return string
      */
-    public function compileNot($query)
+    public function compileNot(string $query): string
     {
         return $query ? $this->wrap($query, '(!') : '';
     }
@@ -464,11 +365,9 @@ class Grammar
     /**
      * Assembles a single where query.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
      */
-    protected function compileWhere(array $where)
+    protected function compileWhere(array $where): string
     {
         $method = $this->makeCompileMethod($where['operator']);
 
@@ -478,12 +377,10 @@ class Grammar
     /**
      * Make the compile method name for the operator.
      *
-     * @param  string  $operator
-     * @return string
      *
      * @throws UnexpectedValueException
      */
-    protected function makeCompileMethod($operator)
+    protected function makeCompileMethod(string $operator): string
     {
         if (! $this->operatorExists($operator)) {
             throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
@@ -494,11 +391,8 @@ class Grammar
 
     /**
      * Determine if the operator exists.
-     *
-     * @param  string  $operator
-     * @return bool
      */
-    protected function operatorExists($operator)
+    protected function operatorExists(string $operator): bool
     {
         return array_key_exists($operator, $this->operators);
     }

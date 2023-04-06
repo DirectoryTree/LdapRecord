@@ -78,7 +78,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function ssl($enabled = true): static
+    public function ssl(bool $enabled = true): static
     {
         $this->useSSL = $enabled;
 
@@ -88,7 +88,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function tls($enabled = true): static
+    public function tls(bool $enabled = true): static
     {
         $this->useTLS = $enabled;
 
@@ -124,7 +124,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function getProtocol()
+    public function getProtocol(): string
     {
         return $this->isUsingSSL() ? LdapInterface::PROTOCOL_SSL : LdapInterface::PROTOCOL;
     }
@@ -140,10 +140,9 @@ trait HandlesConnection
     /**
      * Convert warnings to exceptions for the given operation.
      *
-     *
      * @throws LdapRecordException
      */
-    protected function executeFailableOperation(Closure $operation)
+    protected function executeFailableOperation(Closure $operation): mixed
     {
         // If some older versions of PHP, errors are reported instead of throwing
         // exceptions, which could be a significant detriment to our application.
@@ -178,34 +177,24 @@ trait HandlesConnection
 
     /**
      * Determine if the failed operation should be bypassed.
-     *
-     * @param  string  $method
-     * @return bool
      */
-    protected function shouldBypassFailure($method)
+    protected function shouldBypassFailure(string $method): bool
     {
         return in_array($method, ['search', 'read', 'list']);
     }
 
     /**
      * Determine if the error should be bypassed.
-     *
-     * @param  string  $error
-     * @return bool
      */
-    protected function shouldBypassError($error)
+    protected function shouldBypassError(string $error): bool
     {
         return $this->causedByPaginationSupport($error) || $this->causedBySizeLimit($error) || $this->causedByNoSuchObject($error);
     }
 
     /**
      * Generates an LDAP connection string for each host given.
-     *
-     * @param  string|array  $hosts
-     * @param  string  $port
-     * @return string
      */
-    protected function makeConnectionUris($hosts, $port)
+    protected function makeConnectionUris(array|string $hosts, string|int $port): string
     {
         // If an attempt to connect via SSL protocol is being performed,
         // and we are still using the default port, we will swap it
@@ -222,15 +211,9 @@ trait HandlesConnection
 
     /**
      * Assemble the host URI strings.
-     *
-     * @param  array|string  $hosts
-     * @param  string  $port
-     * @return array
      */
-    protected function assembleHostUris($hosts, $port)
+    protected function assembleHostUris(array|string $hosts, string|int $port): array
     {
-        return array_map(fn ($host) =>
-            "{$this->getProtocol()}{$host}:{$port}"
-        , (array) $hosts);
+        return array_map(fn ($host) => "{$this->getProtocol()}{$host}:{$port}", (array) $hosts);
     }
 }

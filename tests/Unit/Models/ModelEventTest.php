@@ -151,7 +151,7 @@ class ModelEventTest extends TestCase
 
 class ModelEventSaveStub extends Model
 {
-    public function newQueryWithoutScopes()
+    public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
     {
         return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
     }

@@ -136,7 +136,7 @@ class ModelTest extends TestCase
 
     public function test_creatable_dn()
     {
-        Container::getNewInstance()->add(new Connection([
+        Container::getNewInstance()->addConnection(new Connection([
             'base_dn' => 'dc=acme,dc=org',
         ]));
 

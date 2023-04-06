@@ -103,10 +103,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Check if the model needs to be booted and if so, do it.
-     *
-     * @return void
      */
-    protected function bootIfNotBooted()
+    protected function bootIfNotBooted(): void
     {
         if (! isset(static::$booted[static::class])) {
             static::$booted[static::class] = true;
@@ -117,20 +115,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * The "boot" method of the model.
-     *
-     * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         //
     }
 
     /**
      * Clear the list of booted models so they will be re-booted.
-     *
-     * @return void
      */
-    public static function clearBootedModels()
+    public static function clearBootedModels(): void
     {
         static::$booted = [];
 
@@ -139,11 +133,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Handle dynamic method calls into the model.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         if (method_exists($this, $method)) {
             return $this->$method(...$parameters);
@@ -154,34 +145,26 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Handle dynamic static method calls into the method.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
      */
-    public static function __callStatic($method, $parameters)
+    public static function __callStatic(string $method, array $parameters): mixed
     {
         return (new static())->$method(...$parameters);
     }
 
     /**
      * Returns the models distinguished name.
-     *
-     * @return string|null
      */
-    public function getDn()
+    public function getDn(): ?string
     {
         return $this->dn;
     }
 
     /**
      * Set the models distinguished name.
-     *
-     * @param  string  $dn
-     * @return $this
      */
-    public function setDn($dn)
+    public function setDn(string $dn): static
     {
-        $this->dn = (string) $dn;
+        $this->dn = $dn;
 
         return $this;
     }
@@ -189,52 +172,41 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * A mutator for setting the models distinguished name.
      *
-     * @param  string  $dn
      * @return $this
      */
-    public function setDnAttribute($dn)
+    public function setDnAttribute(string $dn): static
     {
         return $this->setRawAttribute('dn', $dn)->setDn($dn);
     }
 
     /**
      * A mutator for setting the models distinguished name.
-     *
-     * @param  string  $dn
-     * @return $this
      */
-    public function setDistinguishedNameAttribute($dn)
+    public function setDistinguishedNameAttribute(string $dn): static
     {
         return $this->setRawAttribute('distinguishedname', $dn)->setDn($dn);
     }
 
     /**
      * Get the connection for the model.
-     *
-     * @return Connection
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return static::resolveConnection($this->getConnectionName());
     }
 
     /**
      * Get the current connection name for the model.
-     *
-     * @return string
      */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connection;
     }
 
     /**
      * Set the connection associated with the model.
-     *
-     * @param  string  $name
-     * @return $this
      */
-    public function setConnection($name)
+    public function setConnection(string $name): static
     {
         $this->connection = $name;
 
@@ -243,22 +215,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Make a new model instance.
-     *
-     * @param  array  $attributes
-     * @return static
      */
-    public static function make($attributes = [])
+    public static function make(array $attributes = []): static
     {
         return new static($attributes);
     }
 
     /**
      * Begin querying the model on a given connection.
-     *
-     * @param  string|null  $connection
-     * @return Builder
      */
-    public static function on($connection = null)
+    public static function on(string $connection = null): Builder
     {
         $instance = new static();
 
@@ -269,11 +235,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Get all the models from the directory.
-     *
-     * @param  array|mixed  $attributes
-     * @return Collection|static[]
      */
-    public static function all($attributes = ['*'])
+    public static function all(array|string $attributes = ['*']): array|Collection
     {
         return static::query()->select($attributes)->paginate();
     }
@@ -281,13 +244,12 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Get the RootDSE (AD schema) record from the directory.
      *
-     * @param  string|null  $connection
-     * @return Model
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public static function getRootDse($connection = null)
+    public static function getRootDse(string $connection = null): Model
     {
+        /** @var Model $model */
         $model = static::getRootDseModel();
 
         return $model::on($connection ?? (new $model)->getConnectionName())
@@ -302,7 +264,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      *
      * @return class-string<Model>
      */
-    protected static function getRootDseModel()
+    protected static function getRootDseModel(): string
     {
         $instance = (new static);
 
@@ -310,7 +272,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
             case $instance instanceof Types\ActiveDirectory:
                 return ActiveDirectory\Entry::class;
             case $instance instanceof Types\DirectoryServer:
-                return OpenLDAP\Entry::class;
+                return DirectoryServer\Entry::class;
             case $instance instanceof Types\OpenLDAP:
                 return OpenLDAP\Entry::class;
             case $instance instanceof Types\FreeIPA:
@@ -322,20 +284,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Begin querying the model.
-     *
-     * @return Builder
      */
-    public static function query()
+    public static function query(): Builder
     {
         return (new static())->newQuery();
     }
 
     /**
      * Get a new query for builder filtered by the current models object classes.
-     *
-     * @return Builder
      */
-    public function newQuery()
+    public function newQuery(): Builder
     {
         return $this->registerModelScopes(
             $this->newQueryWithoutScopes()
@@ -344,10 +302,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Get a new query builder that doesn't have any global scopes.
-     *
-     * @return Builder
      */
-    public function newQueryWithoutScopes()
+    public function newQueryWithoutScopes(): Builder
     {
         return static::resolveConnection(
             $this->getConnectionName()
@@ -356,41 +312,32 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Create a new query builder.
-     *
-     * @return Builder
      */
-    public function newQueryBuilder(Connection $connection)
+    public function newQueryBuilder(Connection $connection): Builder
     {
         return new Builder($connection);
     }
 
     /**
      * Create a new model instance.
-     *
-     * @return static
      */
-    public function newInstance(array $attributes = [])
+    public function newInstance(array $attributes = []): static
     {
         return (new static($attributes))->setConnection($this->getConnectionName());
     }
 
     /**
      * Resolve a connection instance.
-     *
-     * @param  string|null  $connection
-     * @return Connection
      */
-    public static function resolveConnection($connection = null)
+    public static function resolveConnection(string $connection = null): Connection
     {
-        return static::getConnectionContainer()->get($connection);
+        return static::getConnectionContainer()->getConnection($connection);
     }
 
     /**
      * Get the connection container.
-     *
-     * @return Container
      */
-    public static function getConnectionContainer()
+    public static function getConnectionContainer(): Container
     {
         return static::$container ?? static::getDefaultConnectionContainer();
     }

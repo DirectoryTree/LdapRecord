@@ -1145,7 +1145,7 @@ trait HasAttributes
             return true;
         }
 
-        return  is_numeric($current) &&
+        return is_numeric($current) &&
                 is_numeric($original) &&
                 strcmp((string) $current, (string) $original) === 0;
     }

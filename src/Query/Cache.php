@@ -13,10 +13,8 @@ class Cache
 
     /**
      * The cache driver.
-     *
-     * @var CacheInterface
      */
-    protected $store;
+    protected CacheInterface $store;
 
     /**
      * Constructor.
@@ -28,10 +26,8 @@ class Cache
 
     /**
      * Get an item from the cache.
-     *
-     * @param  string  $key
      */
-    public function get($key)
+    public function get(string $key): mixed
     {
         return $this->store->get($key);
     }
@@ -39,11 +35,9 @@ class Cache
     /**
      * Store an item in the cache.
      *
-     * @param  string  $key
      * @param  DateTimeInterface|DateInterval|int|null  $ttl
-     * @return bool
      */
-    public function put($key, $value, $ttl = null)
+    public function put(string $key, mixed $value, DateTimeInterface|DateInterval|int|null $ttl = null): bool
     {
         $seconds = $this->secondsUntil($ttl);
 
@@ -56,11 +50,8 @@ class Cache
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
-     *
-     * @param  string  $key
-     * @param  DateTimeInterface|DateInterval|int|null  $ttl
      */
-    public function remember($key, $ttl, Closure $callback)
+    public function remember(string $key, DateTimeInterface|DateInterval|int|null $ttl, Closure $callback): mixed
     {
         $value = $this->get($key);
 
@@ -75,21 +66,16 @@ class Cache
 
     /**
      * Delete an item from the cache.
-     *
-     * @param  string  $key
-     * @return bool
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return $this->store->delete($key);
     }
 
     /**
      * Get the underlying cache store.
-     *
-     * @return CacheInterface
      */
-    public function store()
+    public function store(): CacheInterface
     {
         return $this->store;
     }

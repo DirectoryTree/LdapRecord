@@ -8,6 +8,7 @@ use LdapRecord\Tests\TestCase;
 class EscapeValueTest extends TestCase
 {
     protected $escapedDnCharacters = ['\\', ',', '=', '+', '<', '>', ';', '"', '#'];
+
     protected $escapedFilterCharacters = ['\\', '*', '(', ')', "\x00"];
 
     public function test_all_characters_are_escaped_by_default()

@@ -19,39 +19,28 @@ class BatchModification
 
     /**
      * The attribute of the modification.
-     *
-     * @var string|null
      */
-    protected $attribute;
+    protected ?string $attribute;
 
     /**
      * The original value of the attribute before modification.
-     *
-     * @var array
      */
-    protected $original = [];
+    protected array $original = [];
 
     /**
      * The values of the modification.
-     *
-     * @var array
      */
-    protected $values = [];
+    protected array $values = [];
 
     /**
      * The modtype integer of the batch modification.
-     *
-     * @var int|null
      */
-    protected $type;
+    protected ?int $type;
 
     /**
      * Constructor.
-     *
-     * @param  string|null  $attribute
-     * @param  string|int|null  $type
      */
-    public function __construct($attribute = null, $type = null, array $values = [])
+    public function __construct(string $attribute = null, string|int $type = null, array $values = [])
     {
         $this->setAttribute($attribute)
             ->setType($type)
@@ -60,11 +49,8 @@ class BatchModification
 
     /**
      * Set the original value of the attribute before modification.
-     *
-     * @param  array|string  $original
-     * @return $this
      */
-    public function setOriginal($original = [])
+    public function setOriginal(array|string $original = []): static
     {
         $this->original = $this->normalizeAttributeValues($original);
 
@@ -73,21 +59,16 @@ class BatchModification
 
     /**
      * Returns the original value of the attribute before modification.
-     *
-     * @return array
      */
-    public function getOriginal()
+    public function getOriginal(): array
     {
         return $this->original;
     }
 
     /**
      * Set the attribute of the modification.
-     *
-     * @param  string  $attribute
-     * @return $this
      */
-    public function setAttribute($attribute)
+    public function setAttribute(string $attribute): static
     {
         $this->attribute = $attribute;
 
@@ -96,20 +77,16 @@ class BatchModification
 
     /**
      * Returns the attribute of the modification.
-     *
-     * @return string
      */
-    public function getAttribute()
+    public function getAttribute(): string
     {
         return $this->attribute;
     }
 
     /**
      * Set the values of the modification.
-     *
-     * @return $this
      */
-    public function setValues(array $values = [])
+    public function setValues(array $values = []): static
     {
         // Null and empty values must also not be added to a batch
         // modification. Passing null or empty values will result
@@ -123,11 +100,8 @@ class BatchModification
 
     /**
      * Normalize all of the attribute values.
-     *
-     * @param  array|string  $values
-     * @return array
      */
-    protected function normalizeAttributeValues($values = [])
+    protected function normalizeAttributeValues(array|string $values = []): array
     {
         // We must convert all of the values to strings. Only strings can
         // be used in batch modifications, otherwise we will we will
@@ -137,21 +111,16 @@ class BatchModification
 
     /**
      * Returns the values of the modification.
-     *
-     * @return array
      */
-    public function getValues()
+    public function getValues(): array
     {
         return $this->values;
     }
 
     /**
      * Set the type of the modification.
-     *
-     * @param  int|null  $type
-     * @return $this
      */
-    public function setType($type = null)
+    public function setType(int $type = null): static
     {
         if (is_null($type)) {
             return $this;
@@ -168,20 +137,16 @@ class BatchModification
 
     /**
      * Returns the type of the modification.
-     *
-     * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
     /**
      * Determines if the batch modification is valid in its current state.
-     *
-     * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return ! is_null($this->get());
     }
@@ -189,10 +154,8 @@ class BatchModification
     /**
      * Builds the type of modification automatically
      * based on the current and original values.
-     *
-     * @return $this
      */
-    public function build()
+    public function build(): static
     {
         switch (true) {
             case empty($this->original) && empty($this->values):
@@ -208,10 +171,8 @@ class BatchModification
 
     /**
      * Determine the batch modification type from the original values.
-     *
-     * @return $this
      */
-    protected function determineBatchTypeFromOriginal()
+    protected function determineBatchTypeFromOriginal(): static
     {
         $added = $this->getAddedValues();
         $removed = $this->getRemovedValues();
@@ -230,10 +191,8 @@ class BatchModification
 
     /**
      * Get the values that were added to the attribute.
-     *
-     * @return array
      */
-    protected function getAddedValues()
+    protected function getAddedValues(): array
     {
         return array_values(
             array_diff($this->values, $this->original)
@@ -242,10 +201,8 @@ class BatchModification
 
     /**
      * Get the values that were removed from the attribute.
-     *
-     * @return array
      */
-    protected function getRemovedValues()
+    protected function getRemovedValues(): array
     {
         return array_values(
             array_diff($this->original, $this->values)
@@ -254,10 +211,8 @@ class BatchModification
 
     /**
      * Returns the built batch modification array.
-     *
-     * @return array|null
      */
-    public function get()
+    public function get(): ?array
     {
         switch ($this->type) {
             case LDAP_MODIFY_BATCH_REMOVE_ALL:
@@ -279,17 +234,14 @@ class BatchModification
                 ];
             default:
                 // If the modtype isn't recognized, we'll return null.
-                return;
+                return null;
         }
     }
 
     /**
      * Determines if the given modtype is valid.
-     *
-     * @param  int  $type
-     * @return bool
      */
-    protected function isValidType($type)
+    protected function isValidType(int $type): bool
     {
         return in_array($type, [
             LDAP_MODIFY_BATCH_REMOVE_ALL,

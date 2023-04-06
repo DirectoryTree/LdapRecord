@@ -89,10 +89,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * Create a new query builder.
-     *
-     * @return ActiveDirectoryBuilder
      */
-    public function newQueryBuilder(Connection $connection)
+    public function newQueryBuilder(Connection $connection): ActiveDirectoryBuilder
     {
         return new ActiveDirectoryBuilder($connection);
     }

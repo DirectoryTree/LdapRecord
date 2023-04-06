@@ -50,31 +50,27 @@ trait HasEvents
 
     /**
      * Fire a custom model event.
-     *
-     * @param  string  $name
      */
-    protected function fireCustomModelEvent($name, array $args = [])
+    protected function fireCustomModelEvent(string $name, array $args = []): void
     {
         $event = implode('\\', [Events::class, ucfirst($name)]);
 
-        return $this->fireModelEvent(new $event($this, ...$args));
+        $this->fireModelEvent(new $event($this, ...$args));
     }
 
     /**
      * Fire a model event.
      */
-    protected function fireModelEvent(Event $event)
+    protected function fireModelEvent(Event $event): void
     {
-        return static::getConnectionContainer()->getEventDispatcher()->fire($event);
+        static::getConnectionContainer()->getDispatcher()->fire($event);
     }
 
     /**
      * Listen to a model event.
-     *
-     * @param  string  $event
      */
-    protected function listenForModelEvent($event, Closure $listener)
+    protected function listenForModelEvent(string $event, Closure $listener)
     {
-        return static::getConnectionContainer()->getEventDispatcher()->listen($event, $listener);
+        static::getConnectionContainer()->getDispatcher()->listen($event, $listener);
     }
 }

@@ -8,10 +8,10 @@ use LdapRecord\Container;
 use LdapRecord\ContainerException;
 use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelDoesNotExistException;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
@@ -21,11 +21,11 @@ class ModelQueryTest extends TestCase
 {
     public function test_resolving_connections()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $this->assertInstanceOf(Connection::class, Entry::resolveConnection());
 
-        Container::getNewInstance()->add(new Connection(), 'other');
+        Container::getNewInstance()->addConnection(new Connection(), 'other');
 
         $model = new Entry();
 
@@ -37,7 +37,7 @@ class ModelQueryTest extends TestCase
 
     public function test_new_query()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $model = new Entry();
 
@@ -47,7 +47,7 @@ class ModelQueryTest extends TestCase
 
     public function test_new_query_without_scopes()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $model = new Entry();
 
@@ -59,8 +59,9 @@ class ModelQueryTest extends TestCase
 
     public function test_new_query_has_connection_base_dn()
     {
-        Container::getNewInstance()
-            ->add(new Connection(['base_dn' => 'foo']));
+        Container::getNewInstance()->addConnection(
+            new Connection(['base_dn' => 'foo'])
+        );
 
         $this->assertEquals('foo', Entry::query()->getBaseDn());
     }
@@ -74,7 +75,7 @@ class ModelQueryTest extends TestCase
 
     public function test_new_queries_apply_object_class_scopes()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $this->assertEquals(
             '(&(objectclass=foo)(objectclass=bar)(objectclass=baz))',
@@ -84,7 +85,7 @@ class ModelQueryTest extends TestCase
 
     public function test_on()
     {
-        Container::getNewInstance()->add(new Connection(), 'other');
+        Container::getNewInstance()->addConnection(new Connection(), 'other');
 
         $query = Entry::on('other');
 
@@ -136,7 +137,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(\Exception::class);
 
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         (new Entry())->create();
     }
@@ -359,7 +360,7 @@ class ModelQueryTest extends TestCase
 
     public function test_destroy()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $this->assertEquals(1, ModelDestroyStub::destroy('foo'));
         $this->assertEquals(2, ModelDestroyStub::destroy(['foo', 'bar']));
@@ -368,7 +369,7 @@ class ModelQueryTest extends TestCase
 
     public function test_descendants_scope()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $model = new Entry();
         $model->setDn('ou=Users,dc=acme,dc=org');
@@ -382,7 +383,7 @@ class ModelQueryTest extends TestCase
 
     public function test_ancestors_scope()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $model = new Entry();
         $model->setDn('ou=Office,ou=Users,dc=acme,dc=org');
@@ -396,7 +397,7 @@ class ModelQueryTest extends TestCase
 
     public function test_siblings_scope()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $model = new Entry();
         $model->setDn('ou=Users,dc=acme,dc=org');
@@ -410,14 +411,14 @@ class ModelQueryTest extends TestCase
 
     public function test_all()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $this->assertInstanceOf(Collection::class, ModelAllTest::all());
     }
 
     public function test_date_objects_are_converted_to_ldap_timestamps_in_where_clause()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $datetime = new \DateTime();
 
@@ -433,7 +434,7 @@ class ModelQueryTest extends TestCase
 
     public function test_exception_is_thrown_when_date_objects_cannot_be_converted()
     {
-        Container::getNewInstance()->add(new Connection());
+        Container::getNewInstance()->addConnection(new Connection());
 
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('Cannot convert field [non-existent-date]');
@@ -458,7 +459,7 @@ class ModelQueryDateConversionTest extends Model
 
 class ModelAllTest extends Model
 {
-    public static function query()
+    public static function query(): Builder
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
@@ -470,7 +471,7 @@ class ModelAllTest extends Model
 
 class ModelDestroyStub extends Model
 {
-    public function find($dn, $columns = [])
+    public function find($dn, $columns = []): Model|Collection|null
     {
         $stub = m::mock(Entry::class);
         $stub->shouldReceive('delete')->once()->andReturnTrue();

@@ -17,7 +17,7 @@ class TestCase extends MockeryTestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }

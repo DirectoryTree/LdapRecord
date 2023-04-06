@@ -3,7 +3,7 @@
 namespace LdapRecord\Tests\Unit\Models\ActiveDirectory;
 
 use LdapRecord\Models\ActiveDirectory\Entry;
-use LdapRecord\Query\Builder;
+use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
 
@@ -69,7 +69,7 @@ class TestModelRestoreStub extends Entry
         return true;
     }
 
-    public function newQuery()
+    public function newQuery(): Builder
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('update')->once()->with(

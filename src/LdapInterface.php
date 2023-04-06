@@ -190,7 +190,7 @@ interface LdapInterface
     public function getDetailedError(): ?DetailedError;
 
     /**
-     * Count the number of entries in a search
+     * Count the number of entries in a search.
      *
      * @see https://www.php.net/manual/en/function.ldap-count-entries.php
      *

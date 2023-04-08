@@ -40,7 +40,7 @@ class BatchModification
     /**
      * Constructor.
      */
-    public function __construct(string $attribute = null, string|int $type = null, array $values = [])
+    public function __construct(string $attribute = null, int $type = null, array $values = [])
     {
         $this->setAttribute($attribute)
             ->setType($type)

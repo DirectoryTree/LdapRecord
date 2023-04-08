@@ -20,17 +20,13 @@ class Timestamp
 
     /**
      * The current timestamp type.
-     *
-     * @var string
      */
-    protected $type;
+    protected string $type;
 
     /**
      * The available timestamp types.
-     *
-     * @var array
      */
-    protected $types = [
+    protected array $types = [
         Timestamp::TYPE_LDAP,
         Timestamp::TYPE_WINDOWS,
         Timestamp::TYPE_WINDOWS_INT,
@@ -39,11 +35,9 @@ class Timestamp
     /**
      * Constructor.
      *
-     * @param  string  $type
-     *
      * @throws LdapRecordException
      */
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->setType($type);
     }
@@ -51,11 +45,9 @@ class Timestamp
     /**
      * Set the type of timestamp to convert from / to.
      *
-     * @param  string  $type
-     *
      * @throws LdapRecordException
      */
-    public function setType($type)
+    public function setType(string $type): void
     {
         if (! in_array($type, $this->types)) {
             throw new LdapRecordException("Unrecognized LDAP date type [$type]");
@@ -67,15 +59,13 @@ class Timestamp
     /**
      * Converts the value to an LDAP date string.
      *
-     * @return float|string
-     *
      * @throws LdapRecordException
      */
-    public function fromDateTime($value)
+    public function fromDateTime(mixed $value): float|int|string
     {
         $value = is_array($value) ? reset($value) : $value;
 
-        // If the value is being converted to a windows integer format but it
+        // If the value is being converted to a windows integer format, but it
         // is already in that format, we will simply return the value back.
         if ($this->type == 'windows-int' && $this->valueIsWindowsIntegerType($value)) {
             return $value;
@@ -103,11 +93,8 @@ class Timestamp
 
     /**
      * Determine if the value given is in Windows Integer (NTFS Filetime) format.
-     *
-     * @param  int|string  $value
-     * @return bool
      */
-    protected function valueIsWindowsIntegerType($value)
+    protected function valueIsWindowsIntegerType(mixed $value): bool
     {
         return is_numeric($value) && in_array(strlen((string) $value), [18, 19]);
     }
@@ -115,11 +102,9 @@ class Timestamp
     /**
      * Converts the LDAP timestamp value to a Carbon instance.
      *
-     * @return Carbon|int|false
-     *
      * @throws LdapRecordException
      */
-    public function toDateTime($value)
+    public function toDateTime($value): Carbon|int|false
     {
         $value = is_array($value) ? reset($value) : $value;
 
@@ -139,24 +124,19 @@ class Timestamp
 
     /**
      * Converts standard LDAP timestamps to a date time object.
-     *
-     * @param  string  $value
-     * @return DateTime|false
      */
-    protected function convertLdapTimeToDateTime($value)
+    protected function convertLdapTimeToDateTime(string $value): DateTime|false
     {
         return DateTime::createFromFormat(
-            str_contains((string) $value, 'Z') ? 'YmdHis\Z' : 'YmdHisT',
+            str_contains($value, 'Z') ? 'YmdHis\Z' : 'YmdHisT',
             $value
         );
     }
 
     /**
      * Converts date objects to a standard LDAP timestamp.
-     *
-     * @return string
      */
-    protected function convertDateTimeToLdapTime(DateTime $date)
+    protected function convertDateTimeToLdapTime(DateTime $date): string
     {
         return $date->format(
             $date->getOffset() == 0 ? 'YmdHis\Z' : 'YmdHisO'
@@ -165,14 +145,11 @@ class Timestamp
 
     /**
      * Converts standard windows timestamps to a date time object.
-     *
-     * @param  string  $value
-     * @return DateTime|false
      */
-    protected function convertWindowsTimeToDateTime($value)
+    protected function convertWindowsTimeToDateTime(string $value): DateTime|false
     {
         return DateTime::createFromFormat(
-            str_contains((string) $value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
+            str_contains($value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
             $value,
             new DateTimeZone('UTC')
         );
@@ -180,10 +157,8 @@ class Timestamp
 
     /**
      * Converts date objects to a windows timestamp.
-     *
-     * @return string
      */
-    protected function convertDateTimeToWindows(DateTime $date)
+    protected function convertDateTimeToWindows(DateTime $date): string
     {
         return $date->format(
             $date->getOffset() == 0 ? 'YmdHis.0\Z' : 'YmdHis.0O'
@@ -193,12 +168,9 @@ class Timestamp
     /**
      * Converts standard windows integer dates to a date time object.
      *
-     * @param  int  $value
-     * @return DateTime|int|false
-     *
      * @throws \Exception
      */
-    protected function convertWindowsIntegerTimeToDateTime($value)
+    protected function convertWindowsIntegerTimeToDateTime(string|int $value = null): DateTime|int|false
     {
         if (is_null($value) || $value === '') {
             return false;
@@ -212,17 +184,15 @@ class Timestamp
             return (int) $value;
         }
 
-        return (new DateTime())->setTimestamp(
+        return (new DateTime)->setTimestamp(
             round($value / 10000000) - 11644473600
         );
     }
 
     /**
      * Converts date objects to a windows integer timestamp.
-     *
-     * @return float
      */
-    protected function convertDateTimeToWindowsInteger(DateTime $date)
+    protected function convertDateTimeToWindowsInteger(DateTime $date): float
     {
         return ($date->getTimestamp() + 11644473600) * 10000000;
     }

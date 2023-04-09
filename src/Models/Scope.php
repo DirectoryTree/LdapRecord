@@ -8,8 +8,6 @@ interface Scope
 {
     /**
      * Apply the scope to the given query.
-     *
-     * @return void
      */
-    public function apply(Builder $query, Model $model);
+    public function apply(Builder $query, Model $model): void;
 }

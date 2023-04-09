@@ -10,10 +10,8 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * An array of stored values.
-     *
-     * @var array
      */
-    protected $storage = [];
+    protected array $storage = [];
 
     /**
      * {@inheritdoc}
@@ -52,22 +50,16 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * Get the expiration time of the key.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function calculateExpiration($seconds)
+    protected function calculateExpiration(int $seconds): int
     {
         return $this->toTimestamp($seconds);
     }
 
     /**
      * Get the UNIX timestamp for the given number of seconds.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function toTimestamp($seconds)
+    protected function toTimestamp(int $seconds): int
     {
         return $seconds > 0 ? $this->availableAt($seconds) : 0;
     }

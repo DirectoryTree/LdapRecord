@@ -935,7 +935,7 @@ class Builder
     /**
      * Prepare the value for being queried.
      */
-    protected function prepareWhereValue(string $field, string $value, bool $raw = false): string
+    protected function prepareWhereValue(string $field, string $value = null, bool $raw = false): string
     {
         return $raw ? $value : $this->escape($value);
     }
@@ -1574,7 +1574,7 @@ class Builder
      */
     protected function fireQueryEvent(QueryExecuted $event): void
     {
-        Container::getInstance()->getEventDispatcher()->fire($event);
+        Container::getInstance()->getDispatcher()->fire($event);
     }
 
     /**

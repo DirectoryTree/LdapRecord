@@ -377,7 +377,6 @@ class Grammar
     /**
      * Make the compile method name for the operator.
      *
-     *
      * @throws UnexpectedValueException
      */
     protected function makeCompileMethod(string $operator): string

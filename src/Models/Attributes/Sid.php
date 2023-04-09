@@ -27,7 +27,6 @@ class Sid
     /**
      * Constructor.
      *
-     *
      * @throws InvalidArgumentException
      */
     public function __construct($value)

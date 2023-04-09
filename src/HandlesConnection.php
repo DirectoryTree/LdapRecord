@@ -17,8 +17,10 @@ trait HandlesConnection
 
     /**
      * The LDAP connection resource.
+     *
+     * @var Connection
      */
-    protected ?Connection $connection = null;
+    protected mixed $connection = null;
 
     /**
      * The bound status of the connection.

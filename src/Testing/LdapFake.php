@@ -183,6 +183,21 @@ class LdapFake implements LdapInterface
         return $result;
     }
 
+    public function getValuesLen(mixed $entry, string $attribute): array|false
+    {
+        return $this->resolveExpectation('getValuesLen', func_get_args());
+    }
+
+    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int
+    {
+        return $this->resolveExpectation('compare', func_get_args());
+    }
+
+    public function setRebindCallback(callable $callback): bool
+    {
+        return $this->resolveExpectation('setRebindCallback', func_get_args());
+    }
+
     /**
      * Retrieves the first entry from a search result.
      *

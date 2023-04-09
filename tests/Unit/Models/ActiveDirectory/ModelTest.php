@@ -64,7 +64,7 @@ class ModelTest extends TestCase
 
 class TestModelRestoreStub extends Entry
 {
-    public function refresh()
+    public function refresh(): bool
     {
         return true;
     }

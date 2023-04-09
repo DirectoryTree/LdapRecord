@@ -43,7 +43,7 @@ trait HasAttributes
     /**
      * The format that dates must be output to for serialization.
      */
-    protected string $dateFormat;
+    protected ?string $dateFormat = null;
 
     /**
      * The default attributes that should be mutated to dates.
@@ -272,7 +272,7 @@ trait HasAttributes
     /**
      * Returns the models attribute by its key.
      */
-    public function getAttribute(string $key, mixed $default = null): mixed
+    public function getAttribute(string $key = null, mixed $default = null): mixed
     {
         if (! $key) {
             return null;
@@ -339,7 +339,7 @@ trait HasAttributes
      *
      * @throws LdapRecordException
      */
-    public function fromDateTime(string $value, string $type): float|int|string
+    public function fromDateTime(mixed $value, string $type): float|int|string
     {
         return (new Timestamp($type))->fromDateTime($value);
     }
@@ -347,10 +347,9 @@ trait HasAttributes
     /**
      * Convert the given LDAP date value to a Carbon instance.
      *
-     *
      * @throws LdapRecordException
      */
-    public function asDateTime(string $value, string $type): Carbon|false
+    public function asDateTime(mixed $value, string $type): Carbon|int|false
     {
         return (new Timestamp($type))->toDateTime($value);
     }
@@ -711,9 +710,11 @@ trait HasAttributes
     /**
      * Set the value of an attribute using its mutator.
      */
-    protected function setMutatedAttributeValue(string $key, mixed $value): mixed
+    protected function setMutatedAttributeValue(string $key, mixed $value): static
     {
-        return $this->{'set'.$this->getMutatorMethodName($key).'Attribute'}($value);
+        $this->{'set'.$this->getMutatorMethodName($key).'Attribute'}($value);
+
+        return $this;
     }
 
     /**

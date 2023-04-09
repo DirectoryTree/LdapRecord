@@ -83,7 +83,7 @@ class ModelScopeTest extends TestCase
         $this->assertCount(1, $query->filters['and']);
         $this->assertEquals('foo', $query->filters['and'][0]['field']);
         $this->assertEquals('=', $query->filters['and'][0]['operator']);
-        $this->assertEquals('\62\61\72', $query->filters['and'][0]['value']->get());
+        $this->assertEquals('\62\61\72', $query->filters['and'][0]['value']);
     }
 
     public function test_local_scopes_accept_arguments()
@@ -94,7 +94,7 @@ class ModelScopeTest extends TestCase
         $this->assertCount(1, $query->filters['and']);
         $this->assertEquals('bar', $query->filters['and'][0]['field']);
         $this->assertEquals('=', $query->filters['and'][0]['operator']);
-        $this->assertEquals('\7a\61\6c', $query->filters['and'][0]['value']->get());
+        $this->assertEquals('\7a\61\6c', $query->filters['and'][0]['value']);
     }
 
     public function test_scopes_do_not_impact_model_refresh()
@@ -148,7 +148,7 @@ class ModelWithLocalScopeTestStub extends Model
 
 class ModelWithGlobalScopeTestStub extends Model
 {
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -157,7 +157,7 @@ class ModelWithGlobalScopeTestStub extends Model
         static::addGlobalScope(new ScopeTestStub());
     }
 
-    public function newQueryBuilder(Connection $connection)
+    public function newQueryBuilder(Connection $connection): Builder
     {
         return new ModelBuilderTestStub($connection);
     }
@@ -165,7 +165,7 @@ class ModelWithGlobalScopeTestStub extends Model
 
 class ModelWithDnScopeTestStub extends Model
 {
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -177,7 +177,7 @@ class ModelWithDnScopeTestStub extends Model
 
 class ScopeTestStub implements Scope
 {
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->whereRaw('foo', '=', 'bar');
     }

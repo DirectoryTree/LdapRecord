@@ -150,7 +150,7 @@ class ContainerTest extends TestCase
 
         $event = new Binding(new Ldap(), 'username', 'password');
 
-        $dispatcher = $container->getEventDispatcher();
+        $dispatcher = $container->getDispatcher();
 
         $logger = m::mock(LoggerInterface::class);
 
@@ -163,21 +163,21 @@ class ContainerTest extends TestCase
 
     public function test_event_dispatcher_can_be_retrieved_statically()
     {
-        $this->assertInstanceOf(Dispatcher::class, Container::getEventDispatcher());
+        $this->assertInstanceOf(Dispatcher::class, Container::getDispatcher());
     }
 
     public function test_event_dispatcher_can_be_retrieved_normally()
     {
         $container = Container::getInstance();
 
-        $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
+        $this->assertInstanceOf(Dispatcher::class, $container->getDispatcher());
     }
 
     public function test_event_dispatcher_is_set_with_new_instance()
     {
         $container = Container::getInstance();
 
-        $this->assertInstanceOf(Dispatcher::class, $container->getEventDispatcher());
+        $this->assertInstanceOf(Dispatcher::class, $container->getDispatcher());
 
         $this->assertInstanceOf(Dispatcher::class, $container->dispatcher());
     }
@@ -186,7 +186,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $dispatcher = $container->getEventDispatcher();
+        $dispatcher = $container->getDispatcher();
 
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Query\Events\*'));

@@ -351,7 +351,7 @@ class Connection
         $guard = call_user_func($this->authGuardResolver);
 
         $guard->setDispatcher(
-            Container::getInstance()->getEventDispatcher()
+            Container::getInstance()->getDispatcher()
         );
 
         return $guard;

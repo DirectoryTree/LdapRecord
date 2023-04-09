@@ -10,10 +10,8 @@ class AddEntryUuidToSelects implements Scope
 {
     /**
      * Add the entry UUID to the selected attributes.
-     *
-     * @return void
      */
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         empty($query->columns)
             ? $query->addSelect(['*', $model->getGuidKey()])

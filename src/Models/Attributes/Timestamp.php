@@ -104,7 +104,7 @@ class Timestamp
      *
      * @throws LdapRecordException
      */
-    public function toDateTime($value): Carbon|int|false
+    public function toDateTime(mixed $value): Carbon|int|false
     {
         $value = is_array($value) ? reset($value) : $value;
 

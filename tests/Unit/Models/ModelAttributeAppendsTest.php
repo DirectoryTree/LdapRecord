@@ -47,7 +47,7 @@ class ModelAttributeAppendsTest extends TestCase
 
 class ModelAttributeAppendsTestStub extends Model
 {
-    protected $appends = ['foo'];
+    protected array $appends = ['foo'];
 
     public function getFooAttribute()
     {

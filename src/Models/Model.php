@@ -206,7 +206,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the connection associated with the model.
      */
-    public function setConnection(string $name): static
+    public function setConnection(string $name = null): static
     {
         $this->connection = $name;
 
@@ -243,7 +243,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Get the RootDSE (AD schema) record from the directory.
-     *
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
@@ -344,30 +343,24 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * Get the default singleton container instance.
-     *
-     * @return Container
      */
-    public static function getDefaultConnectionContainer()
+    public static function getDefaultConnectionContainer(): Container
     {
         return Container::getInstance();
     }
 
     /**
      * Set the connection container.
-     *
-     * @return void
      */
-    public static function setConnectionContainer(Container $container)
+    public static function setConnectionContainer(Container $container): void
     {
         static::$container = $container;
     }
 
     /**
      * Unset the connection container.
-     *
-     * @return void
      */
-    public static function unsetConnectionContainer()
+    public static function unsetConnectionContainer(): void
     {
         static::$container = null;
     }
@@ -425,7 +418,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Returns a new collection with the specified items.
      */
-    public function newCollection($items = []): Collection
+    public function newCollection(mixed $items = []): Collection
     {
         return new Collection($items);
     }
@@ -433,7 +426,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically retrieve attributes on the object.
      */
-    public function __get($key): mixed
+    public function __get(string $key): mixed
     {
         return $this->getAttribute($key);
     }
@@ -441,9 +434,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Dynamically set attributes on the object.
      */
-    public function __set($key, $value): static
+    public function __set(string $key, mixed $value): void
     {
-        return $this->setAttribute($key, $value);
+        $this->setAttribute($key, $value);
     }
 
     /**
@@ -555,16 +548,17 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      */
-    public function is(Model $model): bool
+    public function is(Model $model = null): bool
     {
-        return $this->dn == $model->getDn()
-           && $this->getConnectionName() == $model->getConnectionName();
+        return ! is_null($model)
+            && $this->dn == $model->getDn()
+            && $this->getConnectionName() == $model->getConnectionName();
     }
 
     /**
      * Determine if two models are not the same.
      */
-    public function isNot(Model $model): bool
+    public function isNot(Model $model = null): bool
     {
         return ! $this->is($model);
     }
@@ -781,7 +775,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a direct descendant of the given.
      */
-    public function isChildOf(Model|string $parent): bool
+    public function isChildOf(Model|string $parent = null): bool
     {
         return $this->newDn($this->getDn())->isChildOf(
             $this->newDn((string) $parent)
@@ -791,7 +785,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a direct ascendant of the given.
      */
-    public function isParentOf(Model|string $child): bool
+    public function isParentOf(Model|string $child = null): bool
     {
         return $this->newDn($this->getDn())->isParentOf(
             $this->newDn((string) $child)
@@ -801,7 +795,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a descendant of the given.
      */
-    public function isDescendantOf(Model|string $model): bool
+    public function isDescendantOf(Model|string $model = null): bool
     {
         return $this->dnIsInside($this->getDn(), $model);
     }
@@ -809,7 +803,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determine if the current model is a ancestor of the given.
      */
-    public function isAncestorOf(Model|string $model): bool
+    public function isAncestorOf(Model|string $model = null): bool
     {
         return $this->dnIsInside($model, $this->getDn());
     }
@@ -817,7 +811,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Determines if the DN is inside of the parent DN.
      */
-    protected function dnIsInside(Model|string $dn, Model|string $parentDn): bool
+    protected function dnIsInside(Model|string $dn = null, Model|string $parentDn = null): bool
     {
         return $this->newDn((string) $dn)->isDescendantOf(
             $this->newDn($parentDn)

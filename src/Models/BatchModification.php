@@ -20,7 +20,7 @@ class BatchModification
     /**
      * The attribute of the modification.
      */
-    protected ?string $attribute;
+    protected ?string $attribute = null;
 
     /**
      * The original value of the attribute before modification.
@@ -35,7 +35,7 @@ class BatchModification
     /**
      * The modtype integer of the batch modification.
      */
-    protected ?int $type;
+    protected ?int $type = null;
 
     /**
      * Constructor.

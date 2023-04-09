@@ -26,7 +26,7 @@ class ModelRenameTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }
@@ -92,7 +92,9 @@ class ModelRenameTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect(
-                LdapFake::operation('rename')->with('cn=John Doe,dc=acme,dc=org', 'cn=Тестирование\2c Имя\2c Побег')
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Тестирование\2c Имя\2c Побег')
+                    ->andReturn(true)
             );
 
         $model = new Entry();
@@ -112,7 +114,7 @@ class ModelRenameTest extends TestCase
                 LdapFake::operation('rename')->with(
                     'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org',
                     'cn=Тестирование\2c Имя\2c Побег'
-                )
+                )->andReturn(true)
             );
 
         $model = new Entry();
@@ -131,7 +133,9 @@ class ModelRenameTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect(
-                LdapFake::operation('rename')->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org')
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org')
+                    ->andReturn(true)
             );
 
         $model = new Entry();
@@ -146,7 +150,7 @@ class ModelRenameTest extends TestCase
 
 class ModelRenameTestStub extends Model
 {
-    public function newQuery()
+    public function newQuery(): Builder
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')
@@ -160,7 +164,7 @@ class ModelRenameTestStub extends Model
 
 class ModelRenameWithParentTestStub extends Model
 {
-    public function newQuery()
+    public function newQuery(): Builder
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')
@@ -174,7 +178,7 @@ class ModelRenameWithParentTestStub extends Model
 
 class ModelMoveTestStub extends Model
 {
-    public function newQuery()
+    public function newQuery(): Builder
     {
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('rename')

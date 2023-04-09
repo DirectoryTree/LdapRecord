@@ -13,15 +13,13 @@ class Entry extends BaseEntry implements OpenLDAP
 {
     /**
      * The attribute key that contains the models object GUID.
-     *
-     * @var string
      */
-    protected $guidKey = 'entryuuid';
+    protected string $guidKey = 'entryuuid';
 
     /**
      * {@inheritdoc}
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -33,10 +31,8 @@ class Entry extends BaseEntry implements OpenLDAP
 
     /**
      * Create a new query builder.
-     *
-     * @return OpenLdapBuilder
      */
-    public function newQueryBuilder(Connection $connection)
+    public function newQueryBuilder(Connection $connection): OpenLdapBuilder
     {
         return new OpenLdapBuilder($connection);
     }

@@ -46,7 +46,7 @@ class ModelEventTest extends TestCase
 
         (new ModelEventSaveStub())->saveQuietly();
 
-        $this->assertEquals($dispatcher, Container::getInstance()->getEventDispatcher());
+        $this->assertEquals($dispatcher, Container::getInstance()->getDispatcher());
     }
 
     public function test_create_fires_events()
@@ -156,7 +156,7 @@ class ModelEventSaveStub extends Model
         return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
     }
 
-    public function refresh()
+    public function refresh(): bool
     {
         return true;
     }

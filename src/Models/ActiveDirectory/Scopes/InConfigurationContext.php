@@ -12,18 +12,15 @@ class InConfigurationContext implements Scope
     /**
      * Refines the base dn to be inside the configuration context.
      *
-     * @return void
-     *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->in($this->getConfigurationNamingContext($model));
     }
 
     /**
      * Get the LDAP server configuration naming context distinguished name.
-     *
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */

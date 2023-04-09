@@ -10,10 +10,8 @@ class RejectComputerObjectClass implements Scope
 {
     /**
      * Prevent computer objects from being included in results.
-     *
-     * @return void
      */
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->where('objectclass', '!=', 'computer');
     }

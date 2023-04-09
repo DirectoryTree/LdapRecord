@@ -7,6 +7,7 @@ use LdapRecord\Container;
 use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Models\Scope;
 use LdapRecord\Query\Collection;
@@ -269,7 +270,7 @@ class RelationTestStub extends Relation
 
 class ModelRelationTestStub extends Model
 {
-    public function relation()
+    public function relation(): RelationTestStub
     {
         return new RelationTestStub($this->newQuery(), $this, RelatedModelTestStub::class, 'foo', 'bar');
     }
@@ -282,14 +283,14 @@ class RelatedModelTestStub extends Model
 
 class ModelRelationWithScopeTestStub extends Model
 {
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
         static::addGlobalScope(new ModelRelationScopeTestStub());
     }
 
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany(self::class, 'foo');
     }
@@ -297,7 +298,7 @@ class ModelRelationWithScopeTestStub extends Model
 
 class ModelRelationScopeTestStub implements Scope
 {
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->where('bar', '=', 'baz');
     }
@@ -305,7 +306,7 @@ class ModelRelationScopeTestStub implements Scope
 
 class ModelWithHasManyRelationTestStub extends Model
 {
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany(static::class, 'foo');
     }

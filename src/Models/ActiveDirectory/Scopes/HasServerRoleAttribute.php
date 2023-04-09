@@ -10,10 +10,8 @@ class HasServerRoleAttribute implements Scope
 {
     /**
      * Includes condition of having a serverRole attribute.
-     *
-     * @return void
      */
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->whereHas('serverRole');
     }

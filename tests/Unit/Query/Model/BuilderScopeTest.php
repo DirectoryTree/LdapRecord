@@ -90,7 +90,7 @@ class BuilderScopeTest extends TestCase
 
 class TestModelScope implements Scope
 {
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->where('foo', '=', get_class($model));
     }

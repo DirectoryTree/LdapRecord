@@ -450,7 +450,7 @@ class ModelWithObjectClassStub extends Model
 
 class ModelQueryDateConversionTest extends Model
 {
-    protected $dates = [
+    protected array $dates = [
         'standard' => 'ldap',
         'windows' => 'windows',
         'windowsinteger' => 'windows-int',

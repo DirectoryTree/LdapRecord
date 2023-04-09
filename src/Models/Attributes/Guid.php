@@ -60,7 +60,6 @@ class Guid
     /**
      * Constructor.
      *
-     *
      * @throws InvalidArgumentException
      */
     public function __construct($value)

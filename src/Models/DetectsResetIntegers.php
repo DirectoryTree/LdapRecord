@@ -11,7 +11,7 @@ trait DetectsResetIntegers
      * LDAP attributes to instruct the server to reset the
      * value to an 'unset' or 'cleared' state.
      */
-    protected function valueIsResetInteger(int $value): bool
+    protected function valueIsResetInteger(mixed $value): bool
     {
         return in_array($value, [0, -1], true);
     }

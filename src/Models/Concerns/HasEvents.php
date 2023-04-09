@@ -18,7 +18,7 @@ trait HasEvents
     {
         $container = static::getConnectionContainer();
 
-        $dispatcher = $container->getEventDispatcher();
+        $dispatcher = $container->getDispatcher();
 
         if ($dispatcher) {
             $container->setEventDispatcher(

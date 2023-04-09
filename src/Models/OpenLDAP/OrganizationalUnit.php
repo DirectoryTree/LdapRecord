@@ -16,10 +16,8 @@ class OrganizationalUnit extends Entry
 
     /**
      * Get the creatable RDN attribute name.
-     *
-     * @return string
      */
-    public function getCreatableRdnAttribute()
+    public function getCreatableRdnAttribute(): string
     {
         return 'ou';
     }

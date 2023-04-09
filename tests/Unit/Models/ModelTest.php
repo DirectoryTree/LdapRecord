@@ -687,15 +687,14 @@ class ModelTest extends TestCase
 
 class ModelCreateTestStub extends Model
 {
-    public function save(array $attributes = [])
+    public function save(array $attributes = []): void
     {
-        return true;
     }
 }
 
 class ModelWithDatesStub extends Model
 {
-    protected $dates = [
+    protected array $dates = [
         'standard' => 'ldap',
         'windows' => 'windows',
         'windowsinteger' => 'windows-int',

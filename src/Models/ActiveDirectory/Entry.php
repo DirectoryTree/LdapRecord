@@ -16,10 +16,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 {
     /**
      * The default attributes that should be mutated to dates.
-     *
-     * @var array
      */
-    protected $defaultDates = [
+    protected array $defaultDates = [
         'whenchanged' => 'windows',
         'whencreated' => 'windows',
         'dscorepropagationdata' => 'windows',
@@ -149,10 +147,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * Convert the attributes for JSON serialization.
-     *
-     * @return array
      */
-    protected function convertAttributesForJson(array $attributes = [])
+    protected function convertAttributesForJson(array $attributes = []): array
     {
         $attributes = parent::convertAttributesForJson($attributes);
 
@@ -170,10 +166,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * Convert the attributes from JSON serialization.
-     *
-     * @return array
      */
-    protected function convertAttributesFromJson(array $attributes = [])
+    protected function convertAttributesFromJson(array $attributes = []): array
     {
         $attributes = parent::convertAttributesFromJson($attributes);
 

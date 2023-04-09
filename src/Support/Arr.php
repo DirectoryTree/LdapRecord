@@ -9,7 +9,7 @@ class Arr
     /**
      * Determine whether the given value is array accessible.
      */
-    public static function accessible($value): bool
+    public static function accessible(mixed $value): bool
     {
         return is_array($value) || $value instanceof ArrayAccess;
     }

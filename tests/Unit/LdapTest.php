@@ -90,8 +90,8 @@ class LdapTest extends TestCase
     {
         $ldap = (new LdapFake())
             ->expect([
-                LdapFake::operation('setOption')->once()->with(1, 'value'),
-                LdapFake::operation('setOption')->once()->with(2, 'value'),
+                LdapFake::operation('setOption')->once()->with(1, 'value')->andReturn(true),
+                LdapFake::operation('setOption')->once()->with(2, 'value')->andReturn(true),
             ]);
 
         $ldap->setOptions([1 => 'value', 2 => 'value']);

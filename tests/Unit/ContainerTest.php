@@ -2,9 +2,9 @@
 
 namespace LdapRecord\Tests\Unit;
 
-use BadMethodCallException;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Connection;
+use LdapRecord\ConnectionManager;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
 use LdapRecord\Events\Dispatcher;
@@ -25,9 +25,9 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->add(new Connection());
+        $container->addConnection(new Connection());
 
-        $this->assertInstanceOf(Container::class, $container->add(new Connection(), 'other'));
+        $this->assertInstanceOf(ConnectionManager::class, $container->addConnection(new Connection(), 'other'));
 
         Container::getNewInstance();
 
@@ -40,26 +40,26 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->add(new Connection());
-        $container->add(new Connection(), 'other');
+        $container->addConnection(new Connection());
+        $container->addConnection(new Connection(), 'other');
 
-        $this->assertInstanceOf(Connection::class, $container->get());
-        $this->assertInstanceOf(Connection::class, $container->get('default'));
-        $this->assertInstanceOf(Connection::class, $container->get('other'));
+        $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
+        $this->assertInstanceOf(Connection::class, $container->getConnection('default'));
+        $this->assertInstanceOf(Connection::class, $container->getConnection('other'));
         $this->assertInstanceOf(Connection::class, Container::getConnection('other'));
 
         $this->expectException(ContainerException::class);
 
-        $container->get('non-existent');
+        $container->getConnection('non-existent');
     }
 
     public function test_getting_default_connections()
     {
         $container = Container::getInstance();
 
-        $container->add(new Connection());
+        $container->addConnection(new Connection());
 
-        $this->assertInstanceOf(Connection::class, $container->getDefault());
+        $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
         $this->assertInstanceOf(Connection::class, Container::getConnection('default'));
         $this->assertInstanceOf(Connection::class, Container::getDefaultConnection());
     }
@@ -70,7 +70,7 @@ class ContainerTest extends TestCase
 
         $this->assertEquals('default', $container->getDefaultConnectionName());
 
-        $container->setDefault('other');
+        $container->setDefaultConnection('other');
 
         $this->assertEquals('other', $container->getDefaultConnectionName());
     }
@@ -79,54 +79,54 @@ class ContainerTest extends TestCase
     {
         $container = Container::getNewInstance();
 
-        $this->assertInstanceOf(Container::class, $container->setDefault('other'));
+        $this->assertInstanceOf(ConnectionManager::class, $container->setDefaultConnection('other'));
 
-        $container->add(new Connection());
+        $container->addConnection(new Connection());
 
-        $this->assertInstanceOf(Connection::class, $container->get('other'));
-        $this->assertInstanceOf(Connection::class, $container->getDefault());
+        $this->assertInstanceOf(Connection::class, $container->getConnection('other'));
+        $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
 
         Container::setDefaultConnection('non-existent');
 
         $this->expectException(ContainerException::class);
 
-        $container->getDefault();
+        $container->getDefaultConnection();
     }
 
     public function test_connection_existence()
     {
         $container = Container::getNewInstance();
 
-        $this->assertFalse($container->exists('default'));
+        $this->assertFalse($container->hasConnection('default'));
 
-        $container->add(new Connection());
+        $container->addConnection(new Connection());
 
-        $this->assertTrue($container->exists('default'));
+        $this->assertTrue($container->hasConnection('default'));
 
-        $container->add(new Connection(), 'other');
+        $container->addConnection(new Connection(), 'other');
 
-        $this->assertTrue($container->exists('other'));
+        $this->assertTrue($container->hasConnection('other'));
     }
 
     public function test_removing_connections()
     {
         $container = Container::getNewInstance();
 
-        $container->add(new Connection());
-        $container->add(new Connection(), 'other');
+        $container->addConnection(new Connection());
+        $container->addConnection(new Connection(), 'other');
 
-        $this->assertInstanceOf(Container::class, $container->remove('non-existent'));
-        $this->assertInstanceOf(Connection::class, $container->get('default'));
-        $this->assertInstanceOf(Connection::class, $container->get('other'));
+        $this->assertInstanceOf(ConnectionManager::class, $container->removeConnection('non-existent'));
+        $this->assertInstanceOf(Connection::class, $container->getConnection('default'));
+        $this->assertInstanceOf(Connection::class, $container->getConnection('other'));
 
-        $container->remove('other');
+        $container->removeConnection('other');
 
         Container::removeConnection('default');
-        $this->assertFalse(Container::getInstance()->exists('default'));
+        $this->assertFalse(Container::getInstance()->hasConnection('default'));
 
         $this->expectException(ContainerException::class);
 
-        $container->get('other');
+        $container->getConnection('other');
     }
 
     public function test_getting_all_connections()
@@ -138,8 +138,8 @@ class ContainerTest extends TestCase
             'other' => new Connection(),
         ];
 
-        $container->add($connections['default']);
-        $container->add($connections['other'], 'other');
+        $container->addConnection($connections['default']);
+        $container->addConnection($connections['other'], 'other');
 
         $this->assertEquals($connections, $container->all());
     }
@@ -175,11 +175,7 @@ class ContainerTest extends TestCase
 
     public function test_event_dispatcher_is_set_with_new_instance()
     {
-        $container = Container::getInstance();
-
-        $this->assertInstanceOf(Dispatcher::class, $container->getDispatcher());
-
-        $this->assertInstanceOf(Dispatcher::class, $container->dispatcher());
+        $this->assertInstanceOf(Dispatcher::class, Container::getInstance()->getDispatcher());
     }
 
     public function test_setting_container_logger_registers_event_listeners()
@@ -197,13 +193,5 @@ class ContainerTest extends TestCase
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
-    }
-
-    public function test_calling_undefined_method_throws_bad_method_call_exception()
-    {
-        $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('Call to undefined method LdapRecord\ConnectionManager::undefined()');
-
-        Container::undefined();
     }
 }

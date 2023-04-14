@@ -13,8 +13,8 @@ class LdapResultResponse
         public readonly int $errorCode = 0,
         public readonly string|null $matchedDn = null,
         public readonly string|null $errorMessage = null,
-        public readonly array $referrals = [],
-        public readonly array $controls = []
+        public readonly ?array $referrals = null,
+        public readonly ?array $controls = null,
     ) {
     }
 

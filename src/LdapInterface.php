@@ -243,7 +243,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
      */
-    public function connect(string|array $hosts = [], int $port = 389): object|false;
+    public function connect(string|array $hosts = [], int $port = 389): bool;
 
     /**
      * Closes the current connection.

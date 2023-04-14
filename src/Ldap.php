@@ -157,15 +157,17 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function connect(string|array $hosts = [], int $port = 389): object|false
+    public function connect(string|array $hosts = [], int $port = 389): bool
     {
         $this->bound = false;
 
         $this->host = $this->makeConnectionUris($hosts, $port);
 
-        return $this->connection = $this->executeFailableOperation(function () {
+        $this->connection = $this->executeFailableOperation(function () {
             return ldap_connect($this->host);
         });
+
+        return $this->connection instanceof RawLdapConnection;
     }
 
     /**
@@ -246,7 +248,7 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function parseResult(mixed $result, int &$errorCode, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
+    public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
     {
         $success = ldap_parse_result($this->connection, $result, $errorCode);
 
@@ -269,7 +271,7 @@ class Ldap implements LdapInterface
             return ldap_bind_ext($this->connection, $username, $password ? html_entity_decode($password) : null, $controls);
         });
 
-        $response = $this->parseResult($result, $errorCode, $dn, $errorMessage, $refs);
+        $response = $this->parseResult($result);
 
         $this->bound = $response && $response->successful();
 

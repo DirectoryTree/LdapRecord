@@ -68,7 +68,7 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
-        $conn->getLdapConnection()->expect(['add']);
+        $conn->getLdapConnection()->expect(['add' => true]);
 
         $conn->actingAs(User::create(['cn' => 'John']));
 
@@ -79,7 +79,7 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
-        $conn->getLdapConnection()->expect(['add']);
+        $conn->getLdapConnection()->expect(['add' => true]);
 
         $user = User::create(['cn' => 'John']);
 

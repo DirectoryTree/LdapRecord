@@ -309,7 +309,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function connect(string|array $hosts = [], int $port = 389): object|false
+    public function connect(string|array $hosts = [], int $port = 389): bool
     {
         $this->bound = false;
 

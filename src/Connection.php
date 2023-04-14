@@ -328,6 +328,8 @@ class Connection
                 return Exceptions\InsufficientAccessException::withDetailedError($e, $e->getDetailedError());
             case $this->errorContainsMessage($e->getMessage(), 'Constraint violation'):
                 return Exceptions\ConstraintViolationException::withDetailedError($e, $e->getDetailedError());
+            default:
+                return null;
         }
     }
 

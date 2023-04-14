@@ -172,7 +172,7 @@ class ConnectionTest extends TestCase
     public function test_reconnect_initializes_connection()
     {
         $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('close')->once())
+            ->expect(LdapFake::operation('close')->once()->andreturn(true))
             ->expect(LdapFake::operation('ssl')->twice()->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
 
@@ -266,9 +266,9 @@ class ConnectionTest extends TestCase
     {
         $ldap = (new LdapFake())
             ->expect([
-                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturn(true),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturn(true),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturn(true),
             ]);
 
         (new Connection(['hosts' => ['foo', 'bar']], $ldap))->initialize();
@@ -277,8 +277,8 @@ class ConnectionTest extends TestCase
     public function test_reconnect()
     {
         $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('close')->once())
-            ->expect(LdapFake::operation('connect')->twice())
+            ->expect(LdapFake::operation('close')->once()->andReturn(true))
+            ->expect(LdapFake::operation('connect')->twice()->andReturn(true))
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
 
         $conn = new Connection([
@@ -311,8 +311,8 @@ class ConnectionTest extends TestCase
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
         $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('close')->times(3))
-            ->expect(LdapFake::operation('connect')->times(4))
+            ->expect(LdapFake::operation('close')->times(3)->andReturn(true))
+            ->expect(LdapFake::operation('connect')->times(4)->andReturn(true))
             ->expect(LdapFake::operation('bind')->andReturnResponse());
 
         $conn = new Connection([

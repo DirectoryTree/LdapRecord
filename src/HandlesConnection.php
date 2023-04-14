@@ -13,7 +13,7 @@ trait HandlesConnection
     /**
      * The LDAP host that is currently connected.
      */
-    protected ?string $host;
+    protected ?string $host = null;
 
     /**
      * The LDAP connection resource.
@@ -118,7 +118,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function getConnection(): Connection
+    public function getConnection(): ?Connection
     {
         return $this->connection;
     }

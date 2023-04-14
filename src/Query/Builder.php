@@ -28,7 +28,7 @@ class Builder
     /**
      * The selected columns to retrieve on the query.
      */
-    public array $columns = [];
+    public ?array $columns = null;
 
     /**
      * The query filters.

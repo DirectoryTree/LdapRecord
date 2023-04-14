@@ -278,7 +278,7 @@ class ModelRelationTestStub extends Model
 
 class RelatedModelTestStub extends Model
 {
-    public static $objectClasses = ['foo', 'bar'];
+    public static array $objectClasses = ['foo', 'bar'];
 }
 
 class ModelRelationWithScopeTestStub extends Model

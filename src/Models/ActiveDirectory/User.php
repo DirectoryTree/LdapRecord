@@ -31,10 +31,8 @@ class User extends Entry implements Authenticatable
 
     /**
      * The object classes of the LDAP model.
-     *
-     * @var array
      */
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'person',
         'organizationalperson',

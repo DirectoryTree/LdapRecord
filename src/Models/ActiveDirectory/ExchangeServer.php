@@ -7,12 +7,12 @@ class ExchangeServer extends Entry
     /**
      * {@inheritdoc}
      */
-    public static $objectClasses = ['msExchExchangeServer'];
+    public static array $objectClasses = ['msExchExchangeServer'];
 
     /**
      * {@inheritdoc}
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 

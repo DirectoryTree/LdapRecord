@@ -54,10 +54,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * The object classes of the model.
-     *
-     * @var array
      */
-    public static $objectClasses = [];
+    public static array $objectClasses = [];
 
     /**
      * The connection container instance.

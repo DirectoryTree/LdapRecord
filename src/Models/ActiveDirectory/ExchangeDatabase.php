@@ -7,12 +7,12 @@ class ExchangeDatabase extends Entry
     /**
      * {@inheritdoc}
      */
-    public static $objectClasses = ['msExchMDB'];
+    public static array $objectClasses = ['msExchMDB'];
 
     /**
      * {@inheritdoc}
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 

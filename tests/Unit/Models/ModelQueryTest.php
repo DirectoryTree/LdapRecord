@@ -445,7 +445,7 @@ class ModelQueryTest extends TestCase
 
 class ModelWithObjectClassStub extends Model
 {
-    public static $objectClasses = ['foo', 'bar', 'baz'];
+    public static array $objectClasses = ['foo', 'bar', 'baz'];
 }
 
 class ModelQueryDateConversionTest extends Model

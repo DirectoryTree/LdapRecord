@@ -25,15 +25,13 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * The attribute key that contains the Object SID.
-     *
-     * @var string
      */
-    protected $sidKey = 'objectsid';
+    protected string $sidKey = 'objectsid';
 
     /**
      * {@inheritdoc}
      */
-    public function getObjectSidKey()
+    public function getObjectSidKey(): string
     {
         return $this->sidKey;
     }
@@ -41,7 +39,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * {@inheritdoc}
      */
-    public function getObjectSid()
+    public function getObjectSid(): ?string
     {
         return $this->getFirstAttribute($this->sidKey);
     }
@@ -49,38 +47,35 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * {@inheritdoc}
      */
-    public function getConvertedSid($sid = null)
+    public function getConvertedSid($sid = null): ?string
     {
         try {
             return (string) $this->newObjectSid(
                 $sid ?? $this->getObjectSid()
             );
-        } catch (InvalidArgumentException $e) {
-            return;
+        } catch (InvalidArgumentException) {
+            return null;
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBinarySid($sid = null)
+    public function getBinarySid($sid = null): ?string
     {
         try {
             return $this->newObjectSid(
                 $sid ?? $this->getObjectSid()
             )->getBinary();
-        } catch (InvalidArgumentException $e) {
-            return;
+        } catch (InvalidArgumentException) {
+            return null;
         }
     }
 
     /**
      * Make a new object Sid instance.
-     *
-     * @param  string  $value
-     * @return Sid
      */
-    protected function newObjectSid($value)
+    protected function newObjectSid(string $value): Sid
     {
         return new Sid($value);
     }
@@ -95,10 +90,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * Determine if the object is deleted.
-     *
-     * @return bool
      */
-    public function isDeleted()
+    public function isDeleted(): bool
     {
         return strtoupper((string) $this->getFirstAttribute('isDeleted')) === 'TRUE';
     }
@@ -106,12 +99,9 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Restore a deleted object.
      *
-     * @param  string|null  $newParentDn
-     * @return bool
-     *
      * @throws \LdapRecord\LdapRecordException
      */
-    public function restore($newParentDn = null)
+    public function restore(string $newParentDn = null): bool
     {
         if (! $this->isDeleted()) {
             return false;
@@ -137,10 +127,8 @@ class Entry extends BaseEntry implements ActiveDirectory
 
     /**
      * Get the objects restore location.
-     *
-     * @return string
      */
-    protected function getDefaultRestoreLocation()
+    protected function getDefaultRestoreLocation(): ?string
     {
         return $this->getFirstAttribute('lastKnownParent') ?? $this->getParentDn($this->getParentDn($this->getDn()));
     }

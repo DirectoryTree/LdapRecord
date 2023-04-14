@@ -6,7 +6,7 @@ use LdapRecord\Models\OpenLDAP\Group as OpenLDAPGroup;
 
 class Group extends OpenLDAPGroup
 {
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'posixGroup',
     ];

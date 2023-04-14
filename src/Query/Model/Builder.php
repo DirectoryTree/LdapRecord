@@ -327,7 +327,7 @@ class Builder extends BaseBuilder
     /**
      * {@inheritdoc}
      */
-    protected function prepareWhereValue(string $field, string $value, $raw = false): string
+    protected function prepareWhereValue(string $field, string $value = null, $raw = false): string
     {
         if ($value instanceof DateTime) {
             $field = $this->model->normalizeAttributeKey($field);

@@ -23,10 +23,8 @@ class ModelDoesNotExistException extends LdapRecordException
 
     /**
      * Set the model instance that does not exist.
-     *
-     * @return ModelDoesNotExistException
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): static
     {
         $this->model = $model;
 

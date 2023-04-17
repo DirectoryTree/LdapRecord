@@ -467,7 +467,7 @@ trait HasAttributes
      */
     protected function castRequiresArrayValue(string $key): bool
     {
-        return in_array($this->getCastType($key), ['collection']);
+        return $this->getCastType($key) === 'collection';
     }
 
     /**

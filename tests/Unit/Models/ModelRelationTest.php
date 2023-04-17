@@ -130,7 +130,7 @@ class ModelRelationTest extends TestCase
         $this->assertTrue($relation->exists('foo'));
         $this->assertTrue($relation->exists('cn=foo,dc=local,dc=com'));
 
-        $this->assertFalse($relation->exists());
+        $this->assertFalse($relation->exists(null));
         $this->assertFalse($relation->exists($unrelated->newCollection([$unrelated])));
         $this->assertFalse($relation->exists([$related, $unrelated]));
         $this->assertFalse($relation->exists(['cn=foo,dc=local,dc=com', 'cn=bar,dc=local,dc=com']));

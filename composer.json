@@ -32,6 +32,7 @@
         "php": ">=8.1",
         "ext-ldap": "*",
         "ext-json": "*",
+        "ext-iconv": "*",
         "psr/log": "*",
         "psr/simple-cache": "^2.0|^3.0",
         "nesbot/carbon": "*",

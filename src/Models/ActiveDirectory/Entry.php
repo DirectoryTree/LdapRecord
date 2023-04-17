@@ -103,7 +103,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     public function restore(string $newParentDn = null): bool
     {
-        if (!$this->isDeleted()) {
+        if (! $this->isDeleted()) {
             return false;
         }
 

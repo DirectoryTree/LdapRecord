@@ -9,7 +9,7 @@ class Str
      */
     public static function is(string|iterable $pattern, string $value): bool
     {
-        if (!is_iterable($pattern)) {
+        if (! is_iterable($pattern)) {
             $pattern = [$pattern];
         }
 
@@ -125,7 +125,7 @@ class Str
      */
     public static function substrCount(string $haystack, string $needle, int $offset = 0, int $length = null): int
     {
-        if (!is_null($length)) {
+        if (! is_null($length)) {
             return substr_count($haystack, $needle, $offset, $length);
         } else {
             return substr_count($haystack, $needle, $offset);

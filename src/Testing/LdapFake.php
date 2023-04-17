@@ -64,7 +64,7 @@ class LdapFake implements LdapInterface
         $expectations = Arr::wrap($expectations);
 
         foreach ($expectations as $key => $expectation) {
-            if (!is_int($key)) {
+            if (! is_int($key)) {
                 $operation = static::operation($key);
 
                 $expectation instanceof Closure
@@ -74,7 +74,7 @@ class LdapFake implements LdapInterface
                 $expectation = $operation;
             }
 
-            if (!$expectation instanceof LdapExpectation) {
+            if (! $expectation instanceof LdapExpectation) {
                 $expectation = static::operation($expectation);
             }
 
@@ -204,7 +204,7 @@ class LdapFake implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param \Ldap\Result $result
+     * @param  \Ldap\Result  $result
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -218,7 +218,7 @@ class LdapFake implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param \Ldap\ResultEntry $entry
+     * @param  \Ldap\ResultEntry  $entry
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -232,7 +232,7 @@ class LdapFake implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param \Ldap\ResultEntry $entry
+     * @param  \Ldap\ResultEntry  $entry
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -475,7 +475,7 @@ class LdapFake implements LdapInterface
                 $this->removeExpectation($method, $key);
             }
 
-            if (!is_null($exception = $expectation->getExpectedException())) {
+            if (! is_null($exception = $expectation->getExpectedException())) {
                 throw $exception;
             }
 
@@ -502,7 +502,7 @@ class LdapFake implements LdapInterface
     /**
      * Assert that the expected arguments match the operations arguments.
      *
-     * @param Constraint[] $expectedArgs
+     * @param  Constraint[]  $expectedArgs
      */
     protected function assertMethodArgumentsMatch(string $method, array $expectedArgs = [], array $methodArgs = []): void
     {

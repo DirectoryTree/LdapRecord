@@ -131,7 +131,7 @@ trait HasAttributes
     protected function addDateAttributesToArray(array $attributes): array
     {
         foreach ($this->getDates() as $attribute => $type) {
-            if (!isset($attributes[$attribute])) {
+            if (! isset($attributes[$attribute])) {
                 continue;
             }
 
@@ -151,7 +151,7 @@ trait HasAttributes
     protected function restoreDateAttributesFromArray(array $attributes): array
     {
         foreach ($this->getDates() as $attribute => $type) {
-            if (!isset($attributes[$attribute])) {
+            if (! isset($attributes[$attribute])) {
                 continue;
             }
 
@@ -231,7 +231,7 @@ trait HasAttributes
             // We want to spin through all the mutated attributes for this model and call
             // the mutator for the attribute. We cache off every mutated attributes so
             // we don't have to constantly check on attributes that actually change.
-            if (!Arr::exists($attributes, $key)) {
+            if (! Arr::exists($attributes, $key)) {
                 continue;
             }
 
@@ -274,7 +274,7 @@ trait HasAttributes
      */
     public function getAttribute(string $key = null, mixed $default = null): mixed
     {
-        if (!$key) {
+        if (! $key) {
             return null;
         }
 
@@ -293,11 +293,11 @@ trait HasAttributes
             return $this->getMutatedAttributeValue($key, $value);
         }
 
-        if ($this->isDateAttribute($key) && !is_null($value)) {
+        if ($this->isDateAttribute($key) && ! is_null($value)) {
             return $this->asDateTime(Arr::first($value), $this->getDates()[$key]);
         }
 
-        if ($this->isCastedAttribute($key) && !is_null($value)) {
+        if ($this->isCastedAttribute($key) && ! is_null($value)) {
             return $this->castAttribute($key, $value);
         }
 
@@ -360,7 +360,7 @@ trait HasAttributes
     public function hasCast(string $key, array|string $types = null): bool
     {
         if (array_key_exists($key, $this->getCasts())) {
-            return !$types || in_array($this->getCastType($key), (array) $types, true);
+            return ! $types || in_array($this->getCastType($key), (array) $types, true);
         }
 
         return false;
@@ -508,7 +508,7 @@ trait HasAttributes
      */
     public function fromJson(string $value, bool $asObject = false)
     {
-        return json_decode($value, !$asObject);
+        return json_decode($value, ! $asObject);
     }
 
     /**
@@ -644,12 +644,12 @@ trait HasAttributes
         } elseif (
             $value &&
             $this->isDateAttribute($key) &&
-            !$this->valueIsResetInteger($value)
+            ! $this->valueIsResetInteger($value)
         ) {
             $value = $this->fromDateTime($value, $this->getDates()[$key]);
         }
 
-        if ($this->isJsonCastable($key) && !is_null($value)) {
+        if ($this->isJsonCastable($key) && ! is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
         }
 
@@ -764,7 +764,7 @@ trait HasAttributes
         // search results will contain integer keys that have
         // attribute names as values. We don't need these.
         $this->attributes = array_filter($raw, function ($key) {
-            return !is_int($key);
+            return ! is_int($key);
         }, ARRAY_FILTER_USE_KEY);
 
         // LDAP search results will contain the distinguished
@@ -860,7 +860,7 @@ trait HasAttributes
      */
     public function isDirty(string $key): bool
     {
-        return !$this->originalIsEquivalent($key);
+        return ! $this->originalIsEquivalent($key);
     }
 
     /**
@@ -907,7 +907,7 @@ trait HasAttributes
      */
     protected function originalIsEquivalent(string $key): bool
     {
-        if (!array_key_exists($key, $this->original)) {
+        if (! array_key_exists($key, $this->original)) {
             return false;
         }
 
@@ -930,7 +930,7 @@ trait HasAttributes
     {
         $class = static::class;
 
-        if (!isset(static::$mutatorCache[$class])) {
+        if (! isset(static::$mutatorCache[$class])) {
             static::cacheMutatedAttributes($class);
         }
 

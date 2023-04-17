@@ -99,7 +99,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function onLastPage(): bool
     {
-        return !$this->hasMorePages();
+        return ! $this->hasMorePages();
     }
 
     /**
@@ -140,7 +140,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function isNotEmpty(): bool
     {
-        return !$this->isEmpty();
+        return ! $this->isEmpty();
     }
 
     /**

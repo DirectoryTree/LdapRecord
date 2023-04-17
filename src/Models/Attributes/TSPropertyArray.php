@@ -182,7 +182,7 @@ class TSPropertyArray
      */
     protected function validateProp(string $propName): void
     {
-        if (!$this->has($propName)) {
+        if (! $this->has($propName)) {
             throw new InvalidArgumentException(sprintf('TSProperty for "%s" does not exist.', $propName));
         }
     }

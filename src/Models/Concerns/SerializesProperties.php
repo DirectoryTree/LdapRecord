@@ -69,7 +69,7 @@ trait SerializesProperties
 
             $property->setAccessible(true);
 
-            if (!$property->isInitialized($this)) {
+            if (! $property->isInitialized($this)) {
                 continue;
             }
 
@@ -114,7 +114,7 @@ trait SerializesProperties
                 $name = "\0*\0{$name}";
             }
 
-            if (!array_key_exists($name, $values)) {
+            if (! array_key_exists($name, $values)) {
                 continue;
             }
 

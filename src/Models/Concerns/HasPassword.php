@@ -21,7 +21,7 @@ trait HasPassword
         // Here we will attempt to determine the password hash method in use
         // by parsing the users hashed password (if it as available). If a
         // method is determined, we will override the default here.
-        if (!($method = $this->determinePasswordHashMethod())) {
+        if (! ($method = $this->determinePasswordHashMethod())) {
             $method = $this->getPasswordHashMethod();
         }
 
@@ -140,13 +140,13 @@ trait HasPassword
     /**
      * Encode / hash the given password.
      *
-     * @param string $salt
+     * @param  string  $salt
      *
      * @throws LdapRecordException
      */
     protected function getHashedPassword(string $method, string $password, string $salt = null): string
     {
-        if (!method_exists(Password::class, $method)) {
+        if (! method_exists(Password::class, $method)) {
             throw new LdapRecordException("Password hashing method [{$method}] does not exist.");
         }
 
@@ -172,7 +172,7 @@ trait HasPassword
             $secure = $connection->getConfiguration()->get('use_ssl') || $connection->getConfiguration()->get('use_tls');
         }
 
-        if (!$secure) {
+        if (! $secure) {
             throw new ConnectionException(
                 'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );
@@ -184,7 +184,7 @@ trait HasPassword
      */
     public function getPasswordSalt(string $method): ?string
     {
-        if (!Password::hashMethodRequiresSalt($method)) {
+        if (! Password::hashMethodRequiresSalt($method)) {
             return null;
         }
 
@@ -198,11 +198,11 @@ trait HasPassword
      */
     public function determinePasswordHashMethod()
     {
-        if (!$password = $this->password) {
+        if (! $password = $this->password) {
             return;
         }
 
-        if (!$method = Password::getHashMethod($password)) {
+        if (! $method = Password::getHashMethod($password)) {
             return;
         }
 

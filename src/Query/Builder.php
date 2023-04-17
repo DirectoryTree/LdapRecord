@@ -151,8 +151,7 @@ class Builder
     /**
      * Returns a new Query Builder instance.
      *
-     * @param string $baseDn
-     *
+     * @param  string  $baseDn
      * @return $this
      */
     public function newInstance(string $baseDn = null): static
@@ -474,7 +473,7 @@ class Builder
      */
     public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Collection|array
     {
-        if (!$this->hasOrderBy()) {
+        if (! $this->hasOrderBy()) {
             $this->orderBy($orderBy, $orderByDir);
         }
 
@@ -545,7 +544,7 @@ class Builder
             // We will avoid setting the controls during any pagination
             // requests as it will clear the cookie we need to send
             // to the server upon retrieving every page.
-            if (!$this->paginated) {
+            if (! $this->paginated) {
                 // Before running the query, we will set the LDAP server controls. This
                 // allows the controls to be automatically reset upon each new query
                 // that is conducted on the same connection during each request.
@@ -567,7 +566,7 @@ class Builder
      */
     public function parse(mixed $resource): array
     {
-        if (!$resource) {
+        if (! $resource) {
             return [];
         }
 
@@ -635,7 +634,7 @@ class Builder
      */
     public function firstOrFail(array|string $columns = ['*']): Model|array
     {
-        if (!$record = $this->first($columns)) {
+        if (! $record = $this->first($columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -676,7 +675,7 @@ class Builder
      */
     public function exists(): bool
     {
-        return !is_null($this->first());
+        return ! is_null($this->first());
     }
 
     /**
@@ -684,7 +683,7 @@ class Builder
      */
     public function doesntExist(): bool
     {
-        return !$this->exists();
+        return ! $this->exists();
     }
 
     /**
@@ -743,7 +742,7 @@ class Builder
         $objects = [];
 
         foreach ((array) $dns as $dn) {
-            if (!is_null($object = $this->find($dn, $columns))) {
+            if (! is_null($object = $this->find($dn, $columns))) {
                 $objects[] = $object;
             }
         }
@@ -803,7 +802,7 @@ class Builder
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
-        if (!empty($columns)) {
+        if (! empty($columns)) {
             $this->columns = $columns;
         }
 
@@ -915,11 +914,11 @@ class Builder
         // If we have been provided with two arguments not a "has" or
         // "not has" operator, we'll assume the developer is creating
         // an "equals" clause and set the proper operator in place.
-        if (func_num_args() === 2 && !in_array($operator, ['*', '!*'])) {
+        if (func_num_args() === 2 && ! in_array($operator, ['*', '!*'])) {
             [$value, $operator] = [$operator, '='];
         }
 
-        if (!in_array($operator, $this->grammar->getOperators())) {
+        if (! in_array($operator, $this->grammar->getOperators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -1209,7 +1208,7 @@ class Builder
      */
     public function addFilter(string $type, array $bindings): static
     {
-        if (!array_key_exists($type, $this->filters)) {
+        if (! array_key_exists($type, $this->filters)) {
             throw new InvalidArgumentException("Filter type: [$type] is invalid.");
         }
 
@@ -1373,7 +1372,7 @@ class Builder
             throw new LdapRecordException('A new LDAP object must have a distinguished name (dn).');
         }
 
-        if (!array_key_exists('objectclass', $attributes)) {
+        if (! array_key_exists('objectclass', $attributes)) {
             throw new LdapRecordException(
                 'A new LDAP object must contain at least one object class (objectclass) to be created.'
             );

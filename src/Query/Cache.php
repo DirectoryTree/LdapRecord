@@ -35,7 +35,7 @@ class Cache
     /**
      * Store an item in the cache.
      *
-     * @param DateTimeInterface|DateInterval|int|null $ttl
+     * @param  DateTimeInterface|DateInterval|int|null  $ttl
      */
     public function put(string $key, mixed $value, DateTimeInterface|DateInterval|int|null $ttl = null): bool
     {
@@ -55,7 +55,7 @@ class Cache
     {
         $value = $this->get($key);
 
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             return $value;
         }
 

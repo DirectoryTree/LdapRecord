@@ -8,6 +8,7 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
+use LdapRecord\Query\Model\Builder;
 
 class HasMany extends OneToMany
 {
@@ -15,31 +16,23 @@ class HasMany extends OneToMany
 
     /**
      * The model to use for attaching / detaching.
-     *
-     * @var Model
      */
-    protected $using;
+    protected ?Model $using = null;
 
     /**
      * The attribute key to use for attaching / detaching.
-     *
-     * @var string
      */
-    protected $usingKey;
+    protected ?string $usingKey = null;
 
     /**
      * The pagination page size.
-     *
-     * @var int
      */
-    protected $pageSize = 1000;
+    protected int $pageSize = 1000;
 
     /**
      * The exceptions to bypass for each relation operation.
-     *
-     * @var array
      */
-    protected $bypass = [
+    protected array $bypass = [
         'attach' => [
             'Already exists', 'Type or value exists',
         ],
@@ -50,11 +43,8 @@ class HasMany extends OneToMany
 
     /**
      * Set the model and attribute to use for attaching / detaching.
-     *
-     * @param  string  $usingKey
-     * @return $this
      */
-    public function using(Model $using, $usingKey)
+    public function using(Model $using, string $usingKey): static
     {
         $this->using = $using;
         $this->usingKey = $usingKey;
@@ -64,11 +54,8 @@ class HasMany extends OneToMany
 
     /**
      * Set the pagination page size of the relation query.
-     *
-     * @param  int  $pageSize
-     * @return $this
      */
-    public function setPageSize($pageSize)
+    public function setPageSize(int $pageSize): static
     {
         $this->pageSize = $pageSize;
 
@@ -77,22 +64,16 @@ class HasMany extends OneToMany
 
     /**
      * Paginate the relation using the given page size.
-     *
-     * @param  int  $pageSize
-     * @return Collection
      */
-    public function paginate($pageSize = 1000)
+    public function paginate(int $pageSize = 1000): Collection
     {
         return $this->paginateOnceUsing($pageSize);
     }
 
     /**
      * Paginate the relation using the page size once.
-     *
-     * @param  int  $pageSize
-     * @return Collection
      */
-    protected function paginateOnceUsing($pageSize)
+    protected function paginateOnceUsing(int $pageSize): Collection
     {
         $size = $this->pageSize;
 
@@ -105,13 +86,10 @@ class HasMany extends OneToMany
 
     /**
      * Execute a callback over each result while chunking.
-     *
-     * @param  int  $pageSize
-     * @return bool
      */
-    public function each(Closure $callback, $pageSize = 1000)
+    public function each(Closure $callback, int $pageSize = 1000): bool
     {
-        $this->chunk($pageSize, function ($results) use ($callback) {
+        return $this->chunk($pageSize, function ($results) use ($callback) {
             foreach ($results as $key => $value) {
                 if ($callback($value, $key) === false) {
                     return false;
@@ -122,23 +100,16 @@ class HasMany extends OneToMany
 
     /**
      * Chunk the relation results using the given callback.
-     *
-     * @param  int  $pageSize
-     * @return bool
      */
-    public function chunk($pageSize, Closure $callback)
+    public function chunk(int $pageSize, Closure $callback): bool
     {
         return $this->chunkRelation($pageSize, $callback);
     }
 
     /**
      * Execute the callback over chunks of relation results.
-     *
-     * @param  int  $pageSize
-     * @param  array  $loaded
-     * @return bool
      */
-    protected function chunkRelation($pageSize, Closure $callback, $loaded = [])
+    protected function chunkRelation(int $pageSize, Closure $callback, array $loaded = []): bool
     {
         return $this->getRelationQuery()->chunk($pageSize, function (Collection $results) use ($pageSize, $callback, $loaded) {
             $models = $this->transformResults($results)->when($this->recursive, function (Collection $models) use ($loaded) {
@@ -165,10 +136,8 @@ class HasMany extends OneToMany
 
     /**
      * Get the relationships results.
-     *
-     * @return Collection
      */
-    public function getRelationResults()
+    public function getRelationResults(): Collection
     {
         return $this->transformResults(
             $this->getRelationQuery()->paginate($this->pageSize)
@@ -177,10 +146,8 @@ class HasMany extends OneToMany
 
     /**
      * Get the prepared relationship query.
-     *
-     * @return \LdapRecord\Query\Model\Builder
      */
-    public function getRelationQuery()
+    public function getRelationQuery(): Builder
     {
         $columns = $this->query->getSelects();
 
@@ -207,11 +174,8 @@ class HasMany extends OneToMany
 
     /**
      * Attach a model to the relation.
-     *
-     * @param  Model|string  $model
-     * @return Model|string|false
      */
-    public function attach($model)
+    public function attach(Model|string $model): Model|string|false
     {
         return $this->attemptFailableOperation(
             $this->buildAttachCallback($model),
@@ -222,11 +186,8 @@ class HasMany extends OneToMany
 
     /**
      * Build the attach callback.
-     *
-     * @param  Model|string  $model
-     * @return \Closure
      */
-    protected function buildAttachCallback($model)
+    protected function buildAttachCallback(Model|string $model): Closure
     {
         return function () use ($model) {
             $foreign = $this->getAttachableForeignValue($model);
@@ -245,11 +206,8 @@ class HasMany extends OneToMany
 
     /**
      * Attach a collection of models to the parent instance.
-     *
-     * @param  iterable  $models
-     * @return iterable
      */
-    public function attachMany($models)
+    public function attachMany(iterable $models): iterable
     {
         foreach ($models as $model) {
             $this->attach($model);
@@ -260,11 +218,8 @@ class HasMany extends OneToMany
 
     /**
      * Detach the model from the relation.
-     *
-     * @param  Model|string  $model
-     * @return Model|string|false
      */
-    public function detach($model)
+    public function detach(Model|string $model): Model|string|false
     {
         return $this->attemptFailableOperation(
             $this->buildDetachCallback($model),
@@ -275,30 +230,26 @@ class HasMany extends OneToMany
 
     /**
      * Detach the model or delete the parent if the relation is empty.
-     *
-     * @param  Model|string  $model
-     * @return void
      */
-    public function detachOrDeleteParent($model)
+    public function detachOrDeleteParent(Model|string $model): void
     {
         $count = $this->onceWithoutMerging(function () {
             return $this->count();
         });
 
         if ($count <= 1) {
-            return $this->getParent()->delete();
+            $this->getParent()->delete();
+
+            return;
         }
 
-        return $this->detach($model);
+        $this->detach($model);
     }
 
     /**
      * Build the detach callback.
-     *
-     * @param  Model|string  $model
-     * @return \Closure
      */
-    protected function buildDetachCallback($model)
+    protected function buildDetachCallback(Model|string $model): Closure
     {
         return function () use ($model) {
             $foreign = $this->getAttachableForeignValue($model);
@@ -311,17 +262,14 @@ class HasMany extends OneToMany
                 $model = $this->getForeignModelByValueOrFail($model);
             }
 
-            return $model->deleteAttribute([$this->relationKey => $foreign]);
+            $model->deleteAttribute([$this->relationKey => $foreign]);
         };
     }
 
     /**
      * Get the attachable foreign value from the model.
-     *
-     * @param  Model|string  $model
-     * @return string
      */
-    protected function getAttachableForeignValue($model)
+    protected function getAttachableForeignValue(Model|string $model): string
     {
         if ($model instanceof Model) {
             return $this->using
@@ -335,12 +283,9 @@ class HasMany extends OneToMany
     /**
      * Get the foreign model by the given value, or fail.
      *
-     * @param  string  $model
-     * @return Model
-     *
      * @throws ModelNotFoundException
      */
-    protected function getForeignModelByValueOrFail($model)
+    protected function getForeignModelByValueOrFail(string $model): Model
     {
         if (! is_null($model = $this->getForeignModelByValue($model))) {
             return $model;
@@ -357,12 +302,9 @@ class HasMany extends OneToMany
      *
      * If a bypassable exception is encountered, the value will be returned.
      *
-     * @param  callable  $operation
-     * @param  string|array  $bypass
-     *
      * @throws LdapRecordException
      */
-    protected function attemptFailableOperation($operation, $bypass, $value)
+    protected function attemptFailableOperation(Closure $operation, string|array $bypass, mixed $value): mixed
     {
         try {
             $operation();
@@ -379,10 +321,8 @@ class HasMany extends OneToMany
 
     /**
      * Detach all relation models.
-     *
-     * @return Collection
      */
-    public function detachAll()
+    public function detachAll(): Collection
     {
         return $this->onceWithoutMerging(function () {
             return $this->get()->each(function (Model $model) {
@@ -393,10 +333,8 @@ class HasMany extends OneToMany
 
     /**
      * Detach all relation models or delete the model if its relation is empty.
-     *
-     * @return Collection
      */
-    public function detachAllOrDelete()
+    public function detachAllOrDelete(): Collection
     {
         return $this->onceWithoutMerging(function () {
             return $this->get()->each(function (Model $model) {

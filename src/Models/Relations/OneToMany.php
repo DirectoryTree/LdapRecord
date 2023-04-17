@@ -2,42 +2,32 @@
 
 namespace LdapRecord\Models\Relations;
 
+use Closure;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 
 abstract class OneToMany extends Relation
 {
     /**
      * The relation to merge results with.
-     *
-     * @var OneToMany|null
      */
-    protected $with;
+    protected ?Relation $with = null;
 
     /**
      * The name of the relationship.
-     *
-     * @var string
      */
-    protected $relationName;
+    protected string $relationName;
 
     /**
      * Whether to include recursive results.
-     *
-     * @var bool
      */
-    protected $recursive = false;
+    protected bool $recursive = false;
 
     /**
      * Constructor.
-     *
-     * @param  string  $related
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
-     * @param  string  $relationName
      */
-    public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey, $relationName)
+    public function __construct(Builder $query, Model $parent, string $related, string $relationKey, string $foreignKey, string $relationName)
     {
         $this->relationName = $relationName;
 
@@ -46,10 +36,8 @@ abstract class OneToMany extends Relation
 
     /**
      * Set the relation to load with its parent.
-     *
-     * @return $this
      */
-    public function with(Relation $relation)
+    public function with(Relation $relation): static
     {
         $this->with = $relation;
 
@@ -58,30 +46,23 @@ abstract class OneToMany extends Relation
 
     /**
      * Whether to include recursive results.
-     *
-     * @param  bool  $enable
-     * @return $this
      */
-    public function recursive($enable = true)
+    public function recursive(bool $recursive = true): static
     {
-        $this->recursive = $enable;
+        $this->recursive = $recursive;
 
         return $this;
     }
 
     /**
      * Get the immediate relationships results.
-     *
-     * @return Collection
      */
-    abstract public function getRelationResults();
+    abstract public function getRelationResults(): Collection;
 
     /**
      * Get the results of the relationship.
-     *
-     * @return Collection
      */
-    public function getResults()
+    public function getResults(): Collection
     {
         $results = $this->recursive
             ? $this->getRecursiveResults()
@@ -94,10 +75,8 @@ abstract class OneToMany extends Relation
 
     /**
      * Execute the callback excluding the merged query result.
-     *
-     * @param  callable  $callback
      */
-    protected function onceWithoutMerging($callback)
+    protected function onceWithoutMerging(Closure $callback): mixed
     {
         $merging = $this->with;
 
@@ -112,20 +91,16 @@ abstract class OneToMany extends Relation
 
     /**
      * Get the relation name.
-     *
-     * @return string
      */
-    public function getRelationName()
+    public function getRelationName(): string
     {
         return $this->relationName;
     }
 
     /**
      * Get the results of the merging 'with' relation.
-     *
-     * @return Collection
      */
-    protected function getMergingRelationResults()
+    protected function getMergingRelationResults(): Collection
     {
         return $this->with
             ? $this->with->recursive($this->recursive)->get()
@@ -136,9 +111,8 @@ abstract class OneToMany extends Relation
      * Get the results for the models relation recursively.
      *
      * @param  string[]  $loaded  The distinguished names of models already loaded
-     * @return Collection
      */
-    protected function getRecursiveResults(array $loaded = [])
+    protected function getRecursiveResults(array $loaded = []): Collection
     {
         $results = $this->getRelationResults()->reject(function (Model $model) use ($loaded) {
             // Here we will exclude the models that we have already
@@ -163,10 +137,8 @@ abstract class OneToMany extends Relation
 
     /**
      * Get the recursive relation results for given model.
-     *
-     * @return Collection
      */
-    protected function getRecursiveRelationResults(Model $model, array $loaded)
+    protected function getRecursiveRelationResults(Model $model, array $loaded): Collection
     {
         return ($relation = $model->getRelation($this->relationName))
             ? $relation->getRecursiveResults($loaded)

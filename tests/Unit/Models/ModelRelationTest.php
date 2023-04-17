@@ -5,12 +5,12 @@ namespace LdapRecord\Tests\Unit\Models;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Models\Scope;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 
@@ -253,7 +253,7 @@ class RelationTestStub extends Relation
 {
     protected $results = [];
 
-    public function getResults()
+    public function getResults(): Collection
     {
         return $this->transformResults(
             $this->parent->newCollection($this->results)

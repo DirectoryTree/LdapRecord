@@ -14,7 +14,7 @@ trait HasEvents
     /**
      * Execute the callback without raising any events.
      */
-    protected static function withoutEvents(Closure $callback)
+    protected static function withoutEvents(Closure $callback): mixed
     {
         $container = static::getConnectionContainer();
 
@@ -37,11 +37,8 @@ trait HasEvents
 
     /**
      * Dispatch the given model events.
-     *
-     * @param  string|array  $events
-     * @return void
      */
-    protected function dispatch($events, array $args = [])
+    protected function dispatch(array|string $events, array $args = []): void
     {
         foreach (Arr::wrap($events) as $name) {
             $this->fireCustomModelEvent($name, $args);

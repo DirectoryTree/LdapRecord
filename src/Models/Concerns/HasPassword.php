@@ -12,13 +12,11 @@ trait HasPassword
     /**
      * Set the password on the user.
      *
-     * @param  string|array  $password
-     *
      * @throws ConnectionException
      */
-    public function setPasswordAttribute($password)
+    public function setPasswordAttribute(array|string $password): void
     {
-        $this->validateSecureConnection();
+        $this->assertSecureConnection();
 
         // Here we will attempt to determine the password hash method in use
         // by parsing the users hashed password (if it as available). If a
@@ -49,31 +47,26 @@ trait HasPassword
     /**
      * Alias for setting the password on the user.
      *
-     * @param  string|array  $password
      *
      * @throws ConnectionException
      */
-    public function setUnicodepwdAttribute($password)
+    public function setUnicodepwdAttribute(array|string $password): void
     {
         $this->setPasswordAttribute($password);
     }
 
     /**
      * An accessor for retrieving the user's hashed password value.
-     *
-     * @return string|null
      */
-    public function getPasswordAttribute()
+    public function getPasswordAttribute(): ?string
     {
         return $this->getAttribute($this->getPasswordAttributeName())[0] ?? null;
     }
 
     /**
      * Get the name of the attribute that contains the user's password.
-     *
-     * @return string
      */
-    public function getPasswordAttributeName()
+    public function getPasswordAttributeName(): string
     {
         if (property_exists($this, 'passwordAttribute')) {
             return $this->passwordAttribute;
@@ -88,10 +81,8 @@ trait HasPassword
 
     /**
      * Get the name of the method to use for hashing the user's password.
-     *
-     * @return string
      */
-    public function getPasswordHashMethod()
+    public function getPasswordHashMethod(): string
     {
         if (property_exists($this, 'passwordHashMethod')) {
             return $this->passwordHashMethod;
@@ -106,13 +97,8 @@ trait HasPassword
 
     /**
      * Set the changed password.
-     *
-     * @param  string  $oldPassword
-     * @param  string  $newPassword
-     * @param  string  $attribute
-     * @return void
      */
-    protected function setChangedPassword($oldPassword, $newPassword, $attribute)
+    protected function setChangedPassword(string $oldPassword, string $newPassword, string $attribute): void
     {
         // Create batch modification for removing the old password.
         $this->addModification(
@@ -135,12 +121,8 @@ trait HasPassword
 
     /**
      * Set the password on the model.
-     *
-     * @param  string  $password
-     * @param  string  $attribute
-     * @return void
      */
-    protected function setPassword($password, $attribute)
+    protected function setPassword(string $password, string $attribute): void
     {
         $this->addModification(
             $this->newBatchModification(
@@ -154,14 +136,11 @@ trait HasPassword
     /**
      * Encode / hash the given password.
      *
-     * @param  string  $method
-     * @param  string  $password
      * @param  string  $salt
-     * @return string
      *
      * @throws LdapRecordException
      */
-    protected function getHashedPassword($method, $password, $salt = null)
+    protected function getHashedPassword(string $method, string $password, string $salt = null): string
     {
         if (! method_exists(Password::class, $method)) {
             throw new LdapRecordException("Password hashing method [{$method}] does not exist.");
@@ -177,11 +156,9 @@ trait HasPassword
     /**
      * Validates that the current LDAP connection is secure.
      *
-     * @return void
-     *
      * @throws ConnectionException
      */
-    protected function validateSecureConnection()
+    protected function assertSecureConnection(): void
     {
         $connection = $this->getConnection();
 
@@ -200,14 +177,11 @@ trait HasPassword
 
     /**
      * Attempt to retrieve the password's salt.
-     *
-     * @param  string  $method
-     * @return string|null
      */
-    public function getPasswordSalt($method)
+    public function getPasswordSalt(string $method): ?string
     {
         if (! Password::hashMethodRequiresSalt($method)) {
-            return;
+            return null;
         }
 
         return Password::getSalt($this->password);

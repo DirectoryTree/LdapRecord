@@ -78,8 +78,7 @@ class UserTest extends TestCase
 
 class OpenLDAPUserTestStub extends User
 {
-    protected function validateSecureConnection()
+    protected function assertSecureConnection(): void
     {
-        return true;
     }
 }

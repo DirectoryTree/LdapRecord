@@ -13,24 +13,18 @@ trait HidesAttributes
 {
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var array
      */
-    protected $hidden = [];
+    protected array $hidden = [];
 
     /**
      * The attributes that should be visible in serialization.
-     *
-     * @var array
      */
-    protected $visible = [];
+    protected array $visible = [];
 
     /**
      * Get the hidden attributes for the model.
-     *
-     * @return array
      */
-    public function getHidden()
+    public function getHidden(): array
     {
         return array_map(function ($key) {
             return $this->normalizeAttributeKey($key);
@@ -39,10 +33,8 @@ trait HidesAttributes
 
     /**
      * Set the hidden attributes for the model.
-     *
-     * @return $this
      */
-    public function setHidden(array $hidden)
+    public function setHidden(array $hidden): static
     {
         $this->hidden = $hidden;
 
@@ -51,11 +43,8 @@ trait HidesAttributes
 
     /**
      * Add hidden attributes for the model.
-     *
-     * @param  array|string|null  $attributes
-     * @return void
      */
-    public function addHidden($attributes = null)
+    public function addHidden(array|string $attributes = null): void
     {
         $this->hidden = array_merge(
             $this->hidden,
@@ -65,10 +54,8 @@ trait HidesAttributes
 
     /**
      * Get the visible attributes for the model.
-     *
-     * @return array
      */
-    public function getVisible()
+    public function getVisible(): array
     {
         return array_map(function ($key) {
             return $this->normalizeAttributeKey($key);
@@ -77,10 +64,8 @@ trait HidesAttributes
 
     /**
      * Set the visible attributes for the model.
-     *
-     * @return $this
      */
-    public function setVisible(array $visible)
+    public function setVisible(array $visible): static
     {
         $this->visible = $visible;
 
@@ -89,11 +74,8 @@ trait HidesAttributes
 
     /**
      * Add visible attributes for the model.
-     *
-     * @param  array|string|null  $attributes
-     * @return void
      */
-    public function addVisible($attributes = null)
+    public function addVisible(array|string $attributes = null): void
     {
         $this->visible = array_merge(
             $this->visible,
@@ -103,11 +85,8 @@ trait HidesAttributes
 
     /**
      * Make the given, typically hidden, attributes visible.
-     *
-     * @param  array|string  $attributes
-     * @return $this
      */
-    public function makeVisible($attributes)
+    public function makeVisible(array|string $attributes): static
     {
         $this->hidden = array_diff($this->hidden, (array) $attributes);
 
@@ -120,11 +99,8 @@ trait HidesAttributes
 
     /**
      * Make the given, typically visible, attributes hidden.
-     *
-     * @param  array|string  $attributes
-     * @return $this
      */
-    public function makeHidden($attributes)
+    public function makeHidden(array|string $attributes): static
     {
         $attributes = (array) $attributes;
 

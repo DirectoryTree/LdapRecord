@@ -3,9 +3,9 @@
 namespace LdapRecord\Models\Relations;
 
 use Closure;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 
 /**
@@ -17,68 +17,48 @@ abstract class Relation
 {
     /**
      * The underlying LDAP query.
-     *
-     * @var Builder
      */
-    protected $query;
+    protected Builder $query;
 
     /**
      * The parent model instance.
-     *
-     * @var Model
      */
-    protected $parent;
+    protected Model $parent;
 
     /**
      * The related model class names.
-     *
-     * @var array
      */
-    protected $related;
+    protected array $related;
 
     /**
      * The relation key.
-     *
-     * @var string
      */
-    protected $relationKey;
+    protected string $relationKey;
 
     /**
      * The foreign key.
-     *
-     * @var string
      */
-    protected $foreignKey;
+    protected string $foreignKey;
 
     /**
      * The default relation model.
-     *
-     * @var string
      */
-    protected $default = Entry::class;
+    protected string $default = Entry::class;
 
     /**
      * The callback to use for resolving relation models.
-     *
-     * @var Closure
      */
-    protected static $modelResolver;
+    protected static Closure $modelResolver;
 
     /**
      * The methods that should be passed along to a relation collection.
-     *
-     * @var string[]
      */
-    protected $passthru = ['count', 'exists', 'contains'];
+    protected array $passthru = ['count', 'exists', 'contains'];
 
     /**
      * Constructor.
-     *
-     * @param  string|array  $related
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
      */
-    public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey)
+    public function __construct(Builder $query, Model $parent, array|string $related, string $relationKey, string $foreignKey)
     {
         $this->query = $query;
         $this->parent = $parent;
@@ -86,7 +66,7 @@ abstract class Relation
         $this->relationKey = $relationKey;
         $this->foreignKey = $foreignKey;
 
-        static::$modelResolver = static::$modelResolver ?? function (array $modelObjectClasses, array $relationMap) {
+        static::$modelResolver = function (array $modelObjectClasses, array $relationMap) {
             return array_search($modelObjectClasses, $relationMap);
         };
 
@@ -95,11 +75,8 @@ abstract class Relation
 
     /**
      * Handle dynamic method calls to the relationship.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         if (in_array($method, $this->passthru)) {
             return $this->get('objectclass')->$method(...$parameters);
@@ -116,20 +93,16 @@ abstract class Relation
 
     /**
      * Set the callback to use for resolving models from relation results.
-     *
-     * @return void
      */
-    public static function resolveModelsUsing(Closure $callback)
+    public static function resolveModelsUsing(Closure $callback): void
     {
         static::$modelResolver = $callback;
     }
 
     /**
      * Only return objects matching the related model's object classes.
-     *
-     * @return $this
      */
-    public function onlyRelated()
+    public function onlyRelated(): static
     {
         $relations = [];
 
@@ -154,18 +127,13 @@ abstract class Relation
 
     /**
      * Get the results of the relationship.
-     *
-     * @return Collection
      */
-    abstract public function getResults();
+    abstract public function getResults(): Collection;
 
     /**
      * Execute the relationship query.
-     *
-     * @param  array|string  $columns
-     * @return Collection
      */
-    public function get($columns = ['*'])
+    public function get(array|string $columns = ['*']): Collection
     {
         return $this->getResultsWithColumns($columns);
     }
@@ -174,11 +142,8 @@ abstract class Relation
      * Get the results of the relationship while selecting the given columns.
      *
      * If the query columns are empty, the given columns are applied.
-     *
-     * @param  array  $columns
-     * @return Collection
      */
-    protected function getResultsWithColumns($columns)
+    protected function getResultsWithColumns(array|string $columns): Collection
     {
         if (is_null($this->query->columns)) {
             $this->query->select($columns);
@@ -189,21 +154,16 @@ abstract class Relation
 
     /**
      * Get the first result of the relationship.
-     *
-     * @param  array|string  $columns
-     * @return Model|null
      */
-    public function first($columns = ['*'])
+    public function first(array|string $columns = ['*']): ?Model
     {
         return $this->get($columns)->first();
     }
 
     /**
      * Prepare the relation query.
-     *
-     * @return static
      */
-    public function initRelation()
+    public function initRelation(): static
     {
         $this->query
             ->clearFilters()
@@ -215,10 +175,8 @@ abstract class Relation
 
     /**
      * Set the underlying query for the relation.
-     *
-     * @return $this
      */
-    public function setQuery(Builder $query)
+    public function setQuery(Builder $query): static
     {
         $this->query = $query;
 
@@ -229,70 +187,56 @@ abstract class Relation
 
     /**
      * Get the underlying query for the relation.
-     *
-     * @return Builder
      */
-    public function getQuery()
+    public function getQuery(): Builder
     {
         return $this->query;
     }
 
     /**
      * Get the parent model of the relation.
-     *
-     * @return Model
      */
-    public function getParent()
+    public function getParent(): Model
     {
         return $this->parent;
     }
 
     /**
      * Get the relation attribute key.
-     *
-     * @return string
      */
-    public function getRelationKey()
+    public function getRelationKey(): string
     {
         return $this->relationKey;
     }
 
     /**
      * Get the related model classes for the relation.
-     *
-     * @return array
      */
-    public function getRelated()
+    public function getRelated(): array
     {
         return $this->related;
     }
 
     /**
      * Get the relation foreign attribute key.
-     *
-     * @return string
      */
-    public function getForeignKey()
+    public function getForeignKey(): string
     {
         return $this->foreignKey;
     }
 
     /**
      * Get the class name of the default model.
-     *
-     * @return string
      */
-    public function getDefaultModel()
+    public function getDefaultModel(): string
     {
         return $this->default;
     }
 
     /**
      * Get a new instance of the default model on the relation.
-     *
-     * @return Model
      */
-    public function getNewDefaultModel()
+    public function getNewDefaultModel(): Model
     {
         $model = new $this->default();
 
@@ -303,11 +247,8 @@ abstract class Relation
 
     /**
      * Get the foreign model by the given value.
-     *
-     * @param  string  $value
-     * @return Model|null
      */
-    protected function getForeignModelByValue($value)
+    protected function getForeignModelByValue(string $value): ?Model
     {
         return $this->foreignKeyIsDistinguishedName()
             ? $this->query->find($value)
@@ -316,10 +257,8 @@ abstract class Relation
 
     /**
      * Returns the escaped foreign key value for use in an LDAP filter from the model.
-     *
-     * @return string
      */
-    protected function getEscapedForeignValueFromModel(Model $model)
+    protected function getEscapedForeignValueFromModel(Model $model): string
     {
         return $this->query->escape(
             $this->getForeignValueFromModel($model)
@@ -328,20 +267,16 @@ abstract class Relation
 
     /**
      * Get the relation parents foreign value.
-     *
-     * @return string
      */
-    protected function getParentForeignValue()
+    protected function getParentForeignValue(): ?string
     {
         return $this->getForeignValueFromModel($this->parent);
     }
 
     /**
      * Get the foreign key value from the model.
-     *
-     * @return string
      */
-    protected function getForeignValueFromModel(Model $model)
+    protected function getForeignValueFromModel(Model $model): ?string
     {
         return $this->foreignKeyIsDistinguishedName()
                 ? $model->getDn()
@@ -350,21 +285,16 @@ abstract class Relation
 
     /**
      * Get the first attribute value from the model.
-     *
-     * @param  string  $attribute
-     * @return string|null
      */
-    protected function getFirstAttributeValue(Model $model, $attribute)
+    protected function getFirstAttributeValue(Model $model, string $attribute): mixed
     {
         return $model->getFirstAttribute($attribute);
     }
 
     /**
      * Transforms the results by converting the models into their related.
-     *
-     * @return Collection
      */
-    protected function transformResults(Collection $results)
+    protected function transformResults(Collection $results): Collection
     {
         $relationMap = [];
 
@@ -383,10 +313,8 @@ abstract class Relation
 
     /**
      * Determines if the foreign key is a distinguished name.
-     *
-     * @return bool
      */
-    protected function foreignKeyIsDistinguishedName()
+    protected function foreignKeyIsDistinguishedName(): bool
     {
         return in_array($this->foreignKey, ['dn', 'distinguishedname']);
     }
@@ -396,7 +324,7 @@ abstract class Relation
      *
      * @return class-string|bool
      */
-    protected function determineModelFromRelated(Model $model, array $relationMap)
+    protected function determineModelFromRelated(Model $model, array $relationMap): string|bool
     {
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
@@ -415,11 +343,8 @@ abstract class Relation
 
     /**
      * Sort and normalize the object classes.
-     *
-     * @param  array  $classes
-     * @return array
      */
-    protected function normalizeObjectClasses($classes)
+    protected function normalizeObjectClasses(array $classes): array
     {
         sort($classes);
 

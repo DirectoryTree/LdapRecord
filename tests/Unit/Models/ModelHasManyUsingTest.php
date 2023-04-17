@@ -45,7 +45,7 @@ class ModelHasManyUsingTest extends TestCase
         $this->assertEquals($relation->detach('bar'), 'bar');
     }
 
-    protected function getRelation()
+    protected function getRelation(): HasMany
     {
         $mockBuilder = m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();

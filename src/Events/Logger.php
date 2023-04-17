@@ -13,10 +13,8 @@ class Logger
 {
     /**
      * The logger instance.
-     *
-     * @var LoggerInterface|null
      */
-    protected $logger;
+    protected ?LoggerInterface $logger;
 
     /**
      * Constructor.

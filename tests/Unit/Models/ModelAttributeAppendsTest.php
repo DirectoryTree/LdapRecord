@@ -49,12 +49,12 @@ class ModelAttributeAppendsTestStub extends Model
 {
     protected array $appends = ['foo'];
 
-    public function getFooAttribute()
+    public function getFooAttribute(): string
     {
         return 'bar';
     }
 
-    public function getFooBarAttribute()
+    public function getFooBarAttribute(): string
     {
         return 'foo-bar';
     }

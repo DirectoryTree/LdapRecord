@@ -10,7 +10,7 @@ use LdapRecord\Tests\TestCase;
 
 class ActiveDirectoryTest extends TestCase
 {
-    protected function newBuilder()
+    protected function newBuilder(): ActiveDirectoryBuilder
     {
         return (new ActiveDirectoryBuilder(new Connection([], new LdapFake())))->setModel(new Entry());
     }

@@ -8,10 +8,8 @@ class Guid
 {
     /**
      * The string GUID value.
-     *
-     * @var string
      */
-    protected $value;
+    protected ?string $value = null;
 
     /**
      * The guid structure in order by section to parse using substr().
@@ -19,10 +17,8 @@ class Guid
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
      * @see https://github.com/ldaptools/ldaptools
-     *
-     * @var array
      */
-    protected $guidSections = [
+    protected array $guidSections = [
         [[-26, 2], [-28, 2], [-30, 2], [-32, 2]],
         [[-22, 2], [-24, 2]],
         [[-18, 2], [-20, 2]],
@@ -36,10 +32,8 @@ class Guid
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
      * @see https://github.com/ldaptools/ldaptools
-     *
-     * @var array
      */
-    protected $octetSections = [
+    protected array $octetSections = [
         [6, 4, 2, 0],
         [10, 8],
         [14, 12],
@@ -59,7 +53,7 @@ class Guid
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (static::isValid($value)) {
             $this->value = $value;

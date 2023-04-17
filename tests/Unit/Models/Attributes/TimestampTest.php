@@ -9,17 +9,17 @@ use LdapRecord\Tests\TestCase;
 
 class TimestampTest extends TestCase
 {
-    protected $unixTimestamp = 1601605329;
+    protected int $unixTimestamp = 1601605329;
 
-    protected $utcLdapTimestamp = '20201002021244Z';
+    protected string $utcLdapTimestamp = '20201002021244Z';
 
-    protected $offsetLdapTimestamp = '20201002021244-0500';
+    protected string $offsetLdapTimestamp = '20201002021244-0500';
 
-    protected $utcWindowsTimestamp = '20201002021618.0Z';
+    protected string $utcWindowsTimestamp = '20201002021618.0Z';
 
-    protected $offsetWindowsTimestamp = '20201002021618.0-0500';
+    protected string $offsetWindowsTimestamp = '20201002021618.0-0500';
 
-    protected $windowsIntegerTime = '132460789290000000';
+    protected string $windowsIntegerTime = '132460789290000000';
 
     public function test_exception_is_thrown_when_invalid_type_given()
     {

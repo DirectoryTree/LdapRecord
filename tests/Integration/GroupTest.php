@@ -8,8 +8,7 @@ use LdapRecord\Tests\Integration\Fixtures\Group;
 
 class GroupTest extends TestCase
 {
-    /** @var OrganizationalUnit */
-    protected $ou;
+    protected OrganizationalUnit $ou;
 
     protected function setUp(): void
     {
@@ -33,7 +32,7 @@ class GroupTest extends TestCase
         parent::tearDown();
     }
 
-    protected function createGroup(array $attributes = [])
+    protected function createGroup(array $attributes = []): Group
     {
         $group = (new Group)
             ->inside($this->ou)

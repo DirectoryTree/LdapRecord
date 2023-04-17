@@ -61,7 +61,7 @@ class ModelHasOneTest extends TestCase
         $this->assertNull($relation->detach());
     }
 
-    protected function getRelation()
+    protected function getRelation(): HasOne
     {
         $mockBuilder = m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();

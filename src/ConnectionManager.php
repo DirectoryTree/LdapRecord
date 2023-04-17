@@ -23,10 +23,8 @@ class ConnectionManager
 
     /**
      * The events to register listeners for during initialization.
-     *
-     * @var array
      */
-    protected $listen = [
+    protected array $listen = [
         'LdapRecord\Auth\Events\*',
         'LdapRecord\Query\Events\*',
         'LdapRecord\Models\Events\*',

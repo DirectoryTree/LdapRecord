@@ -11,8 +11,7 @@ use LdapRecord\Tests\Integration\Fixtures\User;
 
 class UserTest extends TestCase
 {
-    /** @var OrganizationalUnit */
-    protected $ou;
+    protected OrganizationalUnit $ou;
 
     protected function setUp(): void
     {
@@ -36,7 +35,7 @@ class UserTest extends TestCase
         parent::tearDown();
     }
 
-    protected function createUser(array $attributes = [])
+    protected function createUser(array $attributes = []): User
     {
         $user = (new User)
             ->inside($this->ou)

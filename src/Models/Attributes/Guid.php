@@ -12,21 +12,6 @@ class Guid
     protected ?string $value = null;
 
     /**
-     * The guid structure in order by section to parse using substr().
-     *
-     * @author Chad Sikorra <Chad.Sikorra@gmail.com>
-     *
-     * @see https://github.com/ldaptools/ldaptools
-     */
-    protected array $guidSections = [
-        [[-26, 2], [-28, 2], [-30, 2], [-32, 2]],
-        [[-22, 2], [-24, 2]],
-        [[-18, 2], [-20, 2]],
-        [[-16, 4]],
-        [[-12, 12]],
-    ];
-
-    /**
      * The hexadecimal octet order based on string position.
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>

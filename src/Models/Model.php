@@ -250,7 +250,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         $model = static::getRootDseModel();
 
         return $model::on($connection ?? (new $model)->getConnectionName())
-            ->in(null)
+            ->in()
             ->read()
             ->whereHas('objectclass')
             ->firstOrFail();

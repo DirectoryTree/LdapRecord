@@ -159,7 +159,7 @@ class LdapExpectation
      */
     public function once(): static
     {
-        return $this->times(1);
+        return $this->times();
     }
 
     /**

@@ -38,27 +38,22 @@ class MbString
 
     /**
      * Split a string into its individual characters and return it as an array.
-     *
-     * @param  string  $value
-     * @return string[]
      */
-    public static function split($value)
+    public static function split(string $value): array
     {
         return preg_split('/(?<!^)(?!$)/u', $value);
     }
 
     /**
      * Detects if the given string is UTF 8.
-     *
-     * @return string|false
      */
-    public static function isUtf8($string)
+    public static function isUtf8(string $string): bool
     {
         if (static::isLoaded()) {
-            return mb_detect_encoding($string, 'UTF-8', $strict = true);
+            return mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8';
         }
 
-        return $string;
+        return false;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Events;
 
+use Closure;
 use LdapRecord\Support\Arr;
 use LdapRecord\Support\Str;
 
@@ -62,9 +63,9 @@ class Dispatcher implements DispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function hasListeners(string $eventName): bool
+    public function hasListeners(string $event): bool
     {
-        return isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]);
+        return isset($this->listeners[$event]) || isset($this->wildcards[$event]);
     }
 
     /**
@@ -168,11 +169,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Add the listeners for the event's interfaces to the given array.
-     *
-     * @param  string  $eventName
-     * @return array
      */
-    protected function addInterfaceListeners($eventName, array $listeners = [])
+    protected function addInterfaceListeners(string $eventName, array $listeners = []): array
     {
         foreach (class_implements($eventName) as $interface) {
             if (isset($this->listeners[$interface])) {
@@ -187,12 +185,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Register an event listener with the dispatcher.
-     *
-     * @param  \Closure|string  $listener
-     * @param  bool  $wildcard
-     * @return \Closure
      */
-    public function makeListener($listener, $wildcard = false)
+    public function makeListener(Closure|string $listener, bool $wildcard = false): Closure
     {
         if (is_string($listener)) {
             return $this->createClassListener($listener, $wildcard);
@@ -209,12 +203,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Create a class based listener.
-     *
-     * @param  string  $listener
-     * @param  bool  $wildcard
-     * @return \Closure
      */
-    protected function createClassListener($listener, $wildcard = false)
+    protected function createClassListener(string $listener, bool $wildcard = false): Closure
     {
         return function ($event, $payload) use ($listener, $wildcard) {
             if ($wildcard) {
@@ -230,11 +220,8 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Create the class based event callable.
-     *
-     * @param  string  $listener
-     * @return callable
      */
-    protected function createClassCallable($listener)
+    protected function createClassCallable(string $listener): callable
     {
         [$class, $method] = $this->parseListenerCallback($listener);
 
@@ -243,13 +230,10 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * Parse the class listener into class and method.
-     *
-     * @param  string  $listener
-     * @return array
      */
-    protected function parseListenerCallback($listener)
+    protected function parseListenerCallback(string $listener): array
     {
-        return str_contains((string) $listener, '@')
+        return str_contains($listener, '@')
             ? explode('@', $listener, 2)
             : [$listener, 'handle'];
     }
@@ -259,7 +243,7 @@ class Dispatcher implements DispatcherInterface
      */
     public function forget(string $event): void
     {
-        if (str_contains((string) $event, '*')) {
+        if (str_contains($event, '*')) {
             unset($this->wildcards[$event]);
         } else {
             unset($this->listeners[$event]);

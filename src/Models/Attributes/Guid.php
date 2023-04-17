@@ -48,11 +48,8 @@ class Guid
 
     /**
      * Determines if the specified GUID is valid.
-     *
-     * @param  string  $guid
-     * @return bool
      */
-    public static function isValid($guid)
+    public static function isValid(string $guid): bool
     {
         return (bool) preg_match('/^([0-9a-fA-F]){8}(-([0-9a-fA-F]){4}){3}-([0-9a-fA-F]){12}$/', (string) $guid);
     }
@@ -113,27 +110,23 @@ class Guid
 
     /**
      * Get the hexadecimal representation of the GUID string.
-     *
-     * @return string
      */
-    public function getHex()
+    public function getHex(): string
     {
         return implode($this->getOctetSections());
     }
 
     /**
      * Get the octect sections of the GUID.
-     *
-     * @return array
      */
-    protected function getOctetSections()
+    protected function getOctetSections(): array
     {
         $sections = [];
 
         $guid = str_replace('-', '', $this->value);
 
         foreach ($this->octetSections as $section) {
-            array_push($sections, $this->parseSection($guid, $section, $octet = true));
+            $sections[] = $this->parseSection($guid, $section, true);
         }
 
         return $sections;
@@ -141,14 +134,11 @@ class Guid
 
     /**
      * Returns the string variant of a binary GUID.
-     *
-     * @param  string  $binary
-     * @return string|null
      */
-    protected function binaryGuidToString($binary)
+    protected function binaryGuidToString(string $binary = null): ?string
     {
         if (is_null($binary) || trim($binary) == '') {
-            return;
+            return null;
         }
 
         $hex = unpack('H*hex', $binary)['hex'];
@@ -174,7 +164,7 @@ class Guid
      * @param  bool  $octet  Whether this is for octet string form.
      * @return string The concatenated sections in upper-case.
      */
-    protected function parseSection($hex, array $sections, $octet = false)
+    protected function parseSection(string $hex, array $sections, bool $octet = false): string
     {
         $parsedString = '';
 

@@ -5,6 +5,7 @@ namespace LdapRecord;
 use Carbon\Carbon;
 use Closure;
 use LdapRecord\Auth\Guard;
+use LdapRecord\Configuration\ConfigurationException;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Query\Builder;
@@ -67,6 +68,8 @@ class Connection
 
     /**
      * Constructor.
+     *
+     * @throws ConfigurationException
      */
     public function __construct(DomainConfiguration|array $config = [], LdapInterface $ldap = null)
     {

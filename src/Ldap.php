@@ -393,6 +393,8 @@ class Ldap implements LdapInterface
         if (preg_match("/(?<=data\s).*?(?=,)/", $this->getExtendedError(), $code)) {
             return $code[0];
         }
+
+        return null;
     }
 
     /**

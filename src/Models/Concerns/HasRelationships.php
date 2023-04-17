@@ -12,58 +12,43 @@ trait HasRelationships
 {
     /**
      * Returns a new has one relationship.
-     *
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
-     * @return HasOne
      */
-    public function hasOne($related, $relationKey, $foreignKey = 'dn')
+    public function hasOne(string $related, string $relationKey, string $foreignKey = 'dn'): HasOne
     {
         return new HasOne($this->newQuery(), $this, $related, $relationKey, $foreignKey);
     }
 
     /**
      * Returns a new has many relationship.
-     *
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
-     * @return HasMany
      */
-    public function hasMany($related, $relationKey, $foreignKey = 'dn')
+    public function hasMany(string $related, string $relationKey, string $foreignKey = 'dn'): HasMany
     {
         return new HasMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
 
     /**
      * Returns a new has many in relationship.
-     *
-     * @param  string  $relationKey
-     * @param  string  $foreignKey
-     * @return HasManyIn
      */
-    public function hasManyIn($related, $relationKey, $foreignKey = 'dn')
+    public function hasManyIn(string $related, string $relationKey, string $foreignKey = 'dn'): HasManyIn
     {
         return new HasManyIn($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
 
     /**
      * Get a relationship by its name.
-     *
-     * @param  string  $relationName
-     * @return Relation|null
      */
-    public function getRelation($relationName)
+    public function getRelation(string $relationName): ?Relation
     {
         if (! method_exists($this, $relationName)) {
-            return;
+            return null;
         }
 
         if (! $relation = $this->{$relationName}()) {
-            return;
+            return null;
         }
 
         if (! $relation instanceof Relation) {
-            return;
+            return null;
         }
 
         return $relation;
@@ -71,10 +56,8 @@ trait HasRelationships
 
     /**
      * Get the relationships name.
-     *
-     * @return string|null
      */
-    protected function guessRelationshipName()
+    protected function guessRelationshipName(): ?string
     {
         return Arr::last(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3))['function'];
     }

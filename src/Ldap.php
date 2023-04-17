@@ -125,8 +125,6 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-values-len.php
      *
-     * @param $entry
-     * @param $attribute
      * @return array
      */
     public function getValuesLen($entry, $attribute)

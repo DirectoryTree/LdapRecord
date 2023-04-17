@@ -13,8 +13,6 @@ class LdapExpectation
 {
     /**
      * The value to return from the expectation.
-     *
-     * @var mixed
      */
     protected $value;
 
@@ -94,7 +92,6 @@ class LdapExpectation
     /**
      * Set the arguments that the operation should receive.
      *
-     * @param  mixed  $args
      * @return $this
      */
     public function with($args)
@@ -117,7 +114,6 @@ class LdapExpectation
     /**
      * Set the expected value to return.
      *
-     * @param  mixed  $value
      * @return $this
      */
     public function andReturn($value)
@@ -244,8 +240,6 @@ class LdapExpectation
 
     /**
      * Get the expected value.
-     *
-     * @return mixed
      */
     public function getExpectedValue()
     {

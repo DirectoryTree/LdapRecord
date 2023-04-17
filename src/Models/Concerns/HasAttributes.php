@@ -126,7 +126,6 @@ trait HasAttributes
     /**
      * Convert the model's serialized original attributes to their original form.
      *
-     * @param  array  $attributes
      * @return array
      */
     public function arrayToOriginal(array $attributes)
@@ -139,7 +138,6 @@ trait HasAttributes
     /**
      * Convert the model's serialized attributes to their original form.
      *
-     * @param  array  $attributes
      * @return array
      */
     public function arrayToAttributes(array $attributes)
@@ -154,7 +152,6 @@ trait HasAttributes
     /**
      * Add the date attributes to the attributes array.
      *
-     * @param  array  $attributes
      * @return array
      */
     protected function addDateAttributesToArray(array $attributes)
@@ -177,7 +174,6 @@ trait HasAttributes
     /**
      * Restore the date attributes to their true value from serialized attributes.
      *
-     * @param  array  $attributes
      * @return array
      */
     protected function restoreDateAttributesFromArray(array $attributes)
@@ -198,7 +194,6 @@ trait HasAttributes
     /**
      * Prepare a date for array / JSON serialization.
      *
-     * @param  DateTimeInterface  $date
      * @return string
      */
     protected function serializeDate(DateTimeInterface $date)
@@ -271,8 +266,6 @@ trait HasAttributes
     /**
      * Add the mutated attributes to the attributes array.
      *
-     * @param  array  $attributes
-     * @param  array  $mutatedAttributes
      * @return array
      */
     protected function addMutatedAttributesToArray(array $attributes, array $mutatedAttributes)
@@ -312,7 +305,6 @@ trait HasAttributes
     /**
      * Fills the entry with the supplied attributes.
      *
-     * @param  array  $attributes
      * @return $this
      */
     public function fill(array $attributes = [])
@@ -328,8 +320,6 @@ trait HasAttributes
      * Returns the models attribute by its key.
      *
      * @param  int|string  $key
-     * @param  mixed  $default
-     * @return mixed
      */
     public function getAttribute($key, $default = null)
     {
@@ -344,8 +334,6 @@ trait HasAttributes
      * Get an attribute's value.
      *
      * @param  string  $key
-     * @param  mixed  $default
-     * @return mixed
      */
     public function getAttributeValue($key, $default = null)
     {
@@ -370,10 +358,7 @@ trait HasAttributes
     /**
      * Get the model's raw attribute value.
      *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
+     * @param  string  $key
      */
     public function getRawAttribute($key, $default = null)
     {
@@ -411,7 +396,6 @@ trait HasAttributes
      * Convert the given date value to an LDAP compatible value.
      *
      * @param  string  $type
-     * @param  mixed  $value
      * @return float|string
      *
      * @throws LdapRecordException
@@ -424,7 +408,6 @@ trait HasAttributes
     /**
      * Convert the given LDAP date value to a Carbon instance.
      *
-     * @param  mixed  $value
      * @param  string  $type
      * @return Carbon|false
      *
@@ -529,7 +512,6 @@ trait HasAttributes
      *
      * @param  string  $key
      * @param  array|null  $value
-     * @return mixed
      */
     protected function castAttribute($key, $value)
     {
@@ -582,7 +564,6 @@ trait HasAttributes
      * Cast the given attribute to JSON.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return string
      */
     protected function castAttributeAsJson($key, $value)
@@ -612,7 +593,6 @@ trait HasAttributes
     /**
      * Encode the given value as JSON.
      *
-     * @param  mixed  $value
      * @return string
      */
     protected function asJson($value)
@@ -625,7 +605,6 @@ trait HasAttributes
      *
      * @param  string  $value
      * @param  bool  $asObject
-     * @return mixed
      */
     public function fromJson($value, $asObject = false)
     {
@@ -634,9 +613,6 @@ trait HasAttributes
 
     /**
      * Decode the given float.
-     *
-     * @param  mixed  $value
-     * @return mixed
      */
     public function fromFloat($value)
     {
@@ -651,7 +627,6 @@ trait HasAttributes
     /**
      * Cast the value to a boolean.
      *
-     * @param  mixed  $value
      * @return bool
      */
     protected function asBoolean($value)
@@ -686,7 +661,6 @@ trait HasAttributes
     /**
      * Get an attribute array of all arrayable values.
      *
-     * @param  array  $values
      * @return array
      */
     protected function getArrayableItems(array $values)
@@ -745,7 +719,6 @@ trait HasAttributes
      * Get an attribute from the $attributes array.
      *
      * @param  string  $key
-     * @return mixed
      */
     protected function getAttributeFromArray($key)
     {
@@ -766,8 +739,6 @@ trait HasAttributes
      * Returns the first attribute by the specified key.
      *
      * @param  string  $key
-     * @param  mixed  $default
-     * @return mixed
      */
     public function getFirstAttribute($key, $default = null)
     {
@@ -790,7 +761,6 @@ trait HasAttributes
      * Set an attribute value by the specified key.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return $this
      */
     public function setAttribute($key, $value)
@@ -820,7 +790,6 @@ trait HasAttributes
      * Set an attribute on the model. No checking is done.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return $this
      */
     public function setRawAttribute($key, $value)
@@ -836,7 +805,6 @@ trait HasAttributes
      * Set the models first attribute value.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return $this
      */
     public function setFirstAttribute($key, $value)
@@ -848,7 +816,6 @@ trait HasAttributes
      * Add a unique value to the given attribute.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return $this
      */
     public function addAttributeValue($key, $value)
@@ -887,8 +854,6 @@ trait HasAttributes
      * Set the value of an attribute using its mutator.
      *
      * @param  string  $key
-     * @param  mixed  $value
-     * @return mixed
      */
     protected function setMutatedAttributeValue($key, $value)
     {
@@ -899,8 +864,6 @@ trait HasAttributes
      * Get the value of an attribute using its mutator.
      *
      * @param  string  $key
-     * @param  mixed  $value
-     * @return mixed
      */
     protected function getMutatedAttributeValue($key, $value)
     {
@@ -913,7 +876,6 @@ trait HasAttributes
      * Hyphenated attributes will use pascal cased methods.
      *
      * @param  string  $key
-     * @return mixed
      */
     protected function getMutatorMethodName($key)
     {
@@ -926,7 +888,6 @@ trait HasAttributes
      * Get the value of an attribute using its mutator for array conversion.
      *
      * @param  string  $key
-     * @param  mixed  $value
      * @return array
      */
     protected function mutateAttributeForArray($key, $value)
@@ -941,7 +902,6 @@ trait HasAttributes
      *
      * Used when constructing an existing LDAP record.
      *
-     * @param  array  $attributes
      * @return $this
      */
     public function setRawAttributes(array $attributes = [])
@@ -981,8 +941,6 @@ trait HasAttributes
     /**
      * Filters the count key recursively from raw LDAP attributes.
      *
-     * @param  array  $attributes
-     * @param  array  $keys
      * @return array
      */
     public function filterRawAttributes(array $attributes = [], array $keys = ['count', 'dn'])
@@ -1034,10 +992,7 @@ trait HasAttributes
     /**
      * Get the model's raw original attribute values.
      *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
+     * @param  string  $key
      */
     public function getRawOriginal($key, $default = null)
     {
@@ -1089,7 +1044,6 @@ trait HasAttributes
     /**
      * Set the accessors to append to model arrays.
      *
-     * @param  array  $appends
      * @return $this
      */
     public function setAppends(array $appends)
@@ -1184,7 +1138,6 @@ trait HasAttributes
     /**
      * Get all of the attribute mutator methods.
      *
-     * @param  mixed  $class
      * @return array
      */
     protected static function getMutatorMethods($class)

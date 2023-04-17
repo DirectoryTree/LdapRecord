@@ -143,8 +143,8 @@ class ParserTest extends TestCase
 
         $this->assertCount(2, $nodes);
 
-        $this->assertEquals($nodes[0]->getRaw(), 'cn=Steve');
-        $this->assertEquals($nodes[1]->getRaw(), 'sn=Bauman');
+        $this->assertEquals('cn=Steve', $nodes[0]->getRaw());
+        $this->assertEquals('sn=Bauman', $nodes[1]->getRaw());
     }
 
     public function test_parser_can_parse_multiple_root_group_nodes()
@@ -156,8 +156,8 @@ class ParserTest extends TestCase
         $this->assertInstanceOf(GroupNode::class, $nodes[0]);
         $this->assertInstanceOf(GroupNode::class, $nodes[1]);
 
-        $this->assertEquals($nodes[0]->getRaw(), '|(foo=bar)');
-        $this->assertEquals($nodes[1]->getRaw(), '|(&(cn=Steve)(sn=Bauman))(mail=sbauman@local.com)');
+        $this->assertEquals('|(foo=bar)', $nodes[0]->getRaw());
+        $this->assertEquals('|(&(cn=Steve)(sn=Bauman))(mail=sbauman@local.com)', $nodes[1]->getRaw());
     }
 
     public function test_parser_can_process_single_node()

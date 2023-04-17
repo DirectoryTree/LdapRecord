@@ -25,7 +25,7 @@ class ModelHasManyUsingTest extends TestCase
         $related->setRawAttributes(['dn' => 'foo']);
 
         $this->assertEquals($relation->attach($related), $related);
-        $this->assertEquals($relation->attach('bar'), 'bar');
+        $this->assertEquals('bar', $relation->attach('bar'));
     }
 
     public function test_detach()
@@ -42,7 +42,7 @@ class ModelHasManyUsingTest extends TestCase
         $related->setRawAttributes(['dn' => 'foo']);
 
         $this->assertEquals($relation->detach($related), $related);
-        $this->assertEquals($relation->detach('bar'), 'bar');
+        $this->assertEquals('bar', $relation->detach('bar'));
     }
 
     protected function getRelation(): HasMany

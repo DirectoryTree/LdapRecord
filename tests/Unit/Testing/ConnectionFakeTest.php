@@ -34,7 +34,7 @@ class ConnectionFakeTest extends TestCase
 
     public function testActingAsWithModel()
     {
-        $fake = ConnectionFake::make([]);
+        $fake = ConnectionFake::make();
 
         $user = (new Entry())->setRawAttributes([
             'dn' => 'cn=John Doe,dc=local,dc=com',
@@ -51,7 +51,7 @@ class ConnectionFakeTest extends TestCase
 
     public function testActingAsWithDn()
     {
-        $fake = ConnectionFake::make([]);
+        $fake = ConnectionFake::make();
 
         $fake->actingAs('cn=John Doe,dc=local,dc=com');
 

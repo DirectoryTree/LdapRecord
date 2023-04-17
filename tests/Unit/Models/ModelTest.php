@@ -50,7 +50,7 @@ class ModelTest extends TestCase
     {
         $this->assertEmpty((new Entry())->getDn());
         $this->assertEmpty((new Entry())->getAttributes());
-        $this->assertNull((new Entry())->getAttribute(null));
+        $this->assertNull((new Entry())->getAttribute());
         $this->assertEquals(['foo' => ['bar']], (new Entry(['foo' => 'bar']))->getAttributes());
         $this->assertEquals(['bar' => ['baz']], (new Entry())->fill(['bar' => 'baz'])->getAttributes());
         $this->assertEquals(2, (new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes());
@@ -441,11 +441,11 @@ class ModelTest extends TestCase
 
         $this->assertTrue($collection->first()->exists);
         $this->assertEquals('baz', $collection->first()->getDn());
-        $this->assertEquals($collection->first()->getConnectionName(), 'other');
+        $this->assertEquals('other', $collection->first()->getConnectionName());
 
         $this->assertTrue($collection->last()->exists);
         $this->assertEquals('foo', $collection->last()->getDn());
-        $this->assertEquals($collection->last()->getConnectionName(), 'other');
+        $this->assertEquals('other', $collection->last()->getConnectionName());
     }
 
     public function test_add_modification()
@@ -558,7 +558,7 @@ class ModelTest extends TestCase
 
         $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
 
-        $this->assertFalse($model->is(null));
+        $this->assertFalse($model->is());
 
         $this->assertFalse($model->is($notMatch));
 
@@ -573,7 +573,7 @@ class ModelTest extends TestCase
 
         $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
 
-        $this->assertTrue($model->isNot(null));
+        $this->assertTrue($model->isNot());
 
         $this->assertTrue($model->isNot($notMatch));
 
@@ -583,7 +583,7 @@ class ModelTest extends TestCase
     public function test_is_descendent_of()
     {
         $model = new Entry();
-        $this->assertFalse($model->isDescendantOf(null));
+        $this->assertFalse($model->isDescendantOf());
         $this->assertFalse($model->isDescendantOf(''));
 
         $model->setDn('cn=foo,ou=bar,dc=acme,dc=org');
@@ -604,7 +604,7 @@ class ModelTest extends TestCase
     public function test_is_ancestor_of()
     {
         $model = new Entry();
-        $this->assertFalse($model->isAncestorOf(null));
+        $this->assertFalse($model->isAncestorOf());
         $this->assertFalse($model->isAncestorOf(''));
 
         $model->setDn('ou=bar,dc=acme,dc=org');
@@ -622,7 +622,7 @@ class ModelTest extends TestCase
     public function test_is_child_of()
     {
         $model = new Entry();
-        $this->assertFalse($model->isChildOf(null));
+        $this->assertFalse($model->isChildOf());
 
         $model->setDn('dc=bar,dc=baz');
         $this->assertFalse($model->isChildOf('dc=bar,dc=baz'));
@@ -637,7 +637,7 @@ class ModelTest extends TestCase
     public function test_is_parent_of()
     {
         $model = new Entry();
-        $this->assertFalse($model->isParentOf(null));
+        $this->assertFalse($model->isParentOf());
 
         $model->setDn('dc=bar,dc=baz');
         $this->assertFalse($model->isParentOf('dc=bar,dc=baz'));

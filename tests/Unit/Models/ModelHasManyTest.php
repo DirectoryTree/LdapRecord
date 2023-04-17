@@ -178,7 +178,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
 
-        $this->assertEquals($relation->attach('bar'), 'bar');
+        $this->assertEquals('bar', $relation->attach('bar'));
     }
 
     public function test_detach()
@@ -199,7 +199,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
 
-        $this->assertEquals($relation->detach('bar'), 'bar');
+        $this->assertEquals('bar', $relation->detach('bar'));
     }
 
     public function test_detaching_all()

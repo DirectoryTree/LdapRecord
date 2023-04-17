@@ -49,7 +49,7 @@ class ArrayCacheStoreTest extends TestCase
         Carbon::setTestNow(Carbon::now()->addSeconds(10)->addSecond());
         $this->assertEquals('foo', $store->get('key', 'foo'));
 
-        Carbon::setTestNow(null);
+        Carbon::setTestNow();
     }
 
     public function test_set_multiple__stores_values()

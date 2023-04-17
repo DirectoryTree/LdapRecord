@@ -65,7 +65,7 @@ class TimestampTest extends TestCase
 
         $date = (new DateTime)->setTimestamp($this->unixTimestamp);
 
-        $this->assertEquals($timestamp->fromDateTime($date), '132460789290000000');
+        $this->assertEquals('132460789290000000', $timestamp->fromDateTime($date));
     }
 
     public function test_ldap_type_can_be_converted_to_date()

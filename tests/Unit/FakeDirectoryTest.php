@@ -25,7 +25,7 @@ class FakeDirectoryTest extends TestCase
 
     public function test_connection_is_replaced_with_fake()
     {
-        $this->assertInstanceOf(ConnectionFake::class, Container::getConnection(null));
+        $this->assertInstanceOf(ConnectionFake::class, Container::getConnection());
         $this->assertInstanceOf(ConnectionFake::class, Container::getDefaultConnection());
     }
 

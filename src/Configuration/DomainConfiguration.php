@@ -109,7 +109,7 @@ class DomainConfiguration
     public function get(string $key): mixed
     {
         if (! $this->has($key)) {
-            throw new ConfigurationException("Option {$key} does not exist.");
+            throw new ConfigurationException("Option $key does not exist.");
         }
 
         return $this->options[$key];

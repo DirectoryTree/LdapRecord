@@ -19,9 +19,9 @@ trait HasGlobalScopes
         if (is_string($scope) && ! is_null($implementation)) {
             static::$globalScopes[static::class][$scope] = $implementation;
         } elseif ($scope instanceof Closure) {
-             static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
+            static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
         } elseif ($scope instanceof Scope) {
-             static::$globalScopes[static::class][get_class($scope)] = $scope;
+            static::$globalScopes[static::class][get_class($scope)] = $scope;
         } else {
             throw new InvalidArgumentException('Global scope must be an instance of Closure or Scope.');
         }

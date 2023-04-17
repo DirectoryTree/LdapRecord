@@ -17,22 +17,22 @@ class TSPropertyArray
      * @var array
      */
     public const DEFAULTS = [
-        'CtxCfgPresent' => 2953518677,
-        'CtxWFProfilePath' => '',
-        'CtxWFProfilePathW' => '',
-        'CtxWFHomeDir' => '',
-        'CtxWFHomeDirW' => '',
-        'CtxWFHomeDirDrive' => '',
-        'CtxWFHomeDirDriveW' => '',
-        'CtxShadow' => 1,
+        'CtxCfgPresent'           => 2953518677,
+        'CtxWFProfilePath'        => '',
+        'CtxWFProfilePathW'       => '',
+        'CtxWFHomeDir'            => '',
+        'CtxWFHomeDirW'           => '',
+        'CtxWFHomeDirDrive'       => '',
+        'CtxWFHomeDirDriveW'      => '',
+        'CtxShadow'               => 1,
         'CtxMaxDisconnectionTime' => 0,
-        'CtxMaxConnectionTime' => 0,
-        'CtxMaxIdleTime' => 0,
-        'CtxWorkDirectory' => '',
-        'CtxWorkDirectoryW' => '',
-        'CtxCfgFlags1' => 2418077696,
-        'CtxInitialProgram' => '',
-        'CtxInitialProgramW' => '',
+        'CtxMaxConnectionTime'    => 0,
+        'CtxMaxIdleTime'          => 0,
+        'CtxWorkDirectory'        => '',
+        'CtxWorkDirectoryW'       => '',
+        'CtxCfgFlags1'            => 2418077696,
+        'CtxInitialProgram'       => '',
+        'CtxInitialProgramW'      => '',
     ];
 
     /**
@@ -182,7 +182,7 @@ class TSPropertyArray
      */
     protected function validateProp(string $propName): void
     {
-        if (! $this->has($propName)) {
+        if (!$this->has($propName)) {
             throw new InvalidArgumentException(sprintf('TSProperty for "%s" does not exist.', $propName));
         }
     }

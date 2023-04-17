@@ -19,7 +19,7 @@ class ModelSerializationTest extends TestCase
 
         $model = (new User())->setRawAttributes([
             'whenchanged' => [(string) $whenchanged],
-            'lastlogon' => [(string) $lastlogon],
+            'lastlogon'   => [(string) $lastlogon],
         ]);
 
         $encodedAndSerialized = json_encode(serialize(clone $model));
@@ -46,7 +46,7 @@ class ModelSerializationTest extends TestCase
 
         $model = (new Entry())->setRawAttributes([
             'objectguid' => [$guid->getBinary()],
-            'objectsid' => [$sid->getBinary()],
+            'objectsid'  => [$sid->getBinary()],
         ]);
 
         $encodedAndSerialized = json_encode(serialize(clone $model));

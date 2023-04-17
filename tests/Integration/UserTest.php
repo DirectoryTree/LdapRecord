@@ -37,15 +37,15 @@ class UserTest extends TestCase
 
     protected function createUser(array $attributes = []): User
     {
-        $user = (new User)
+        $user = (new User())
             ->inside($this->ou)
             ->fill(array_merge([
-                'uid' => 'fbar',
-                'cn' => 'Foo',
-                'sn' => 'Bar',
-                'givenName' => 'Foo',
-                'uidNumber' => 1000,
-                'gidNumber' => 1000,
+                'uid'           => 'fbar',
+                'cn'            => 'Foo',
+                'sn'            => 'Bar',
+                'givenName'     => 'Foo',
+                'uidNumber'     => 1000,
+                'gidNumber'     => 1000,
                 'homeDirectory' => '/foo',
             ], $attributes));
 

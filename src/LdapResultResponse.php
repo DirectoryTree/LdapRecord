@@ -29,6 +29,6 @@ class LdapResultResponse
      */
     public function failed(): bool
     {
-        return ! $this->successful();
+        return !$this->successful();
     }
 }

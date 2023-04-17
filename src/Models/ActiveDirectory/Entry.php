@@ -18,8 +18,8 @@ class Entry extends BaseEntry implements ActiveDirectory
      * The default attributes that should be mutated to dates.
      */
     protected array $defaultDates = [
-        'whenchanged' => 'windows',
-        'whencreated' => 'windows',
+        'whenchanged'           => 'windows',
+        'whencreated'           => 'windows',
         'dscorepropagationdata' => 'windows',
     ];
 
@@ -103,7 +103,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     public function restore(string $newParentDn = null): bool
     {
-        if (! $this->isDeleted()) {
+        if (!$this->isDeleted()) {
             return false;
         }
 

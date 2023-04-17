@@ -6,7 +6,8 @@ use LDAP\Connection as RawLdapConnection;
 
 class Ldap implements LdapInterface
 {
-    use HandlesConnection, DetectsErrors;
+    use HandlesConnection;
+    use DetectsErrors;
 
     /**
      * {@inheritdoc}
@@ -23,7 +24,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param  \Ldap\Result  $result
+     * @param \Ldap\Result $result
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -37,7 +38,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param \Ldap\ResultEntry $entry
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -51,7 +52,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param \Ldap\ResultEntry $entry
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -85,7 +86,7 @@ class Ldap implements LdapInterface
      */
     public function getLastError(): ?string
     {
-        if (! $this->connection) {
+        if (!$this->connection) {
             return null;
         }
 
@@ -97,7 +98,7 @@ class Ldap implements LdapInterface
      */
     public function getDetailedError(): ?DetailedError
     {
-        if (! $number = $this->errNo()) {
+        if (!$number = $this->errNo()) {
             return null;
         }
 
@@ -252,7 +253,11 @@ class Ldap implements LdapInterface
     {
         if (ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $controls)) {
             return new LdapResultResponse(
-                $errorCode, $dn, $errorMessage, $referrals, $controls
+                $errorCode,
+                $dn,
+                $errorMessage,
+                $referrals,
+                $controls
             );
         }
 

@@ -66,7 +66,7 @@ trait HandlesConnection
      */
     public function isConnected(): bool
     {
-        return ! is_null($this->connection);
+        return !is_null($this->connection);
     }
 
     /**
@@ -150,7 +150,7 @@ trait HandlesConnection
         // exceptions, which could be a significant detriment to our application.
         // Here, we will enforce these operations to throw exceptions instead.
         set_error_handler(function (int $severity, string $message, string $file, int $line): bool {
-            if (! $this->shouldBypassError($message)) {
+            if (!$this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
             }
 

@@ -42,7 +42,7 @@ abstract class Validator
      */
     public function validate(): bool
     {
-        if (! $this->passes()) {
+        if (!$this->passes()) {
             $this->fail();
         }
 

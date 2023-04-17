@@ -59,7 +59,7 @@ class DistinguishedName
      */
     public static function isValid(string $value = null): bool
     {
-        return ! static::make($value)->isEmpty();
+        return !static::make($value)->isEmpty();
     }
 
     /**
@@ -69,11 +69,11 @@ class DistinguishedName
     {
         $components = ldap_explode_dn($dn, (int) $withoutAttributes = false);
 
-        if (! is_array($components)) {
+        if (!is_array($components)) {
             return [];
         }
 
-        if (! array_key_exists('count', $components)) {
+        if (!array_key_exists('count', $components)) {
             return [];
         }
 
@@ -301,7 +301,7 @@ class DistinguishedName
             return false;
         }
 
-        if (! $length = count($components) - count($ancestorComponents)) {
+        if (!$length = count($components) - count($ancestorComponents)) {
             return false;
         }
 

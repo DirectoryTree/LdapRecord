@@ -49,7 +49,7 @@ class Timestamp
      */
     public function setType(string $type): void
     {
-        if (! in_array($type, $this->types)) {
+        if (!in_array($type, $this->types)) {
             throw new LdapRecordException("Unrecognized LDAP date type [$type]");
         }
 
@@ -84,10 +84,10 @@ class Timestamp
         }
 
         return match ($this->type) {
-            'ldap' => $this->convertDateTimeToLdapTime($value),
-            'windows' => $this->convertDateTimeToWindows($value),
+            'ldap'        => $this->convertDateTimeToLdapTime($value),
+            'windows'     => $this->convertDateTimeToWindows($value),
             'windows-int' => $this->convertDateTimeToWindowsInteger($value),
-            default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
+            default       => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
         };
     }
 
@@ -113,10 +113,10 @@ class Timestamp
         }
 
         $value = match ($this->type) {
-            'ldap' => $this->convertLdapTimeToDateTime($value),
-            'windows' => $this->convertWindowsTimeToDateTime($value),
+            'ldap'        => $this->convertLdapTimeToDateTime($value),
+            'windows'     => $this->convertWindowsTimeToDateTime($value),
             'windows-int' => $this->convertWindowsIntegerTimeToDateTime($value),
-            default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
+            default       => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
         };
 
         return $value instanceof DateTime ? Carbon::instance($value) : $value;
@@ -184,7 +184,7 @@ class Timestamp
             return (int) $value;
         }
 
-        return (new DateTime)->setTimestamp(
+        return (new DateTime())->setTimestamp(
             round($value / 10000000) - 11644473600
         );
     }

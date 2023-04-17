@@ -34,10 +34,10 @@ class GroupTest extends TestCase
 
     protected function createGroup(array $attributes = []): Group
     {
-        $group = (new Group)
+        $group = (new Group())
             ->inside($this->ou)
             ->fill(array_merge([
-                'cn' => 'Foo',
+                'cn'        => 'Foo',
                 'gidNumber' => 500,
             ], $attributes));
 

@@ -147,9 +147,10 @@ class Guid
      *
      * @see https://github.com/ldaptools/ldaptools
      *
-     * @param  string  $hex  The full hex string.
-     * @param  array  $sections  An array of start and length (unless octet is true, then length is always 2).
-     * @param  bool  $octet  Whether this is for octet string form.
+     * @param string $hex      The full hex string.
+     * @param array  $sections An array of start and length (unless octet is true, then length is always 2).
+     * @param bool   $octet    Whether this is for octet string form.
+     *
      * @return string The concatenated sections in upper-case.
      */
     protected function parseSection(string $hex, array $sections, bool $octet = false): string

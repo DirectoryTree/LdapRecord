@@ -50,7 +50,7 @@ abstract class AbstractPaginator
         do {
             $this->applyServerControls($ldap);
 
-            if (! $resource = $this->query->run($this->filter)) {
+            if (!$resource = $this->query->run($this->filter)) {
                 break;
             }
 

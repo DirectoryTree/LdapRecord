@@ -63,7 +63,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS_INT);
 
-        $date = (new DateTime)->setTimestamp($this->unixTimestamp);
+        $date = (new DateTime())->setTimestamp($this->unixTimestamp);
 
         $this->assertEquals('132460789290000000', $timestamp->fromDateTime($date));
     }

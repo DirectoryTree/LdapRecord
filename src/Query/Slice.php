@@ -99,7 +99,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function onLastPage(): bool
     {
-        return ! $this->hasMorePages();
+        return !$this->hasMorePages();
     }
 
     /**
@@ -140,7 +140,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function isNotEmpty(): bool
     {
-        return ! $this->isEmpty();
+        return !$this->isEmpty();
     }
 
     /**
@@ -214,10 +214,10 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => $this->getArrayableItems(),
-            'last_page' => $this->lastPage(),
-            'per_page' => $this->perPage(),
-            'total' => $this->total(),
+            'data'         => $this->getArrayableItems(),
+            'last_page'    => $this->lastPage(),
+            'per_page'     => $this->perPage(),
+            'total'        => $this->total(),
         ];
     }
 }

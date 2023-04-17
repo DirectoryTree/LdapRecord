@@ -21,7 +21,7 @@ trait HasEvents
         $dispatcher = $container->getDispatcher();
 
         if ($dispatcher) {
-            $container->setEventDispatcher(
+            $container->setDispatcher(
                 new NullDispatcher($dispatcher)
             );
         }
@@ -30,7 +30,7 @@ trait HasEvents
             return $callback();
         } finally {
             if ($dispatcher) {
-                $container->setEventDispatcher($dispatcher);
+                $container->setDispatcher($dispatcher);
             }
         }
     }

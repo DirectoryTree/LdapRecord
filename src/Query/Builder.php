@@ -264,7 +264,7 @@ class Builder
     /**
      * Set the base distinguished name of the query.
      */
-    public function setBaseDn(Model|string $dn): static
+    public function setBaseDn(Model|string $dn = null): static
     {
         $this->baseDn = $this->substituteBaseInDn($dn);
 
@@ -302,7 +302,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      */
-    protected function substituteBaseInDn(Model|string $dn): string
+    protected function substituteBaseInDn(Model|string $dn = null): string
     {
         return str_replace(
             '{base}',
@@ -552,7 +552,7 @@ class Builder
             }
 
             return $ldap->{$this->type}(
-                $this->dn ?? $this->baseDn,
+                (string) ($this->dn ?? $this->baseDn),
                 $filter,
                 $this->getSelects(),
                 $onlyAttributes = false,
@@ -902,7 +902,7 @@ class Builder
      *
      * @throws InvalidArgumentException
      */
-    public function where(array|string $field, string $operator = null, string $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
         if (is_array($field)) {
             // If the field is an array, we will assume we have been
@@ -935,7 +935,7 @@ class Builder
     /**
      * Prepare the value for being queried.
      */
-    protected function prepareWhereValue(string $field, string $value = null, bool $raw = false): string
+    protected function prepareWhereValue(string $field, mixed $value = null, bool $raw = false): string
     {
         return $raw ? $value : $this->escape($value);
     }
@@ -945,7 +945,7 @@ class Builder
      *
      * Values given to this method are not escaped.
      */
-    public function whereRaw(array|string $field, string $operator = null, string $value = null): static
+    public function whereRaw(array|string $field, string $operator = null, mixed $value = null): static
     {
         return $this->where($field, $operator, $value, 'and', true);
     }

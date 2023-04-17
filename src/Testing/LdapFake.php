@@ -293,7 +293,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function getOption(int $option, mixed &$value = null): bool
+    public function getOption(int $option, mixed &$value = null): mixed
     {
         return $this->resolveExpectation('getOption', func_get_args());
     }
@@ -373,7 +373,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function parseResult(mixed $result, int &$errorCode, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
+    public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
     {
         return $this->resolveExpectation('parseResult', func_get_args());
     }

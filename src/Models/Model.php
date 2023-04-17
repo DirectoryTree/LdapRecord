@@ -160,7 +160,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     /**
      * Set the models distinguished name.
      */
-    public function setDn(string $dn): static
+    public function setDn(string $dn = null): static
     {
         $this->dn = $dn;
 
@@ -1073,7 +1073,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function deleteAttribute(array $attributes): void
+    public function deleteAttribute(array|string $attributes): void
     {
         $this->assertExists();
 

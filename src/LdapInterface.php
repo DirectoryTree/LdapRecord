@@ -227,7 +227,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-get-option.php
      */
-    public function getOption(int $option, mixed &$value = null): bool;
+    public function getOption(int $option, mixed &$value = null): mixed;
 
     /**
      * Starts a connection using TLS.
@@ -288,7 +288,7 @@ interface LdapInterface
      *
      * @param  \LDAP\Result  $result
      */
-    public function parseResult(mixed $result, int &$errorCode, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false;
+    public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false;
 
     /**
      * Binds to the current connection using the specified username and password.

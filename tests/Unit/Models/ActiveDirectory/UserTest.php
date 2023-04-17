@@ -25,7 +25,7 @@ class UserTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }
@@ -127,17 +127,17 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasMailbox()->filters;
 
-        $this->assertEquals($filters['and'][4]['field'], 'msExchMailboxGuid');
-        $this->assertEquals($filters['and'][4]['operator'], '*');
+        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['field']);
+        $this->assertEquals('*', $filters['and'][4]['operator']);
     }
 
     public function test_scope_where_has_lockout_is_applied()
     {
         $filters = User::whereHasLockout()->filters;
 
-        $this->assertEquals($filters['and'][4]['field'], 'lockoutTime');
-        $this->assertEquals($filters['and'][4]['operator'], '>=');
-        $this->assertEquals($filters['and'][4]['value']->raw(), 1);
+        $this->assertEquals('lockoutTime', $filters['and'][4]['field']);
+        $this->assertEquals('>=', $filters['and'][4]['operator']);
+        $this->assertEquals('\31', $filters['and'][4]['value']);
     }
 
     public function test_is_locked_out()

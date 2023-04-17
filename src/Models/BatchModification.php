@@ -68,7 +68,7 @@ class BatchModification
     /**
      * Set the attribute of the modification.
      */
-    public function setAttribute(string $attribute): static
+    public function setAttribute(string $attribute = null): static
     {
         $this->attribute = $attribute;
 
@@ -138,7 +138,7 @@ class BatchModification
     /**
      * Returns the type of the modification.
      */
-    public function getType(): int
+    public function getType(): ?int
     {
         return $this->type;
     }

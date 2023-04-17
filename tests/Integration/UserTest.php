@@ -31,7 +31,7 @@ class UserTest extends TestCase
     {
         $this->ou->delete(true);
 
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }

@@ -30,8 +30,8 @@ class BuilderCacheTest extends TestCase
         $conn->setCache(new ArrayCacheStore());
 
         $container = Container::getInstance();
-        $container->setDefault('default');
-        $container->add($conn, 'default');
+        $container->setDefaultConnection('default');
+        $container->addConnection($conn, 'default');
 
         $query = Entry::query();
 

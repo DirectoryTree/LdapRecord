@@ -127,7 +127,7 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function getOption(int $option, mixed &$value = null): bool
+    public function getOption(int $option, mixed &$value = null): mixed
     {
         ldap_get_option($this->connection, $option, $value);
 
@@ -250,9 +250,7 @@ class Ldap implements LdapInterface
      */
     public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
     {
-        $success = ldap_parse_result($this->connection, $result, $errorCode);
-
-        if ($success) {
+        if (ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $controls)) {
             return new LdapResultResponse(
                 $errorCode, $dn, $errorMessage, $referrals, $controls
             );

@@ -31,7 +31,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         (new ModelEventSaveStub())->save();
     }
@@ -42,7 +42,7 @@ class ModelEventTest extends TestCase
 
         $dispatcher->shouldNotReceive('fire');
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         (new ModelEventSaveStub())->saveQuietly();
 
@@ -58,7 +58,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         $expectation = LdapFake::operation('add')
             ->once()
@@ -94,7 +94,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Updated::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         $modifyBatchExpectation = LdapFake::operation('modifyBatch')
             ->once()
@@ -129,7 +129,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Deleting::class);
         $dispatcher->shouldReceive('fire')->once()->with(Deleted::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturn(true);
 

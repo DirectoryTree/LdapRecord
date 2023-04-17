@@ -19,7 +19,7 @@ class UserTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }

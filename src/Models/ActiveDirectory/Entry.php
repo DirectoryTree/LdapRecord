@@ -50,8 +50,8 @@ class Entry extends BaseEntry implements ActiveDirectory
     public function getConvertedSid($sid = null): ?string
     {
         try {
-            return (string) $this->newObjectSid(
-                $sid ?? $this->getObjectSid()
+            return $this->newObjectSid(
+                (string) ($sid ?? $this->getObjectSid())
             );
         } catch (InvalidArgumentException) {
             return null;
@@ -123,6 +123,8 @@ class Entry extends BaseEntry implements ActiveDirectory
         $this->setRawAttribute('distinguishedname', $newDn);
 
         $this->save(['isDeleted' => null]);
+
+        return true;
     }
 
     /**

@@ -35,7 +35,7 @@ class Builder
      */
     public array $filters = [
         'and' => [],
-        'or'  => [],
+        'or' => [],
         'raw' => [],
     ];
 
@@ -150,9 +150,6 @@ class Builder
 
     /**
      * Returns a new Query Builder instance.
-     *
-     * @param  string  $baseDn
-     * @return $this
      */
     public function newInstance(string $baseDn = null): static
     {
@@ -281,8 +278,6 @@ class Builder
 
     /**
      * Get the distinguished name of the query.
-     *
-     * @return string
      */
     public function getDn(): ?string
     {
@@ -479,9 +474,9 @@ class Builder
 
         $this->addControl(LDAP_CONTROL_VLVREQUEST, true, [
             'before' => 0,
-            'after'  => $perPage - 1,
+            'after' => $perPage - 1,
             'offset' => ($page * $perPage) - $perPage + 1,
-            'count'  => 0,
+            'count' => 0,
         ]);
 
         return $this->get();
@@ -1559,11 +1554,11 @@ class Builder
         $args = [$query, $time];
 
         $event = match ($type) {
-            'read'     => new Events\Read(...$args),
-            'chunk'    => new Events\Chunk(...$args),
-            'listing'  => new Events\Listing(...$args),
+            'read' => new Events\Read(...$args),
+            'chunk' => new Events\Chunk(...$args),
+            'listing' => new Events\Listing(...$args),
             'paginate' => new Events\Paginate(...$args),
-            default    => new Events\Search(...$args),
+            default => new Events\Search(...$args),
         };
 
         $this->fireQueryEvent($event);

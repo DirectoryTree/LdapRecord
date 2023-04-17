@@ -140,8 +140,6 @@ trait HasPassword
     /**
      * Encode / hash the given password.
      *
-     * @param  string  $salt
-     *
      * @throws LdapRecordException
      */
     protected function getHashedPassword(string $method, string $password, string $salt = null): string
@@ -213,10 +211,10 @@ trait HasPassword
         );
 
         return match ((int) $algo) {
-            Password::CRYPT_SALT_TYPE_MD5    => 'md5'.$method,
+            Password::CRYPT_SALT_TYPE_MD5 => 'md5'.$method,
             Password::CRYPT_SALT_TYPE_SHA256 => 'sha256'.$method,
             Password::CRYPT_SALT_TYPE_SHA512 => 'sha512'.$method,
-            default                          => $method,
+            default => $method,
         };
     }
 }

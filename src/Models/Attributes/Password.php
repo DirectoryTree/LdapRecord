@@ -112,8 +112,6 @@ class Password
 
     /**
      * Crypt password with an MD5 salt.
-     *
-     * @param  string  $salt
      */
     public static function md5Crypt(string $password, string $salt = null): string
     {
@@ -122,8 +120,6 @@ class Password
 
     /**
      * Crypt password with a SHA256 salt.
-     *
-     * @param  string  $salt
      */
     public static function sha256Crypt(string $password, string $salt = null): string
     {
@@ -132,8 +128,6 @@ class Password
 
     /**
      * Crypt a password with a SHA512 salt.
-     *
-     * @param  string  $salt
      */
     public static function sha512Crypt(string $password, string $salt = null): string
     {
@@ -188,10 +182,10 @@ class Password
     protected static function makeCryptPrefixAndLength(int $type): array
     {
         return match ((int) $type) {
-            static::CRYPT_SALT_TYPE_MD5    => ['$1$', 12],
+            static::CRYPT_SALT_TYPE_MD5 => ['$1$', 12],
             static::CRYPT_SALT_TYPE_SHA256 => ['$5$', 16],
             static::CRYPT_SALT_TYPE_SHA512 => ['$6$', 16],
-            default                        => throw new InvalidArgumentException("Invalid crypt type [$type]."),
+            default => throw new InvalidArgumentException("Invalid crypt type [$type]."),
         };
     }
 
@@ -209,8 +203,6 @@ class Password
 
     /**
      * Attempt to retrieve the hash method and algorithm used for the password.
-     *
-     * @return array|void
      */
     public static function getHashMethodAndAlgo(string $password): ?array
     {

@@ -700,12 +700,12 @@ class ModelWithDatesStub extends Model
 
 class ModelBootingTestStub extends Model
 {
-    public static function isBooted()
+    public static function isBooted(): bool
     {
         return array_key_exists(static::class, static::booted());
     }
 
-    public static function booted()
+    public static function booted(): array
     {
         return static::$booted;
     }

@@ -241,7 +241,7 @@ class ModelHasManyTest extends TestCase
         );
     }
 
-    protected function getRelation()
+    protected function getRelation(): HasMany
     {
         $mockBuilder = m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();

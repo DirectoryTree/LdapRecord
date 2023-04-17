@@ -16,7 +16,7 @@ use LdapRecord\Tests\TestCase;
 
 class BuilderTest extends TestCase
 {
-    protected function newBuilder()
+    protected function newBuilder(): Builder
     {
         return new Builder(new Connection([], new LdapFake()));
     }

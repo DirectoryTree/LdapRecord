@@ -14,17 +14,13 @@ class User extends Entry implements Authenticatable
 
     /**
      * The password's attribute name.
-     *
-     * @var string
      */
-    protected $passwordAttribute = 'userpassword';
+    protected string $passwordAttribute = 'userpassword';
 
     /**
      * The password's hash method.
-     *
-     * @var string
      */
-    protected $passwordHashMethod = 'ssha';
+    protected string $passwordHashMethod = 'ssha';
 
     /**
      * The object classes of the LDAP model.

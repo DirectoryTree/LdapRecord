@@ -172,19 +172,21 @@ class ModelAccessorStub extends Model
         'foo-bar' => ['baz'],
     ];
 
-    public function getFooAttribute($bar)
+    public function getFooAttribute($bar): string
     {
         return $bar[0].'baz';
     }
 
-    public function getFooBarAttribute($baz)
+    public function getFooBarAttribute($baz): ?string
     {
         if ($baz) {
             return $baz[0].'-other';
         }
+
+        return null;
     }
 
-    public function getZaxAttribute($value)
+    public function getZaxAttribute($value): string
     {
         return 'zax';
     }
@@ -197,12 +199,12 @@ class ModelMutatorStub extends Model
         'foo-bar' => ['baz'],
     ];
 
-    public function setFooAttribute($bar)
+    public function setFooAttribute($bar): void
     {
         $this->attributes['foo'] = [$bar.'baz'];
     }
 
-    public function setFooBarAttribute($baz)
+    public function setFooBarAttribute($baz): void
     {
         $this->attributes['foo-bar'] = [$baz.'-other'];
     }

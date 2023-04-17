@@ -54,7 +54,7 @@ class ModelHasManyInTest extends TestCase
 
 class ModelHasManyInStub extends Model
 {
-    public function relation($mockBuilder = null, $foreignKey = 'dn')
+    public function relation($mockBuilder = null, $foreignKey = 'dn'): HasManyIn
     {
         $mockBuilder = $mockBuilder ?: m::mock(Builder::class);
         $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();

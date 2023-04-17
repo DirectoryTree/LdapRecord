@@ -251,7 +251,7 @@ class ModelRelationTest extends TestCase
 
 class RelationTestStub extends Relation
 {
-    protected $results = [];
+    protected array $results = [];
 
     public function getResults(): Collection
     {
@@ -260,7 +260,7 @@ class RelationTestStub extends Relation
         );
     }
 
-    public function setResults($results)
+    public function setResults($results): static
     {
         $this->results = $results;
 

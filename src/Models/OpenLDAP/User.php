@@ -5,6 +5,7 @@ namespace LdapRecord\Models\OpenLDAP;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\Concerns\HasPassword;
+use LdapRecord\Models\Relations\HasMany;
 
 class User extends Entry implements Authenticatable
 {
@@ -39,10 +40,8 @@ class User extends Entry implements Authenticatable
      * The groups relationship.
      *
      * Retrieve groups that the user is a part of.
-     *
-     * @return \LdapRecord\Models\Relations\HasMany
      */
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Group::class, 'memberuid', 'uid');
     }

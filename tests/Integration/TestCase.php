@@ -7,7 +7,7 @@ use LdapRecord\Tests\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
-    protected function makeConnection(array $params = [])
+    protected function makeConnection(array $params = []): Connection
     {
         return new Connection(array_merge([
             'hosts' => ['localhost'],

@@ -6,10 +6,8 @@ class MbString
 {
     /**
      * Get the integer value of a specific character.
-     *
-     * @return int
      */
-    public static function ord($string)
+    public static function ord(string $string): int
     {
         if (static::isLoaded()) {
             $result = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
@@ -24,10 +22,8 @@ class MbString
 
     /**
      * Get the character for a specific integer value.
-     *
-     * @return string
      */
-    public static function chr($int)
+    public static function chr(int $int): string
     {
         if (static::isLoaded()) {
             return mb_convert_encoding(pack('n', $int), 'UTF-8', 'UTF-16BE');
@@ -58,10 +54,8 @@ class MbString
 
     /**
      * Checks if the mbstring extension is enabled in PHP.
-     *
-     * @return bool
      */
-    public static function isLoaded()
+    public static function isLoaded(): bool
     {
         return extension_loaded('mbstring');
     }

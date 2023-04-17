@@ -113,7 +113,7 @@ class DistinguishedNameBuilder
     /**
      * Pop an RDN off of the end of the DN.
      */
-    public function pop(int $amount = 1, array &$removed = []): static
+    public function pop(int $amount = 1, array &$removed = null): static
     {
         $removed = array_map(function ($component) {
             return DistinguishedName::makeRdn($component);
@@ -125,7 +125,7 @@ class DistinguishedNameBuilder
     /**
      * Shift an RDN off of the beginning of the DN.
      */
-    public function shift(int $amount = 1, array &$removed = []): static
+    public function shift(int $amount = 1, array &$removed = null): static
     {
         $removed = array_map(function ($component) {
             return DistinguishedName::makeRdn($component);

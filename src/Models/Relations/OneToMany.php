@@ -17,7 +17,7 @@ abstract class OneToMany extends Relation
     /**
      * The name of the relationship.
      */
-    protected string $relationName;
+    protected ?string $relationName = null;
 
     /**
      * Whether to include recursive results.
@@ -27,7 +27,7 @@ abstract class OneToMany extends Relation
     /**
      * Constructor.
      */
-    public function __construct(Builder $query, Model $parent, string $related, string $relationKey, string $foreignKey, string $relationName)
+    public function __construct(Builder $query, Model $parent, array|string $related, string $relationKey, string $foreignKey, string $relationName)
     {
         $this->relationName = $relationName;
 

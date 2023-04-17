@@ -38,31 +38,24 @@ class TSPropertyArray
     /**
      * @var string The default data that occurs before the TSPropertyArray (CtxCfgPresent with a bunch of spaces...?)
      */
-    protected $defaultPreBinary = '43747843666750726573656e742020202020202020202020202020202020202020202020202020202020202020202020';
+    protected string $defaultPreBinary = '43747843666750726573656e742020202020202020202020202020202020202020202020202020202020202020202020';
 
     /**
      * @var TSProperty[]
      */
-    protected $tsProperty = [];
+    protected array $tsProperty = [];
 
-    /**
-     * @var string
-     */
-    protected $signature = self::VALID_SIGNATURE;
+    protected string $signature = self::VALID_SIGNATURE;
 
     /**
      * Binary data that occurs before the TSPropertyArray data in userParameters.
-     *
-     * @var string
      */
-    protected $preBinary = '';
+    protected string $preBinary = '';
 
     /**
      * Binary data that occurs after the TSPropertyArray data in userParameters.
-     *
-     * @var string
      */
-    protected $postBinary = '';
+    protected string $postBinary = '';
 
     /**
      * Construct in one of the following ways:.
@@ -71,7 +64,7 @@ class TSPropertyArray
      *   - Pass the userParameters binary value. The object representation of that will be decoded and constructed.
      *   - Pass nothing and a default set of TSProperty key => value pairs will be used (See DEFAULTS constant).
      */
-    public function __construct($tsPropertyArray = null)
+    public function __construct(mixed $tsPropertyArray = null)
     {
         $this->preBinary = hex2bin($this->defaultPreBinary);
 
@@ -90,22 +83,16 @@ class TSPropertyArray
 
     /**
      * Check if a specific TSProperty exists by its property name.
-     *
-     * @param  string  $propName
-     * @return bool
      */
-    public function has($propName)
+    public function has(string $propName): bool
     {
         return array_key_exists(strtolower($propName), array_change_key_case($this->tsProperty));
     }
 
     /**
      * Get a TSProperty object by its property name (ie. CtxWFProfilePath).
-     *
-     * @param  string  $propName
-     * @return TSProperty
      */
-    public function get($propName)
+    public function get(string $propName): TSProperty
     {
         $this->validateProp($propName);
 
@@ -114,10 +101,8 @@ class TSPropertyArray
 
     /**
      * Add a TSProperty object. If it already exists, it will be overwritten.
-     *
-     * @return $this
      */
-    public function add(TSProperty $tsProperty)
+    public function add(TSProperty $tsProperty): static
     {
         $this->tsProperty[$tsProperty->getName()] = $tsProperty;
 
@@ -125,12 +110,9 @@ class TSPropertyArray
     }
 
     /**
-     * Remove a TSProperty by its property name (ie. CtxMinEncryptionLevel).
-     *
-     * @param  string  $propName
-     * @return $this
+     * Remove a TSProperty by its property name (i.e. CtxMinEncryptionLevel).
      */
-    public function remove($propName)
+    public function remove(string $propName): static
     {
         foreach (array_keys($this->tsProperty) as $property) {
             if (strtolower($propName) == strtolower($property)) {
@@ -143,11 +125,8 @@ class TSPropertyArray
 
     /**
      * Set the value for a specific TSProperty by its name.
-     *
-     * @param  string  $propName
-     * @return $this
      */
-    public function set($propName, $propValue)
+    public function set(string $propName, string|int $propValue): static
     {
         $this->validateProp($propName);
 
@@ -158,10 +137,8 @@ class TSPropertyArray
 
     /**
      * Get the full binary representation of the userParameters containing the TSPropertyArray data.
-     *
-     * @return string
      */
-    public function toBinary()
+    public function toBinary(): string
     {
         $binary = $this->preBinary;
 
@@ -178,10 +155,8 @@ class TSPropertyArray
 
     /**
      * Get a simple associative array containing of all TSProperty names and values.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $userParameters = [];
 
@@ -197,17 +172,15 @@ class TSPropertyArray
      *
      * @return TSProperty[]
      */
-    public function getTSProperties()
+    public function getTSProperties(): array
     {
         return $this->tsProperty;
     }
 
     /**
      * Validates that the given property name exists.
-     *
-     * @param  string  $propName
      */
-    protected function validateProp($propName)
+    protected function validateProp(string $propName): void
     {
         if (! $this->has($propName)) {
             throw new InvalidArgumentException(sprintf('TSProperty for "%s" does not exist.', $propName));
@@ -215,21 +188,17 @@ class TSPropertyArray
     }
 
     /**
-     * @param  string  $propName
-     * @return TSProperty
+     * Get the TS property object for the given property.
      */
-    protected function getTsPropObj($propName)
+    protected function getTsPropObj(string $propName): TSProperty
     {
         return array_change_key_case($this->tsProperty)[strtolower($propName)];
     }
 
     /**
-     * Get an associative array with all of the userParameters property names and values.
-     *
-     * @param  string  $userParameters
-     * @return void
+     * Get an associative array with all the userParameters property names and values.
      */
-    protected function decodeUserParameters($userParameters)
+    protected function decodeUserParameters(string $userParameters): void
     {
         $userParameters = bin2hex($userParameters);
 
@@ -259,11 +228,9 @@ class TSPropertyArray
      * individual TSProperty structures. Return the full length
      * of the TSPropertyArray data.
      *
-     * @param  string  $tsPropertyArray
-     * @param  int  $tsPropCount
      * @return int The length of the data in the TSPropertyArray
      */
-    protected function addTSPropData($tsPropertyArray, $tsPropCount)
+    protected function addTSPropData(string $tsPropertyArray, int $tsPropCount): int
     {
         $length = 0;
 

@@ -13,7 +13,7 @@ trait HasRelationships
     /**
      * Returns a new has one relationship.
      */
-    public function hasOne(string $related, string $relationKey, string $foreignKey = 'dn'): HasOne
+    public function hasOne(array|string $related, string $relationKey, string $foreignKey = 'dn'): HasOne
     {
         return new HasOne($this->newQuery(), $this, $related, $relationKey, $foreignKey);
     }
@@ -21,7 +21,7 @@ trait HasRelationships
     /**
      * Returns a new has many relationship.
      */
-    public function hasMany(string $related, string $relationKey, string $foreignKey = 'dn'): HasMany
+    public function hasMany(array|string $related, string $relationKey, string $foreignKey = 'dn'): HasMany
     {
         return new HasMany($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
@@ -29,7 +29,7 @@ trait HasRelationships
     /**
      * Returns a new has many in relationship.
      */
-    public function hasManyIn(string $related, string $relationKey, string $foreignKey = 'dn'): HasManyIn
+    public function hasManyIn(array|string $related, string $relationKey, string $foreignKey = 'dn'): HasManyIn
     {
         return new HasManyIn($this->newQuery(), $this, $related, $relationKey, $foreignKey, $this->guessRelationshipName());
     }
@@ -37,8 +37,12 @@ trait HasRelationships
     /**
      * Get a relationship by its name.
      */
-    public function getRelation(string $relationName): ?Relation
+    public function getRelation(string $relationName = null): ?Relation
     {
+        if (is_null($relationName)) {
+            return null;
+        }
+
         if (! method_exists($this, $relationName)) {
             return null;
         }

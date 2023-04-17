@@ -80,30 +80,24 @@ class Guid
 
     /**
      * Returns the string value of the SID.
-     *
-     * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
      * Get the binary representation of the GUID string.
-     *
-     * @return string
      */
-    public function getBinary()
+    public function getBinary(): string
     {
         return hex2bin($this->getHex());
     }
 
     /**
      * Get the encoded hexadecimal representation of the GUID string.
-     *
-     * @return string
      */
-    public function getEncodedHex()
+    public function getEncodedHex(): string
     {
         return '\\'.implode('\\', str_split($this->getHex(), 2));
     }

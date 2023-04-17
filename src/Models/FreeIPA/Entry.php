@@ -39,10 +39,8 @@ class Entry extends BaseEntry implements FreeIPA
 
     /**
      * Create a new query builder.
-     *
-     * @return FreeIpaBuilder
      */
-    public function newQueryBuilder(Connection $connection)
+    public function newQueryBuilder(Connection $connection): FreeIpaBuilder
     {
         return new FreeIpaBuilder($connection);
     }

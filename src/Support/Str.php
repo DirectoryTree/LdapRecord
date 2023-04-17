@@ -7,7 +7,7 @@ class Str
     /**
      * Determine if a given string matches a given pattern.
      */
-    public static function is(string|iterable $pattern, string $value)
+    public static function is(string|iterable $pattern, string $value): bool
     {
         if (! is_iterable($pattern)) {
             $pattern = [$pattern];

@@ -364,7 +364,10 @@ class ModelQueryTest extends TestCase
 
         $this->assertEquals(1, ModelDestroyStub::destroy('foo'));
         $this->assertEquals(2, ModelDestroyStub::destroy(['foo', 'bar']));
-        $this->assertEquals(2, ModelDestroyStub::destroy(new Collection(['foo', 'bar'])));
+        $this->assertEquals(2, ModelDestroyStub::destroy(new Collection([
+            new ModelDestroyStub(['dn' => 'foo']),
+            new ModelDestroyStub(['dn' => 'bar']),
+        ])));
     }
 
     public function test_descendants_scope()

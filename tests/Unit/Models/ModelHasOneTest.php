@@ -4,10 +4,10 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasOne;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;

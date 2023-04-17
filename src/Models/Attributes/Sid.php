@@ -8,20 +8,15 @@ class Sid
 {
     /**
      * The string SID value.
-     *
-     * @var string
      */
-    protected $value;
+    protected string $value;
 
     /**
      * Determines if the specified SID is valid.
-     *
-     * @param  string  $sid
-     * @return bool
      */
-    public static function isValid($sid)
+    public static function isValid(string $sid): bool
     {
-        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", (string) $sid);
+        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", $sid);
     }
 
     /**
@@ -29,7 +24,7 @@ class Sid
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (static::isValid($value)) {
             $this->value = $value;
@@ -50,20 +45,16 @@ class Sid
 
     /**
      * Returns the string value of the SID.
-     *
-     * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
      * Returns the binary variant of the SID.
-     *
-     * @return string
      */
-    public function getBinary()
+    public function getBinary(): string
     {
         $sid = explode('-', ltrim($this->value, 'S-'));
 
@@ -83,11 +74,8 @@ class Sid
 
     /**
      * Returns the string variant of a binary SID.
-     *
-     * @param  string  $binary
-     * @return string|null
      */
-    protected function binarySidToString($binary)
+    protected function binarySidToString(string $binary): string
     {
         // Revision - 8bit unsigned int (C1)
         // Count - 8bit unsigned int (C1)
@@ -96,7 +84,7 @@ class Sid
         $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
 
         if (! isset($sid['id']) || ! isset($sid['rev'])) {
-            return;
+            return '';
         }
 
         $revisionLevel = $sid['rev'];

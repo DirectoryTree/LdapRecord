@@ -9,7 +9,7 @@ trait EscapesValues
     /**
      * Prepare a value to be escaped.
      */
-    public function escape(string $value = null, string $ignore = '', int $flags = 0): EscapedValue
+    public function escape(mixed $value = null, string $ignore = '', int $flags = 0): EscapedValue
     {
         return new EscapedValue($value, $ignore, $flags);
     }

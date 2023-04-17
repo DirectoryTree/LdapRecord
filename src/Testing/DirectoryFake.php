@@ -35,7 +35,7 @@ class DirectoryFake
      */
     public static function tearDown()
     {
-        Container::reset();
+        Container::flush();
     }
 
     /**

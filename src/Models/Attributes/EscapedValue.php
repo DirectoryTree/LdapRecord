@@ -6,46 +6,33 @@ class EscapedValue
 {
     /**
      * The value to be escaped.
-     *
-     * @var string
      */
-    protected $value;
+    protected mixed $value;
 
     /**
      * The characters to ignore when escaping.
-     *
-     * @var string
      */
-    protected $ignore;
+    protected string $ignore;
 
     /**
      * The escape flags.
-     *
-     * @var int
      */
-    protected $flags;
+    protected int $flags;
 
     /**
      * Constructor.
-     *
-     * @param  string  $value
-     * @param  string  $ignore
-     * @param  int  $flags
      */
-    public function __construct($value, $ignore = '', $flags = 0)
+    public function __construct(mixed $value, string $ignore = '', int $flags = 0)
     {
-        $this->value = (string) $value;
+        $this->value = $value;
         $this->ignore = $ignore;
         $this->flags = $flags;
     }
 
     /**
      * Un-escapes a hexadecimal string into its original string representation.
-     *
-     * @param  string  $value
-     * @return string
      */
-    public static function unescape($value)
+    public static function unescape(string $value): string
     {
         return preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', function ($matches) {
             return chr(hexdec($matches[1]));
@@ -57,32 +44,29 @@ class EscapedValue
      */
     public function __toString(): string
     {
-        return (string) $this->get();
+        return $this->get();
     }
 
     /**
      * Get the escaped value.
      */
-    public function get()
+    public function get(): string
     {
-        return ldap_escape($this->value, $this->ignore, $this->flags);
+        return ldap_escape((string) $this->value, $this->ignore, $this->flags);
     }
 
     /**
      * Get the raw (unescaped) value.
      */
-    public function raw()
+    public function raw(): mixed
     {
         return $this->value;
     }
 
     /**
      * Set the characters to exclude from being escaped.
-     *
-     * @param  string  $characters
-     * @return $this
      */
-    public function ignore($characters)
+    public function ignore(string $characters): static
     {
         $this->ignore = $characters;
 
@@ -91,10 +75,8 @@ class EscapedValue
 
     /**
      * Prepare the value to be escaped for use in a distinguished name.
-     *
-     * @return $this
      */
-    public function dn()
+    public function dn(): static
     {
         $this->flags = LDAP_ESCAPE_DN;
 
@@ -103,10 +85,8 @@ class EscapedValue
 
     /**
      * Prepare the value to be escaped for use in a filter.
-     *
-     * @return $this
      */
-    public function filter()
+    public function filter(): static
     {
         $this->flags = LDAP_ESCAPE_FILTER;
 
@@ -115,10 +95,8 @@ class EscapedValue
 
     /**
      * Prepare the value to be escaped for use in a distinguished name and filter.
-     *
-     * @return $this
      */
-    public function both()
+    public function both(): static
     {
         $this->flags = LDAP_ESCAPE_FILTER + LDAP_ESCAPE_DN;
 

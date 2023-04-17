@@ -984,7 +984,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $this->assertEquals($result, $b->get());
@@ -1004,7 +1004,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $this->assertEquals($result[0], $b->first());
@@ -1027,14 +1027,14 @@ class BuilderTest extends TestCase
                     $operation->once()->andReturn([]);
                 },
                 'parseResult' => function ($operation) {
-                    $operation->once()->andReturn([]);
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ])->expect([
                 'search' => function ($operation) use ($result) {
                     $operation->once()->andReturn($result);
                 },
-                'parseResult' => function ($operation) use ($result) {
-                    $operation->once()->andReturn($result);
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ]);
 
@@ -1064,14 +1064,14 @@ class BuilderTest extends TestCase
                     $operation->once()->andReturn([]);
                 },
                 'parseResult' => function ($operation) {
-                    $operation->once()->andReturn([]);
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ])->expect([
                 'search' => function ($operation) use ($result) {
                     $operation->once()->andReturn($result);
                 },
-                'parseResult' => function ($operation) use ($result) {
-                    $operation->once()->andReturn($result);
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ]);
 
@@ -1096,14 +1096,14 @@ class BuilderTest extends TestCase
                     $operation->once()->andReturn([]);
                 },
                 'parseResult' => function ($operation) {
-                    $operation->once()->andReturn([]);
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ])->expect([
                 'search' => function ($operation) use ($result) {
                     $operation->once()->andReturn($result);
                 },
-                'parseResult' => function ($operation) use ($result) {
-                    $operation->once()->andReturn($result);
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ]);
 
@@ -1128,14 +1128,14 @@ class BuilderTest extends TestCase
                     $operation->once()->andReturn([]);
                 },
                 'parseResult' => function ($operation) {
-                    $operation->once()->andReturn([]);
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ])->expect([
                 'search' => function ($operation) use ($result) {
                     $operation->once()->andReturn($result);
                 },
-                'parseResult' => function ($operation) use ($result) {
-                    $operation->once()->andReturn($result);
+                'parseResult' => function ($operation) {
+                    $operation->once()->andReturn(new LdapResultResponse());
                 },
             ]);
 
@@ -1161,7 +1161,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $this->assertEquals($result[0], $b->sole());
@@ -1198,7 +1198,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $this->expectException(MultipleObjectsFoundException::class);
@@ -1261,7 +1261,7 @@ class BuilderTest extends TestCase
                 LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturn(true),
                 LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturn(true),
                 LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturn(true),
-                LdapFake::operation('parseResult')->once(),
+                LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
                 LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
             ]);
 
@@ -1309,7 +1309,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $this->assertEquals([
@@ -1337,7 +1337,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $result = $b->chunk(500, function ($results, $page) {
@@ -1370,7 +1370,7 @@ class BuilderTest extends TestCase
             ->expect([
                 'bind' => new LdapResultResponse(),
                 'search' => $result,
-                'parseResult' => $result,
+                'parseResult' => new LdapResultResponse(),
             ]);
 
         $result = $b->each(function ($object, $key) {
@@ -1416,7 +1416,7 @@ class BuilderTest extends TestCase
                                 && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
                                 && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
                         },
-                    ]);
+                    ])->andReturn(new LdapResultResponse());
                 },
             ]);
 
@@ -1462,7 +1462,7 @@ class BuilderTest extends TestCase
                                 && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
                                 && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
                         },
-                    ]);
+                    ])->andReturn(new LdapResultResponse());
                 },
             ]);
 

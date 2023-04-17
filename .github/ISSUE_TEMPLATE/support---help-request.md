@@ -17,4 +17,4 @@ assignees: ''
 -->
 **Environment:**
  - LDAP Server Type: [e.g. ActiveDirectory / OpenLDAP / FreeIPA]
- - PHP Version: [e.g. 8.0 / 8.1]
+ - PHP Version: [e.g. 8.1 / 8.2]

@@ -94,7 +94,7 @@ class DomainConfiguration
      *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
-    public function set(string $key, mixed $value)
+    public function set(string $key, mixed $value): void
     {
         if ($this->validate($key, $value)) {
             $this->options[$key] = $value;

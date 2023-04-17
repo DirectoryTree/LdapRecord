@@ -14,17 +14,17 @@ trait HasGlobalScopes
      *
      * @throws InvalidArgumentException
      */
-    public static function addGlobalScope(Scope|Closure|string $scope, Closure $implementation = null)
+    public static function addGlobalScope(Scope|Closure|string $scope, Closure $implementation = null): void
     {
         if (is_string($scope) && ! is_null($implementation)) {
-            return static::$globalScopes[static::class][$scope] = $implementation;
+            static::$globalScopes[static::class][$scope] = $implementation;
         } elseif ($scope instanceof Closure) {
-            return static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
+             static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
         } elseif ($scope instanceof Scope) {
-            return static::$globalScopes[static::class][get_class($scope)] = $scope;
+             static::$globalScopes[static::class][get_class($scope)] = $scope;
+        } else {
+            throw new InvalidArgumentException('Global scope must be an instance of Closure or Scope.');
         }
-
-        throw new InvalidArgumentException('Global scope must be an instance of Closure or Scope.');
     }
 
     /**

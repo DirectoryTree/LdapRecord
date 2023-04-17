@@ -8,10 +8,8 @@ abstract class Event
 {
     /**
      * The model that the event is being triggered on.
-     *
-     * @var Model
      */
-    protected $model;
+    protected Model $model;
 
     /**
      * Constructor.
@@ -23,10 +21,8 @@ abstract class Event
 
     /**
      * Returns the model that generated the event.
-     *
-     * @return Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }

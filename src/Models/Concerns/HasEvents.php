@@ -66,7 +66,7 @@ trait HasEvents
     /**
      * Listen to a model event.
      */
-    protected function listenForModelEvent(string $event, Closure $listener)
+    protected function listenForModelEvent(string $event, Closure $listener): void
     {
         static::getConnectionContainer()->getDispatcher()->listen($event, $listener);
     }

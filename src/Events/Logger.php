@@ -28,10 +28,8 @@ class Logger
 
     /**
      * Logs the given event.
-     *
-     * @return void
      */
-    public function log($event)
+    public function log($event): void
     {
         switch (true) {
             case $event instanceof AuthEvent:
@@ -48,10 +46,8 @@ class Logger
 
     /**
      * Logs an authentication event.
-     *
-     * @return void
      */
-    public function auth(AuthEvent $event)
+    public function auth(AuthEvent $event): void
     {
         if (isset($this->logger)) {
             $connection = $event->getConnection();
@@ -74,10 +70,8 @@ class Logger
 
     /**
      * Logs a model event.
-     *
-     * @return void
      */
-    public function model(ModelEvent $event)
+    public function model(ModelEvent $event): void
     {
         if (isset($this->logger)) {
             $model = $event->getModel();
@@ -97,10 +91,8 @@ class Logger
 
     /**
      * Logs a query event.
-     *
-     * @return void
      */
-    public function query(QueryEvent $event)
+    public function query(QueryEvent $event): void
     {
         if (isset($this->logger)) {
             $query = $event->getQuery();
@@ -122,10 +114,8 @@ class Logger
 
     /**
      * Returns the operational name of the given event.
-     *
-     * @return string
      */
-    protected function getOperationName($event)
+    protected function getOperationName($event): string
     {
         return (new ReflectionClass($event))->getShortName();
     }

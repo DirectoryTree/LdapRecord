@@ -57,7 +57,7 @@ class DistinguishedName
     /**
      * Determine if the given value is a valid distinguished name.
      */
-    public static function isValid(string $value): bool
+    public static function isValid(string $value = null): bool
     {
         return ! static::make($value)->isEmpty();
     }

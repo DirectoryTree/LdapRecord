@@ -6,8 +6,6 @@ class LdapResultResponse
 {
     /**
      * Constructor.
-     *
-     * @return void
      */
     public function __construct(
         public readonly int $errorCode = 0,
@@ -20,20 +18,16 @@ class LdapResultResponse
 
     /**
      * Determine if the LDAP response indicates a successful status.
-     *
-     * @return bool
      */
-    public function successful()
+    public function successful(): bool
     {
         return $this->errorCode === 0 && empty($this->errorMessage);
     }
 
     /**
      * Determine if the LDAP response indicates a failed status.
-     *
-     * @return bool
      */
-    public function failed()
+    public function failed(): bool
     {
         return ! $this->successful();
     }

@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Integration\Fixtures;
 
 use LdapRecord\Models\OpenLDAP\Group as OpenLDAPGroup;
+use LdapRecord\Models\Relations\HasMany;
 
 class Group extends OpenLDAPGroup
 {
@@ -11,7 +12,7 @@ class Group extends OpenLDAPGroup
         'posixGroup',
     ];
 
-    public function members()
+    public function members(): HasMany
     {
         return $this->hasMany([User::class, Group::class], 'memberUid');
     }

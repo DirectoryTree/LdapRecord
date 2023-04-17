@@ -42,7 +42,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related = new Entry()]));
 
         $collection = $relation->getResults();
@@ -59,18 +59,20 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
+        $child = m::mock(HasMany::class)->shouldAllowMockingProtectedMethods();
+        $child->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([new Entry()]));
+
         $related = m::mock(ModelHasManyStub::class)->makePartial();
         $related->shouldReceive('getDn')->andReturn('bar');
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('getRelation')->once()->with('relation')->andReturnSelf();
-        $related->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([new Entry()]));
+        $related->shouldReceive('getRelation')->once()->with('relation')->andReturn($child);
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
         $results = $relation->recursive()->get();
@@ -89,7 +91,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
             $related = m::mock(ModelHasManyStub::class);
 
@@ -116,7 +118,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
             $related = m::mock(ModelHasManyStub::class);
 
@@ -124,9 +126,11 @@ class ModelHasManyTest extends TestCase
             $related->shouldReceive('convert')->once()->andReturnSelf();
             $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
 
-            $related->shouldReceive('getRelation')->once()->andReturnSelf();
-            $related->shouldReceive('recursive')->once()->andReturnSelf();
-            $related->shouldReceive('chunkRelation')->once()->with(1000, Closure::class, ['bar']);
+            $relation = m::mock(HasMany::class)->shouldAllowMockingProtectedMethods();
+            $relation->shouldReceive('recursive')->once()->andReturnSelf();
+            $relation->shouldReceive('chunkRelation')->once()->with(1000, Closure::class, ['bar']);
+
+            $related->shouldReceive('getRelation')->once()->andReturn($relation);
 
             $callback(new ModelsCollection([$related]));
 
@@ -150,7 +154,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(500)->andReturn(new Collection());
 
         $this->assertInstanceOf(Collection::class, $relation->getResults());
@@ -215,7 +219,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
-        $query->shouldReceive('whereRaw')->once()->with('member', '=', EscapedValue::class)->andReturnSelf();
+        $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related]));
 
         $this->assertEquals($relation->detachAll(), new Collection([$related]));
@@ -253,7 +257,7 @@ class ModelHasManyTest extends TestCase
 
 class ModelHasManyStub extends Model
 {
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany(Entry::class, 'foo');
     }
@@ -261,7 +265,7 @@ class ModelHasManyStub extends Model
 
 class ModelHasManyStubWithManyRelated extends Model
 {
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany([User::class, Group::class], 'foo');
     }

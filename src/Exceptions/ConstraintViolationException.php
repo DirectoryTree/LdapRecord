@@ -11,10 +11,8 @@ class ConstraintViolationException extends LdapRecordException
 
     /**
      * Determine if the exception was generated due to the password policy.
-     *
-     * @return bool
      */
-    public function causedByPasswordPolicy()
+    public function causedByPasswordPolicy(): bool
     {
         return isset($this->detailedError)
                 ? $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '0000052D')
@@ -23,10 +21,8 @@ class ConstraintViolationException extends LdapRecordException
 
     /**
      * Determine if the exception was generated due to an incorrect password.
-     *
-     * @return bool
      */
-    public function causedByIncorrectPassword()
+    public function causedByIncorrectPassword(): bool
     {
         return isset($this->detailedError)
                 ? $this->errorContainsMessage($this->detailedError->getDiagnosticMessage(), '00000056')

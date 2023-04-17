@@ -47,7 +47,7 @@ class Str
             return $subject;
         }
 
-        $position = strrpos($subject, (string) $search);
+        $position = strrpos($subject, $search);
 
         if ($position === false) {
             return $subject;

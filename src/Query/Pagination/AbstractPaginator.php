@@ -65,7 +65,7 @@ abstract class AbstractPaginator
     }
 
     /**
-     * Whether the paginater should continue iterating.
+     * Whether the paginator should continue iterating.
      */
     protected function shouldContinue(): bool
     {

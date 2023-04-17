@@ -498,7 +498,7 @@ trait HasAttributes
     /**
      * Encode the given value as JSON.
      */
-    protected function asJson(mixed $value): string
+    protected function asJson(mixed $value): string|false
     {
         return json_encode($value);
     }
@@ -506,7 +506,7 @@ trait HasAttributes
     /**
      * Decode the given JSON back into an array or object.
      */
-    public function fromJson(string $value, bool $asObject = false)
+    public function fromJson(string $value, bool $asObject = false): mixed
     {
         return json_decode($value, ! $asObject);
     }
@@ -567,7 +567,7 @@ trait HasAttributes
     }
 
     /**
-     * Get all of the appendable values that are arrayable.
+     * Get all the appendable values that are arrayable.
      */
     protected function getArrayableAppends(): array
     {

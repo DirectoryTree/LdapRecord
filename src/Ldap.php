@@ -417,7 +417,7 @@ class Ldap implements LdapInterface
     {
         preg_match('/^([\da-fA-F]+):/', $message, $matches);
 
-        return isset($matches[1]) ? $matches[1] : false;
+        return $matches[1] ?? false;
     }
 
     /**

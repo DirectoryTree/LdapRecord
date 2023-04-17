@@ -172,18 +172,13 @@ class Grammar
             $filters += count($query->filters[$type]);
         }
 
-        switch ($operator) {
-            case '>':
-                return $filters > $count;
-            case '>=':
-                return $filters >= $count;
-            case '<':
-                return $filters < $count;
-            case '<=':
-                return $filters <= $count;
-            default:
-                return $filters == $count;
-        }
+        return match ($operator) {
+            '>' => $filters > $count,
+            '>=' => $filters >= $count,
+            '<' => $filters < $count,
+            '<=' => $filters <= $count,
+            default => $filters == $count,
+        };
     }
 
     /**

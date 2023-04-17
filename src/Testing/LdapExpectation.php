@@ -31,7 +31,7 @@ class LdapExpectation
     /**
      * The method that the expectation belongs to.
      */
-    protected string $method;
+    protected ?string $method = null;
 
     /**
      * The methods argument's.
@@ -50,8 +50,6 @@ class LdapExpectation
 
     /**
      * The error number to return.
-     *
-     * @var int
      */
     protected ?string $errorCode = null;
 

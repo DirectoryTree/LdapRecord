@@ -91,7 +91,7 @@ class Sid
 
         $identifierAuthority = $sid['id'];
 
-        $subs = isset($sid['count']) ? $sid['count'] : 0;
+        $subs = $sid['count'] ?? 0;
 
         $sidHex = $subs ? bin2hex($binary) : '';
 

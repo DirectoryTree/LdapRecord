@@ -177,8 +177,8 @@ class ConnectionTest extends TestCase
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
 
         $conn = new Connection([
-            'hosts' => ['127.0.0.1'],
-            'use_ssl' => true,
+            'hosts'    => ['127.0.0.1'],
+            'use_ssl'  => true,
             'username' => 'foo',
             'password' => 'bar',
         ], $ldap);

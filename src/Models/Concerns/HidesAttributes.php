@@ -90,7 +90,7 @@ trait HidesAttributes
     {
         $this->hidden = array_diff($this->hidden, (array) $attributes);
 
-        if (! empty($this->visible)) {
+        if (!empty($this->visible)) {
             $this->addVisible($attributes);
         }
 

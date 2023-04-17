@@ -104,7 +104,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function bootIfNotBooted(): void
     {
-        if (! isset(static::$booted[static::class])) {
+        if (!isset(static::$booted[static::class])) {
             static::$booted[static::class] = true;
 
             static::boot();
@@ -249,7 +249,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         /** @var Model $model */
         $model = static::getRootDseModel();
 
-        return $model::on($connection ?? (new $model)->getConnectionName())
+        return $model::on($connection ?? (new $model())->getConnectionName())
             ->in()
             ->read()
             ->whereHas('objectclass')
@@ -263,7 +263,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected static function getRootDseModel(): string
     {
-        $instance = (new static);
+        $instance = (new static());
 
         switch (true) {
             case $instance instanceof Types\ActiveDirectory:
@@ -443,7 +443,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     #[\ReturnTypeWillChange]
     public function offsetExists(mixed $offset): bool
     {
-        return ! is_null($this->getAttribute($offset));
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
@@ -536,7 +536,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function fresh(): static|false
     {
-        if (! $this->exists) {
+        if (!$this->exists) {
             return false;
         }
 
@@ -548,7 +548,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function is(Model $model = null): bool
     {
-        return ! is_null($model)
+        return !is_null($model)
             && $this->dn == $model->getDn()
             && $this->getConnectionName() == $model->getConnectionName();
     }
@@ -558,7 +558,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public function isNot(Model $model = null): bool
     {
-        return ! $this->is($model);
+        return !$this->is($model);
     }
 
     /**
@@ -868,7 +868,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         // Here we will populate the models object classes if it
         // does not already have any set. An LDAP object cannot
         // be successfully created in the server without them.
-        if (! $this->hasAttribute('objectclass')) {
+        if (!$this->hasAttribute('objectclass')) {
             $this->setAttribute('objectclass', static::$objectClasses);
         }
 
@@ -905,7 +905,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function performUpdate(): void
     {
-        if (! count($modifications = $this->getModifications())) {
+        if (!count($modifications = $this->getModifications())) {
             return;
         }
 
@@ -1003,7 +1003,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
         // do this in case of leaf nodes being given alongside any parent
         // node, ensuring they can be deleted inside of the directory.
         foreach ((array) $dns as $dn) {
-            if (! $model = $instance->find($dn)) {
+            if (!$model = $instance->find($dn)) {
                 continue;
             }
 
@@ -1134,7 +1134,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     {
         $this->assertExists();
 
-        if (! $rdn = $this->getRdn()) {
+        if (!$rdn = $this->getRdn()) {
             throw new UnexpectedValueException('Current model does not contain an RDN to move.');
         }
 
@@ -1271,7 +1271,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
                 $modification->setOriginal($this->original[$attribute]);
             }
 
-            if (! $modification->build()->isValid()) {
+            if (!$modification->build()->isValid()) {
                 continue;
             }
 
@@ -1288,7 +1288,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     protected function assertExists(): void
     {
-        if (! $this->exists || is_null($this->dn)) {
+        if (!$this->exists || is_null($this->dn)) {
             throw ModelDoesNotExistException::forModel($this);
         }
     }

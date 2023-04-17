@@ -60,7 +60,7 @@ class Guard
             $authenticated = false;
         }
 
-        if (! $stayBound) {
+        if (!$stayBound) {
             $this->bindAsConfiguredUser();
         }
 
@@ -80,7 +80,7 @@ class Guard
         // Prior to binding, we will upgrade our connectivity to TLS on our current
         // connection and ensure we are not already bound before upgrading.
         // This is to prevent subsequent upgrading on several binds.
-        if ($this->connection->isUsingTLS() && ! $this->connection->isBound()) {
+        if ($this->connection->isUsingTLS() && !$this->connection->isBound()) {
             $this->connection->startTLS();
         }
 

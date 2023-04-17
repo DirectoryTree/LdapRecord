@@ -202,7 +202,7 @@ class TSProperty
      * Decode the property by inspecting the nibbles of each blob, checking
      * the control, and adding up the results into a final value.
      *
-     * @param  bool  $string  Whether or not this is simple string data.
+     * @param bool $string Whether or not this is simple string data.
      */
     protected function decodePropValue(string $hex, bool $string = false): string
     {
@@ -308,7 +308,7 @@ class TSProperty
      * the control for X or Y equals 011010. Additionally, if the dec value of the nibble is > 9, then the nibble value
      * must be subtracted by 9 before the final value is constructed.
      *
-     * @param  string  $nibbleType  Either X or Y
+     * @param string $nibbleType Either X or Y
      */
     protected function getNibbleWithControl(string $nibbleType, string $nibble): string
     {
@@ -327,7 +327,7 @@ class TSProperty
     /**
      * Need to make sure hex values are always an even length, so pad as needed.
      *
-     * @param  int  $padLength  The hex string must be padded to this length (with zeros).
+     * @param int $padLength The hex string must be padded to this length (with zeros).
      */
     protected function dec2hex(int $int, int $padLength = 2): string
     {

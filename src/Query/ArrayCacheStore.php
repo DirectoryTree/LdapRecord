@@ -18,7 +18,7 @@ class ArrayCacheStore implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        if (! isset($this->storage[$key])) {
+        if (!isset($this->storage[$key])) {
             return $default;
         }
 
@@ -41,7 +41,7 @@ class ArrayCacheStore implements CacheInterface
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
         $this->storage[$key] = [
-            'value' => $value,
+            'value'     => $value,
             'expiresAt' => $this->calculateExpiration($ttl),
         ];
 

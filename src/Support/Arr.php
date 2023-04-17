@@ -65,7 +65,7 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      *
-     * @param  array  $array
+     * @param array $array
      */
     public static function last(iterable $array, callable $callback = null, mixed $default = null): mixed
     {
@@ -81,7 +81,7 @@ class Arr
      */
     public static function get(ArrayAccess|array $array, string|int|null $key, mixed $default = null): mixed
     {
-        if (! static::accessible($array)) {
+        if (!static::accessible($array)) {
             return Helpers::value($default);
         }
 

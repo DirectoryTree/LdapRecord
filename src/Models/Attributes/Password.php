@@ -113,7 +113,7 @@ class Password
     /**
      * Crypt password with an MD5 salt.
      *
-     * @param  string  $salt
+     * @param string $salt
      */
     public static function md5Crypt(string $password, string $salt = null): string
     {
@@ -123,7 +123,7 @@ class Password
     /**
      * Crypt password with a SHA256 salt.
      *
-     * @param  string  $salt
+     * @param string $salt
      */
     public static function sha256Crypt(string $password, string $salt = null): string
     {
@@ -133,7 +133,7 @@ class Password
     /**
      * Crypt a password with a SHA512 salt.
      *
-     * @param  string  $salt
+     * @param string $salt
      */
     public static function sha512Crypt(string $password, string $salt = null): string
     {
@@ -143,10 +143,10 @@ class Password
     /**
      * Make a new password hash.
      *
-     * @param  string  $password  The password to make a hash of.
-     * @param  string  $method  The hash function to use.
-     * @param  string|null  $algo  The algorithm to use for hashing.
-     * @param  string|null  $salt  The salt to append onto the hash.
+     * @param string      $password The password to make a hash of.
+     * @param string      $method   The hash function to use.
+     * @param string|null $algo     The algorithm to use for hashing.
+     * @param string|null $salt     The salt to append onto the hash.
      */
     protected static function makeHash(string $password, string $method, string $algo = null, string $salt = null): string
     {
@@ -188,10 +188,10 @@ class Password
     protected static function makeCryptPrefixAndLength(int $type): array
     {
         return match ((int) $type) {
-            static::CRYPT_SALT_TYPE_MD5 => ['$1$', 12],
+            static::CRYPT_SALT_TYPE_MD5    => ['$1$', 12],
             static::CRYPT_SALT_TYPE_SHA256 => ['$5$', 16],
             static::CRYPT_SALT_TYPE_SHA512 => ['$6$', 16],
-            default => throw new InvalidArgumentException("Invalid crypt type [$type]."),
+            default                        => throw new InvalidArgumentException("Invalid crypt type [$type]."),
         };
     }
 
@@ -200,7 +200,7 @@ class Password
      */
     public static function getHashMethod(string $password): ?string
     {
-        if (! preg_match('/^\{(\w+)\}/', $password, $matches)) {
+        if (!preg_match('/^\{(\w+)\}/', $password, $matches)) {
             return null;
         }
 
@@ -214,7 +214,7 @@ class Password
      */
     public static function getHashMethodAndAlgo(string $password): ?array
     {
-        if (! preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
+        if (!preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
             return null;
         }
 

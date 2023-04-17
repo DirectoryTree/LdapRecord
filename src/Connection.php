@@ -93,7 +93,7 @@ class Connection
      */
     public function setConfiguration(DomainConfiguration|array $config = []): static
     {
-        if (! $config instanceof DomainConfiguration) {
+        if (!$config instanceof DomainConfiguration) {
             $config = new DomainConfiguration($config);
         }
 
@@ -151,8 +151,8 @@ class Connection
             $this->configuration->get('options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
-                LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
-                LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals'),
+                LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),
+                LDAP_OPT_REFERRALS        => $this->configuration->get('follow_referrals'),
             ]
         ));
     }
@@ -253,7 +253,7 @@ class Connection
      */
     public function replicate(): static
     {
-        return new static($this->configuration, new $this->ldap);
+        return new static($this->configuration, new $this->ldap());
     }
 
     /**
@@ -291,7 +291,7 @@ class Connection
             // Before running the operation, we will check if the current
             // connection is bound and connect if necessary. Otherwise,
             // some LDAP operations will not be executed properly.
-            if (! $this->isConnected()) {
+            if (!$this->isConnected()) {
                 $this->connect();
             }
 
@@ -349,7 +349,7 @@ class Connection
      */
     public function auth(): Guard
     {
-        if (! $this->ldap->isConnected()) {
+        if (!$this->ldap->isConnected()) {
             $this->initialize();
         }
 

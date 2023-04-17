@@ -43,12 +43,12 @@ class User extends Entry implements Authenticatable
      * The attributes that should be mutated to dates.
      */
     protected array $dates = [
-        'lastlogon' => 'windows-int',
-        'lastlogoff' => 'windows-int',
-        'pwdlastset' => 'windows-int',
-        'lockouttime' => 'windows-int',
-        'accountexpires' => 'windows-int',
-        'badpasswordtime' => 'windows-int',
+        'lastlogon'          => 'windows-int',
+        'lastlogoff'         => 'windows-int',
+        'pwdlastset'         => 'windows-int',
+        'lockouttime'        => 'windows-int',
+        'accountexpires'     => 'windows-int',
+        'badpasswordtime'    => 'windows-int',
         'lastlogontimestamp' => 'windows-int',
     ];
 
@@ -71,7 +71,7 @@ class User extends Entry implements Authenticatable
      */
     public function isEnabled(): bool
     {
-        return ! $this->isDisabled();
+        return !$this->isDisabled();
     }
 
     /**
@@ -148,7 +148,7 @@ class User extends Entry implements Authenticatable
     {
         $time = $this->getFirstAttribute('lockouttime');
 
-        if (! $time instanceof Carbon) {
+        if (!$time instanceof Carbon) {
             return false;
         }
 
@@ -156,6 +156,6 @@ class User extends Entry implements Authenticatable
             ? $time->addMinutes($localTimezone)
             : $time->setTimezone($localTimezone)->addMinutes($durationInMinutes ?: 0);
 
-        return ! $time->isPast();
+        return !$time->isPast();
     }
 }

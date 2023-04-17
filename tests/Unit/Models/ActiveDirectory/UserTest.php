@@ -55,9 +55,9 @@ class UserTest extends TestCase
         $this->assertCount(1, $mods = $user->getModifications());
 
         $this->assertEquals([
-            'attrib' => 'unicodepwd',
+            'attrib'  => 'unicodepwd',
             'modtype' => LDAP_MODIFY_BATCH_ADD,
-            'values' => [Password::encode('foo')],
+            'values'  => [Password::encode('foo')],
         ], $mods[0]);
     }
 
@@ -72,9 +72,9 @@ class UserTest extends TestCase
         $this->assertCount(1, $mods = $user->getModifications());
 
         $this->assertEquals([
-            'attrib' => 'unicodepwd',
+            'attrib'  => 'unicodepwd',
             'modtype' => LDAP_MODIFY_BATCH_REPLACE,
-            'values' => [Password::encode('foo')],
+            'values'  => [Password::encode('foo')],
         ], $mods[0]);
     }
 
@@ -106,14 +106,14 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 2,
-                'values' => [Password::encode('bar')],
+                'values'  => [Password::encode('bar')],
             ],
             [
-                'attrib' => 'unicodepwd',
+                'attrib'  => 'unicodepwd',
                 'modtype' => 1,
-                'values' => [Password::encode('baz')],
+                'values'  => [Password::encode('baz')],
             ],
         ], $user->getModifications());
     }

@@ -58,7 +58,7 @@ class EventLoggerTest extends TestCase
 
         $conn = new ConnectionFake([
             'base_dn' => 'dc=local,dc=com',
-            'hosts' => ['localhost'],
+            'hosts'   => ['localhost'],
         ], $ldap);
 
         $conn->shouldBeConnected()->connect();

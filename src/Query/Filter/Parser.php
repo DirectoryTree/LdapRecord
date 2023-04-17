@@ -10,9 +10,9 @@ class Parser
     /**
      * Parse an LDAP filter into nodes.
      *
-     * @return (ConditionNode|GroupNode)[]
-     *
      * @throws ParserException
+     *
+     * @return (ConditionNode|GroupNode)[]
      */
     public static function parse(string $string): array
     {
@@ -44,7 +44,7 @@ class Parser
     /**
      * Assemble the parsed nodes into a single filter.
      *
-     * @param  Node|Node[]  $nodes
+     * @param Node|Node[] $nodes
      */
     public static function assemble(Node|array $nodes = []): string
     {
@@ -71,10 +71,11 @@ class Parser
     /**
      * Build an array of nodes from the given filters.
      *
-     * @param  string[]  $filters
-     * @return (ConditionNode|GroupNode)[]
+     * @param string[] $filters
      *
      * @throws ParserException
+     *
+     * @return (ConditionNode|GroupNode)[]
      */
     protected static function buildNodes(array $filters = []): array
     {
@@ -83,7 +84,7 @@ class Parser
                 $filter = static::unwrap($filter);
             }
 
-            if (static::isGroup($filter) && ! Str::endsWith($filter, ')')) {
+            if (static::isGroup($filter) && !Str::endsWith($filter, ')')) {
                 throw new ParserException(sprintf('Unclosed filter group [%s]', Str::afterLast($filter, ')')));
             }
 

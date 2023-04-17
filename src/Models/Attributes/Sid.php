@@ -83,7 +83,7 @@ class Sid
         // ID - 32bit unsigned long, big-endian order
         $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
 
-        if (! isset($sid['id']) || ! isset($sid['rev'])) {
+        if (!isset($sid['id']) || !isset($sid['rev'])) {
             return '';
         }
 

@@ -43,15 +43,15 @@ trait HasRelationships
             return null;
         }
 
-        if (!method_exists($this, $relationName)) {
+        if (! method_exists($this, $relationName)) {
             return null;
         }
 
-        if (!$relation = $this->{$relationName}()) {
+        if (! $relation = $this->{$relationName}()) {
             return null;
         }
 
-        if (!$relation instanceof Relation) {
+        if (! $relation instanceof Relation) {
             return null;
         }
 

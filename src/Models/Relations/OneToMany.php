@@ -110,7 +110,7 @@ abstract class OneToMany extends Relation
     /**
      * Get the results for the models relation recursively.
      *
-     * @param string[] $loaded The distinguished names of models already loaded
+     * @param  string[]  $loaded  The distinguished names of models already loaded
      */
     protected function getRecursiveResults(array $loaded = []): Collection
     {

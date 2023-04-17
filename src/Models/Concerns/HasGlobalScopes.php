@@ -16,7 +16,7 @@ trait HasGlobalScopes
      */
     public static function addGlobalScope(Scope|Closure|string $scope, Closure $implementation = null): void
     {
-        if (is_string($scope) && !is_null($implementation)) {
+        if (is_string($scope) && ! is_null($implementation)) {
             static::$globalScopes[static::class][$scope] = $implementation;
         } elseif ($scope instanceof Closure) {
             static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
@@ -32,7 +32,7 @@ trait HasGlobalScopes
      */
     public static function hasGlobalScope(Scope|string $scope): bool
     {
-        return !is_null(static::getGlobalScope($scope));
+        return ! is_null(static::getGlobalScope($scope));
     }
 
     /**

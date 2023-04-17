@@ -62,7 +62,7 @@ class AccountControl
      */
     public function __construct(int $flag = null)
     {
-        if (!is_null($flag)) {
+        if (! is_null($flag)) {
             $this->apply($flag);
         }
     }
@@ -134,7 +134,7 @@ class AccountControl
      */
     public function doesntHave(int $flag): bool
     {
-        return !$this->has($flag);
+        return ! $this->has($flag);
     }
 
     /**
@@ -367,7 +367,7 @@ class AccountControl
     /**
      * Set the account control values.
      *
-     * @param array<int, int> $flags
+     * @param  array<int, int>  $flags
      */
     public function setValues(array $flags): void
     {

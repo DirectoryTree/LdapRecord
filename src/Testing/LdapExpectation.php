@@ -83,7 +83,7 @@ class LdapExpectation
                 return new Callback($arg);
             }
 
-            if (!$arg instanceof Constraint) {
+            if (! $arg instanceof Constraint) {
                 return new IsEqual($arg);
             }
 
@@ -267,7 +267,7 @@ class LdapExpectation
      */
     public function decrementCallCount(): static
     {
-        if (!$this->indefinitely) {
+        if (! $this->indefinitely) {
             $this->count -= 1;
         }
 

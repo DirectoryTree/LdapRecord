@@ -74,7 +74,7 @@ class Grammar
      */
     protected function queryMustBeWrapped(Builder $query): bool
     {
-        return !$query->isNested() && $this->hasMultipleFilters($query);
+        return ! $query->isNested() && $this->hasMultipleFilters($query);
     }
 
     /**
@@ -106,7 +106,7 @@ class Grammar
     {
         $filter = $this->compileWheres($query, 'or');
 
-        if (!$this->hasMultipleFilters($query)) {
+        if (! $this->hasMultipleFilters($query)) {
             return $filter;
         }
 
@@ -148,7 +148,7 @@ class Grammar
      */
     protected function bindingValueIsNotEmpty(string $value): bool
     {
-        return !empty($value);
+        return ! empty($value);
     }
 
     /**
@@ -381,7 +381,7 @@ class Grammar
      */
     protected function makeCompileMethod(string $operator): string
     {
-        if (!$this->operatorExists($operator)) {
+        if (! $this->operatorExists($operator)) {
             throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
         }
 

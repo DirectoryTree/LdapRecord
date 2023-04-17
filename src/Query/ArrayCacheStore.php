@@ -18,7 +18,7 @@ class ArrayCacheStore implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        if (!isset($this->storage[$key])) {
+        if (! isset($this->storage[$key])) {
             return $default;
         }
 

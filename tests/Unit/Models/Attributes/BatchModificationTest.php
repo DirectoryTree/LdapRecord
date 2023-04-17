@@ -164,7 +164,8 @@ class BatchModificationTest extends TestCase
 
     public function test_values_are_converted_to_strings()
     {
-        $class = new class() {
+        $class = new class()
+        {
             public function __toString()
             {
                 return 'test';

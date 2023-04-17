@@ -71,7 +71,7 @@ class User extends Entry implements Authenticatable
      */
     public function isEnabled(): bool
     {
-        return !$this->isDisabled();
+        return ! $this->isDisabled();
     }
 
     /**
@@ -148,7 +148,7 @@ class User extends Entry implements Authenticatable
     {
         $time = $this->getFirstAttribute('lockouttime');
 
-        if (!$time instanceof Carbon) {
+        if (! $time instanceof Carbon) {
             return false;
         }
 
@@ -156,6 +156,6 @@ class User extends Entry implements Authenticatable
             ? $time->addMinutes($localTimezone)
             : $time->setTimezone($localTimezone)->addMinutes($durationInMinutes ?: 0);
 
-        return !$time->isPast();
+        return ! $time->isPast();
     }
 }

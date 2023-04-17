@@ -22,7 +22,7 @@ class Guard
     /**
      * The event dispatcher.
      */
-    protected DispatcherInterface $events;
+    protected ?DispatcherInterface $events = null;
 
     /**
      * Constructor.
@@ -115,7 +115,7 @@ class Guard
     /**
      * Get the event dispatcher instance.
      */
-    public function getDispatcher(): DispatcherInterface
+    public function getDispatcher(): ?DispatcherInterface
     {
         return $this->events;
     }
@@ -123,7 +123,7 @@ class Guard
     /**
      * Set the event dispatcher instance.
      */
-    public function setDispatcher(DispatcherInterface $dispatcher): void
+    public function setDispatcher(DispatcherInterface $dispatcher = null): void
     {
         $this->events = $dispatcher;
     }

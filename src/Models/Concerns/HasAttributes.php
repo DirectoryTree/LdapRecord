@@ -517,10 +517,10 @@ trait HasAttributes
     public function fromFloat(float $value): float
     {
         return match ((string) $value) {
-            'NaN'       => NAN,
-            'Infinity'  => INF,
+            'NaN' => NAN,
+            'Infinity' => INF,
             '-Infinity' => -INF,
-            default     => $value,
+            default => $value,
         };
     }
 

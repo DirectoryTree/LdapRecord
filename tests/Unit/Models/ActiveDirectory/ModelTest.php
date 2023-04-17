@@ -53,7 +53,7 @@ class ModelTest extends TestCase
     {
         $m = (new TestModelRestoreStub())->setRawAttributes([
             'isdeleted' => ['true'],
-            'dn'        => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
+            'dn' => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
         ]);
 
         $m->restore();
@@ -76,13 +76,13 @@ class TestModelRestoreStub extends Entry
             'CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com',
             [
                 [
-                    'attrib'  => 'isdeleted',
+                    'attrib' => 'isdeleted',
                     'modtype' => LDAP_MODIFY_BATCH_REMOVE_ALL,
                 ],
                 [
-                    'attrib'  => 'distinguishedname',
+                    'attrib' => 'distinguishedname',
                     'modtype' => LDAP_MODIFY_BATCH_ADD,
-                    'values'  => ['CN=John Doe,DC=local,DC=com'],
+                    'values' => ['CN=John Doe,DC=local,DC=com'],
                 ],
             ]
         )->andReturnTrue();

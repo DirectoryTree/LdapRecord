@@ -214,8 +214,6 @@ class LdapExpectation
 
     /**
      * Get the expected exception.
-     *
-     * @return null|\Exception|LdapRecordException
      */
     public function getExpectedException(): ?Exception
     {

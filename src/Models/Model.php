@@ -169,8 +169,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * A mutator for setting the models distinguished name.
-     *
-     * @return $this
      */
     public function setDnAttribute(string $dn): static
     {

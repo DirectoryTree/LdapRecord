@@ -37,7 +37,7 @@ class GroupTest extends TestCase
         $group = (new Group())
             ->inside($this->ou)
             ->fill(array_merge([
-                'cn'        => 'Foo',
+                'cn' => 'Foo',
                 'gidNumber' => 500,
             ], $attributes));
 

@@ -53,7 +53,7 @@ class Paginator extends AbstractPaginator
         $cookie = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'] ?? '';
 
         $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value'] = [
-            'size'   => $this->perPage,
+            'size' => $this->perPage,
             'cookie' => $cookie,
         ];
     }

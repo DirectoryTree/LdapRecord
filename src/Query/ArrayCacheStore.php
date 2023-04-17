@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Query;
 
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
 class ArrayCacheStore implements CacheInterface
@@ -38,10 +39,10 @@ class ArrayCacheStore implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
         $this->storage[$key] = [
-            'value'     => $value,
+            'value' => $value,
             'expiresAt' => $this->calculateExpiration($ttl),
         ];
 
@@ -101,7 +102,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);

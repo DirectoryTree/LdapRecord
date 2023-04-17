@@ -18,8 +18,8 @@ class Entry extends BaseEntry implements ActiveDirectory
      * The default attributes that should be mutated to dates.
      */
     protected array $defaultDates = [
-        'whenchanged'           => 'windows',
-        'whencreated'           => 'windows',
+        'whenchanged' => 'windows',
+        'whencreated' => 'windows',
         'dscorepropagationdata' => 'windows',
     ];
 

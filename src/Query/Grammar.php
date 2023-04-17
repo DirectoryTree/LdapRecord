@@ -10,20 +10,20 @@ class Grammar
      * The query operators and their method names.
      */
     public array $operators = [
-        '*'               => 'has',
-        '!*'              => 'notHas',
-        '='               => 'equals',
-        '!'               => 'doesNotEqual',
-        '!='              => 'doesNotEqual',
-        '>='              => 'greaterThanOrEquals',
-        '<='              => 'lessThanOrEquals',
-        '~='              => 'approximatelyEquals',
-        'starts_with'     => 'startsWith',
+        '*' => 'has',
+        '!*' => 'notHas',
+        '=' => 'equals',
+        '!' => 'doesNotEqual',
+        '!=' => 'doesNotEqual',
+        '>=' => 'greaterThanOrEquals',
+        '<=' => 'lessThanOrEquals',
+        '~=' => 'approximatelyEquals',
+        'starts_with' => 'startsWith',
         'not_starts_with' => 'notStartsWith',
-        'ends_with'       => 'endsWith',
-        'not_ends_with'   => 'notEndsWith',
-        'contains'        => 'contains',
-        'not_contains'    => 'notContains',
+        'ends_with' => 'endsWith',
+        'not_ends_with' => 'notEndsWith',
+        'contains' => 'contains',
+        'not_contains' => 'notContains',
     ];
 
     /**
@@ -63,8 +63,8 @@ class Grammar
             .$this->compileOrWheres($query);
 
         return match ($this->wrapper) {
-            'and'   => $this->compileAnd($filter),
-            'or'    => $this->compileOr($filter),
+            'and' => $this->compileAnd($filter),
+            'or' => $this->compileOr($filter),
             default => $filter,
         };
     }

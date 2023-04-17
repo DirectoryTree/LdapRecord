@@ -11,10 +11,8 @@ trait SerializesProperties
 
     /**
      * Prepare the attributes for serialization.
-     *
-     * @return array
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         $properties = (new ReflectionClass($this))->getProperties();
 
@@ -32,10 +30,8 @@ trait SerializesProperties
 
     /**
      * Restore the attributes after serialization.
-     *
-     * @return void
      */
-    public function __wakeup()
+    public function __wakeup(): void
     {
         foreach ((new ReflectionClass($this))->getProperties() as $property) {
             if ($property->isStatic()) {
@@ -51,10 +47,8 @@ trait SerializesProperties
 
     /**
      * Prepare the model for serialization.
-     *
-     * @return array
      */
-    public function __serialize()
+    public function __serialize(): array
     {
         $values = [];
 
@@ -92,10 +86,8 @@ trait SerializesProperties
 
     /**
      * Restore the model after serialization.
-     *
-     * @return void
      */
-    public function __unserialize(array $values)
+    public function __unserialize(array $values): void
     {
         $properties = (new ReflectionClass($this))->getProperties();
 
@@ -130,7 +122,7 @@ trait SerializesProperties
     /**
      * Get the property value for the given property.
      */
-    protected function getPropertyValue(ReflectionProperty $property)
+    protected function getPropertyValue(ReflectionProperty $property): mixed
     {
         $property->setAccessible(true);
 

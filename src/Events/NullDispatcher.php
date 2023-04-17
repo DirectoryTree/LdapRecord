@@ -35,8 +35,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Fire an event until the first non-null response is returned.
-     *
-     * @return null
      */
     public function until(string|object $event, mixed $payload = []): ?array
     {
@@ -45,8 +43,6 @@ class NullDispatcher implements DispatcherInterface
 
     /**
      * Fire an event and call the listeners.
-     *
-     * @return null
      */
     public function fire(string|object $event, mixed $payload = [], bool $halt = false): void
     {

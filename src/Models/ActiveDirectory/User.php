@@ -43,12 +43,12 @@ class User extends Entry implements Authenticatable
      * The attributes that should be mutated to dates.
      */
     protected array $dates = [
-        'lastlogon'          => 'windows-int',
-        'lastlogoff'         => 'windows-int',
-        'pwdlastset'         => 'windows-int',
-        'lockouttime'        => 'windows-int',
-        'accountexpires'     => 'windows-int',
-        'badpasswordtime'    => 'windows-int',
+        'lastlogon' => 'windows-int',
+        'lastlogoff' => 'windows-int',
+        'pwdlastset' => 'windows-int',
+        'lockouttime' => 'windows-int',
+        'accountexpires' => 'windows-int',
+        'badpasswordtime' => 'windows-int',
         'lastlogontimestamp' => 'windows-int',
     ];
 

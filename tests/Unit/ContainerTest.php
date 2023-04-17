@@ -135,7 +135,7 @@ class ContainerTest extends TestCase
 
         $connections = [
             'default' => new Connection(),
-            'other'   => new Connection(),
+            'other' => new Connection(),
         ];
 
         $container->addConnection($connections['default']);

@@ -15,7 +15,7 @@ class ConnectionFakeTest extends TestCase
     public function testMakeWithConfig()
     {
         $fake = $fake = ConnectionFake::make([
-            'hosts'   => ['foo', 'bar'],
+            'hosts' => ['foo', 'bar'],
             'use_tls' => true,
         ]);
 

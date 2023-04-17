@@ -71,9 +71,9 @@ class BuilderScopeTest extends TestCase
             $func = new ReflectionFunction($closure);
 
             return $func->getClosureThis()->filters['and'][0] == [
-                'field'    => 'foo',
+                'field' => 'foo',
                 'operator' => '=',
-                'value'    => 'bar',
+                'value' => 'bar',
             ];
         }))->andReturn([]);
 

@@ -20,7 +20,7 @@ class Entry extends BaseEntry implements FreeIPA
      * The default attributes that should be mutated to dates.
      */
     protected array $defaultDates = [
-        'krblastpwdchange'      => 'ldap',
+        'krblastpwdchange' => 'ldap',
         'krbpasswordexpiration' => 'ldap',
     ];
 

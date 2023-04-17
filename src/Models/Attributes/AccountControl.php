@@ -68,7 +68,7 @@ class AccountControl
     }
 
     /**
-     * Get the value when casted to string.
+     * Get the value when cast to string.
      */
     public function __toString(): string
     {
@@ -76,7 +76,7 @@ class AccountControl
     }
 
     /**
-     * Get the value when casted to int.
+     * Get the value when cast to int.
      */
     public function __toInt(): int
     {
@@ -84,9 +84,9 @@ class AccountControl
     }
 
     /**
-     * Add the flag to the account control values.
+     * Set the flag to the account control values.
      */
-    public function add(int $flag): static
+    public function set(int $flag): static
     {
         // Use the value as a key so if the same value
         // is used, it will always be overwritten
@@ -98,7 +98,7 @@ class AccountControl
     /**
      * Remove the flag from the account control.
      */
-    public function remove(int $flag): static
+    public function unset(int $flag): static
     {
         unset($this->values[$flag]);
 
@@ -148,25 +148,25 @@ class AccountControl
     /**
      * The logon script will be run.
      */
-    public function runLoginScript(): static
+    public function setRunLoginScript(): static
     {
-        return $this->add(static::SCRIPT);
+        return $this->set(static::SCRIPT);
     }
 
     /**
      * The user account is locked.
      */
-    public function accountIsLocked(): static
+    public function setAccountIsLocked(): static
     {
-        return $this->add(static::LOCKOUT);
+        return $this->set(static::LOCKOUT);
     }
 
     /**
      * The user account is disabled.
      */
-    public function accountIsDisabled(): static
+    public function setAccountIsDisabled(): static
     {
-        return $this->add(static::ACCOUNTDISABLE);
+        return $this->set(static::ACCOUNTDISABLE);
     }
 
     /**
@@ -175,25 +175,25 @@ class AccountControl
      * This account provides user access to this domain, but not to any domain that
      * trusts this domain. This is sometimes referred to as a local user account.
      */
-    public function accountIsTemporary(): static
+    public function setAccountIsTemporary(): static
     {
-        return $this->add(static::TEMP_DUPLICATE_ACCOUNT);
+        return $this->set(static::TEMP_DUPLICATE_ACCOUNT);
     }
 
     /**
      * This is a default account type that represents a typical user.
      */
-    public function accountIsNormal(): static
+    public function setAccountIsNormal(): static
     {
-        return $this->add(static::NORMAL_ACCOUNT);
+        return $this->set(static::NORMAL_ACCOUNT);
     }
 
     /**
      * This is a permit to trust an account for a system domain that trusts other domains.
      */
-    public function accountIsForInterdomain(): static
+    public function setAccountIsForInterdomain(): static
     {
-        return $this->add(static::INTERDOMAIN_TRUST_ACCOUNT);
+        return $this->set(static::INTERDOMAIN_TRUST_ACCOUNT);
     }
 
     /**
@@ -201,42 +201,42 @@ class AccountControl
      * Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft
      * Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
      */
-    public function accountIsForWorkstation(): static
+    public function setAccountIsForWorkstation(): static
     {
-        return $this->add(static::WORKSTATION_TRUST_ACCOUNT);
+        return $this->set(static::WORKSTATION_TRUST_ACCOUNT);
     }
 
     /**
      * This is a computer account for a domain controller that is a member of this domain.
      */
-    public function accountIsForServer(): static
+    public function setAccountIsForServer(): static
     {
-        return $this->add(static::SERVER_TRUST_ACCOUNT);
+        return $this->set(static::SERVER_TRUST_ACCOUNT);
     }
 
     /**
      * This is an MNS logon account.
      */
-    public function accountIsMnsLogon(): static
+    public function setAccountIsMnsLogon(): static
     {
-        return $this->add(static::MNS_LOGON_ACCOUNT);
+        return $this->set(static::MNS_LOGON_ACCOUNT);
     }
 
     /**
      * (Windows 2000/Windows Server 2003) This account does
      * not require Kerberos pre-authentication for logging on.
      */
-    public function accountDoesNotRequirePreAuth(): static
+    public function setAccountDoesNotRequirePreAuth(): static
     {
-        return $this->add(static::DONT_REQ_PREAUTH);
+        return $this->set(static::DONT_REQ_PREAUTH);
     }
 
     /**
      * When this flag is set, it forces the user to log on by using a smart card.
      */
-    public function accountRequiresSmartCard(): static
+    public function setAccountRequiresSmartCard(): static
     {
-        return $this->add(static::SMARTCARD_REQUIRED);
+        return $this->set(static::SMARTCARD_REQUIRED);
     }
 
     /**
@@ -244,25 +244,25 @@ class AccountControl
      *
      * This is a security-sensitive setting. Removing this setting from an RODC compromises security on that server.
      */
-    public function accountIsReadOnly(): static
+    public function setAccountIsReadOnly(): static
     {
-        return $this->add(static::PARTIAL_SECRETS_ACCOUNT);
+        return $this->set(static::PARTIAL_SECRETS_ACCOUNT);
     }
 
     /**
      * The home folder is required.
      */
-    public function homeFolderIsRequired(): static
+    public function setHomeFolderIsRequired(): static
     {
-        return $this->add(static::HOMEDIR_REQUIRED);
+        return $this->set(static::HOMEDIR_REQUIRED);
     }
 
     /**
      * No password is required.
      */
-    public function passwordIsNotRequired(): static
+    public function setPasswordIsNotRequired(): static
     {
-        return $this->add(static::PASSWD_NOTREQD);
+        return $this->set(static::PASSWD_NOTREQD);
     }
 
     /**
@@ -272,33 +272,33 @@ class AccountControl
      *
      * @see http://msdn2.microsoft.com/en-us/library/aa746398.aspx
      */
-    public function passwordCannotBeChanged(): static
+    public function setPasswordCannotBeChanged(): static
     {
-        return $this->add(static::PASSWD_CANT_CHANGE);
+        return $this->set(static::PASSWD_CANT_CHANGE);
     }
 
     /**
      * Represents the password, which should never expire on the account.
      */
-    public function passwordDoesNotExpire(): static
+    public function setPasswordDoesNotExpire(): static
     {
-        return $this->add(static::DONT_EXPIRE_PASSWORD);
+        return $this->set(static::DONT_EXPIRE_PASSWORD);
     }
 
     /**
      * (Windows 2000/Windows Server 2003) The user's password has expired.
      */
-    public function passwordIsExpired(): static
+    public function setPasswordIsExpired(): static
     {
-        return $this->add(static::PASSWORD_EXPIRED);
+        return $this->set(static::PASSWORD_EXPIRED);
     }
 
     /**
      * The user can send an encrypted password.
      */
-    public function allowEncryptedTextPassword(): static
+    public function setAllowEncryptedTextPassword(): static
     {
-        return $this->add(static::ENCRYPTED_TEXT_PWD_ALLOWED);
+        return $this->set(static::ENCRYPTED_TEXT_PWD_ALLOWED);
     }
 
     /**
@@ -310,9 +310,9 @@ class AccountControl
      * To enable a service for Kerberos delegation, you must set this
      * flag on the userAccountControl property of the service account.
      */
-    public function trustForDelegation(): static
+    public function setTrustForDelegation(): static
     {
-        return $this->add(static::TRUSTED_FOR_DELEGATION);
+        return $this->set(static::TRUSTED_FOR_DELEGATION);
     }
 
     /**
@@ -323,27 +323,27 @@ class AccountControl
      * account assume a client's identity and authenticate as that user to other remote
      * servers on the network.
      */
-    public function trustToAuthForDelegation(): static
+    public function setTrustToAuthForDelegation(): static
     {
-        return $this->add(static::TRUSTED_TO_AUTH_FOR_DELEGATION);
+        return $this->set(static::TRUSTED_TO_AUTH_FOR_DELEGATION);
     }
 
     /**
      * When this flag is set, the security context of the user is not delegated to a
      * service even if the service account is set as trusted for Kerberos delegation.
      */
-    public function doNotTrustForDelegation(): static
+    public function setDoNotTrustForDelegation(): static
     {
-        return $this->add(static::NOT_DELEGATED);
+        return $this->set(static::NOT_DELEGATED);
     }
 
     /**
      * (Windows 2000/Windows Server 2003) Restrict this principal to
      * use only Data Encryption Standard (DES) encryption types for keys.
      */
-    public function useDesKeyOnly(): static
+    public function setUseDesKeyOnly(): static
     {
-        return $this->add(static::USE_DES_KEY_ONLY);
+        return $this->set(static::USE_DES_KEY_ONLY);
     }
 
     /**

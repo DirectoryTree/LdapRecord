@@ -50,7 +50,7 @@ class ActiveDirectoryBuilder extends Builder
     public function whereDisabled(): static
     {
         return $this->rawFilter(
-            (new AccountControl())->accountIsDisabled()->filter()
+            (new AccountControl())->setAccountIsDisabled()->filter()
         );
     }
 

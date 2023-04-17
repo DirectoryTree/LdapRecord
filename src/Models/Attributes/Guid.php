@@ -58,7 +58,7 @@ class Guid
     }
 
     /**
-     * Returns the string value of the SID.
+     * Returns the string value of the GUID.
      */
     public function getValue(): string
     {

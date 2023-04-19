@@ -61,13 +61,13 @@ class Timestamp
      *
      * @throws LdapRecordException
      */
-    public function fromDateTime(mixed $value): float|int|string
+    public function fromDateTime(mixed $value): int|string
     {
         $value = is_array($value) ? reset($value) : $value;
 
         // If the value is being converted to a windows integer format, but it
         // is already in that format, we will simply return the value back.
-        if ($this->type == 'windows-int' && $this->valueIsWindowsIntegerType($value)) {
+        if ($this->type === Timestamp::TYPE_WINDOWS_INT && $this->valueIsWindowsIntegerType($value)) {
             return $value;
         }
         // If the value is numeric, we will assume it's a UNIX timestamp.
@@ -84,9 +84,9 @@ class Timestamp
         }
 
         return match ($this->type) {
-            'ldap' => $this->convertDateTimeToLdapTime($value),
-            'windows' => $this->convertDateTimeToWindows($value),
-            'windows-int' => $this->convertDateTimeToWindowsInteger($value),
+            Timestamp::TYPE_LDAP => $this->convertDateTimeToLdapTime($value),
+            Timestamp::TYPE_WINDOWS => $this->convertDateTimeToWindows($value),
+            Timestamp::TYPE_WINDOWS_INT => $this->convertDateTimeToWindowsInteger($value),
             default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
         };
     }
@@ -113,9 +113,9 @@ class Timestamp
         }
 
         $value = match ($this->type) {
-            'ldap' => $this->convertLdapTimeToDateTime($value),
-            'windows' => $this->convertWindowsTimeToDateTime($value),
-            'windows-int' => $this->convertWindowsIntegerTimeToDateTime($value),
+            Timestamp::TYPE_LDAP => $this->convertLdapTimeToDateTime($value),
+            Timestamp::TYPE_WINDOWS => $this->convertWindowsTimeToDateTime($value),
+            Timestamp::TYPE_WINDOWS_INT => $this->convertWindowsIntegerTimeToDateTime($value),
             default => throw new LdapRecordException("Unrecognized date type [{$this->type}]"),
         };
 
@@ -192,7 +192,7 @@ class Timestamp
     /**
      * Converts date objects to a windows integer timestamp.
      */
-    protected function convertDateTimeToWindowsInteger(DateTime $date): float
+    protected function convertDateTimeToWindowsInteger(DateTime $date): int
     {
         return ($date->getTimestamp() + 11644473600) * 10000000;
     }

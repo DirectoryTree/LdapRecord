@@ -141,7 +141,7 @@ class ContainerTest extends TestCase
         $container->addConnection($connections['default']);
         $container->addConnection($connections['other'], 'other');
 
-        $this->assertEquals($connections, $container->all());
+        $this->assertEquals($connections, $container->getConnections());
     }
 
     public function test_logging_takes_place_after_instance_is_created()

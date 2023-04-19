@@ -60,13 +60,13 @@ class Container
      */
     public function __call(string $method, array $parameters): mixed
     {
-        return $this->manager()->{$method}(...$parameters);
+        return $this->getConnectionManager()->{$method}(...$parameters);
     }
 
     /**
      * Get the connection manager.
      */
-    public function manager(): ConnectionManager
+    public function getConnectionManager(): ConnectionManager
     {
         return $this->manager;
     }

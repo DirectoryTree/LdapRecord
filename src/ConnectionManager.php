@@ -77,7 +77,7 @@ class ConnectionManager
      *
      * @return Connection[]
      */
-    public function all(): array
+    public function getConnections(): array
     {
         return $this->connections;
     }
@@ -213,7 +213,7 @@ class ConnectionManager
     /**
      * Unset the event dispatcher.
      */
-    public function unsetEventDispatcher(): void
+    public function unsetDispatcher(): void
     {
         $this->dispatcher = null;
     }

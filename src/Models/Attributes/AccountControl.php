@@ -51,11 +51,11 @@ class AccountControl
     public const PARTIAL_SECRETS_ACCOUNT = 67108864;
 
     /**
-     * The account control flag values.
+     * The account control flags.
      *
      * @var array<int, int>
      */
-    protected array $values = [];
+    protected array $flags = [];
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ class AccountControl
     public function __construct(int $flag = null)
     {
         if (! is_null($flag)) {
-            $this->apply($flag);
+            $this->applyFlags($flag);
         }
     }
 
@@ -84,57 +84,57 @@ class AccountControl
     }
 
     /**
-     * Set the flag to the account control values.
+     * Set a flag on the account control.
      */
-    public function set(int $flag): static
+    public function setFlag(int $flag): static
     {
         // Use the value as a key so if the same value
         // is used, it will always be overwritten
-        $this->values[$flag] = $flag;
+        $this->flags[$flag] = $flag;
 
         return $this;
     }
 
     /**
-     * Remove the flag from the account control.
+     * Unset a flag from the account control.
      */
-    public function unset(int $flag): static
+    public function unsetFlag(int $flag): static
     {
-        unset($this->values[$flag]);
+        unset($this->flags[$flag]);
 
         return $this;
     }
 
     /**
-     * Extract and apply the flag.
+     * Extract and apply several flags.
      */
-    public function apply(int $flag): void
+    public function applyFlags(int $flags): void
     {
-        $this->setValues($this->extractFlags($flag));
+        $this->setFlags($this->extractFlags($flags));
     }
 
     /**
-     * Determine if the account control contains the given UAC flag(s).
+     * Determine if the account control contains the given flag(s).
      */
-    public function has(int $flag): bool
+    public function hasFlag(int $flag): bool
     {
         // Here we will extract the given flag into an array
         // of possible flags. This will allow us to see if
         // our AccountControl object contains any of them.
         $flagsUsed = array_intersect(
             $this->extractFlags($flag),
-            $this->values
+            $this->flags
         );
 
         return in_array($flag, $flagsUsed);
     }
 
     /**
-     * Determine if the account control does not contain the given UAC flag(s).
+     * Determine if the account control does not contain the given flag(s).
      */
-    public function doesntHave(int $flag): bool
+    public function doesntHaveFlag(int $flag): bool
     {
-        return ! $this->has($flag);
+        return ! $this->hasFlag($flag);
     }
 
     /**
@@ -142,7 +142,7 @@ class AccountControl
      */
     public function filter(): string
     {
-        return sprintf('(UserAccountControl:1.2.840.113556.1.4.803:=%s)', $this->getValue());
+        return sprintf('(UserAccountControl:1.2.840.113556.1.4.803:=%s)', $this);
     }
 
     /**
@@ -150,7 +150,7 @@ class AccountControl
      */
     public function setRunLoginScript(): static
     {
-        return $this->set(static::SCRIPT);
+        return $this->setFlag(static::SCRIPT);
     }
 
     /**
@@ -158,7 +158,7 @@ class AccountControl
      */
     public function setAccountIsLocked(): static
     {
-        return $this->set(static::LOCKOUT);
+        return $this->setFlag(static::LOCKOUT);
     }
 
     /**
@@ -166,7 +166,7 @@ class AccountControl
      */
     public function setAccountIsDisabled(): static
     {
-        return $this->set(static::ACCOUNTDISABLE);
+        return $this->setFlag(static::ACCOUNTDISABLE);
     }
 
     /**
@@ -177,7 +177,7 @@ class AccountControl
      */
     public function setAccountIsTemporary(): static
     {
-        return $this->set(static::TEMP_DUPLICATE_ACCOUNT);
+        return $this->setFlag(static::TEMP_DUPLICATE_ACCOUNT);
     }
 
     /**
@@ -185,7 +185,7 @@ class AccountControl
      */
     public function setAccountIsNormal(): static
     {
-        return $this->set(static::NORMAL_ACCOUNT);
+        return $this->setFlag(static::NORMAL_ACCOUNT);
     }
 
     /**
@@ -193,7 +193,7 @@ class AccountControl
      */
     public function setAccountIsForInterdomain(): static
     {
-        return $this->set(static::INTERDOMAIN_TRUST_ACCOUNT);
+        return $this->setFlag(static::INTERDOMAIN_TRUST_ACCOUNT);
     }
 
     /**
@@ -203,7 +203,7 @@ class AccountControl
      */
     public function setAccountIsForWorkstation(): static
     {
-        return $this->set(static::WORKSTATION_TRUST_ACCOUNT);
+        return $this->setFlag(static::WORKSTATION_TRUST_ACCOUNT);
     }
 
     /**
@@ -211,7 +211,7 @@ class AccountControl
      */
     public function setAccountIsForServer(): static
     {
-        return $this->set(static::SERVER_TRUST_ACCOUNT);
+        return $this->setFlag(static::SERVER_TRUST_ACCOUNT);
     }
 
     /**
@@ -219,7 +219,7 @@ class AccountControl
      */
     public function setAccountIsMnsLogon(): static
     {
-        return $this->set(static::MNS_LOGON_ACCOUNT);
+        return $this->setFlag(static::MNS_LOGON_ACCOUNT);
     }
 
     /**
@@ -228,7 +228,7 @@ class AccountControl
      */
     public function setAccountDoesNotRequirePreAuth(): static
     {
-        return $this->set(static::DONT_REQ_PREAUTH);
+        return $this->setFlag(static::DONT_REQ_PREAUTH);
     }
 
     /**
@@ -236,7 +236,7 @@ class AccountControl
      */
     public function setAccountRequiresSmartCard(): static
     {
-        return $this->set(static::SMARTCARD_REQUIRED);
+        return $this->setFlag(static::SMARTCARD_REQUIRED);
     }
 
     /**
@@ -246,7 +246,7 @@ class AccountControl
      */
     public function setAccountIsReadOnly(): static
     {
-        return $this->set(static::PARTIAL_SECRETS_ACCOUNT);
+        return $this->setFlag(static::PARTIAL_SECRETS_ACCOUNT);
     }
 
     /**
@@ -254,7 +254,7 @@ class AccountControl
      */
     public function setHomeFolderIsRequired(): static
     {
-        return $this->set(static::HOMEDIR_REQUIRED);
+        return $this->setFlag(static::HOMEDIR_REQUIRED);
     }
 
     /**
@@ -262,7 +262,7 @@ class AccountControl
      */
     public function setPasswordIsNotRequired(): static
     {
-        return $this->set(static::PASSWD_NOTREQD);
+        return $this->setFlag(static::PASSWD_NOTREQD);
     }
 
     /**
@@ -274,7 +274,7 @@ class AccountControl
      */
     public function setPasswordCannotBeChanged(): static
     {
-        return $this->set(static::PASSWD_CANT_CHANGE);
+        return $this->setFlag(static::PASSWD_CANT_CHANGE);
     }
 
     /**
@@ -282,7 +282,7 @@ class AccountControl
      */
     public function setPasswordDoesNotExpire(): static
     {
-        return $this->set(static::DONT_EXPIRE_PASSWORD);
+        return $this->setFlag(static::DONT_EXPIRE_PASSWORD);
     }
 
     /**
@@ -290,7 +290,7 @@ class AccountControl
      */
     public function setPasswordIsExpired(): static
     {
-        return $this->set(static::PASSWORD_EXPIRED);
+        return $this->setFlag(static::PASSWORD_EXPIRED);
     }
 
     /**
@@ -298,7 +298,7 @@ class AccountControl
      */
     public function setAllowEncryptedTextPassword(): static
     {
-        return $this->set(static::ENCRYPTED_TEXT_PWD_ALLOWED);
+        return $this->setFlag(static::ENCRYPTED_TEXT_PWD_ALLOWED);
     }
 
     /**
@@ -312,7 +312,7 @@ class AccountControl
      */
     public function setTrustForDelegation(): static
     {
-        return $this->set(static::TRUSTED_FOR_DELEGATION);
+        return $this->setFlag(static::TRUSTED_FOR_DELEGATION);
     }
 
     /**
@@ -325,7 +325,7 @@ class AccountControl
      */
     public function setTrustToAuthForDelegation(): static
     {
-        return $this->set(static::TRUSTED_TO_AUTH_FOR_DELEGATION);
+        return $this->setFlag(static::TRUSTED_TO_AUTH_FOR_DELEGATION);
     }
 
     /**
@@ -334,7 +334,7 @@ class AccountControl
      */
     public function setDoNotTrustForDelegation(): static
     {
-        return $this->set(static::NOT_DELEGATED);
+        return $this->setFlag(static::NOT_DELEGATED);
     }
 
     /**
@@ -343,7 +343,7 @@ class AccountControl
      */
     public function setUseDesKeyOnly(): static
     {
-        return $this->set(static::USE_DES_KEY_ONLY);
+        return $this->setFlag(static::USE_DES_KEY_ONLY);
     }
 
     /**
@@ -351,7 +351,7 @@ class AccountControl
      */
     public function getValue(): int
     {
-        return array_sum($this->values);
+        return array_sum($this->flags);
     }
 
     /**
@@ -359,9 +359,9 @@ class AccountControl
      *
      * @return array<int, int>
      */
-    public function getValues(): array
+    public function getFlags(): array
     {
-        return $this->values;
+        return $this->flags;
     }
 
     /**
@@ -369,9 +369,9 @@ class AccountControl
      *
      * @param  array<int, int>  $flags
      */
-    public function setValues(array $flags): void
+    public function setFlags(array $flags): void
     {
-        $this->values = $flags;
+        $this->flags = $flags;
     }
 
     /**
@@ -381,15 +381,15 @@ class AccountControl
     {
         $flags = $this->getAllFlags();
 
-        $exists = [];
+        $applied = [];
 
         foreach ($flags as $name => $flag) {
-            if ($this->has($flag)) {
-                $exists[$name] = $flag;
+            if ($this->hasFlag($flag)) {
+                $applied[$name] = $flag;
             }
         }
 
-        return $exists;
+        return $applied;
     }
 
     /**
@@ -403,7 +403,7 @@ class AccountControl
     /**
      * Extracts the given flag into an array of flags used.
      */
-    public function extractFlags(int $flag): array
+    protected function extractFlags(int $flag): array
     {
         $flags = [];
 

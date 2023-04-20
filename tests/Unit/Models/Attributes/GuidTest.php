@@ -2,11 +2,19 @@
 
 namespace LdapRecord\Tests\Unit\Models\Attributes;
 
+use InvalidArgumentException;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Tests\TestCase;
 
 class GuidTest extends TestCase
 {
+    public function test_throws_exception_with_empty_guid()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Guid('');
+    }
+
     public function test_get_hex()
     {
         $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';

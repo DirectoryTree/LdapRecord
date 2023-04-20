@@ -9,8 +9,38 @@ use Mockery as m;
 
 class ModelTest extends TestCase
 {
+    public function test_get_object_guid()
+    {
+        $this->assertNull((new Entry)->getObjectGuid());
+
+        $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';
+
+        $m = new Entry(['objectguid' => $guid]);
+
+        $this->assertEquals($guid, $m->getObjectGuid());
+    }
+
+    public function test_get_object_guid_binary()
+    {
+        $hex = 'd0b40d279d24a7469cc5eb695d9af9ac';
+
+        $m = new Entry(['objectguid' => hex2bin($hex)]);
+
+        $this->assertEquals(hex2bin($hex), $m->getObjectGuid());
+        $this->assertEquals('270db4d0-249d-46a7-9cc5-eb695d9af9ac', $m->getConvertedGuid());
+    }
+
+    public function test_get_converted_guid_with_empty_values()
+    {
+        $this->assertNull((new Entry(['objectguid' => null]))->getConvertedGuid());
+        $this->assertNull((new Entry(['objectguid' => '']))->getConvertedGuid());
+        $this->assertNull((new Entry(['objectguid' => ' ']))->getConvertedGuid());
+    }
+
     public function test_get_object_sid()
     {
+        $this->assertNull((new Entry)->getObjectSid());
+
         $sid = 'S-1-5-21-977923109-2952828257-175163757-387119';
 
         $m = new Entry(['objectsid' => $sid]);
@@ -28,13 +58,11 @@ class ModelTest extends TestCase
         $this->assertEquals('S-1-5-21-1004336348-1177238915-682003330-512', $m->getConvertedSid());
     }
 
-    public function test_object_sid_is_converted()
+    public function test_get_converted_sid_with_empty_values()
     {
-        $hex = '010500000000000515000000dcf4dc3b833d2b46828ba62800020000';
-
-        $m = new Entry(['objectsid' => hex2bin($hex)]);
-
-        $this->assertEquals('S-1-5-21-1004336348-1177238915-682003330-512', $m->toArray()['objectsid'][0]);
+        $this->assertNull((new Entry(['objectsid' => null]))->getConvertedSid());
+        $this->assertNull((new Entry(['objectsid' => '']))->getConvertedSid());
+        $this->assertNull((new Entry(['objectsid' => ' ']))->getConvertedSid());
     }
 
     public function test_is_deleted()

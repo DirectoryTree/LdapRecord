@@ -4,7 +4,6 @@ namespace LdapRecord\Tests\Unit;
 
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Connection;
-use LdapRecord\ConnectionManager;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
 use LdapRecord\Events\Dispatcher;
@@ -25,15 +24,11 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->addConnection(new Connection());
+        $container->addConnection($default = new Connection());
+        $container->addConnection($other = new Connection(), 'other');
 
-        $this->assertInstanceOf(ConnectionManager::class, $container->addConnection(new Connection(), 'other'));
-
-        Container::getNewInstance();
-
-        Container::addConnection(new Connection(), 'test');
-
-        $this->assertInstanceOf(Connection::class, Container::getConnection('test'));
+        $this->assertSame($default, $container->getDefaultConnection());
+        $this->assertSame($other, $container->getConnection('other'));
     }
 
     public function test_getting_connections()
@@ -79,7 +74,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getNewInstance();
 
-        $this->assertInstanceOf(ConnectionManager::class, $container->setDefaultConnection('other'));
+        $container->setDefaultConnection('other');
 
         $container->addConnection(new Connection());
 
@@ -115,7 +110,8 @@ class ContainerTest extends TestCase
         $container->addConnection(new Connection());
         $container->addConnection(new Connection(), 'other');
 
-        $this->assertInstanceOf(ConnectionManager::class, $container->removeConnection('non-existent'));
+        $container->removeConnection('non-existent');
+
         $this->assertInstanceOf(Connection::class, $container->getConnection('default'));
         $this->assertInstanceOf(Connection::class, $container->getConnection('other'));
 

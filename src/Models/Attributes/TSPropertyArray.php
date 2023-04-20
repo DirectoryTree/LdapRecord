@@ -36,15 +36,20 @@ class TSPropertyArray
     ];
 
     /**
-     * @var string The default data that occurs before the TSPropertyArray (CtxCfgPresent with a bunch of spaces...?)
+     * The default data that occurs before the TSPropertyArray (CtxCfgPresent with a bunch of spaces...?).
      */
     protected string $defaultPreBinary = '43747843666750726573656e742020202020202020202020202020202020202020202020202020202020202020202020';
 
     /**
+     * The TSProperty array.
+     *
      * @var TSProperty[]
      */
     protected array $tsProperty = [];
 
+    /**
+     * The TSProperty signature.
+     */
     protected string $signature = self::VALID_SIGNATURE;
 
     /**

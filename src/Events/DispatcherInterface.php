@@ -30,7 +30,7 @@ interface DispatcherInterface
     public function dispatch(string|object $event, mixed $payload = [], $halt = false): mixed;
 
     /**
-     * Get all of the listeners for a given event name.
+     * Get all the listeners for a given event name.
      */
     public function getListeners(string $event): array;
 
@@ -38,4 +38,9 @@ interface DispatcherInterface
      * Remove a set of listeners from the dispatcher.
      */
     public function forget(string $event): void;
+
+    /**
+     * Remove all the listeners from the dispatcher.
+     */
+    public function forgetAll(): void;
 }

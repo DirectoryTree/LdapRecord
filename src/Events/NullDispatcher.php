@@ -57,7 +57,7 @@ class NullDispatcher implements DispatcherInterface
     }
 
     /**
-     * Get all of the listeners for a given event name.
+     * Get all the listeners for a given event name.
      */
     public function getListeners(string $event): array
     {
@@ -70,5 +70,13 @@ class NullDispatcher implements DispatcherInterface
     public function forget(string $event): void
     {
         $this->dispatcher->forget($event);
+    }
+
+    /**
+     * Remove all the listeners from the dispatcher.
+     */
+    public function forgetAll(): void
+    {
+        $this->dispatcher->forgetAll();
     }
 }

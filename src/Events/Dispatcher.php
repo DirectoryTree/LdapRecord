@@ -248,5 +248,25 @@ class Dispatcher implements DispatcherInterface
         } else {
             unset($this->listeners[$event]);
         }
+
+        foreach ($this->wildcardsCache as $key => $listeners) {
+            if (Str::is($event, $key)) {
+                unset($this->wildcardsCache[$key]);
+            }
+        }
+    }
+
+    /**
+     * Remove all the listeners from the dispatcher.
+     */
+    public function forgetAll(): void
+    {
+        $listeners = array_merge(
+            $this->listeners, $this->wildcards
+        );
+
+        foreach (array_keys($listeners) as $listener) {
+            $this->forget($listener);
+        }
     }
 }

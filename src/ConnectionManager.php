@@ -139,7 +139,7 @@ class ConnectionManager
 
         $this->connections = [];
 
-        $this->dispatcher = new Dispatcher();
+        $this->dispatcher->forgetAll();
 
         return $this;
     }
@@ -165,7 +165,7 @@ class ConnectionManager
     /**
      * Initialize the event logger.
      */
-    public function initEventLogger(): void
+    protected function initEventLogger(): void
     {
         $logger = $this->newEventLogger();
 

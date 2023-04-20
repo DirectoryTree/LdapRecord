@@ -79,7 +79,7 @@ class User extends Entry implements Authenticatable
      */
     public function isDisabled(): bool
     {
-        return $this->accountControl()->has(AccountControl::ACCOUNTDISABLE);
+        return $this->accountControl()->hasFlag(AccountControl::ACCOUNTDISABLE);
     }
 
     /**

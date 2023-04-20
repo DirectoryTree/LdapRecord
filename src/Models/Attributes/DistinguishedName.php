@@ -156,7 +156,7 @@ class DistinguishedName
             // escaped. This cannot be opted out of. Here we will unescape
             // the attribute value, then re-escape it to its original
             // representation from the server using the "dn" flag.
-            $value = $this->escape(EscapedValue::unescape($value))->dn();
+            $value = $this->escape(EscapedValue::unescape($value))->forDn();
 
             $components[] = static::makeRdn([$attribute, $value]);
         }

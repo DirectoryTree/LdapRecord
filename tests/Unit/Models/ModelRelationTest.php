@@ -225,7 +225,7 @@ class ModelRelationTest extends TestCase
 
         $model->setDn($characters);
 
-        $expected = (new EscapedValue($characters))->both()->get();
+        $expected = (new EscapedValue($characters))->forDnAndFilter()->get();
 
         $this->assertEquals(
             "(foo=$expected)",

@@ -24,7 +24,7 @@ class EscapeValueTest extends TestCase
     public function test_reserved_dn_characters_are_escaped()
     {
         foreach ($this->escapedDnCharacters as $character) {
-            $value = (new EscapedValue($character))->dn()->get();
+            $value = (new EscapedValue($character))->forDn()->get();
 
             $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_DN), $value);
         }
@@ -33,7 +33,7 @@ class EscapeValueTest extends TestCase
     public function test_reserved_filter_characters_are_escaped()
     {
         foreach ($this->escapedFilterCharacters as $character) {
-            $value = (new EscapedValue($character))->filter()->get();
+            $value = (new EscapedValue($character))->forFilter()->get();
 
             $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_FILTER), $value);
         }
@@ -44,7 +44,7 @@ class EscapeValueTest extends TestCase
         $characters = array_merge($this->escapedFilterCharacters, $this->escapedDnCharacters);
 
         foreach ($characters as $character) {
-            $value = (new EscapedValue($character))->both()->get();
+            $value = (new EscapedValue($character))->forDnAndFilter()->get();
 
             $this->assertEquals(ldap_escape($character, '', LDAP_ESCAPE_FILTER + LDAP_ESCAPE_DN), $value);
         }

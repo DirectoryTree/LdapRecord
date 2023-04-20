@@ -107,7 +107,7 @@ class DistinguishedNameBuilder
      */
     protected function makeAppendableComponent(string|array $attribute, string $value = null): array
     {
-        return [trim($attribute), $this->escape(trim($value))->dn()];
+        return [trim($attribute), $this->escape(trim($value))->forDn()];
     }
 
     /**

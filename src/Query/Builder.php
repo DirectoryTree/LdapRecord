@@ -920,7 +920,7 @@ class Builder
         // We'll escape the value if raw isn't requested.
         $value = $this->prepareWhereValue($field, $value, $raw);
 
-        $field = $this->escape($field)->both()->get();
+        $field = $this->escape($field)->forDnAndFilter()->get();
 
         $this->addFilter($boolean, compact('field', 'operator', 'value'));
 

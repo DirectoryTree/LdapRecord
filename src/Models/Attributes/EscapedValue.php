@@ -58,7 +58,7 @@ class EscapedValue
     /**
      * Get the raw (unescaped) value.
      */
-    public function raw(): mixed
+    public function getRaw(): mixed
     {
         return $this->value;
     }
@@ -76,7 +76,7 @@ class EscapedValue
     /**
      * Prepare the value to be escaped for use in a distinguished name.
      */
-    public function dn(): static
+    public function forDn(): static
     {
         $this->flags = LDAP_ESCAPE_DN;
 
@@ -86,7 +86,7 @@ class EscapedValue
     /**
      * Prepare the value to be escaped for use in a filter.
      */
-    public function filter(): static
+    public function forFilter(): static
     {
         $this->flags = LDAP_ESCAPE_FILTER;
 
@@ -96,7 +96,7 @@ class EscapedValue
     /**
      * Prepare the value to be escaped for use in a distinguished name and filter.
      */
-    public function both(): static
+    public function forDnAndFilter(): static
     {
         $this->flags = LDAP_ESCAPE_FILTER + LDAP_ESCAPE_DN;
 

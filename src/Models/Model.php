@@ -1227,7 +1227,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         $name = $this->escape(
             $name ?? $this->getFirstAttribute($attribute)
-        )->dn();
+        )->forDn();
 
         return "$attribute=$name";
     }

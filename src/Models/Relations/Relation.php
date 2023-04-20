@@ -262,7 +262,7 @@ abstract class Relation
     {
         return $this->query->escape(
             $this->getForeignValueFromModel($model)
-        )->both();
+        )->forDnAndFilter();
     }
 
     /**

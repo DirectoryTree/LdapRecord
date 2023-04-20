@@ -178,9 +178,9 @@ class UserTest extends TestCase
         $uac = (new User())->setRawAttribute('useraccountcontrol', '514')->accountControl();
 
         $this->assertSame(514, $uac->getValue());
-        $this->assertTrue($uac->has(AccountControl::ACCOUNTDISABLE));
-        $this->assertTrue($uac->has(AccountControl::NORMAL_ACCOUNT));
-        $this->assertFalse($uac->has(AccountControl::DONT_EXPIRE_PASSWORD));
+        $this->assertTrue($uac->hasFlag(AccountControl::ACCOUNTDISABLE));
+        $this->assertTrue($uac->hasFlag(AccountControl::NORMAL_ACCOUNT));
+        $this->assertFalse($uac->hasFlag(AccountControl::DONT_EXPIRE_PASSWORD));
     }
 
     public function test_user_is_disabled()

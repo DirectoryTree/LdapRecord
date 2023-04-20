@@ -7,7 +7,6 @@ use Closure;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Configuration\ConfigurationException;
 use LdapRecord\Configuration\DomainConfiguration;
-use LdapRecord\Events\Dispatcher;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;

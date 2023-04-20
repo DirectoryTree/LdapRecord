@@ -12,9 +12,9 @@ class HasOne extends Relation
      */
     public function getResults(): Collection
     {
-        $model = $this->getForeignModelByValue(
-            $this->getFirstAttributeValue($this->parent, $this->relationKey)
-        );
+        $relationValue = $this->getFirstAttributeValue($this->parent, $this->relationKey);
+
+        $model = $relationValue ? $this->getForeignModelByValue($relationValue) : null;
 
         return $this->transformResults(
             $this->parent->newCollection($model ? [$model] : null)

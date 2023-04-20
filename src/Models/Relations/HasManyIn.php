@@ -14,7 +14,7 @@ class HasManyIn extends OneToMany
         $results = $this->parent->newCollection();
 
         foreach ((array) $this->parent->getAttribute($this->relationKey) as $value) {
-            if ($foreign = $this->getForeignModelByValue($value)) {
+            if ($value && $foreign = $this->getForeignModelByValue($value)) {
                 $results->push($foreign);
             }
         }

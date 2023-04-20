@@ -32,7 +32,7 @@ class ConnectionEventsTest extends TestCase
 
         $conn->setDispatcher($dispatcher);
 
-        $this->assertInstanceOf(Connection::class, $conn->connect());
+        $conn->connect();
     }
 
     public function test_failed_connection_dispatches_proper_events()

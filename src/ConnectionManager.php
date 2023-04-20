@@ -51,25 +51,21 @@ class ConnectionManager
     /**
      * Add a new connection.
      */
-    public function addConnection(Connection $connection, ?string $name = null): static
+    public function addConnection(Connection $connection, ?string $name = null): void
     {
         $this->connections[$name ?? $this->default] = $connection;
 
         if ($this->dispatcher) {
             $connection->setDispatcher($this->dispatcher);
         }
-
-        return $this;
     }
 
     /**
      * Remove a connection by its name.
      */
-    public function removeConnection(string $name): static
+    public function removeConnection(string $name): void
     {
         unset($this->connections[$name]);
-
-        return $this;
     }
 
     /**
@@ -107,11 +103,9 @@ class ConnectionManager
     /**
      * Set the default connection by its name.
      */
-    public function setDefaultConnection(string $name): static
+    public function setDefaultConnection(string $name): void
     {
         $this->default = $name;
-
-        return $this;
     }
 
     /**
@@ -133,15 +127,13 @@ class ConnectionManager
     /**
      * Flush the manager of all instances and connections.
      */
-    public function flush(): static
+    public function flush(): void
     {
         $this->logger = null;
 
         $this->connections = [];
 
         $this->dispatcher->forgetAll();
-
-        return $this;
     }
 
     /**

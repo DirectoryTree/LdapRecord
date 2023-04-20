@@ -75,8 +75,12 @@ class Sid
     /**
      * Returns the string variant of a binary SID.
      */
-    protected function binarySidToString(string $binary): string
+    protected function binarySidToString(string $binary): ?string
     {
+        if (trim($binary) === '') {
+            return null;
+        }
+
         // Revision - 8bit unsigned int (C1)
         // Count - 8bit unsigned int (C1)
         // 2 null bytes
@@ -84,7 +88,7 @@ class Sid
         $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
 
         if (! isset($sid['id']) || ! isset($sid['rev'])) {
-            return '';
+            return null;
         }
 
         $revisionLevel = $sid['rev'];

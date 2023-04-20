@@ -108,9 +108,9 @@ class Guid
     /**
      * Returns the string variant of a binary GUID.
      */
-    protected function binaryGuidToString(string $binary = null): ?string
+    protected function binaryGuidToString(string $binary): ?string
     {
-        if (is_null($binary) || trim($binary) == '') {
+        if (trim($binary) === '') {
             return null;
         }
 

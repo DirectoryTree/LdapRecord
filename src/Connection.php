@@ -199,7 +199,7 @@ class Connection
      * @throws Auth\BindException
      * @throws LdapRecordException
      */
-    public function connect(string $username = null, string $password = null): static
+    public function connect(string $username = null, string $password = null): void
     {
         $attempt = function () use ($username, $password) {
             $this->dispatch(new Events\Connecting($this));
@@ -220,8 +220,6 @@ class Connection
 
             $this->retryOnNextHost($e, $attempt);
         }
-
-        return $this;
     }
 
     /**

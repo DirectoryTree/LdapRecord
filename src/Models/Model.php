@@ -738,8 +738,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     public function getConvertedGuid(string $guid = null): ?string
     {
         try {
-            return (string) $this->newObjectGuid(
-                $guid ?? $this->getObjectGuid()
+            return $this->newObjectGuid(
+                (string) ($guid ?? $this->getObjectGuid())
             );
         } catch (InvalidArgumentException) {
             return null;

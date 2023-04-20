@@ -149,19 +149,6 @@ class ModelEventTest extends TestCase
     }
 }
 
-class ModelEventSaveStub extends Model
-{
-    public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
-    {
-        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
-    }
-
-    public function refresh(): bool
-    {
-        return true;
-    }
-}
-
 class ModelQueryBuilderSaveStub extends Builder
 {
     public function insert(string $dn, array $attributes): bool
@@ -170,6 +157,19 @@ class ModelQueryBuilderSaveStub extends Builder
     }
 
     public function update(string $dn, array $modifications): bool
+    {
+        return true;
+    }
+}
+
+class ModelEventSaveStub extends Model
+{
+    public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
+    {
+        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
+    }
+
+    public function refresh(): bool
     {
         return true;
     }

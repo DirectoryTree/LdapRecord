@@ -694,7 +694,7 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    protected function throwNotFoundException(string $query, string $dn): void
+    protected function throwNotFoundException(string $query, string $dn = null): void
     {
         throw ObjectNotFoundException::forQuery($query, $dn);
     }

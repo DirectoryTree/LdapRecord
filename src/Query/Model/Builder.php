@@ -153,7 +153,7 @@ class Builder extends BaseBuilder
      *
      * @throws ModelNotFoundException
      */
-    protected function throwNotFoundException(string $query, string $dn): void
+    protected function throwNotFoundException(string $query, string $dn = null): void
     {
         throw ModelNotFoundException::forQuery($query, $dn);
     }

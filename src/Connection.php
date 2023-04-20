@@ -91,7 +91,7 @@ class Connection
      *
      * @throws Configuration\ConfigurationException
      */
-    public function setConfiguration(DomainConfiguration|array $config = []): static
+    public function setConfiguration(DomainConfiguration|array $config = []): void
     {
         if (! $config instanceof DomainConfiguration) {
             $config = new DomainConfiguration($config);
@@ -102,28 +102,22 @@ class Connection
         $this->hosts = $this->configuration->get('hosts');
 
         $this->host = reset($this->hosts);
-
-        return $this;
     }
 
     /**
      * Set the LDAP connection.
      */
-    public function setLdapConnection(LdapInterface $ldap): static
+    public function setLdapConnection(LdapInterface $ldap): void
     {
         $this->ldap = $ldap;
-
-        return $this;
     }
 
     /**
      * Set the event dispatcher.
      */
-    public function setDispatcher(DispatcherInterface $dispatcher): static
+    public function setDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;
-
-        return $this;
     }
 
     /**
@@ -168,11 +162,9 @@ class Connection
     /**
      * Set the cache store.
      */
-    public function setCache(CacheInterface $store): static
+    public function setCache(CacheInterface $store): void
     {
         $this->cache = new Cache($store);
-
-        return $this;
     }
 
     /**

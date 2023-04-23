@@ -3,16 +3,28 @@
 namespace LdapRecord\Models\Relations;
 
 use Closure;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Query\Model\Builder;
 
 abstract class OneToMany extends Relation
 {
     /**
+     * The model to use for attaching / detaching.
+     */
+    protected ?Model $using = null;
+
+    /**
      * The relation to merge results with.
      */
     protected ?Relation $with = null;
+
+    /**
+     * The attribute key to use for attaching / detaching.
+     */
+    protected ?string $usingKey = null;
 
     /**
      * The name of the relationship.
@@ -25,6 +37,18 @@ abstract class OneToMany extends Relation
     protected bool $recursive = false;
 
     /**
+     * The exceptions to bypass for each relation operation.
+     */
+    protected array $bypass = [
+        'attach' => [
+            'Already exists', 'Type or value exists',
+        ],
+        'detach' => [
+            'No such attribute', 'Server is unwilling to perform',
+        ],
+    ];
+
+    /**
      * Constructor.
      */
     public function __construct(Builder $query, Model $parent, array|string $related, string $relationKey, string $foreignKey, string $relationName)
@@ -32,6 +56,17 @@ abstract class OneToMany extends Relation
         $this->relationName = $relationName;
 
         parent::__construct($query, $parent, $related, $relationKey, $foreignKey);
+    }
+
+    /**
+     * Set the model and attribute to use for attaching / detaching.
+     */
+    public function using(Model $using, string $usingKey): static
+    {
+        $this->using = $using;
+        $this->usingKey = $usingKey;
+
+        return $this;
     }
 
     /**
@@ -95,6 +130,183 @@ abstract class OneToMany extends Relation
     public function getRelationName(): string
     {
         return $this->relationName;
+    }
+
+    /**
+     * Attach a model to the relation.
+     */
+    public function attach(Model|string $model): Model|string|false
+    {
+        return $this->attemptFailableOperation(
+            $this->buildAttachCallback($model),
+            $this->bypass['attach'],
+            $model
+        );
+    }
+
+    /**
+     * Build the attach callback.
+     */
+    protected function buildAttachCallback(Model|string $model): Closure
+    {
+        return function () use ($model) {
+            $foreign = $this->getAttachableForeignValue($model);
+
+            if ($this->using) {
+                return $this->using->addAttribute($this->usingKey, $foreign);
+            }
+
+            if (! $model instanceof Model) {
+                $model = $this->getForeignModelByValueOrFail($model);
+            }
+
+            return $model->addAttribute($this->relationKey, $foreign);
+        };
+    }
+
+    /**
+     * Get the foreign model by the given value, or fail.
+     *
+     * @throws ModelNotFoundException
+     */
+    protected function getForeignModelByValueOrFail(string $model): Model
+    {
+        if (! is_null($model = $this->getForeignModelByValue($model))) {
+            return $model;
+        }
+
+        throw ModelNotFoundException::forQuery(
+            $this->query->getUnescapedQuery(),
+            $this->query->getDn()
+        );
+    }
+
+    /**
+     * Attach a collection of models to the parent instance.
+     */
+    public function attachMany(iterable $models): iterable
+    {
+        foreach ($models as $model) {
+            $this->attach($model);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Detach the model from the relation.
+     */
+    public function detach(Model|string $model): Model|string|false
+    {
+        return $this->attemptFailableOperation(
+            $this->buildDetachCallback($model),
+            $this->bypass['detach'],
+            $model
+        );
+    }
+
+    /**
+     * Detach the model or delete the parent if the relation is empty.
+     */
+    public function detachOrDeleteParent(Model|string $model): void
+    {
+        $count = $this->onceWithoutMerging(function () {
+            return $this->count();
+        });
+
+        if ($count <= 1) {
+            $this->getParent()->delete();
+
+            return;
+        }
+
+        $this->detach($model);
+    }
+
+    /**
+     * Build the detach callback.
+     */
+    protected function buildDetachCallback(Model|string $model): Closure
+    {
+        return function () use ($model) {
+            $foreign = $this->getAttachableForeignValue($model);
+
+            if ($this->using) {
+                return $this->using->removeAttribute($this->usingKey, $foreign);
+            }
+
+            if (! $model instanceof Model) {
+                $model = $this->getForeignModelByValueOrFail($model);
+            }
+
+            $model->removeAttribute($this->relationKey, $foreign);
+        };
+    }
+
+    /**
+     * Get the attachable foreign value from the model.
+     */
+    protected function getAttachableForeignValue(Model|string $model): string
+    {
+        if ($model instanceof Model) {
+            return $this->using
+                ? $this->getForeignValueFromModel($model)
+                : $this->getParentForeignValue();
+        }
+
+        return $this->using ? $model : $this->getParentForeignValue();
+    }
+
+    /**
+     * Attempt a failable operation and return the value if successful.
+     *
+     * If a bypassable exception is encountered, the value will be returned.
+     *
+     * @throws LdapRecordException
+     */
+    protected function attemptFailableOperation(Closure $operation, string|array $bypass, mixed $value): mixed
+    {
+        try {
+            $operation();
+
+            return $value;
+        } catch (LdapRecordException $e) {
+            if ($this->errorContainsMessage($e->getMessage(), $bypass)) {
+                return $value;
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Detach all relation models.
+     */
+    public function detachAll(): Collection
+    {
+        return $this->onceWithoutMerging(function () {
+            return $this->get()->each(function (Model $model) {
+                $this->detach($model);
+            });
+        });
+    }
+
+    /**
+     * Detach all relation models or delete the model if its relation is empty.
+     */
+    public function detachAllOrDelete(): Collection
+    {
+        return $this->onceWithoutMerging(function () {
+            return $this->get()->each(function (Model $model) {
+                $relation = $model->getRelation($this->relationName);
+
+                if ($relation && $relation->count() >= 1) {
+                    $model->delete();
+                } else {
+                    $this->detach($model);
+                }
+            });
+        });
     }
 
     /**

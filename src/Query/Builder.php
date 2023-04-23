@@ -153,11 +153,9 @@ class Builder
      */
     public function newInstance(string $baseDn = null): static
     {
-        // We'll set the base DN of the new Builder so
-        // developers don't need to do this manually.
-        $dn = is_null($baseDn) ? $this->getDn() : $baseDn;
-
-        return (new static($this->connection))->setDn($dn);
+        return (new static($this->connection))->setDn(
+            is_null($baseDn) ? $this->getDn() : $baseDn
+        );
     }
 
     /**
@@ -1379,9 +1377,9 @@ class Builder
     }
 
     /**
-     * Create attributes on the entry in the directory.
+     * Add attributes to an entry in the directory.
      */
-    public function insertAttributes(string $dn, array $attributes): bool
+    public function add(string $dn, array $attributes): bool
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modAdd($dn, $attributes);
@@ -1399,9 +1397,9 @@ class Builder
     }
 
     /**
-     * Update an entries attribute in the directory.
+     * Replace an entry's attributes in the directory.
      */
-    public function updateAttributes(string $dn, array $attributes): bool
+    public function replace(string $dn, array $attributes): bool
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modReplace($dn, $attributes);
@@ -1419,9 +1417,9 @@ class Builder
     }
 
     /**
-     * Delete attributes on the entry in the directory.
+     * Remove attributes on the entry in the directory.
      */
-    public function deleteAttributes(string $dn, array $attributes): bool
+    public function remove(string $dn, array $attributes): bool
     {
         return $this->connection->run(function (LdapInterface $ldap) use ($dn, $attributes) {
             return $ldap->modDelete($dn, $attributes);

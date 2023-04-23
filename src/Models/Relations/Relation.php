@@ -251,8 +251,8 @@ abstract class Relation
     protected function getForeignModelByValue(string $value): ?Model
     {
         return $this->foreignKeyIsDistinguishedName()
-            ? $this->query->find($value)
-            : $this->query->findBy($this->foreignKey, $value);
+            ? $this->query->clearFilters()->find($value)
+            : $this->query->clearFilters()->findBy($this->foreignKey, $value);
     }
 
     /**

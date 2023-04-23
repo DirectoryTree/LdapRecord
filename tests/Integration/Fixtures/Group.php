@@ -2,18 +2,18 @@
 
 namespace LdapRecord\Tests\Integration\Fixtures;
 
-use LdapRecord\Models\OpenLDAP\Group as OpenLDAPGroup;
-use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Models\OpenLDAP\Entry;
+use LdapRecord\Models\Relations\HasManyIn;
 
-class Group extends OpenLDAPGroup
+class Group extends Entry
 {
     public static array $objectClasses = [
         'top',
         'posixGroup',
     ];
 
-    public function members(): HasMany
+    public function users(): HasManyIn
     {
-        return $this->hasMany([User::class, Group::class], 'memberUid');
+        return $this->hasManyIn(User::class, 'memberuid', 'uid')->using($this, 'memberuid');
     }
 }

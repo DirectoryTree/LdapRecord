@@ -931,18 +931,18 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Create an attribute on the model.
+     * Add an attribute on the model with the given value.
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function createAttribute(string $attribute, mixed $value): void
+    public function addAttribute(string $attribute, mixed $value): void
     {
         $this->assertExists();
 
         $this->dispatch(['saving', 'updating']);
 
-        $this->newQuery()->insertAttributes($this->dn, [$attribute => (array) $value]);
+        $this->newQuery()->add($this->dn, [$attribute => (array) $value]);
 
         $this->addAttributeValue($attribute, $value);
 
@@ -968,13 +968,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function updateAttribute(string $attribute, mixed $value): void
+    public function replaceAttribute(string $attribute, mixed $value): void
     {
         $this->assertExists();
 
         $this->dispatch(['saving', 'updating']);
 
-        $this->newQuery()->updateAttributes($this->dn, [$attribute => (array) $value]);
+        $this->newQuery()->replace($this->dn, [$attribute => (array) $value]);
 
         $this->addAttributeValue($attribute, $value);
 
@@ -1058,20 +1058,31 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     }
 
     /**
-     * Delete an attribute on the model.
+     * Remove an attribute on the model.
      *
-     * Delete specific values in attributes:
+     * @throws ModelDoesNotExistException
+     * @throws \LdapRecord\LdapRecordException
+     */
+    public function removeAttribute(string $attribute, mixed $value): void
+    {
+        $this->removeAttributes([$attribute => $value]);
+    }
+
+    /**
+     * Remove an attribute on the model.
+     *
+     * Remove specific values in attributes:
      *
      *     ["memberuid" => "jdoe"]
      *
-     * Delete an entire attribute:
+     * Remove an entire attribute:
      *
      *     ["memberuid" => []]
      *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function deleteAttribute(array|string $attributes): void
+    public function removeAttributes(array|string $attributes): void
     {
         $this->assertExists();
 
@@ -1079,7 +1090,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
         $this->dispatch(['saving', 'updating']);
 
-        $this->newQuery()->deleteAttributes($this->dn, $attributes);
+        $this->newQuery()->remove($this->dn, $attributes);
 
         foreach ($attributes as $attribute => $value) {
             // If the attribute value is empty, we can assume the

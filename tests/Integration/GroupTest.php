@@ -32,23 +32,9 @@ class GroupTest extends TestCase
         parent::tearDown();
     }
 
-    protected function createGroup(array $attributes = []): Group
-    {
-        $group = (new Group())
-            ->inside($this->ou)
-            ->fill(array_merge([
-                'cn' => 'Foo',
-                'gidNumber' => 500,
-            ], $attributes));
-
-        $group->save();
-
-        return $group;
-    }
-
     public function test_it_can_be_created()
     {
-        $group = $this->createGroup();
+        $group = $this->createGroup($this->ou);
 
         $this->assertTrue($group->exists);
         $this->assertTrue($group->wasRecentlyCreated);
@@ -58,55 +44,59 @@ class GroupTest extends TestCase
 
     public function test_it_can_attach_members()
     {
-        $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo = $this->createGroup(['cn' => 'Bar']);
+        $group = $this->createGroup($this->ou, ['cn' => 'Foo']);
+        $userOne = $this->createUser($this->ou, ['cn' => 'Bar']);
+        $userTwo = $this->createUser($this->ou, ['cn' => 'Baz']);
 
-        $groupOne->members()->attach($groupTwo);
+        $group->users()->attach($userOne);
+        $group->users()->attach($userTwo);
 
-        $this->assertCount(1, $members = $groupOne->members()->get());
-        $this->assertInstanceOf(Group::class, $member = $members->first());
-        $this->assertEquals('cn=Bar,ou=Group Test OU,dc=local,dc=com', $member->getDn());
-        $this->assertEquals(['cn=Foo,ou=Group Test OU,dc=local,dc=com'], $groupTwo->memberuid);
+        $this->assertCount(2, $users = $group->users()->get());
+
+        $this->assertEquals([
+            $userOne->getFirstAttribute('uid'),
+            $userTwo->getFirstAttribute('uid'),
+        ], $users->pluck('uid.0')->toArray());
     }
 
     public function test_it_can_detach_members()
     {
-        $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo = $this->createGroup(['cn' => 'Bar']);
+        $group = $this->createGroup($this->ou, ['cn' => 'Foo']);
+        $user = $this->createUser($this->ou, ['cn' => 'Bar']);
 
-        $groupOne->members()->attach($groupTwo);
+        $group->users()->attach($user);
 
-        $this->assertCount(1, $groupOne->members()->get());
+        $this->assertCount(1, $group->users()->get());
 
-        $groupOne->members()->detach($groupTwo);
+        $group->users()->detach($user);
 
-        $this->assertCount(0, $groupOne->members()->get());
+        $this->assertCount(0, $group->users()->get());
     }
 
     public function test_it_can_detach_or_delete()
     {
-        $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo = $this->createGroup(['cn' => 'Bar']);
+        $group = $this->createGroup($this->ou, ['cn' => 'Foo']);
+        $user = $this->createUser($this->ou, ['cn' => 'Bar']);
 
-        $groupOne->members()->attach($groupTwo);
+        $group->users()->attach($user);
 
-        $this->assertTrue($groupOne->exists);
+        $this->assertTrue($group->exists);
 
-        $groupOne->members()->detachOrDeleteParent($groupTwo);
+        $group->users()->detachOrDeleteParent($user);
 
-        $this->assertFalse($groupOne->exists);
+        $this->assertFalse($group->exists);
     }
 
-    public function test_it_can_detach_or_delete_with_multiple_groups()
+    public function test_it_can_detach_or_delete_with_multiple_users()
     {
-        $groupOne = $this->createGroup(['cn' => 'Foo']);
-        $groupTwo = $this->createGroup(['cn' => 'Bar']);
-        $groupThree = $this->createGroup(['cn' => 'Baz']);
+        $group = $this->createGroup($this->ou, ['cn' => 'Foo']);
+        $userOne = $this->createUser($this->ou, ['cn' => 'Bar']);
+        $userTwo = $this->createUser($this->ou, ['cn' => 'Baz']);
 
-        $groupOne->members()->attachMany([$groupTwo, $groupThree]);
+        $group->users()->attachMany([$userOne, $userTwo]);
 
-        $groupOne->members()->detachOrDeleteParent($groupTwo);
+        $group->users()->detachOrDeleteParent($userOne);
 
-        $this->assertTrue($groupOne->exists);
+        $this->assertTrue($group->exists);
     }
 }

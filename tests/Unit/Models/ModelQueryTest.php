@@ -157,7 +157,7 @@ class ModelQueryTest extends TestCase
         $model->shouldReceive('newQuery')->once()->andReturn($query);
 
         $model->setRawAttributes(['dn' => 'foo']);
-        $model->createAttribute('bar', 'baz');
+        $model->addAttribute('bar', 'baz');
     }
 
     public function test_create_attribute_without_existing_model()
@@ -166,7 +166,7 @@ class ModelQueryTest extends TestCase
 
         $model = new Entry();
 
-        $model->createAttribute('foo', 'bar');
+        $model->addAttribute('foo', 'bar');
     }
 
     public function test_update()
@@ -236,7 +236,7 @@ class ModelQueryTest extends TestCase
 
         $model->setRawAttributes(['dn' => 'foo']);
 
-        $model->updateAttribute('bar', 'baz');
+        $model->replaceAttribute('bar', 'baz');
     }
 
     public function test_update_attribute_without_existing_model()
@@ -245,7 +245,7 @@ class ModelQueryTest extends TestCase
 
         $model = new Entry();
 
-        $model->updateAttribute('foo', 'bar');
+        $model->replaceAttribute('foo', 'bar');
     }
 
     public function test_delete()
@@ -297,12 +297,12 @@ class ModelQueryTest extends TestCase
             'bar' => ['baz', 'zal', 'zar'],
         ]);
 
-        $model->deleteAttribute('foo');
+        $model->removeAttributes('foo');
 
         $this->assertEquals(['bar' => ['baz', 'zal', 'zar']], $model->getAttributes());
         $this->assertEquals(['bar' => ['baz', 'zal', 'zar']], $model->getOriginal());
 
-        $model->deleteAttribute(['bar' => ['zal']]);
+        $model->removeAttributes(['bar' => ['zal']]);
 
         $this->assertEquals(['bar' => ['baz', 'zar']], $model->getAttributes());
         $this->assertEquals(['bar' => ['baz', 'zar']], $model->getOriginal());
@@ -323,7 +323,7 @@ class ModelQueryTest extends TestCase
 
         $model->setRawAttributes(['dn' => 'dn']);
 
-        $model->deleteAttribute(['foo', 'bar' => 'zar']);
+        $model->removeAttributes(['foo', 'bar' => 'zar']);
     }
 
     public function test_delete_attribute_without_existing_model()

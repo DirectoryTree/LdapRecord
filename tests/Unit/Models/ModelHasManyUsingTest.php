@@ -16,8 +16,8 @@ class ModelHasManyUsingTest extends TestCase
         $relation = $this->getRelation();
 
         $using = $relation->getParent();
-        $using->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnSelf();
-        $using->shouldReceive('createAttribute')->once()->with('member', 'bar')->andReturnSelf();
+        $using->shouldReceive('addAttribute')->once()->with('member', 'foo')->andReturnSelf();
+        $using->shouldReceive('addAttribute')->once()->with('member', 'bar')->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');
 
@@ -33,8 +33,8 @@ class ModelHasManyUsingTest extends TestCase
         $relation = $this->getRelation();
 
         $using = $relation->getParent();
-        $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnSelf();
-        $using->shouldReceive('deleteAttribute')->once()->with(['member' => 'bar'])->andReturnSelf();
+        $using->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnSelf();
+        $using->shouldReceive('removeAttribute')->once()->with('member', 'bar')->andReturnSelf();
 
         $relation->using($relation->getParent(), 'member');
 
@@ -48,7 +48,7 @@ class ModelHasManyUsingTest extends TestCase
     protected function getRelation(): HasMany
     {
         $mockBuilder = m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('clearFilters')->zeroOrMoreTimes()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 

@@ -64,7 +64,7 @@ class ModelHasOneTest extends TestCase
     protected function getRelation(): HasOne
     {
         $mockBuilder = m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('clearFilters')->zeroOrMoreTimes()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 

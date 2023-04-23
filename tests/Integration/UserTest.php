@@ -35,28 +35,9 @@ class UserTest extends TestCase
         parent::tearDown();
     }
 
-    protected function createUser(array $attributes = []): User
-    {
-        $user = (new User())
-            ->inside($this->ou)
-            ->fill(array_merge([
-                'uid' => 'fbar',
-                'cn' => 'Foo',
-                'sn' => 'Bar',
-                'givenName' => 'Foo',
-                'uidNumber' => 1000,
-                'gidNumber' => 1000,
-                'homeDirectory' => '/foo',
-            ], $attributes));
-
-        $user->save();
-
-        return $user;
-    }
-
     public function test_it_can_be_created()
     {
-        $user = $this->createUser();
+        $user = $this->createUser($this->ou, ['cn' => 'Foo']);
 
         $this->assertEquals('cn=Foo,ou=User Test OU,dc=local,dc=com', $user->getDn());
 
@@ -69,9 +50,38 @@ class UserTest extends TestCase
         $this->assertTrue(Guid::isValid($user->getObjectGuid()));
     }
 
+    public function test_it_can_be_added_to_groups()
+    {
+        $user = $this->createUser($this->ou);
+
+        $group = $this->createGroup($this->ou);
+
+        $user->groups()->attach($group);
+
+        $this->assertEquals(1, $group->users()->count());
+        $this->assertEquals(1, $user->groups()->count());
+    }
+
+    public function test_it_can_be_removed_from_groups()
+    {
+        $user = $this->createUser($this->ou);
+
+        $group = $this->createGroup($this->ou);
+
+        $user->groups()->attach($group);
+
+        $this->assertEquals(1, $group->users()->count());
+        $this->assertEquals(1, $user->groups()->count());
+
+        $user->groups()->detach($group);
+
+        $this->assertEquals(0, $group->users()->count());
+        $this->assertEquals(0, $user->groups()->count());
+    }
+
     public function test_it_can_set_password()
     {
-        $user = $this->createUser();
+        $user = $this->createUser($this->ou);
 
         $user->fill(['password' => 'secret'])->save();
 
@@ -91,7 +101,7 @@ class UserTest extends TestCase
 
     public function test_it_can_change_password()
     {
-        $user = $this->createUser();
+        $user = $this->createUser($this->ou);
 
         $user->fill(['password' => 'secret'])->save();
 
@@ -114,7 +124,7 @@ class UserTest extends TestCase
 
     public function test_it_can_bind_and_then_change_password()
     {
-        $user = $this->createUser();
+        $user = $this->createUser($this->ou);
 
         $user->fill(['password' => 'secret'])->save();
 
@@ -139,7 +149,7 @@ class UserTest extends TestCase
 
     public function test_it_throws_exception_when_providing_an_invalid_password_during_change()
     {
-        $user = $this->createUser();
+        $user = $this->createUser($this->ou);
 
         $user->fill(['password' => 'secret'])->save();
 

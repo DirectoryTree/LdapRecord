@@ -168,12 +168,12 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('getDn')->andReturn('foo');
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnTrue();
+        $related->shouldReceive('addAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $this->assertEquals($relation->attach($related), $related);
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('createAttribute')->once()->with('member', 'foo')->andReturnTrue();
+        $related->shouldReceive('addAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
@@ -189,12 +189,12 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('getDn')->andReturn('foo');
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
+        $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $this->assertEquals($relation->detach($related), $related);
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
+        $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
@@ -213,7 +213,7 @@ class ModelHasManyTest extends TestCase
         $related = m::mock(Entry::class);
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
-        $related->shouldReceive('deleteAttribute')->once()->with(['member' => 'foo'])->andReturnTrue();
+        $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
@@ -244,7 +244,7 @@ class ModelHasManyTest extends TestCase
     protected function getRelation(): HasMany
     {
         $mockBuilder = m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('clearFilters')->zeroOrMoreTimes()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 

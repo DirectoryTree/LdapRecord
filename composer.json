@@ -43,7 +43,8 @@
         "phpunit/phpunit": "^9.0",
         "mockery/mockery": "^1.0",
         "spatie/ray": "^1.24",
-        "laravel/pint": "^1.6"
+        "laravel/pint": "^1.6",
+        "fakerphp/faker": "^1.21"
     },
     "archive": {
         "exclude": [

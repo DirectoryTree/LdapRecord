@@ -99,4 +99,19 @@ class GroupTest extends TestCase
 
         $this->assertTrue($group->exists);
     }
+
+    public function test_it_can_detach_many_users()
+    {
+        $group = $this->createGroup($this->ou, ['cn' => 'Foo']);
+        $userOne = $this->createUser($this->ou, ['cn' => 'Bar']);
+        $userTwo = $this->createUser($this->ou, ['cn' => 'Baz']);
+
+        $group->users()->attachMany([$userOne, $userTwo]);
+
+        $this->assertEquals(2, $group->users()->count());
+
+        $group->users()->detachMany([$userOne, $userTwo]);
+
+        $this->assertEquals(0, $group->users()->count());
+    }
 }

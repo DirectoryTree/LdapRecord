@@ -1063,7 +1063,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function removeAttribute(string $attribute, mixed $value): void
+    public function removeAttribute(string $attribute, mixed $value = null): void
     {
         $this->removeAttributes([$attribute => $value]);
     }

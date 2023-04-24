@@ -170,7 +170,7 @@ class ModelHasManyTest extends TestCase
         $related = m::mock(Entry::class);
         $related->shouldReceive('addAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
-        $this->assertEquals($relation->attach($related), $related);
+        $relation->attach($related);
 
         $related = m::mock(Entry::class);
         $related->shouldReceive('addAttribute')->once()->with('member', 'foo')->andReturnTrue();
@@ -178,7 +178,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
 
-        $this->assertEquals('bar', $relation->attach('bar'));
+        $relation->attach('bar');
     }
 
     public function test_detach()
@@ -191,7 +191,7 @@ class ModelHasManyTest extends TestCase
         $related = m::mock(Entry::class);
         $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();
 
-        $this->assertEquals($relation->detach($related), $related);
+        $relation->detach($related);
 
         $related = m::mock(Entry::class);
         $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();
@@ -199,7 +199,7 @@ class ModelHasManyTest extends TestCase
         $query = $relation->getQuery();
         $query->shouldReceive('find')->once()->with('bar')->andReturn($related);
 
-        $this->assertEquals('bar', $relation->detach('bar'));
+        $relation->detach('bar');
     }
 
     public function test_detaching_all()

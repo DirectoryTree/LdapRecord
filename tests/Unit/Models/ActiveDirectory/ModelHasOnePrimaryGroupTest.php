@@ -23,7 +23,8 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
         $group = new Group(['objectsid' => 'S-1-111-222-513']);
 
-        $this->assertEquals($group, $user->primaryGroup()->attach($group));
+        $user->primaryGroup()->attach($group);
+
         $this->assertEquals('513', $user->getFirstAttribute('primarygroupid'));
     }
 
@@ -33,7 +34,8 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
         $this->assertEquals('513', $user->getFirstAttribute('primarygroupid'));
 
-        $this->assertNull($user->primaryGroup()->detach());
+        $user->primaryGroup()->detach();
+
         $this->assertNull($user->getFirstAttribute('primarygroupid'));
     }
 }

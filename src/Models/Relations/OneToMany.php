@@ -328,7 +328,7 @@ abstract class OneToMany extends Relation
     }
 
     /**
-     * Get the results for the models relation recursively.
+     * Get the results for the model's relation recursively.
      *
      * @param  string[]  $loaded  The distinguished names of models already loaded
      */
@@ -344,7 +344,7 @@ abstract class OneToMany extends Relation
         foreach ($results as $model) {
             $loaded[] = $model->getDn();
 
-            // Finally, we will fetch the related models relations,
+            // Finally, we will fetch the related model's relations,
             // passing along our loaded models, to ensure we do
             // not attempt fetching already loaded relations.
             $results = $results->merge(

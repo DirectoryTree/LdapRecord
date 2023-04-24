@@ -142,7 +142,7 @@ class ModelQueryTest extends TestCase
         (new Entry())->create();
     }
 
-    public function test_create_attribute()
+    public function test_add_attribute()
     {
         $expectation = LdapFake::operation('modAdd')
             ->once()
@@ -160,7 +160,7 @@ class ModelQueryTest extends TestCase
         $model->addAttribute('bar', 'baz');
     }
 
-    public function test_create_attribute_without_existing_model()
+    public function test_add_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
 
@@ -220,7 +220,7 @@ class ModelQueryTest extends TestCase
         $model->update();
     }
 
-    public function test_update_attribute()
+    public function test_replace_attribute()
     {
         $expectation = LdapFake::operation('modReplace')
             ->once()
@@ -239,7 +239,7 @@ class ModelQueryTest extends TestCase
         $model->replaceAttribute('bar', 'baz');
     }
 
-    public function test_update_attribute_without_existing_model()
+    public function test_replace_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);
 
@@ -278,7 +278,7 @@ class ModelQueryTest extends TestCase
         $model->delete();
     }
 
-    public function test_delete_attribute()
+    public function test_remove_attribute()
     {
         $ldap = (new LdapFake())->expect([
             'bind' => new LdapResultResponse(),
@@ -308,7 +308,7 @@ class ModelQueryTest extends TestCase
         $this->assertEquals(['bar' => ['baz', 'zar']], $model->getOriginal());
     }
 
-    public function test_delete_attribute_with_array()
+    public function test_remove_attribute_with_array()
     {
         $ldap = (new LdapFake())
             ->expect([

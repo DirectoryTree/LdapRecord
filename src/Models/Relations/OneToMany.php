@@ -189,7 +189,6 @@ abstract class OneToMany extends Relation
         foreach ($models as $model) {
             $this->attach($model);
         }
-
     }
 
     /**

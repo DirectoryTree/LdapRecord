@@ -135,13 +135,23 @@ abstract class OneToMany extends Relation
     /**
      * Attach a model to the relation.
      */
-    public function attach(Model|string $model): Model|string|false
+    public function attach(Model|string $model): void
     {
-        return $this->attemptFailableOperation(
+        $this->attemptFailableOperation(
             $this->buildAttachCallback($model),
             $this->bypass['attach'],
             $model
         );
+    }
+
+    /**
+     * Attach a collection of models to the parent instance.
+     */
+    public function attachMany(iterable $models): void
+    {
+        foreach ($models as $model) {
+            $this->attach($model);
+        }
     }
 
     /**
@@ -160,7 +170,7 @@ abstract class OneToMany extends Relation
                 $model = $this->getForeignModelByValueOrFail($model);
             }
 
-            return $model->addAttribute($this->relationKey, $foreign);
+            $model->addAttribute($this->relationKey, $foreign);
         };
     }
 
@@ -182,21 +192,11 @@ abstract class OneToMany extends Relation
     }
 
     /**
-     * Attach a collection of models to the parent instance.
-     */
-    public function attachMany(iterable $models): void
-    {
-        foreach ($models as $model) {
-            $this->attach($model);
-        }
-    }
-
-    /**
      * Detach the model from the relation.
      */
-    public function detach(Model|string $model): Model|string|false
+    public function detach(Model|string $model): void
     {
-        return $this->attemptFailableOperation(
+        $this->attemptFailableOperation(
             $this->buildDetachCallback($model),
             $this->bypass['detach'],
             $model

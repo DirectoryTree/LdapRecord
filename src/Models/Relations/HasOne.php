@@ -23,24 +23,18 @@ class HasOne extends Relation
 
     /**
      * Attach a model instance to the parent model.
-     *
-     * @throws \LdapRecord\LdapRecordException
      */
-    public function attach(Model|string $model): Model|string
+    public function attach(Model|string $model): void
     {
         $foreign = $model instanceof Model
             ? $this->getForeignValueFromModel($model)
             : $model;
 
         $this->parent->setAttribute($this->relationKey, $foreign)->save();
-
-        return $model;
     }
 
     /**
      * Detach the related model from the parent.
-     *
-     * @throws \LdapRecord\LdapRecordException
      */
     public function detach(): void
     {

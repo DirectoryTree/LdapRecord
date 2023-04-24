@@ -184,13 +184,12 @@ abstract class OneToMany extends Relation
     /**
      * Attach a collection of models to the parent instance.
      */
-    public function attachMany(iterable $models): iterable
+    public function attachMany(iterable $models): void
     {
         foreach ($models as $model) {
             $this->attach($model);
         }
 
-        return $models;
     }
 
     /**
@@ -203,6 +202,16 @@ abstract class OneToMany extends Relation
             $this->bypass['detach'],
             $model
         );
+    }
+
+    /**
+     * Detach a collection of models from the parent instance.
+     */
+    public function detachMany(iterable $models): void
+    {
+        foreach ($models as $model) {
+            $this->detach($model);
+        }
     }
 
     /**

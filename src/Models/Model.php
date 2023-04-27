@@ -59,10 +59,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
 
     /**
      * The connection container instance.
-     *
-     * @var Container
      */
-    protected static $container;
+    protected static ?Container $container = null;
 
     /**
      * The connection name for the model.
@@ -75,6 +73,11 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
     protected string $guidKey = 'objectguid';
 
     /**
+     * The array of booted models.
+     */
+    protected static array $booted = [];
+
+    /**
      * Contains the models modifications.
      */
     protected array $modifications = [];
@@ -83,11 +86,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      * The array of global scopes on the model.
      */
     protected static array $globalScopes = [];
-
-    /**
-     * The array of booted models.
-     */
-    protected static array $booted = [];
 
     /**
      * Constructor.
@@ -146,7 +144,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
      */
     public static function __callStatic(string $method, array $parameters): mixed
     {
-        return (new static())->$method(...$parameters);
+        return (new static)->$method(...$parameters);
     }
 
     /**

@@ -20,6 +20,15 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Container::class, Container::getInstance());
     }
 
+    public function test_set_as_global()
+    {
+        $container = new Container();
+
+        $container->setAsGlobal();
+
+        $this->assertSame(Container::getInstance(), $container);
+    }
+
     public function test_adding_connections()
     {
         $container = Container::getInstance();

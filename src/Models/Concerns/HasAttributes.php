@@ -683,12 +683,30 @@ trait HasAttributes
      */
     public function addAttributeValue(string $key, mixed $value): static
     {
-        return $this->setAttribute($key, array_unique(
+        return $this->setRawAttribute($key, array_unique(
             array_merge(
-                Arr::wrap($this->getAttribute($key)),
+                $this->getRawAttribute($key, []),
                 Arr::wrap($value)
             )
         ));
+    }
+
+    /**
+     * Remove a unique value from the given attribute.
+     */
+    public function removeAttributeValue(string $key, mixed $value): static
+    {
+        $values = $this->getRawAttribute($key, []);
+
+        foreach (Arr::wrap($value) as $value) {
+            $index = array_search($value, $values);
+
+            if ($index !== false) {
+                unset($values[$index]);
+            }
+        }
+
+        return $this->setRawAttribute($key, array_values($values));
     }
 
     /**

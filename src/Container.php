@@ -36,7 +36,7 @@ class Container
      */
     public static function getNewInstance(): static
     {
-        return static::setInstance(new static());
+        return static::setInstance(new static);
     }
 
     /**
@@ -60,7 +60,15 @@ class Container
      */
     public function __call(string $method, array $parameters): mixed
     {
-        return $this->getConnectionManager()->{$method}(...$parameters);
+        return $this->manager->{$method}(...$parameters);
+    }
+
+    /**
+     * Set the current container instance available globally.
+     */
+    public function setAsGlobal(): void
+    {
+        static::setInstance($this);
     }
 
     /**

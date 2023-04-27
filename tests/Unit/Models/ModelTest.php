@@ -267,6 +267,30 @@ class ModelTest extends TestCase
 
         $model->addAttributeValue('foo', 'bar');
         $this->assertEquals(['bar', 'baz', 'zal'], $model->foo);
+
+        $this->assertEquals([
+            (new BatchModification('foo', LDAP_MODIFY_BATCH_ADD, $model->foo))->get(),
+        ], $model->getModifications());
+    }
+
+    public function test_removing_attribute_values()
+    {
+        $model = new Entry();
+        $model->foo = ['bar', 'baz', 'zal'];
+
+        $model->removeAttributeValue('missing', 'foo');
+        $this->assertEquals([], $model->missing);
+
+        $model->removeAttributeValue('foo', 'bar');
+        $this->assertEquals(['baz', 'zal'], $model->foo);
+
+        $model->removeAttributeValue('foo', 'invalid');
+        $this->assertEquals(['baz', 'zal'], $model->foo);
+
+        $model->removeAttributeValue('foo', ['baz', 'zal', 'zee']);
+        $this->assertEquals([], $model->foo);
+
+        $this->assertEmpty($model->getModifications());
     }
 
     public function test_attribute_keys_are_normalized()

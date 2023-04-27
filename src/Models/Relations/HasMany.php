@@ -3,15 +3,12 @@
 namespace LdapRecord\Models\Relations;
 
 use Closure;
-use LdapRecord\DetectsErrors;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Model\Builder;
 
 class HasMany extends OneToMany
 {
-    use DetectsErrors;
-
     /**
      * The pagination page size.
      */

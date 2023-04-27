@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Relations;
 
 use Closure;
+use LdapRecord\DetectsErrors;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
@@ -11,6 +12,8 @@ use LdapRecord\Query\Model\Builder;
 
 abstract class OneToMany extends Relation
 {
+    use DetectsErrors;
+
     /**
      * The model to use for attaching / detaching.
      */

@@ -136,7 +136,7 @@ abstract class OneToMany extends Relation
     }
 
     /**
-     * Attach a model to the relation.
+     * Attach the model in the relation.
      */
     public function attach(Model|string $model): void
     {
@@ -166,7 +166,9 @@ abstract class OneToMany extends Relation
             $foreign = $this->getAttachableForeignValue($model);
 
             if ($this->using) {
-                return $this->using->addAttribute($this->usingKey, $foreign);
+                $this->using->addAttribute($this->usingKey, $foreign);
+
+                return;
             }
 
             if (! $model instanceof Model) {
@@ -243,7 +245,9 @@ abstract class OneToMany extends Relation
             $foreign = $this->getAttachableForeignValue($model);
 
             if ($this->using) {
-                return $this->using->removeAttribute($this->usingKey, $foreign);
+                $this->using->removeAttribute($this->usingKey, $foreign);
+
+                return;
             }
 
             if (! $model instanceof Model) {
@@ -252,6 +256,54 @@ abstract class OneToMany extends Relation
 
             $model->removeAttribute($this->relationKey, $foreign);
         };
+    }
+
+    /**
+     * Associate the model in the relation.
+     */
+    public function associate(Model|string $model): void
+    {
+        $foreign = $this->getAttachableForeignValue($model);
+
+        if ($this->using) {
+            $this->using->addAttributeValue($this->usingKey, $foreign);
+
+            return;
+        }
+
+        if (! $model instanceof Model) {
+            $model = $this->getForeignModelByValueOrFail($model);
+        }
+
+        $model->addAttributeValue($this->relationKey, $foreign);
+    }
+
+    /**
+     * Dissociate the model in the relation.
+     */
+    public function dissociate(Model|string $model): void
+    {
+        $foreign = $this->getAttachableForeignValue($model);
+
+        if ($this->using) {
+            $this->using->removeAttributeValue($this->usingKey, $foreign);
+
+            return;
+        }
+
+        if (! $model instanceof Model) {
+            $model = $this->getForeignModelByValueOrFail($model);
+        }
+
+        $model->removeAttributeValue($this->relationKey, $foreign);
+    }
+
+    /**
+     * Alias of "dissociate" method.
+     */
+    public function disassociate(Model|string $model): void
+    {
+        $this->dissociate($model);
     }
 
     /**

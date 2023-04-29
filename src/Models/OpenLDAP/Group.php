@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Models\OpenLDAP;
 
-use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Models\Relations\HasManyIn;
 
 class Group extends Entry
 {
@@ -16,11 +16,9 @@ class Group extends Entry
 
     /**
      * The members relationship.
-     *
-     * Retrieves members that are apart of the group.
      */
-    public function members(): HasMany
+    public function members(): HasManyIn
     {
-        return $this->hasMany([static::class, User::class], 'memberUid');
+        return $this->hasManyIn([static::class, User::class], 'uniquemember')->using($this, 'uniquemember');
     }
 }

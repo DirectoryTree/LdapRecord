@@ -34,11 +34,9 @@ class User extends Entry implements Authenticatable
 
     /**
      * The groups relationship.
-     *
-     * Retrieve groups that the user is a part of.
      */
     public function groups(): HasMany
     {
-        return $this->hasMany(Group::class, 'memberuid', 'uid');
+        return $this->hasMany(Group::class, 'uniquemember');
     }
 }

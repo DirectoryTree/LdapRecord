@@ -309,7 +309,7 @@ trait HasAttributes
      */
     public function getRawAttribute(string $key, mixed $default = null): mixed
     {
-        return Arr::get($this->attributes, $key, $default);
+        return Arr::get($this->attributes, $this->normalizeAttributeKey($key), $default);
     }
 
     /**
@@ -683,12 +683,10 @@ trait HasAttributes
      */
     public function addAttributeValue(string $key, mixed $value): static
     {
-        return $this->setRawAttribute($key, array_unique(
-            array_merge(
-                $this->getRawAttribute($key, []),
-                Arr::wrap($value)
-            )
-        ));
+        return $this->setRawAttribute($key, array_unique(array_merge(
+            $this->getRawAttribute($key, []),
+            Arr::wrap($value)
+        )));
     }
 
     /**

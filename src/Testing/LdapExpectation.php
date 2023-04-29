@@ -102,6 +102,22 @@ class LdapExpectation
     }
 
     /**
+     * Set the expected value to return true.
+     */
+    public function andReturnTrue(): static
+    {
+        return $this->andReturn(true);
+    }
+
+    /**
+     * Set the expected value to return false.
+     */
+    public function andReturnFalse(): static
+    {
+         return $this->andReturn(false);
+    }
+
+    /**
      * The error message to return from the expectation.
      */
     public function andReturnError(int $errorCode = 1, string $errorMessage = '', string $diagnosticMessage = ''): static

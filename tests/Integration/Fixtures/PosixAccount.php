@@ -6,7 +6,7 @@ use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Models\OpenLDAP\Entry;
 use LdapRecord\Models\Relations\HasMany;
 
-class User extends Entry
+class PosixAccount extends Entry
 {
     use HasPassword;
 
@@ -22,6 +22,6 @@ class User extends Entry
 
     public function groups(): HasMany
     {
-        return $this->hasMany(Group::class, 'memberuid', 'uid');
+        return $this->hasMany(PosixGroup::class, 'memberuid', 'uid');
     }
 }

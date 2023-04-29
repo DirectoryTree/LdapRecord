@@ -192,6 +192,14 @@ class Connection
     }
 
     /**
+     * Set the auth guard resolver callback.
+     */
+    public function setGuardResolver(Closure $callback): void
+    {
+        $this->authGuardResolver = $callback;
+    }
+
+    /**
      * Bind to the LDAP server.
      *
      * If no username or password is specified, then the configured credentials are used.

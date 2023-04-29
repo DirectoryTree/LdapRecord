@@ -184,27 +184,32 @@ class LdapFake implements LdapInterface
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
-        return $this->resolveExpectation('getValuesLen', func_get_args());
-    }
-
-    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int
-    {
-        return $this->resolveExpectation('compare', func_get_args());
-    }
-
-    public function setRebindCallback(callable $callback): bool
-    {
-        return $this->resolveExpectation('setRebindCallback', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * Retrieves the first entry from a search result.
-     *
-     * @see http://php.net/manual/en/function.ldap-first-entry.php
-     *
-     * @param  \Ldap\Result  $result
+     * {@inheritDoc}
+     */
+    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setRebindCallback(callable $callback): bool
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -214,11 +219,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * Retrieves the next entry from a search result.
-     *
-     * @see http://php.net/manual/en/function.ldap-next-entry.php
-     *
-     * @param  \Ldap\ResultEntry  $entry
+     * {@inheritDoc}
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -228,11 +229,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * Retrieves the ldap entry's attributes.
-     *
-     * @see http://php.net/manual/en/function.ldap-get-attributes.php
-     *
-     * @param  \Ldap\ResultEntry  $entry
+     * {@inheritDoc}
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -256,8 +253,8 @@ class LdapFake implements LdapInterface
      */
     public function isUsingSSL(): bool
     {
-        return $this->hasExpectations('isUsingSSL')
-            ? $this->resolveExpectation('isUsingSSL')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->useSSL;
     }
 
@@ -266,8 +263,8 @@ class LdapFake implements LdapInterface
      */
     public function isUsingTLS(): bool
     {
-        return $this->hasExpectations('isUsingTLS')
-            ? $this->resolveExpectation('isUsingTLS')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->useTLS;
     }
 
@@ -276,8 +273,8 @@ class LdapFake implements LdapInterface
      */
     public function isBound(): bool
     {
-        return $this->hasExpectations('isBound')
-            ? $this->resolveExpectation('isBound')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->bound;
     }
 
@@ -286,8 +283,8 @@ class LdapFake implements LdapInterface
      */
     public function setOption(int $option, mixed $value): bool
     {
-        return $this->hasExpectations('setOption')
-            ? $this->resolveExpectation('setOption', func_get_args())
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
             : true;
     }
 
@@ -296,7 +293,7 @@ class LdapFake implements LdapInterface
      */
     public function getOption(int $option, mixed &$value = null): mixed
     {
-        return $this->resolveExpectation('getOption', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -304,7 +301,7 @@ class LdapFake implements LdapInterface
      */
     public function startTLS(): bool
     {
-        return $this->resolveExpectation('startTLS', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -316,8 +313,8 @@ class LdapFake implements LdapInterface
 
         $this->host = $this->makeConnectionUris($hosts, $port);
 
-        return $this->connection = $this->hasExpectations('connect')
-            ? $this->resolveExpectation('connect', func_get_args())
+        return $this->connection = $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
             : true;
     }
 
@@ -330,17 +327,17 @@ class LdapFake implements LdapInterface
         $this->bound = false;
         $this->host = null;
 
-        return $this->hasExpectations('close')
-            ? $this->resolveExpectation('close')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bind(string $username = null, string $password = null, array $controls = null): LdapResultResponse
+    public function bind(string $dn = null, string $password = null, array $controls = null): LdapResultResponse
     {
-        $result = $this->resolveExpectation('bind', func_get_args());
+        $result = $this->resolveExpectation(__FUNCTION__, func_get_args());
 
         $this->bound = $result->successful();
 
@@ -348,11 +345,19 @@ class LdapFake implements LdapInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function saslBind(string $dn = null, string $password = null, array $options = null): bool
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
     {
-        return $this->resolveExpectation('search', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -360,7 +365,7 @@ class LdapFake implements LdapInterface
      */
     public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
     {
-        return $this->resolveExpectation('listing', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -368,7 +373,7 @@ class LdapFake implements LdapInterface
      */
     public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
     {
-        return $this->resolveExpectation('read', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -376,7 +381,7 @@ class LdapFake implements LdapInterface
      */
     public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
     {
-        return $this->resolveExpectation('parseResult', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -384,7 +389,7 @@ class LdapFake implements LdapInterface
      */
     public function add(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('add', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -392,7 +397,7 @@ class LdapFake implements LdapInterface
      */
     public function delete(string $dn): bool
     {
-        return $this->resolveExpectation('delete', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -400,7 +405,7 @@ class LdapFake implements LdapInterface
      */
     public function rename(string $dn, string $newRdn, string $newParent, bool $deleteOldRdn = false): bool
     {
-        return $this->resolveExpectation('rename', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -408,7 +413,7 @@ class LdapFake implements LdapInterface
      */
     public function modify(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modify', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -416,7 +421,7 @@ class LdapFake implements LdapInterface
      */
     public function modifyBatch(string $dn, array $values): bool
     {
-        return $this->resolveExpectation('modifyBatch', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -424,7 +429,7 @@ class LdapFake implements LdapInterface
      */
     public function modAdd(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modAdd', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -432,7 +437,7 @@ class LdapFake implements LdapInterface
      */
     public function modReplace(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modReplace', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -440,7 +445,7 @@ class LdapFake implements LdapInterface
      */
     public function modDelete(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modDelete', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -448,7 +453,7 @@ class LdapFake implements LdapInterface
      */
     public function freeResult(mixed $result): bool
     {
-        return $this->resolveExpectation('freeResult', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -456,7 +461,7 @@ class LdapFake implements LdapInterface
      */
     public function err2Str(int $number): string
     {
-        return $this->resolveExpectation('err2Str', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**

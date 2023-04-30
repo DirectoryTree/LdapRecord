@@ -87,7 +87,7 @@ class Guard
         try {
             if (! $this->authenticate($username, $password)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
-        }
+            }
 
             $this->fireAuthEvent('bound', $username, $password);
         } catch (Exception $e) {

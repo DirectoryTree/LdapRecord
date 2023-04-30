@@ -267,11 +267,11 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function bind(string $username = null, string $password = null, array $controls = null): LdapResultResponse
+    public function bind(string $dn = null, string $password = null, array $controls = null): LdapResultResponse
     {
         /** @var \LDAP\Result $result */
-        $result = $this->executeFailableOperation(function () use ($username, $password, $controls) {
-            return ldap_bind_ext($this->connection, $username, $password ? html_entity_decode($password) : null, $controls);
+        $result = $this->executeFailableOperation(function () use ($dn, $password, $controls) {
+            return ldap_bind_ext($this->connection, $dn, $password ? html_entity_decode($password) : null, $controls);
         });
 
         $response = $this->parseResult($result);
@@ -279,6 +279,33 @@ class Ldap implements LdapInterface
         $this->bound = $response && $response->successful();
 
         return $response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function saslBind(string $dn = null, string $password = null, array $options = []): bool
+    {
+        return $this->executeFailableOperation(function () use ($dn, $password, $options) {
+            $options = array_merge([
+                'mech' => null,
+                'realm' => null,
+                'authc_id' => null,
+                'authz_id' => null,
+                'props' => null,
+            ], $options);
+
+            return $this->bound = ldap_sasl_bind(
+                $this->connection,
+                $dn,
+                $password ? html_entity_decode($password) : null,
+                $options['mech'],
+                $options['realm'],
+                $options['authc_id'],
+                $options['authz_id'],
+                $options['props'],
+            );
+        });
     }
 
     /**

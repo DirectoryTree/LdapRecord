@@ -291,14 +291,28 @@ interface LdapInterface
     public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false;
 
     /**
-     * Binds to the current connection using the specified username and password.
-     * If sasl is true, the current connection is bound using SASL.
+     * Bind to the LDAP directory.
      *
      * @see http://php.net/manual/en/function.ldap-bind.php
      *
      * @throws LdapRecordException
      */
-    public function bind(string $username = null, string $password = null, array $controls = null): LdapResultResponse;
+    public function bind(string $dn = null, string $password = null, array $controls = null): LdapResultResponse;
+
+    /**
+     * Bind to the LDAP directory using SASL.
+     *
+     * SASL options:
+     *  - mech: Mechanism (Defaults: null)
+     *  - realm: Realm (Defaults: null)
+     *  - authc_id: Verification Identity (Defaults: null)
+     *  - authz_id: Authorization Identity (Defaults: null)
+     *  - props: Options for Authorization Identity (Defaults: null)
+     *
+     * @see https://php.net/manual/en/function.ldap-sasl-bind.php
+     * @see https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
+     */
+    public function saslBind(string $dn = null, string $password = null, array $options = []): bool;
 
     /**
      * Adds an entry to the current connection.

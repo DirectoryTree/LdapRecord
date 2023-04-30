@@ -44,6 +44,18 @@ class DomainConfiguration
         // Whether or not to use TLS when connecting.
         'use_tls' => false,
 
+        // Whether or not to use SASL when connecting.
+        'use_sasl' => false,
+
+        // SASL options
+        'sasl_options' => [
+            'mech' => null,
+            'realm' => null,
+            'authc_id' => null,
+            'authz_id' => null,
+            'props' => null,
+        ],
+
         // Whether or not follow referrals is enabled when performing LDAP operations.
         'follow_referrals' => false,
 

@@ -349,7 +349,7 @@ class LdapFake implements LdapInterface
      */
     public function saslBind(string $dn = null, string $password = null, array $options = null): bool
     {
-        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+        return $this->bound = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**

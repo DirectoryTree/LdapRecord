@@ -53,22 +53,22 @@ class Guard
         try {
             $this->bind($username, $password);
 
-            $authenticated = true;
+            $bound = true;
 
             $this->fireAuthEvent('passed', $username, $password);
         } catch (BindException) {
-            $authenticated = false;
+            $bound = false;
         }
 
         if (! $stayBound) {
             $this->bindAsConfiguredUser();
         }
 
-        return $authenticated;
+        return $bound;
     }
 
     /**
-     * Attempt binding a user to the LDAP server. Supports anonymous binding.
+     * Attempt binding a user to the LDAP server. Supports sasl and anonymous binding.
      *
      * @throws BindException
      * @throws \LdapRecord\ConnectionException
@@ -85,7 +85,11 @@ class Guard
         }
 
         try {
-            if ($this->connection->bind($username, $password)->failed()) {
+            $bound = $this->configuration->get('use_sasl') ?? false
+                ? $this->connection->saslBind($username, $password, $this->configuration->get('sasl_options'))
+                : $this->connection->bind($username, $password)->successful();
+
+            if (! $bound) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 

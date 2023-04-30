@@ -114,7 +114,7 @@ class LdapExpectation
      */
     public function andReturnFalse(): static
     {
-         return $this->andReturn(false);
+        return $this->andReturn(false);
     }
 
     /**

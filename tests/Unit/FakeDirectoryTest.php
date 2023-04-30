@@ -44,10 +44,12 @@ class FakeDirectoryTest extends TestCase
             'port' => 389,
             'use_tls' => true,
             'use_ssl' => false,
+            'use_sasl' => false,
             'timeout' => 5,
             'version' => 3,
             'follow_referrals' => false,
             'options' => ['foo'],
+            'sasl_options' => [],
         ];
 
         Container::addConnection(new Connection($config), 'local');

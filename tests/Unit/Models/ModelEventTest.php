@@ -69,7 +69,7 @@ class ModelEventTest extends TestCase
                     'objectclass' => ['bar'],
                 ]
             )
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
@@ -107,7 +107,7 @@ class ModelEventTest extends TestCase
                         'values' => ['foo'],
                     ],
                 ],
-            ])->andReturn(true);
+            ])->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $modifyBatchExpectation]);
 
@@ -131,7 +131,7 @@ class ModelEventTest extends TestCase
 
         Container::getInstance()->setDispatcher($dispatcher);
 
-        $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturn(true);
+        $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 

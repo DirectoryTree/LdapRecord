@@ -107,7 +107,7 @@ class ModelQueryTest extends TestCase
                 'cn=foo,dc=bar,dc=baz',
                 ['cn' => ['foo'], 'objectclass' => ['bar']]
             )
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
@@ -147,7 +147,7 @@ class ModelQueryTest extends TestCase
         $expectation = LdapFake::operation('modAdd')
             ->once()
             ->with('foo', ['bar' => ['baz']])
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
@@ -180,7 +180,7 @@ class ModelQueryTest extends TestCase
         $expectation = LdapFake::operation('modifyBatch')
             ->once()
             ->with('foo', [$mod])
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
@@ -225,7 +225,7 @@ class ModelQueryTest extends TestCase
         $expectation = LdapFake::operation('modReplace')
             ->once()
             ->with(['foo', ['bar' => ['baz']]])
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
@@ -253,7 +253,7 @@ class ModelQueryTest extends TestCase
         $expectation = LdapFake::operation('delete')
             ->once()
             ->with('foo')
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['bind' => new LdapResultResponse(), $expectation]);
 
@@ -282,8 +282,8 @@ class ModelQueryTest extends TestCase
     {
         $ldap = (new LdapFake())->expect([
             'bind' => new LdapResultResponse(),
-            LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturn(true),
-            LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturn(true),
+            LdapFake::operation('modDelete')->once()->with('dn', ['foo' => []])->andReturnTrue(),
+            LdapFake::operation('modDelete')->once()->with('dn', ['bar' => ['zal']])->andReturnTrue(),
         ]);
 
         $query = new Builder(new Connection([], $ldap));
@@ -313,7 +313,7 @@ class ModelQueryTest extends TestCase
         $ldap = (new LdapFake())
             ->expect([
                 'bind' => new LdapResultResponse(),
-                LdapFake::operation('modDelete')->once()->with('dn', ['foo' => [], 'bar' => ['zar']])->andReturn(true),
+                LdapFake::operation('modDelete')->once()->with('dn', ['foo' => [], 'bar' => ['zar']])->andReturnTrue(),
             ]);
 
         $query = new Builder(new Connection([], $ldap));

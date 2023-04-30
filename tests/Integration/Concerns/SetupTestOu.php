@@ -10,8 +10,8 @@ trait SetupTestOu
 
     protected function setupTestOu()
     {
-        $this->ou = OrganizationalUnit::query()->where('ou', $name = 'Group Test OU')->firstOr(fn () =>
-            OrganizationalUnit::create(['ou' => $name])
+        $this->ou = OrganizationalUnit::query()->where('ou', $name = 'Group Test OU')->firstOr(
+            fn () => OrganizationalUnit::create(['ou' => $name])
         );
 
         $this->ou->deleteLeafNodes();

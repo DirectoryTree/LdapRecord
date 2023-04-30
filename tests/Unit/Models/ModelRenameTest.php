@@ -94,7 +94,7 @@ class ModelRenameTest extends TestCase
             ->expect(
                 LdapFake::operation('rename')
                     ->with('cn=John Doe,dc=acme,dc=org', 'cn=Тестирование\2c Имя\2c Побег')
-                    ->andReturn(true)
+                    ->andReturnTrue()
             );
 
         $model = new Entry();
@@ -114,7 +114,7 @@ class ModelRenameTest extends TestCase
                 LdapFake::operation('rename')->with(
                     'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org',
                     'cn=Тестирование\2c Имя\2c Побег'
-                )->andReturn(true)
+                )->andReturnTrue()
             );
 
         $model = new Entry();
@@ -135,7 +135,7 @@ class ModelRenameTest extends TestCase
             ->expect(
                 LdapFake::operation('rename')
                     ->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org')
-                    ->andReturn(true)
+                    ->andReturnTrue()
             );
 
         $model = new Entry();

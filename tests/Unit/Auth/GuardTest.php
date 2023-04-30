@@ -201,4 +201,28 @@ class GuardTest extends TestCase
         $this->assertTrue($guard->attempt('johndoe', 'secret', $bindAsUser = true));
         $this->assertEquals(4, $totalFired);
     }
+
+    public function test_sasl_bind()
+    {
+        $ldap = (new LdapFake())
+            ->expect(
+                LdapFake::operation('saslBind')
+                    ->once()
+                    ->with(null, null, ['mech' => 'GSSAPI'])
+                    ->andReturnTrue()
+            );
+
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'use_sasl' => true,
+            'sasl_options' => [
+                'mech' => 'GSSAPI',
+            ],
+        ]));
+
+        $this->assertFalse($ldap->isBound());
+
+        $guard->bindAsConfiguredUser();
+
+        $this->assertTrue($ldap->isBound());
+    }
 }

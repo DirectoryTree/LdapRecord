@@ -1215,9 +1215,9 @@ class BuilderTest extends TestCase
         $ldap->expect([
             'bind' => new LdapResultResponse(),
             'search' => null,
-            LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturn(true),
-            LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturn(true),
-            LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturn(true),
+            LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
         ]);
 
         $b->get();
@@ -1258,9 +1258,9 @@ class BuilderTest extends TestCase
             ->getLdapConnection()
             ->expect([
                 'bind' => new LdapResultResponse(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturn(true),
-                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturn(true),
-                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturn(true),
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
                 LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
                 LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
             ]);
@@ -1276,10 +1276,10 @@ class BuilderTest extends TestCase
             ->getLdapConnection()
             ->expect([
                 'bind' => new LdapResultResponse(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturn(true),
-                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturn(true),
-                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturn(true),
-                LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturn(true),
+                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
+                LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturnTrue(),
             ]);
 
         $this->assertTrue($b->insert('cn=John Doe', ['objectclass' => ['foo']]));

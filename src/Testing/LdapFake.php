@@ -15,8 +15,8 @@ use PHPUnit\Framework\Constraint\Constraint;
 
 class LdapFake implements LdapInterface
 {
-    use HandlesConnection;
     use DetectsErrors;
+    use HandlesConnection;
 
     /**
      * The expectations of the LDAP fake.
@@ -108,6 +108,14 @@ class LdapFake implements LdapInterface
     public function removeExpectation(string $method, int $key): void
     {
         unset($this->expectations[$method][$key]);
+    }
+
+    /**
+     * Set the fake LDAP host.
+     */
+    public function setHost(string $host)
+    {
+        $this->host = $host;
     }
 
     /**

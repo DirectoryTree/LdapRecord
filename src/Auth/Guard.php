@@ -85,11 +85,7 @@ class Guard
         }
 
         try {
-            $bound = $this->configuration->get('use_sasl') ?? false
-                ? $this->connection->saslBind($username, $password, $this->configuration->get('sasl_options'))
-                : $this->connection->bind($username, $password)->successful();
-
-            if (! $bound) {
+            if (! $this->authenticate($username, $password)) {
                 throw new Exception($this->connection->getLastError(), $this->connection->errNo());
             }
 
@@ -99,6 +95,22 @@ class Guard
 
             throw BindException::withDetailedError($e, $this->connection->getDetailedError());
         }
+    }
+
+    /**
+     * Authenticate by binding to the LDAP server.
+     *
+     * @throws \LdapRecord\ConnectionException
+     */
+    protected function authenticate(string $username = null, string $password = null): bool
+    {
+        if ($this->configuration->get('use_sasl') ?? false) {
+            return $this->connection->saslBind(
+                $username, $password, $this->configuration->get('sasl_options')
+            );
+        }
+
+        return $this->connection->bind($username, $password)->successful();
     }
 
     /**

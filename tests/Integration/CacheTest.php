@@ -4,120 +4,81 @@ namespace LdapRecord\Tests\Integration;
 
 use Carbon\Carbon;
 use LdapRecord\Container;
-use LdapRecord\Models\OpenLDAP\OrganizationalUnit;
+use LdapRecord\Models\OpenLDAP\User;
 use LdapRecord\Query\ArrayCacheStore;
-use LdapRecord\Tests\Integration\Fixtures\User;
+use LdapRecord\Tests\Integration\Concerns\MakesUsers;
+use LdapRecord\Tests\Integration\Concerns\SetupTestConnection;
+use LdapRecord\Tests\Integration\Concerns\SetupTestOu;
 use Psr\SimpleCache\CacheInterface;
 
 class CacheTest extends TestCase
 {
-    /** @var OrganizationalUnit */
-    protected $ou;
+    use MakesUsers;
+    use SetupTestOu;
+    use SetupTestConnection;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Container::addConnection($this->makeConnection());
-
-        $this->ou = OrganizationalUnit::query()->where('ou', 'User Test OU')->firstOr(function () {
-            return OrganizationalUnit::create(['ou' => 'User Test OU']);
-        });
-
-        $this->ou->deleteLeafNodes();
+        $this->setupTestOu();
     }
 
-    protected function tearDown(): void
+    protected function resetConnection(array $params = [], CacheInterface $cache = null): void
     {
-        $this->ou->delete(true);
+        Container::flush();
 
-        Container::reset();
-
-        parent::tearDown();
-    }
-
-    protected function resetConnection(array $params = [], CacheInterface $cache = null)
-    {
-        Container::reset();
-
-        $connection = parent::makeConnection($params);
+        $connection = $this->makeConnection($params);
 
         if ($cache) {
             $connection->setCache($cache);
         }
 
         Container::addConnection($connection);
-
-        return $connection;
     }
 
-    /** @return User */
-    protected function createUser(string $cn)
-    {
-        $user = (new User())
-            ->inside($this->ou)
-            ->fill(array_merge([
-                'uid' => 'u'.$cn,
-                'cn' => $cn,
-                'sn' => 'Baz',
-                'givenName' => $cn,
-                'uidNumber' => 1000 + ord($cn),
-                'gidNumber' => 1000 + ord($cn),
-                'homeDirectory' => '/'.strtolower($cn),
-            ]));
-
-        $user->save();
-
-        return $user;
-    }
-
-    /** @return array */
-    protected function getUserCnsFromCache($ttl = 30)
+    protected function getUserCnsFromCache($ttl = 30): array
     {
         $cache = Carbon::now()->addSeconds($ttl);
 
         return User::cache($cache)
             ->get()
-            ->sortBy(function (User $user) {
-                return $user->getName();
-            })->map(function (User $user) {
-                return $user->getName();
-            })
+            ->sortBy(fn (User $user) => $user->getName())
+            ->map(fn (User $user) => $user->getName())
             ->values()
             ->all();
     }
 
     public function test_that_results_are_fetched_from_cache()
     {
-        $cache = new ArrayCacheStore();
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: new ArrayCacheStore);
 
         $this->assertEquals([], $this->getUserCnsFromCache());
-        $this->createUser('foo');
+
+        $user = $this->makeUser($this->ou);
+        $user->save();
 
         $this->assertEquals([], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_are_fetched_from_cache2()
     {
-        $cache = new ArrayCacheStore();
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: new ArrayCacheStore);
 
-        $this->createUser('foo');
+        $this->makeUser($this->ou, ['cn' => 'foo'])->save();
         $this->assertEquals(['foo'], $this->getUserCnsFromCache());
-        $this->createUser('bar');
+        $this->makeUser($this->ou, ['cn' => 'bar'])->save();
 
         $this->assertEquals(['foo'], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_expire_from_cache()
     {
-        $cache = new ArrayCacheStore();
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: new ArrayCacheStore);
 
-        $this->createUser('foo');
+        $this->makeUser($this->ou, ['cn' => 'foo'])->save();
         $this->assertEquals(['foo'], $this->getUserCnsFromCache(1));
-        $this->createUser('bar');
+        $this->makeUser($this->ou, ['cn' => 'bar'])->save();
 
         sleep(2);
 
@@ -126,26 +87,24 @@ class CacheTest extends TestCase
 
     public function test_that_results_stay_in_cache_even_if_connection_is_reset()
     {
-        $cache = new ArrayCacheStore();
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: $cache = new ArrayCacheStore);
 
-        $this->createUser('foo');
+        $this->makeUser($this->ou, ['cn' => 'foo'])->save();
         $this->assertEquals(['foo'], $this->getUserCnsFromCache());
-        $this->createUser('bar');
+        $this->makeUser($this->ou, ['cn' => 'bar'])->save();
 
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: $cache);
 
         $this->assertEquals(['foo'], $this->getUserCnsFromCache());
     }
 
     public function test_that_results_are_not_reused_if_hostname_changes()
     {
-        $cache = new ArrayCacheStore();
-        $this->resetConnection([], $cache);
+        $this->resetConnection(cache: $cache = new ArrayCacheStore);
 
-        $this->createUser('foo');
+        $this->makeUser($this->ou, ['cn' => 'foo'])->save();
         $this->assertEquals(['foo'], $this->getUserCnsFromCache());
-        $this->createUser('bar');
+        $this->makeUser($this->ou, ['cn' => 'bar'])->save();
 
         $this->resetConnection(['hosts' => ['127.0.0.1']], $cache);
 

@@ -26,9 +26,10 @@ trait HidesAttributes
      */
     public function getHidden(): array
     {
-        return array_map(function ($key) {
-            return $this->normalizeAttributeKey($key);
-        }, $this->hidden);
+        return array_map(
+            $this->normalizeAttributeKey(...),
+            $this->hidden
+        );
     }
 
     /**
@@ -57,9 +58,10 @@ trait HidesAttributes
      */
     public function getVisible(): array
     {
-        return array_map(function ($key) {
-            return $this->normalizeAttributeKey($key);
-        }, $this->visible);
+        return array_map(
+            $this->normalizeAttributeKey(...),
+            $this->visible
+        );
     }
 
     /**

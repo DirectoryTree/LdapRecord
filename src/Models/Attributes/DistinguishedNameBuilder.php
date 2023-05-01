@@ -24,9 +24,9 @@ class DistinguishedNameBuilder
      */
     public function __construct($dn = null)
     {
-        $this->components = array_map(function ($rdn) {
-            return DistinguishedName::explodeRdn($rdn);
-        }, DistinguishedName::make($dn)->components());
+        $this->components = array_map(fn ($rdn) => (
+            DistinguishedName::explodeRdn($rdn)
+        ), DistinguishedName::make($dn)->components());
     }
 
     /**
@@ -115,9 +115,9 @@ class DistinguishedNameBuilder
      */
     public function pop(int $amount = 1, array &$removed = null): static
     {
-        $removed = array_map(function ($component) {
-            return DistinguishedName::makeRdn($component);
-        }, array_splice($this->components, -$amount, $amount));
+        $removed = array_map(fn ($component) => (
+            DistinguishedName::makeRdn($component)
+        ), array_splice($this->components, -$amount, $amount));
 
         return $this;
     }
@@ -127,9 +127,9 @@ class DistinguishedNameBuilder
      */
     public function shift(int $amount = 1, array &$removed = null): static
     {
-        $removed = array_map(function ($component) {
-            return DistinguishedName::makeRdn($component);
-        }, array_splice($this->components, 0, $amount));
+        $removed = array_map(fn ($component) => (
+            DistinguishedName::makeRdn($component)
+        ), array_splice($this->components, 0, $amount));
 
         return $this;
     }
@@ -159,9 +159,9 @@ class DistinguishedNameBuilder
      */
     protected function componentsOfType(string $type): array
     {
-        $components = array_filter($this->components, function ($component) use ($type) {
-            return ([$name] = $component) && strtolower($name) === strtolower($type);
-        });
+        $components = array_filter($this->components, fn ($component) => (
+            ([$name] = $component) && strtolower($name) === strtolower($type)
+        ));
 
         return array_values($components);
     }
@@ -183,8 +183,8 @@ class DistinguishedNameBuilder
             ? array_reverse($this->components)
             : $this->components;
 
-        return implode(',', array_map(function ($component) {
-            return DistinguishedName::makeRdn($component);
-        }, $components));
+        return implode(',', array_map(fn ($component) => (
+            DistinguishedName::makeRdn($component)
+        ), $components));
     }
 }

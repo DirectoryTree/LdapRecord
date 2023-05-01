@@ -100,9 +100,7 @@ class Builder extends BaseBuilder
      */
     public function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
     {
-        return $this->afterScopes(function () use ($dn, $columns) {
-            return parent::find($dn, $columns);
-        });
+        return $this->afterScopes(fn () => parent::find($dn, $columns));
     }
 
     /**

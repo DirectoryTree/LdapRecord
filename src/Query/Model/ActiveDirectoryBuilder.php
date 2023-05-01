@@ -39,9 +39,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereEnabled(): static
     {
-        return $this->notFilter(function ($query) {
-            return $query->whereDisabled();
-        });
+        return $this->notFilter(fn ($query) => (
+            $query->whereDisabled()
+        ));
     }
 
     /**
@@ -59,9 +59,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereMember(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->whereEquals($attribute, $dn);
-        }, 'member', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->whereEquals($attribute, $dn)
+        ), 'member', $nested);
     }
 
     /**
@@ -69,9 +69,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function orWhereMember(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->orWhereEquals($attribute, $dn);
-        }, 'member', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->orWhereEquals($attribute, $dn)
+        ), 'member', $nested);
     }
 
     /**
@@ -79,9 +79,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereMemberOf(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->whereEquals($attribute, $dn);
-        }, 'memberof', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->whereEquals($attribute, $dn)
+        ), 'memberof', $nested);
     }
 
     /**
@@ -89,9 +89,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereNotMemberof(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->whereNotEquals($attribute, $dn);
-        }, 'memberof', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->whereNotEquals($attribute, $dn)
+        ), 'memberof', $nested);
     }
 
     /**
@@ -99,9 +99,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function orWhereMemberOf(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->orWhereEquals($attribute, $dn);
-        }, 'memberof', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->orWhereEquals($attribute, $dn)
+        ), 'memberof', $nested);
     }
 
     /**
@@ -109,9 +109,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function orWhereNotMemberof(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->orWhereNotEquals($attribute, $dn);
-        }, 'memberof', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->orWhereNotEquals($attribute, $dn)
+        ), 'memberof', $nested);
     }
 
     /**
@@ -119,9 +119,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereManager(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->whereEquals($attribute, $dn);
-        }, 'manager', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->whereEquals($attribute, $dn)
+        ), 'manager', $nested);
     }
 
     /**
@@ -129,9 +129,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function whereNotManager(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->whereNotEquals($attribute, $dn);
-        }, 'manager', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->whereNotEquals($attribute, $dn)
+        ), 'manager', $nested);
     }
 
     /**
@@ -139,9 +139,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function orWhereManager(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->orWhereEquals($attribute, $dn);
-        }, 'manager', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->orWhereEquals($attribute, $dn)
+        ), 'manager', $nested);
     }
 
     /**
@@ -149,9 +149,9 @@ class ActiveDirectoryBuilder extends Builder
      */
     public function orWhereNotManager(string $dn, bool $nested = false): static
     {
-        return $this->nestedMatchQuery(function ($attribute) use ($dn) {
-            return $this->orWhereNotEquals($attribute, $dn);
-        }, 'manager', $nested);
+        return $this->nestedMatchQuery(fn ($attribute) => (
+            $this->orWhereNotEquals($attribute, $dn)
+        ), 'manager', $nested);
     }
 
     /**

@@ -779,9 +779,9 @@ trait HasAttributes
         // out the attributes that contain an integer key. LDAP
         // search results will contain integer keys that have
         // attribute names as values. We don't need these.
-        $this->attributes = array_filter($raw, function ($key) {
-            return ! is_int($key);
-        }, ARRAY_FILTER_USE_KEY);
+        $this->attributes = array_filter($raw, fn ($key) => (
+            ! is_int($key)
+        ), ARRAY_FILTER_USE_KEY);
 
         // LDAP search results will contain the distinguished
         // name inside of the `dn` key. We will retrieve this,
@@ -958,11 +958,10 @@ trait HasAttributes
      */
     public static function cacheMutatedAttributes(string $class): void
     {
-        static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))->reject(function ($match) {
-            return $match === 'First';
-        })->map(function ($match) {
-            return lcfirst($match);
-        })->all();
+        static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))
+            ->reject(fn ($match) => $match === 'First')
+            ->map(fn ($match) => lcfirst($match))
+            ->all();
     }
 
     /**

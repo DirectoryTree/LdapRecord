@@ -48,9 +48,9 @@ class Parser
      */
     public static function assemble(Node|array $nodes = []): string
     {
-        return array_reduce(Arr::wrap($nodes), function ($carry, Node $node) {
-            return $carry .= static::compileNode($node);
-        });
+        return array_reduce(Arr::wrap($nodes), fn ($carry, Node $node) => (
+            $carry .= static::compileNode($node)
+        ));
     }
 
     /**

@@ -17,10 +17,9 @@ class Collection extends BaseCollection
             return $value;
         }
 
-        return fn ($item) => (
+        return fn ($item) =>
             $item instanceof Model
                 ? $item->getFirstAttribute($value)
-                : data_get($item, $value)
-        );
+                : data_get($item, $value);
     }
 }

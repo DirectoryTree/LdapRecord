@@ -351,11 +351,11 @@ abstract class OneToMany extends Relation
      */
     public function detachAll(): Collection
     {
-        return $this->onceWithoutMerging(fn () => (
+        return $this->onceWithoutMerging(fn () =>
             $this->get()->each(function (Model $model) {
                 $this->detach($model);
             })
-        ));
+        );
     }
 
     /**
@@ -363,7 +363,7 @@ abstract class OneToMany extends Relation
      */
     public function detachAllOrDelete(): Collection
     {
-        return $this->onceWithoutMerging(fn () => (
+        return $this->onceWithoutMerging(fn () =>
             $this->get()->each(function (Model $model) {
                 $relation = $model->getRelation($this->relationName);
 
@@ -373,7 +373,7 @@ abstract class OneToMany extends Relation
                     $this->detach($model);
                 }
             })
-        ));
+        );
     }
 
     /**
@@ -393,12 +393,12 @@ abstract class OneToMany extends Relation
      */
     protected function getRecursiveResults(array $loaded = []): Collection
     {
-        $results = $this->getRelationResults()->reject(fn (Model $model) => (
+        $results = $this->getRelationResults()->reject(fn (Model $model) =>
             // Here we will exclude the models that we have already
             // loaded the recursive results for so we don't run
             // into issues with circular relations in LDAP.
             in_array($model->getDn(), $loaded)
-        ));
+        );
 
         foreach ($results as $model) {
             $loaded[] = $model->getDn();

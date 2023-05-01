@@ -34,9 +34,9 @@ class EscapedValue
      */
     public static function unescape(string $value): string
     {
-        return preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', fn ($matches) => (
+        return preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', fn ($matches) =>
             chr(hexdec($matches[1]))
-        ), $value);
+        , $value);
     }
 
     /**

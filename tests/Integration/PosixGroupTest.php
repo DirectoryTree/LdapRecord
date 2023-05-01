@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Integration;
 
 use LdapRecord\Container;
+use LdapRecord\Models\Collection;
 use LdapRecord\Tests\Integration\Concerns\MakePosixUsers;
 use LdapRecord\Tests\Integration\Concerns\MakesPosixGroups;
 use LdapRecord\Tests\Integration\Concerns\SetupTestConnection;
@@ -110,7 +111,7 @@ class PosixGroupTest extends TestCase
         $userTwo = $this->makePosixUser($this->ou, ['cn' => 'Baz']);
         $userTwo->save();
 
-        $group->users()->attachMany([$userOne, $userTwo]);
+        $group->users()->attach([$userOne, $userTwo]);
 
         $group->users()->detachOrDeleteParent($userOne);
 
@@ -128,11 +129,11 @@ class PosixGroupTest extends TestCase
         $userTwo = $this->makePosixUser($this->ou, ['cn' => 'Baz']);
         $userTwo->save();
 
-        $group->users()->attachMany([$userOne, $userTwo]);
+        $group->users()->attach(new Collection([$userOne, $userTwo]));
 
         $this->assertEquals(2, $group->users()->count());
 
-        $group->users()->detachMany([$userOne, $userTwo]);
+        $group->users()->detach([$userOne, $userTwo]);
 
         $this->assertEquals(0, $group->users()->count());
     }

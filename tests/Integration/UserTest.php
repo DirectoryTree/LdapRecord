@@ -48,8 +48,7 @@ class UserTest extends TestCase
         $secondUser->save();
 
         $group = $this->makeGroup($this->ou);
-        $group->members()->associate($firstUser);
-        $group->members()->associate($secondUser);
+        $group->members()->associate([$firstUser, $secondUser]);
         $group->save();
 
         $this->assertCount(1, $firstUser->groups()->get());

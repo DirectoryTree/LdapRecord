@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Integration;
 
+use LdapRecord\Models\Collection;
 use LdapRecord\Tests\Integration\Concerns\MakesGroups;
 use LdapRecord\Tests\Integration\Concerns\MakesUsers;
 use LdapRecord\Tests\Integration\Concerns\SetupTestConnection;
@@ -80,8 +81,10 @@ class GroupTest extends TestCase
         $secondUser->save();
 
         $group = $this->makeGroup($this->ou);
-        $group->members()->associate($firstUser);
-        $group->members()->associate($secondUser);
+        $group->members()->associate(new Collection([
+            $firstUser,
+            $secondUser,
+        ]));
 
         $group->save();
 
@@ -104,8 +107,7 @@ class GroupTest extends TestCase
         $secondUser->save();
 
         $group = $this->makeGroup($this->ou);
-        $group->members()->associate($firstUser);
-        $group->members()->associate($secondUser);
+        $group->members()->associate([$firstUser, $secondUser]);
 
         $group->save();
 

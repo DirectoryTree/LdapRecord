@@ -2,8 +2,12 @@
 
 namespace LdapRecord\Tests\Integration;
 
+use LdapRecord\Tests\Integration\Concerns\CreatesTestConnection;
+
 class ConnectionTest extends TestCase
 {
+    use CreatesTestConnection;
+
     public function test_connect()
     {
         $conn = $this->makeConnection();

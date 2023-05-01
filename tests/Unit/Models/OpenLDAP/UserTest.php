@@ -19,7 +19,7 @@ class UserTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }
@@ -55,11 +55,9 @@ class UserTest extends TestCase
 
     public function test_algo_and_salt_is_automatically_detected_when_changing_a_users_password()
     {
-        $pass = Password::sha512crypt('secret');
-
         $user = (new OpenLDAPUserTestStub())->setRawAttributes([
             'userpassword' => [
-                $pass,
+                Password::sha512crypt('secret'),
             ],
         ]);
 
@@ -80,8 +78,7 @@ class UserTest extends TestCase
 
 class OpenLDAPUserTestStub extends User
 {
-    protected function validateSecureConnection()
+    protected function assertSecureConnection(): void
     {
-        return true;
     }
 }

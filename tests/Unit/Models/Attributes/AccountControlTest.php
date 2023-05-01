@@ -22,28 +22,28 @@ class AccountControlTest extends TestCase
         $values = array_values($ac->getAllFlags());
 
         $ac
-            ->accountIsLocked()
-            ->accountRequiresSmartCard()
-            ->accountIsTemporary()
-            ->accountIsForServer()
-            ->accountIsForInterdomain()
-            ->accountIsForWorkstation()
-            ->accountDoesNotRequirePreAuth()
-            ->accountIsDisabled()
-            ->accountIsMnsLogon()
-            ->accountIsNormal()
-            ->accountIsReadOnly()
-            ->allowEncryptedTextPassword()
-            ->homeFolderIsRequired()
-            ->passwordCannotBeChanged()
-            ->passwordDoesNotExpire()
-            ->passwordIsExpired()
-            ->passwordIsNotRequired()
-            ->runLoginScript()
-            ->trustForDelegation()
-            ->trustToAuthForDelegation()
-            ->doNotTrustForDelegation()
-            ->useDesKeyOnly();
+            ->setAccountIsLocked()
+            ->setAccountRequiresSmartCard()
+            ->setAccountIsTemporary()
+            ->setAccountIsForServer()
+            ->setAccountIsForInterdomain()
+            ->setAccountIsForWorkstation()
+            ->setAccountDoesNotRequirePreAuth()
+            ->setAccountIsDisabled()
+            ->setAccountIsMnsLogon()
+            ->setAccountIsNormal()
+            ->setAccountIsReadOnly()
+            ->setAllowEncryptedTextPassword()
+            ->setHomeFolderIsRequired()
+            ->setPasswordCannotBeChanged()
+            ->setPasswordDoesNotExpire()
+            ->setPasswordIsExpired()
+            ->setPasswordIsNotRequired()
+            ->setRunLoginScript()
+            ->setTrustForDelegation()
+            ->setTrustToAuthForDelegation()
+            ->setDoNotTrustForDelegation()
+            ->setUseDesKeyOnly();
 
         $this->assertEquals(array_sum($values), $ac->getValue());
 
@@ -78,7 +78,7 @@ class AccountControlTest extends TestCase
         $ac = new AccountControl();
 
         $this->assertEquals(0, $ac->__toInt());
-        $this->assertEquals(0, (int) $ac->getValue());
+        $this->assertEquals(0, $ac->getValue());
         $this->assertIsInt($ac->__toInt());
     }
 
@@ -101,7 +101,7 @@ class AccountControlTest extends TestCase
             2 => 2,
             8 => 8,
             512 => 512,
-        ], $ac->getValues());
+        ], $ac->getFlags());
         $this->assertEquals($flag, $ac->getValue());
     }
 
@@ -110,15 +110,15 @@ class AccountControlTest extends TestCase
         $ac = new AccountControl();
 
         $ac
-            ->accountIsLocked()
-            ->passwordDoesNotExpire();
+            ->setAccountIsLocked()
+            ->setPasswordDoesNotExpire();
 
-        $this->assertTrue($ac->has(AccountControl::LOCKOUT));
-        $this->assertTrue($ac->has(AccountControl::DONT_EXPIRE_PASSWORD));
-        $this->assertFalse($ac->has(AccountControl::ACCOUNTDISABLE));
-        $this->assertFalse($ac->has(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
-        $this->assertFalse($ac->has(AccountControl::NORMAL_ACCOUNT));
-        $this->assertFalse($ac->has(AccountControl::PASSWD_NOTREQD));
+        $this->assertTrue($ac->hasFlag(AccountControl::LOCKOUT));
+        $this->assertTrue($ac->hasFlag(AccountControl::DONT_EXPIRE_PASSWORD));
+        $this->assertFalse($ac->hasFlag(AccountControl::ACCOUNTDISABLE));
+        $this->assertFalse($ac->hasFlag(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
+        $this->assertFalse($ac->hasFlag(AccountControl::NORMAL_ACCOUNT));
+        $this->assertFalse($ac->hasFlag(AccountControl::PASSWD_NOTREQD));
     }
 
     public function test_doesnt_have()
@@ -126,24 +126,24 @@ class AccountControlTest extends TestCase
         $ac = new AccountControl();
 
         $ac
-            ->accountIsLocked()
-            ->passwordDoesNotExpire();
+            ->setAccountIsLocked()
+            ->setPasswordDoesNotExpire();
 
-        $this->assertFalse($ac->doesntHave(AccountControl::LOCKOUT));
-        $this->assertFalse($ac->doesntHave(AccountControl::DONT_EXPIRE_PASSWORD));
-        $this->assertTrue($ac->doesntHave(AccountControl::ACCOUNTDISABLE));
-        $this->assertTrue($ac->doesntHave(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
-        $this->assertTrue($ac->doesntHave(AccountControl::NORMAL_ACCOUNT));
-        $this->assertTrue($ac->doesntHave(AccountControl::PASSWD_NOTREQD));
+        $this->assertFalse($ac->doesntHaveFlag(AccountControl::LOCKOUT));
+        $this->assertFalse($ac->doesntHaveFlag(AccountControl::DONT_EXPIRE_PASSWORD));
+        $this->assertTrue($ac->doesntHaveFlag(AccountControl::ACCOUNTDISABLE));
+        $this->assertTrue($ac->doesntHaveFlag(AccountControl::ENCRYPTED_TEXT_PWD_ALLOWED));
+        $this->assertTrue($ac->doesntHaveFlag(AccountControl::NORMAL_ACCOUNT));
+        $this->assertTrue($ac->doesntHaveFlag(AccountControl::PASSWD_NOTREQD));
     }
 
     public function test_values_are_overwritten()
     {
         $ac = new AccountControl();
 
-        $ac->accountIsNormal()
-            ->accountIsNormal()
-            ->accountIsNormal();
+        $ac->setAccountIsNormal()
+            ->setAccountIsNormal()
+            ->setAccountIsNormal();
 
         $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
     }
@@ -152,13 +152,13 @@ class AccountControlTest extends TestCase
     {
         $ac = new AccountControl();
 
-        $ac->accountIsNormal()->accountIsDisabled();
+        $ac->setAccountIsNormal()->setAccountIsDisabled();
 
-        $values = $ac->getValues();
+        $values = $ac->getFlags();
 
         unset($values[AccountControl::ACCOUNTDISABLE]);
 
-        $ac->setValues($values);
+        $ac->setFlags($values);
 
         $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
     }
@@ -168,8 +168,8 @@ class AccountControlTest extends TestCase
         $ac = new AccountControl();
 
         // Values are overwritten.
-        $ac->add(AccountControl::ACCOUNTDISABLE);
-        $ac->add(AccountControl::ACCOUNTDISABLE);
+        $ac->setFlag(AccountControl::ACCOUNTDISABLE);
+        $ac->setFlag(AccountControl::ACCOUNTDISABLE);
 
         $this->assertEquals(AccountControl::ACCOUNTDISABLE, $ac->getValue());
     }
@@ -178,14 +178,14 @@ class AccountControlTest extends TestCase
     {
         $ac = new AccountControl();
 
-        $ac->accountIsNormal()->accountIsDisabled();
+        $ac->setAccountIsNormal()->setAccountIsDisabled();
 
-        $ac->remove(AccountControl::ACCOUNTDISABLE);
+        $ac->unsetFlag(AccountControl::ACCOUNTDISABLE);
 
         $this->assertEquals(AccountControl::NORMAL_ACCOUNT, $ac->getValue());
 
-        $ac->remove(AccountControl::NORMAL_ACCOUNT);
-        $ac->remove(AccountControl::NORMAL_ACCOUNT);
+        $ac->unsetFlag(AccountControl::NORMAL_ACCOUNT);
+        $ac->unsetFlag(AccountControl::NORMAL_ACCOUNT);
         $this->assertEquals(0, $ac->getValue());
     }
 }

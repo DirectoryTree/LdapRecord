@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit\Testing;
 
 use Exception;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Testing\LdapExpectation;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
@@ -123,10 +124,22 @@ class LdapFakeTest extends TestCase
     {
         $fake = new LdapFake();
 
-        $fake->expect(['bind' => true]);
+        $fake->expect(['bind' => $response = new LdapResultResponse()]);
 
-        $this->assertTrue($fake->bind('foo', 'bar'));
+        $this->assertSame($response, $fake->bind('foo', 'bar'));
+
         $this->assertTrue($fake->isBound());
+    }
+
+    public function testBindWithExpectationReturnsFailedResult()
+    {
+        $fake = new LdapFake();
+
+        $fake->expect(['bind' => $response = new LdapResultResponse(1)]);
+
+        $this->assertSame($response, $fake->bind('foo', 'bar'));
+
+        $this->assertFalse($fake->isBound());
     }
 
     public function testClose()

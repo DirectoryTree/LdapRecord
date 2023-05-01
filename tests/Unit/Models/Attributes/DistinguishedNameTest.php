@@ -65,7 +65,7 @@ class DistinguishedNameTest extends TestCase
 
     public function test_is_valid()
     {
-        $this->assertFalse(DistinguishedName::isValid(null));
+        $this->assertFalse(DistinguishedName::isValid());
         $this->assertFalse(DistinguishedName::isValid(''));
         $this->assertFalse(DistinguishedName::isValid('invalid'));
         $this->assertFalse(DistinguishedName::isValid('=john doe'));
@@ -81,7 +81,7 @@ class DistinguishedNameTest extends TestCase
 
     public function test_is_empty()
     {
-        $this->assertTrue(DistinguishedName::make(null)->isEmpty());
+        $this->assertTrue(DistinguishedName::make()->isEmpty());
         $this->assertTrue(DistinguishedName::make('')->isEmpty());
         $this->assertTrue(DistinguishedName::make('invalid')->isEmpty());
         $this->assertTrue(DistinguishedName::make('=john doe')->isEmpty());

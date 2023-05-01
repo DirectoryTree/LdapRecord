@@ -6,6 +6,7 @@ use LdapRecord\Auth\BindException;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\DetailedError;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Testing\ConnectionFake;
 use LdapRecord\Testing\DirectoryFake;
@@ -24,7 +25,7 @@ class FakeDirectoryTest extends TestCase
 
     public function test_connection_is_replaced_with_fake()
     {
-        $this->assertInstanceOf(ConnectionFake::class, Container::getConnection(null));
+        $this->assertInstanceOf(ConnectionFake::class, Container::getConnection());
         $this->assertInstanceOf(ConnectionFake::class, Container::getDefaultConnection());
     }
 
@@ -43,10 +44,12 @@ class FakeDirectoryTest extends TestCase
             'port' => 389,
             'use_tls' => true,
             'use_ssl' => false,
+            'use_sasl' => false,
             'timeout' => 5,
             'version' => 3,
             'follow_referrals' => false,
             'options' => ['foo'],
+            'sasl_options' => [],
         ];
 
         Container::addConnection(new Connection($config), 'local');
@@ -67,7 +70,7 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
-        $conn->getLdapConnection()->expect(['add']);
+        $conn->getLdapConnection()->expect(['add' => true]);
 
         $conn->actingAs(User::create(['cn' => 'John']));
 
@@ -78,7 +81,7 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
-        $conn->getLdapConnection()->expect(['add']);
+        $conn->getLdapConnection()->expect(['add' => true]);
 
         $user = User::create(['cn' => 'John']);
 
@@ -118,10 +121,10 @@ class FakeDirectoryTest extends TestCase
         Container::addConnection(new Connection(['hosts' => ['bravo']]), 'bravo');
 
         $alpha = DirectoryFake::setup('alpha');
-        $alpha->getLdapConnection()->expect(['bind' => true]);
+        $alpha->getLdapConnection()->expect(['bind' => new LdapResultResponse()]);
 
         $bravo = DirectoryFake::setup('bravo');
-        $bravo->getLdapConnection()->expect(['bind' => false]);
+        $bravo->getLdapConnection()->expect(['bind' => new LdapResultResponse(1)]);
 
         $this->assertEquals(['alpha'], $alpha->getConfiguration()->get('hosts'));
         $this->assertEquals(['bravo'], $bravo->getConfiguration()->get('hosts'));

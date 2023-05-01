@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Unit\Query;
 use Carbon\Carbon;
 use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\Entry;
 use LdapRecord\Query\ArrayCacheStore;
 use LdapRecord\Query\Cache;
@@ -33,8 +34,8 @@ class BuilderCacheTest extends TestCase
         $conn->setCache(new ArrayCacheStore());
 
         $container = Container::getInstance();
-        $container->setDefault('default');
-        $container->add($conn, 'default');
+        $container->setDefaultConnection('default');
+        $container->addConnection($conn, 'default');
 
         $query = Entry::query();
 
@@ -44,19 +45,23 @@ class BuilderCacheTest extends TestCase
 
     public function test_cache_key_generation_connects_to_server_when_not_connected()
     {
-        $ldap = (new LdapFake)
-            ->expect(LdapFake::operation('bind')->andReturn(true))
-            ->expect(LdapFake::operation('getHost')->andReturn($host = 'localhost'));
+        $ldap = (new LdapFake)->expect(
+            LdapFake::operation('bind')->andReturn(new LdapResultResponse())
+        );
 
-        $conn = new Connection([], $ldap);
+        $ldap->setHost($host = 'localhost');
+
+        $ldap->bind();
+
+        $conn = new Connection(ldap: $ldap);
 
         $conn->setCache(
             $cache = m::mock(ArrayCacheStore::class)
         );
 
         $container = Container::getInstance();
-        $container->setDefault('default');
-        $container->add($conn, 'default');
+        $container->setDefaultConnection('default');
+        $container->addConnection($conn, 'default');
 
         $query = Entry::cache(Carbon::now()->addDay());
 

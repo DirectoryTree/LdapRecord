@@ -2,19 +2,26 @@
 
 namespace LdapRecord\Tests\Integration;
 
-use LdapRecord\Connection;
+use Faker\Factory;
+use Faker\Generator;
+use LdapRecord\Tests\Integration\Concerns\SetupTestConnection;
 use LdapRecord\Tests\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
-    protected function makeConnection(array $params = [])
+    protected ?Generator $faker = null;
+
+    protected function setUp(): void
     {
-        return new Connection(array_merge([
-            'hosts' => ['localhost'],
-            'base_dn' => 'dc=local,dc=com',
-            'username' => 'cn=admin,dc=local,dc=com',
-            'password' => 'secret',
-            'use_ssl' => true,
-        ], $params));
+        parent::setUp();
+
+        if (in_array(SetupTestConnection::class, class_uses($this))) {
+            $this->setUpTestConnection();
+        }
+    }
+
+    protected function faker(): Generator
+    {
+        return $this->faker ??= Factory::create();
     }
 }

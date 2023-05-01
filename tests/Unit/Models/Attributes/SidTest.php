@@ -2,11 +2,26 @@
 
 namespace LdapRecord\Tests\Unit\Models\Attributes;
 
+use InvalidArgumentException;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Tests\TestCase;
 
 class SidTest extends TestCase
 {
+    public function test_throws_exception_with_empty_sid()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Sid('');
+    }
+
+    public function test_throws_exception_with_invalid_sid()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Sid('invalid');
+    }
+
     public function test_can_be_converted_from_binary()
     {
         $hex = '010500000000000515000000dcf4dc3b833d2b46828ba62800020000';

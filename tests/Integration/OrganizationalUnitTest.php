@@ -4,21 +4,22 @@ namespace LdapRecord\Tests\Integration;
 
 use LdapRecord\Container;
 use LdapRecord\Models\OpenLDAP\OrganizationalUnit;
+use LdapRecord\Tests\Integration\Concerns\SetupTestConnection;
 
 class OrganizationalUnitTest extends TestCase
 {
+    use SetupTestConnection;
+
     protected function setUp(): void
     {
         parent::setUp();
-
-        Container::addConnection($this->makeConnection());
 
         OrganizationalUnit::destroy(OrganizationalUnit::all(), $recursive = true);
     }
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }

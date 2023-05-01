@@ -7,14 +7,11 @@ use LdapRecord\Container;
 class DirectoryFake
 {
     /**
-     * Setup the fake connection.
-     *
-     * @param  string|null  $name
-     * @return ConnectionFake
+     * Set up the fake connection.
      *
      * @throws \LdapRecord\ContainerException
      */
-    public static function setup($name = null)
+    public static function setup(string $name = null): ConnectionFake
     {
         $connection = Container::getConnection($name);
 
@@ -30,21 +27,16 @@ class DirectoryFake
 
     /**
      * Reset the container.
-     *
-     * @return void
      */
-    public static function tearDown()
+    public static function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
     }
 
     /**
      * Make a connection fake.
-     *
-     * @param  array  $config
-     * @return ConnectionFake
      */
-    public static function makeConnectionFake(array $config = [])
+    public static function makeConnectionFake(array $config = []): ConnectionFake
     {
         return ConnectionFake::make($config)->shouldBeConnected();
     }

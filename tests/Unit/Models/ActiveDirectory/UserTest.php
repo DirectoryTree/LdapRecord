@@ -11,7 +11,6 @@ use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\Attributes\Timestamp;
-use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
 
@@ -26,7 +25,7 @@ class UserTest extends TestCase
 
     protected function tearDown(): void
     {
-        Container::reset();
+        Container::flush();
 
         parent::tearDown();
     }
@@ -57,7 +56,7 @@ class UserTest extends TestCase
 
         $this->assertEquals([
             'attrib' => 'unicodepwd',
-            'modtype' => LDAP_MODIFY_BATCH_REPLACE,
+            'modtype' => LDAP_MODIFY_BATCH_ADD,
             'values' => [Password::encode('foo')],
         ], $mods[0]);
     }
@@ -79,7 +78,7 @@ class UserTest extends TestCase
         ], $mods[0]);
     }
 
-    public function test_set_password_behaves_differently_on_non_user_models()
+    public function test_set_password_behaves_identically_on_non_user_models()
     {
         $user = new UserPasswordTestStub();
 
@@ -87,7 +86,7 @@ class UserTest extends TestCase
 
         $nonUser = new NonUserPasswordTestStub();
 
-        $nonUser->unicodepwd = 'foo';
+        $nonUser->unicodepwd = Password::encode('foo');
 
         $this->assertEquals($user->getModifications(), $nonUser->getModifications());
     }
@@ -128,17 +127,17 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasMailbox()->filters;
 
-        $this->assertEquals($filters['and'][4]['field'], 'msExchMailboxGuid');
-        $this->assertEquals($filters['and'][4]['operator'], '*');
+        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['field']);
+        $this->assertEquals('*', $filters['and'][4]['operator']);
     }
 
     public function test_scope_where_has_lockout_is_applied()
     {
         $filters = User::whereHasLockout()->filters;
 
-        $this->assertEquals($filters['and'][4]['field'], 'lockoutTime');
-        $this->assertEquals($filters['and'][4]['operator'], '>=');
-        $this->assertEquals($filters['and'][4]['value']->raw(), 1);
+        $this->assertEquals('lockoutTime', $filters['and'][4]['field']);
+        $this->assertEquals('>=', $filters['and'][4]['operator']);
+        $this->assertEquals('\31', $filters['and'][4]['value']);
     }
 
     public function test_is_locked_out()
@@ -179,9 +178,9 @@ class UserTest extends TestCase
         $uac = (new User())->setRawAttribute('useraccountcontrol', '514')->accountControl();
 
         $this->assertSame(514, $uac->getValue());
-        $this->assertTrue($uac->has(AccountControl::ACCOUNTDISABLE));
-        $this->assertTrue($uac->has(AccountControl::NORMAL_ACCOUNT));
-        $this->assertFalse($uac->has(AccountControl::DONT_EXPIRE_PASSWORD));
+        $this->assertTrue($uac->hasFlag(AccountControl::ACCOUNTDISABLE));
+        $this->assertTrue($uac->hasFlag(AccountControl::NORMAL_ACCOUNT));
+        $this->assertFalse($uac->hasFlag(AccountControl::DONT_EXPIRE_PASSWORD));
     }
 
     public function test_user_is_disabled()
@@ -237,22 +236,11 @@ class UserTest extends TestCase
 
 class UserPasswordTestStub extends User
 {
-    protected function validateSecureConnection()
+    protected function assertSecureConnection(): void
     {
-        return true;
     }
 }
 
 class NonUserPasswordTestStub extends Model
 {
-    use HasPassword;
-
-    protected $passwordAttribute = 'unicodepwd';
-
-    protected $passwordHashMethod = 'encode';
-
-    protected function validateSecureConnection()
-    {
-        return true;
-    }
 }

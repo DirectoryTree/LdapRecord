@@ -4,10 +4,10 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasOne;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -47,7 +47,7 @@ class ModelHasOneTest extends TestCase
         $parent->shouldReceive('setAttribute')->once()->with('manager', 'foo')->andReturnSelf();
         $parent->shouldReceive('save')->once()->andReturnTrue();
 
-        $this->assertEquals($related, $relation->attach($related));
+        $relation->attach($related);
     }
 
     public function test_detach()
@@ -58,13 +58,13 @@ class ModelHasOneTest extends TestCase
         $parent->shouldReceive('setAttribute')->once()->with('manager', null)->andReturnSelf();
         $parent->shouldReceive('save')->once()->andReturnTrue();
 
-        $this->assertNull($relation->detach());
+        $relation->detach();
     }
 
-    protected function getRelation()
+    protected function getRelation(): HasOne
     {
         $mockBuilder = m::mock(Builder::class);
-        $mockBuilder->shouldReceive('clearFilters')->once()->withNoArgs()->andReturnSelf();
+        $mockBuilder->shouldReceive('clearFilters')->zeroOrMoreTimes()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('withoutGlobalScopes')->once()->withNoArgs()->andReturnSelf();
         $mockBuilder->shouldReceive('setModel')->once()->with(Entry::class)->andReturnSelf();
 

@@ -31,7 +31,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         (new ModelEventSaveStub())->save();
     }
@@ -42,11 +42,11 @@ class ModelEventTest extends TestCase
 
         $dispatcher->shouldNotReceive('fire');
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         (new ModelEventSaveStub())->saveQuietly();
 
-        $this->assertEquals($dispatcher, Container::getInstance()->getEventDispatcher());
+        $this->assertEquals($dispatcher, Container::getInstance()->getDispatcher());
     }
 
     public function test_create_fires_events()
@@ -58,7 +58,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Created::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         $expectation = LdapFake::operation('add')
             ->once()
@@ -69,7 +69,7 @@ class ModelEventTest extends TestCase
                     'objectclass' => ['bar'],
                 ]
             )
-            ->andReturn(true);
+            ->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
@@ -94,7 +94,7 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class);
         $dispatcher->shouldReceive('fire')->once()->with(Updated::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
         $modifyBatchExpectation = LdapFake::operation('modifyBatch')
             ->once()
@@ -107,7 +107,7 @@ class ModelEventTest extends TestCase
                         'values' => ['foo'],
                     ],
                 ],
-            ])->andReturn(true);
+            ])->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $modifyBatchExpectation]);
 
@@ -129,9 +129,9 @@ class ModelEventTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Deleting::class);
         $dispatcher->shouldReceive('fire')->once()->with(Deleted::class);
 
-        Container::getInstance()->setEventDispatcher($dispatcher);
+        Container::getInstance()->setDispatcher($dispatcher);
 
-        $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturn(true);
+        $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturnTrue();
 
         $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
 
@@ -149,27 +149,27 @@ class ModelEventTest extends TestCase
     }
 }
 
-class ModelEventSaveStub extends Model
+class ModelQueryBuilderSaveStub extends Builder
 {
-    public function newQueryWithoutScopes()
+    public function insert(string $dn, array $attributes): bool
     {
-        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
+        return true;
     }
 
-    public function refresh()
+    public function update(string $dn, array $modifications): bool
     {
         return true;
     }
 }
 
-class ModelQueryBuilderSaveStub extends Builder
+class ModelEventSaveStub extends Model
 {
-    public function insert($dn, array $attributes)
+    public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
     {
-        return true;
+        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
     }
 
-    public function update($dn, array $modifications)
+    public function refresh(): bool
     {
         return true;
     }

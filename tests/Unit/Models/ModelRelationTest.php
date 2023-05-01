@@ -5,11 +5,12 @@ namespace LdapRecord\Tests\Unit\Models;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Models\Scope;
-use LdapRecord\Query\Collection;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 
@@ -224,7 +225,7 @@ class ModelRelationTest extends TestCase
 
         $model->setDn($characters);
 
-        $expected = (new EscapedValue($characters))->both()->get();
+        $expected = (new EscapedValue($characters))->forDnAndFilter()->get();
 
         $this->assertEquals(
             "(foo=$expected)",
@@ -250,16 +251,16 @@ class ModelRelationTest extends TestCase
 
 class RelationTestStub extends Relation
 {
-    protected $results = [];
+    protected array $results = [];
 
-    public function getResults()
+    public function getResults(): Collection
     {
         return $this->transformResults(
             $this->parent->newCollection($this->results)
         );
     }
 
-    public function setResults($results)
+    public function setResults($results): static
     {
         $this->results = $results;
 
@@ -269,7 +270,7 @@ class RelationTestStub extends Relation
 
 class ModelRelationTestStub extends Model
 {
-    public function relation()
+    public function relation(): RelationTestStub
     {
         return new RelationTestStub($this->newQuery(), $this, RelatedModelTestStub::class, 'foo', 'bar');
     }
@@ -277,19 +278,19 @@ class ModelRelationTestStub extends Model
 
 class RelatedModelTestStub extends Model
 {
-    public static $objectClasses = ['foo', 'bar'];
+    public static array $objectClasses = ['foo', 'bar'];
 }
 
 class ModelRelationWithScopeTestStub extends Model
 {
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
         static::addGlobalScope(new ModelRelationScopeTestStub());
     }
 
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany(self::class, 'foo');
     }
@@ -297,7 +298,7 @@ class ModelRelationWithScopeTestStub extends Model
 
 class ModelRelationScopeTestStub implements Scope
 {
-    public function apply(Builder $query, Model $model)
+    public function apply(Builder $query, Model $model): void
     {
         $query->where('bar', '=', 'baz');
     }
@@ -305,7 +306,7 @@ class ModelRelationScopeTestStub implements Scope
 
 class ModelWithHasManyRelationTestStub extends Model
 {
-    public function relation()
+    public function relation(): HasMany
     {
         return $this->hasMany(static::class, 'foo');
     }

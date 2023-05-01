@@ -8,33 +8,23 @@ abstract class Event
 {
     /**
      * The connection that the username and password is being bound on.
-     *
-     * @var LdapInterface
      */
-    protected $connection;
+    protected LdapInterface $connection;
 
     /**
      * The username that is being used for binding.
-     *
-     * @var string
      */
-    protected $username;
+    protected ?string $username;
 
     /**
      * The password that is being used for binding.
-     *
-     * @var string
      */
-    protected $password;
+    protected ?string $password;
 
     /**
      * Constructor.
-     *
-     * @param  LdapInterface  $connection
-     * @param  string  $username
-     * @param  string  $password
      */
-    public function __construct(LdapInterface $connection, $username, $password)
+    public function __construct(LdapInterface $connection, string $username = null, string $password = null)
     {
         $this->connection = $connection;
         $this->username = $username;
@@ -43,30 +33,24 @@ abstract class Event
 
     /**
      * Returns the events connection.
-     *
-     * @return LdapInterface
      */
-    public function getConnection()
+    public function getConnection(): LdapInterface
     {
         return $this->connection;
     }
 
     /**
      * Returns the authentication events username.
-     *
-     * @return string
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
     /**
      * Returns the authentication events password.
-     *
-     * @return string
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }

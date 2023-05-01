@@ -138,10 +138,10 @@ class ModelHiddenAttributesTest extends TestCase
 
 class ModelWithHiddenAttributesStub extends Model
 {
-    protected $hidden = ['foo'];
+    protected array $hidden = ['foo'];
 }
 
 class ModelWithVisibleAttributesStub extends Model
 {
-    protected $visible = ['foo'];
+    protected array $visible = ['foo'];
 }

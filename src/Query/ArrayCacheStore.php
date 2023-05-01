@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Query;
 
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
 class ArrayCacheStore implements CacheInterface
@@ -10,15 +11,13 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * An array of stored values.
-     *
-     * @var array
      */
-    protected $storage = [];
+    protected array $storage = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (! isset($this->storage[$key])) {
             return $default;
@@ -38,9 +37,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
         $this->storage[$key] = [
             'value' => $value,
@@ -52,30 +51,24 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * Get the expiration time of the key.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function calculateExpiration($seconds)
+    protected function calculateExpiration(int $seconds = null): int
     {
         return $this->toTimestamp($seconds);
     }
 
     /**
      * Get the UNIX timestamp for the given number of seconds.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function toTimestamp($seconds)
+    protected function toTimestamp(int $seconds = null): int
     {
         return $seconds > 0 ? $this->availableAt($seconds) : 0;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         unset($this->storage[$key]);
 
@@ -83,9 +76,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): bool
     {
         $this->storage = [];
 
@@ -93,9 +86,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getMultiple($keys, $default = null)
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         $values = [];
 
@@ -107,9 +100,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);
@@ -119,9 +112,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple(iterable $keys): bool
     {
         foreach ($keys as $key) {
             $this->delete($key);
@@ -131,9 +124,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return isset($this->storage[$key]);
     }

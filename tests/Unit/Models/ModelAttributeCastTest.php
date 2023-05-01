@@ -137,7 +137,7 @@ class ModelAttributeCastTest extends TestCase
 
 class ModelCastStub extends Model
 {
-    protected $casts = [
+    protected array $casts = [
         'intAttribute' => 'int',
         'integerAttribute' => 'integer',
         'floatAttribute' => 'float',

@@ -4,9 +4,9 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Utilities;
 
 class ModelAccessorMutatorTest extends TestCase
 {
@@ -109,7 +109,11 @@ class ModelAccessorMutatorTest extends TestCase
         // Case insensitivity
         $this->assertInstanceOf(Carbon::class, $model->accountExpires);
         $this->assertTrue($date->setTimezone('UTC')->micro(0)->eq($model->accountexpires));
-        $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $model->getAttributes()['accountexpires'][0]);
+
+        $this->assertEquals(
+            (new Timestamp(Timestamp::TYPE_WINDOWS_INT))->fromDateTime($date),
+            $model->getAttributes()['accountexpires'][0]
+        );
     }
 
     public function test_models_mutate_from_ldap_type_to_date()
@@ -163,24 +167,26 @@ class ModelAccessorMutatorTest extends TestCase
 
 class ModelAccessorStub extends Model
 {
-    protected $attributes = [
+    protected array $attributes = [
         'foo' => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
-    public function getFooAttribute($bar)
+    public function getFooAttribute($bar): string
     {
         return $bar[0].'baz';
     }
 
-    public function getFooBarAttribute($baz)
+    public function getFooBarAttribute($baz): ?string
     {
         if ($baz) {
             return $baz[0].'-other';
         }
+
+        return null;
     }
 
-    public function getZaxAttribute($value)
+    public function getZaxAttribute($value): string
     {
         return 'zax';
     }
@@ -188,17 +194,17 @@ class ModelAccessorStub extends Model
 
 class ModelMutatorStub extends Model
 {
-    protected $attributes = [
+    protected array $attributes = [
         'foo' => ['bar'],
         'foo-bar' => ['baz'],
     ];
 
-    public function setFooAttribute($bar)
+    public function setFooAttribute($bar): void
     {
         $this->attributes['foo'] = [$bar.'baz'];
     }
 
-    public function setFooBarAttribute($baz)
+    public function setFooBarAttribute($baz): void
     {
         $this->attributes['foo-bar'] = [$baz.'-other'];
     }
@@ -206,7 +212,7 @@ class ModelMutatorStub extends Model
 
 class ModelDateMutatorStub extends Model
 {
-    protected $dates = [
+    protected array $dates = [
         'createTimestamp' => 'ldap',
         'whenchanged' => 'windows',
         'accountexpires' => 'windows-int',
@@ -215,7 +221,7 @@ class ModelDateMutatorStub extends Model
 
 class ModelDateAccessorStub extends ModelDateMutatorStub
 {
-    protected $attributes = [
+    protected array $attributes = [
         'createTimestamp' => ['20190910220204Z'],
         'whenchanged' => ['20190910220204.0Z'],
         'accountexpires' => ['132126265240000000'],

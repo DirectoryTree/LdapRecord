@@ -225,7 +225,7 @@ class ExampleEvent
 
 class ExampleListener
 {
-    public function handle(SomeEventInterface $event)
+    public function handle(SomeEventInterface $event): void
     {
         $_SERVER['__event.test2'] = 'baar';
     }

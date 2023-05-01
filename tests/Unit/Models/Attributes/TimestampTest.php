@@ -6,17 +6,20 @@ use DateTime;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Tests\TestCase;
-use LdapRecord\Utilities;
 
 class TimestampTest extends TestCase
 {
-    protected $utcLdapTimestamp = '20201002021244Z';
-    protected $offsetLdapTimestamp = '20201002021244-0500';
+    protected int $unixTimestamp = 1601605329;
 
-    protected $utcindowsTimestamp = '20201002021618.0Z';
-    protected $offsetWindowsTimestamp = '20201002021618.0-0500';
+    protected string $utcLdapTimestamp = '20201002021244Z';
 
-    protected $windowsIntegerTime = '132460789290000000';
+    protected string $offsetLdapTimestamp = '20201002021244-0500';
+
+    protected string $utcWindowsTimestamp = '20201002021618.0Z';
+
+    protected string $offsetWindowsTimestamp = '20201002021618.0-0500';
+
+    protected string $windowsIntegerTime = '132460789290000000';
 
     public function test_exception_is_thrown_when_invalid_type_given()
     {
@@ -27,7 +30,7 @@ class TimestampTest extends TestCase
 
     public function test_converting_to_date_returns_date_objects()
     {
-        $timestamp = new Timestamp('ldap');
+        $timestamp = new Timestamp(Timestamp::TYPE_LDAP);
 
         $date = new DateTime();
 
@@ -36,7 +39,7 @@ class TimestampTest extends TestCase
 
     public function test_dates_can_be_converted_to_ldap_type()
     {
-        $timestamp = new Timestamp('ldap');
+        $timestamp = new Timestamp(Timestamp::TYPE_LDAP);
 
         $date = new DateTime();
         $this->assertEquals($date->format('YmdHis\Z'), $timestamp->fromDateTime($date));
@@ -47,7 +50,7 @@ class TimestampTest extends TestCase
 
     public function test_dates_can_be_converted_to_windows_type()
     {
-        $timestamp = new Timestamp('windows');
+        $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS);
 
         $date = new DateTime();
         $this->assertEquals($date->format('YmdHis.0\Z'), $timestamp->fromDateTime($date));
@@ -58,16 +61,16 @@ class TimestampTest extends TestCase
 
     public function test_dates_can_be_converted_to_windows_integer_type()
     {
-        $timestamp = new Timestamp('windows-int');
+        $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS_INT);
 
-        $date = new DateTime();
+        $date = (new DateTime())->setTimestamp($this->unixTimestamp);
 
-        $this->assertEquals(Utilities::convertUnixTimeToWindowsTime($date->getTimestamp()), $timestamp->fromDateTime($date));
+        $this->assertEquals('132460789290000000', $timestamp->fromDateTime($date));
     }
 
     public function test_ldap_type_can_be_converted_to_date()
     {
-        $timestamp = new Timestamp('ldap');
+        $timestamp = new Timestamp(Timestamp::TYPE_LDAP);
 
         $datetime = $timestamp->toDateTime($this->utcLdapTimestamp);
 
@@ -84,9 +87,9 @@ class TimestampTest extends TestCase
 
     public function test_windows_type_can_be_converted_to_date()
     {
-        $timestamp = new Timestamp('windows');
+        $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS);
 
-        $datetime = $timestamp->toDateTime($this->utcindowsTimestamp);
+        $datetime = $timestamp->toDateTime($this->utcWindowsTimestamp);
         $this->assertEquals('UTC', $datetime->timezone->getName());
         $this->assertEquals('Fri Oct 02 2020 02:16:18 GMT+0000', $datetime->toString());
 
@@ -97,7 +100,7 @@ class TimestampTest extends TestCase
 
     public function test_windows_integer_type_can_be_converted_to_date()
     {
-        $timestamp = new Timestamp('windows-int');
+        $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS_INT);
 
         $datetime = $timestamp->toDateTime($this->windowsIntegerTime);
         $this->assertEquals('UTC', $datetime->timezone->getName());
@@ -108,9 +111,9 @@ class TimestampTest extends TestCase
     {
         date_default_timezone_set('Australia/Sydney');
 
-        $timestamp = new Timestamp('windows');
+        $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS);
 
-        $datetime = $timestamp->toDateTime($this->utcindowsTimestamp);
+        $datetime = $timestamp->toDateTime($this->utcWindowsTimestamp);
 
         $this->assertEquals('UTC', $datetime->timezone->getName());
 

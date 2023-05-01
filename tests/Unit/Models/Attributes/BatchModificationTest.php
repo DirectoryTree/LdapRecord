@@ -213,8 +213,8 @@ class BatchModificationTest extends TestCase
     {
         $mod = new BatchModification();
 
-        $mod->setOriginal([(new AccountControl())->accountIsNormal()]);
-        $mod->setValues([(new AccountControl())->accountIsNormal()]);
+        $mod->setOriginal([(new AccountControl())->setAccountIsNormal()]);
+        $mod->setValues([(new AccountControl())->setAccountIsNormal()]);
 
         $this->assertIsString($mod->getOriginal()[0]);
         $this->assertIsString($mod->getValues()[0]);

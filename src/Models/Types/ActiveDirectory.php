@@ -6,33 +6,23 @@ interface ActiveDirectory extends TypeInterface
 {
     /**
      * Returns the models object SID key.
-     *
-     * @return string
      */
-    public function getObjectSidKey();
+    public function getObjectSidKey(): string;
 
     /**
      * Returns the model's hex object SID.
      *
      * @see https://msdn.microsoft.com/en-us/library/ms679024(v=vs.85).aspx
-     *
-     * @return string
      */
-    public function getObjectSid();
+    public function getObjectSid(): ?string;
 
     /**
      * Returns the model's SID.
-     *
-     * @param  string|null  $sid
-     * @return string|null
      */
-    public function getConvertedSid($sid = null);
+    public function getConvertedSid(string $sid = null): ?string;
 
     /**
      * Returns the model's binary SID.
-     *
-     * @param  string|null  $sid
-     * @return string|null
      */
-    public function getBinarySid($sid = null);
+    public function getBinarySid(string $sid = null): ?string;
 }

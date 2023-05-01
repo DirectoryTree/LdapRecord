@@ -9,10 +9,10 @@ use LdapRecord\Tests\TestCase;
 
 class AuthGuardFakeTest extends TestCase
 {
-    public function testBindAsConfiguredUserAlwaysReturnsTrue()
+    public function testBindAsConfiguredUserAlwaysReturnsNull()
     {
         $guard = new AuthGuardFake(new LdapFake(), new DomainConfiguration());
 
-        $this->assertTrue($guard->bindAsConfiguredUser());
+        $this->assertNull($guard->bindAsConfiguredUser());
     }
 }

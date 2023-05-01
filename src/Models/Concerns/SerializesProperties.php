@@ -23,9 +23,9 @@ trait SerializesProperties
             ));
         }
 
-        return array_values(array_filter(array_map(fn ($p) => (
+        return array_values(array_filter(array_map(fn ($p) =>
             $p->isStatic() ? null : $p->getName()
-        ), $properties)));
+        , $properties)));
     }
 
     /**

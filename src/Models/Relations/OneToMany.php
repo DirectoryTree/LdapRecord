@@ -138,23 +138,19 @@ abstract class OneToMany extends Relation
     /**
      * Attach the model in the relation.
      */
-    public function attach(Model|string $model): void
+    public function attach(mixed $model): void
     {
+        if (is_iterable($model)) {
+            array_map($this->attach(...), [...$model]);
+
+            return;
+        }
+
         $this->attemptFailableOperation(
             $this->buildAttachCallback($model),
             $this->bypass['attach'],
             $model
         );
-    }
-
-    /**
-     * Attach a collection of models to the parent instance.
-     */
-    public function attachMany(iterable $models): void
-    {
-        foreach ($models as $model) {
-            $this->attach($model);
-        }
     }
 
     /**
@@ -199,23 +195,19 @@ abstract class OneToMany extends Relation
     /**
      * Detach the model from the relation.
      */
-    public function detach(Model|string $model): void
+    public function detach(mixed $model): void
     {
+        if (is_iterable($model)) {
+            array_map($this->detach(...), [...$model]);
+
+            return;
+        }
+
         $this->attemptFailableOperation(
             $this->buildDetachCallback($model),
             $this->bypass['detach'],
             $model
         );
-    }
-
-    /**
-     * Detach a collection of models from the parent instance.
-     */
-    public function detachMany(iterable $models): void
-    {
-        foreach ($models as $model) {
-            $this->detach($model);
-        }
     }
 
     /**
@@ -261,8 +253,14 @@ abstract class OneToMany extends Relation
     /**
      * Associate the model in the relation.
      */
-    public function associate(Model|string $model): void
+    public function associate(mixed $model): void
     {
+        if (is_iterable($model)) {
+            array_map($this->associate(...), [...$model]);
+
+            return;
+        }
+
         $foreign = $this->getAttachableForeignValue($model);
 
         if ($this->using) {
@@ -281,8 +279,14 @@ abstract class OneToMany extends Relation
     /**
      * Dissociate the model in the relation.
      */
-    public function dissociate(Model|string $model): void
+    public function dissociate(mixed $model): void
     {
+        if (is_iterable($model)) {
+            array_map($this->dissociate(...), [...$model]);
+
+            return;
+        }
+
         $foreign = $this->getAttachableForeignValue($model);
 
         if ($this->using) {
@@ -347,11 +351,11 @@ abstract class OneToMany extends Relation
      */
     public function detachAll(): Collection
     {
-        return $this->onceWithoutMerging(function () {
-            return $this->get()->each(function (Model $model) {
+        return $this->onceWithoutMerging(fn () => (
+            $this->get()->each(function (Model $model) {
                 $this->detach($model);
-            });
-        });
+            })
+        ));
     }
 
     /**
@@ -359,8 +363,8 @@ abstract class OneToMany extends Relation
      */
     public function detachAllOrDelete(): Collection
     {
-        return $this->onceWithoutMerging(function () {
-            return $this->get()->each(function (Model $model) {
+        return $this->onceWithoutMerging(fn () => (
+            $this->get()->each(function (Model $model) {
                 $relation = $model->getRelation($this->relationName);
 
                 if ($relation && $relation->count() >= 1) {
@@ -368,8 +372,8 @@ abstract class OneToMany extends Relation
                 } else {
                     $this->detach($model);
                 }
-            });
-        });
+            })
+        ));
     }
 
     /**
@@ -389,12 +393,12 @@ abstract class OneToMany extends Relation
      */
     protected function getRecursiveResults(array $loaded = []): Collection
     {
-        $results = $this->getRelationResults()->reject(function (Model $model) use ($loaded) {
+        $results = $this->getRelationResults()->reject(fn (Model $model) => (
             // Here we will exclude the models that we have already
             // loaded the recursive results for so we don't run
             // into issues with circular relations in LDAP.
-            return in_array($model->getDn(), $loaded);
-        });
+            in_array($model->getDn(), $loaded)
+        ));
 
         foreach ($results as $model) {
             $loaded[] = $model->getDn();

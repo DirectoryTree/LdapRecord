@@ -177,8 +177,7 @@ class Builder
      */
     public function get(array|string $columns = ['*']): Collection|array
     {
-        return $this->onceWithColumns(Arr::wrap($columns), fn () =>
-            $this->query($this->getQuery())
+        return $this->onceWithColumns(Arr::wrap($columns), fn () => $this->query($this->getQuery())
         );
     }
 
@@ -366,8 +365,7 @@ class Builder
         // Here we will create the pagination callback. This allows us
         // to only execute an LDAP request if caching is disabled
         // or if no cache of the given query exists yet.
-        $callback = fn () =>
-            $this->runPaginate($query, $pageSize, $isCritical);
+        $callback = fn () => $this->runPaginate($query, $pageSize, $isCritical);
 
         $pages = $this->getCachedResponse($query, $callback);
 
@@ -381,8 +379,8 @@ class Builder
      */
     protected function runPaginate(string $filter, int $perPage, bool $isCritical): array
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap)
         );
     }
 
@@ -419,8 +417,8 @@ class Builder
             }
         };
 
-        $isolate ? $this->connection->isolate(fn (Connection $replicate) =>
-            $chunk($this->clone()->setConnection($replicate))
+        $isolate ? $this->connection->isolate(
+            fn (Connection $replicate) => $chunk($this->clone()->setConnection($replicate))
         ) : $chunk($this);
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
@@ -433,8 +431,8 @@ class Builder
      */
     protected function runChunk(string $filter, int $perPage, bool $isCritical): Generator
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap)
         );
     }
 
@@ -1370,8 +1368,8 @@ class Builder
             );
         }
 
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->add($dn, $attributes)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->add($dn, $attributes)
         );
     }
 
@@ -1380,8 +1378,8 @@ class Builder
      */
     public function add(string $dn, array $attributes): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->modAdd($dn, $attributes)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->modAdd($dn, $attributes)
         );
     }
 
@@ -1390,8 +1388,8 @@ class Builder
      */
     public function update(string $dn, array $modifications): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->modifyBatch($dn, $modifications)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->modifyBatch($dn, $modifications)
         );
     }
 
@@ -1400,8 +1398,8 @@ class Builder
      */
     public function replace(string $dn, array $attributes): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->modReplace($dn, $attributes)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->modReplace($dn, $attributes)
         );
     }
 
@@ -1410,8 +1408,8 @@ class Builder
      */
     public function delete(string $dn): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->delete($dn)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->delete($dn)
         );
     }
 
@@ -1420,8 +1418,8 @@ class Builder
      */
     public function remove(string $dn, array $attributes): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->modDelete($dn, $attributes)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->modDelete($dn, $attributes)
         );
     }
 
@@ -1430,8 +1428,8 @@ class Builder
      */
     public function rename(string $dn, string $rdn, string $newParentDn, bool $deleteOldRdn = true): bool
     {
-        return $this->connection->run(fn (LdapInterface $ldap) =>
-            $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn)
+        return $this->connection->run(
+            fn (LdapInterface $ldap) => $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn)
         );
     }
 

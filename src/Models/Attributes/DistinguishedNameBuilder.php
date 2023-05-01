@@ -24,9 +24,10 @@ class DistinguishedNameBuilder
      */
     public function __construct($dn = null)
     {
-        $this->components = array_map(fn ($rdn) =>
-            DistinguishedName::explodeRdn($rdn)
-        , DistinguishedName::make($dn)->components());
+        $this->components = array_map(
+            fn ($rdn) => DistinguishedName::explodeRdn($rdn),
+            DistinguishedName::make($dn)->components()
+        );
     }
 
     /**
@@ -115,9 +116,10 @@ class DistinguishedNameBuilder
      */
     public function pop(int $amount = 1, array &$removed = null): static
     {
-        $removed = array_map(fn ($component) =>
-            DistinguishedName::makeRdn($component)
-        , array_splice($this->components, -$amount, $amount));
+        $removed = array_map(
+            fn ($component) => DistinguishedName::makeRdn($component),
+            array_splice($this->components, -$amount, $amount)
+        );
 
         return $this;
     }
@@ -127,9 +129,10 @@ class DistinguishedNameBuilder
      */
     public function shift(int $amount = 1, array &$removed = null): static
     {
-        $removed = array_map(fn ($component) =>
-            DistinguishedName::makeRdn($component)
-        , array_splice($this->components, 0, $amount));
+        $removed = array_map(
+            fn ($component) => DistinguishedName::makeRdn($component),
+            array_splice($this->components, 0, $amount)
+        );
 
         return $this;
     }
@@ -183,8 +186,9 @@ class DistinguishedNameBuilder
             ? array_reverse($this->components)
             : $this->components;
 
-        return implode(',', array_map(fn ($component) =>
-            DistinguishedName::makeRdn($component)
-        , $components));
+        return implode(',', array_map(
+            fn ($component) => DistinguishedName::makeRdn($component),
+            $components
+        ));
     }
 }

@@ -351,8 +351,8 @@ abstract class OneToMany extends Relation
      */
     public function detachAll(): Collection
     {
-        return $this->onceWithoutMerging(fn () =>
-            $this->get()->each(function (Model $model) {
+        return $this->onceWithoutMerging(
+            fn () => $this->get()->each(function (Model $model) {
                 $this->detach($model);
             })
         );
@@ -363,8 +363,8 @@ abstract class OneToMany extends Relation
      */
     public function detachAllOrDelete(): Collection
     {
-        return $this->onceWithoutMerging(fn () =>
-            $this->get()->each(function (Model $model) {
+        return $this->onceWithoutMerging(
+            fn () => $this->get()->each(function (Model $model) {
                 $relation = $model->getRelation($this->relationName);
 
                 if ($relation && $relation->count() >= 1) {

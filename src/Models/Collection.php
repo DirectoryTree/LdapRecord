@@ -109,8 +109,8 @@ class Collection extends QueryCollection
     {
         if (is_string($model)) {
             return $this->isValidDn($model)
-                ? $related->getDn() == $model
-                : $related->getName() == $model;
+                ? strcasecmp($related->getDn(), $model) === 0
+                : strcasecmp($related->getName(), $model) === 0;
         }
 
         return $related->is($model);

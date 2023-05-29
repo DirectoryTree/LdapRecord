@@ -96,11 +96,67 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Finds a model by its distinguished name.
+     * {@inheritDoc}
+     */
+    public function first(array|string $columns = ['*']): ?Model
+    {
+        return parent::first($columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function firstOrFail(array|string $columns = ['*']): Model
+    {
+        return parent::firstOrFail($columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function sole(array|string $columns = ['*']): Model
+    {
+        return parent::sole($columns);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
     {
         return $this->afterScopes(fn () => parent::find($dn, $columns));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findOrFail(string $dn, array|string $columns = ['*']): Model
+    {
+        return parent::findOrFail($dn, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): Model
+    {
+        return parent::findByOrFail($attribute, $value, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?Model
+    {
+        return parent::findBy($attribute, $value, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findMany(array|string $dns, array|string $columns = ['*']): Collection
+    {
+        return parent::findMany($dns, $columns);
     }
 
     /**

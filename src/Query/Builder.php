@@ -177,8 +177,7 @@ class Builder
      */
     public function get(array|string $columns = ['*']): Collection|array
     {
-        return $this->onceWithColumns(Arr::wrap($columns), fn () => $this->query($this->getQuery())
-        );
+        return $this->onceWithColumns(Arr::wrap($columns), fn () => $this->query($this->getQuery()));
     }
 
     /**

@@ -28,10 +28,13 @@ class CacheTest extends TestCase
         $cache = new Cache(new ArrayCacheStore());
 
         $this->assertTrue($cache->put('foo', 'bar'));
-        $this->assertNull($cache->get('foo'));
-
-        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->addSeconds(10)));
         $this->assertEquals('bar', $cache->get('foo'));
+
+        $this->assertTrue($cache->put('foo', 'bar', Carbon::now()->addSecond()));
+
+        sleep(2);
+
+        $this->assertNull($cache->get('foo'));
     }
 
     public function test_items_can_be_deleted()
@@ -57,9 +60,11 @@ class CacheTest extends TestCase
 
         $this->assertEquals('bar', $cache->get('foo'));
 
-        $cache->remember('baz', Carbon::now()->subDay(), function () {
+        $cache->remember('baz', 1, function () {
             return 'zal';
         });
+
+        sleep(2);
 
         $this->assertNull($cache->get('baz'));
     }

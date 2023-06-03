@@ -110,4 +110,27 @@ class CacheTest extends TestCase
 
         $this->assertEquals(['bar', 'foo'], $this->getUserCnsFromCache());
     }
+
+    public function test_custom_cache_keys_can_be_used()
+    {
+        $this->resetConnection(cache: $cache = new ArrayCacheStore);
+
+        $user = $this->makeUser($this->ou, ['cn' => 'foo']);
+
+        $user->save();
+
+        $user->refresh();
+
+        User::query()->cache(key: 'foo')->get();
+
+        $cached = (new User)->setRawAttributes(
+            $cache->get('foo')[0]
+        );
+
+        $this->assertEquals($user->toArray(), $cached->toArray());
+
+        User::query()->getCache()->delete('foo');
+
+        $this->assertNull($cache->get('foo'));
+    }
 }

@@ -85,6 +85,11 @@ class Builder
     protected bool $caching = false;
 
     /**
+     * The custom cache key to use when caching results.
+     */
+    protected ?string $cacheKey = null;
+
+    /**
      * How long the query should be cached until.
      */
     protected ?DateTimeInterface $cacheUntil = null;
@@ -510,7 +515,7 @@ class Builder
     protected function getCachedResponse(string $query, Closure $callback): mixed
     {
         if ($this->cache && $this->caching) {
-            $key = $this->getCacheKey($query);
+            $key = $this->cacheKey ?? $this->getCacheKey($query);
 
             if ($this->flushCache) {
                 $this->cache->delete($key);
@@ -519,7 +524,14 @@ class Builder
             return $this->cache->remember($key, $this->cacheUntil, $callback);
         }
 
-        return $callback();
+        try {
+            return $callback();
+        } finally {
+            $this->caching = false;
+            $this->cacheKey = null;
+            $this->cacheUntil = null;
+            $this->flushCache = false;
+        }
     }
 
     /**
@@ -1325,9 +1337,10 @@ class Builder
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      */
-    public function cache(DateTimeInterface $until = null, bool $flush = false): static
+    public function cache(DateTimeInterface $until = null, bool $flush = false, string $key = null): static
     {
         $this->caching = true;
+        $this->cacheKey = $key;
         $this->cacheUntil = $until;
         $this->flushCache = $flush;
 

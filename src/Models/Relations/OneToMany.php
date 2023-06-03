@@ -215,11 +215,16 @@ abstract class OneToMany extends Relation
      */
     public function detachOrDeleteParent(Model|string $model): void
     {
-        $count = $this->onceWithoutMerging(function () {
-            return $this->count();
+        /** @var Collection $related */
+        $related = $this->onceWithoutMerging(function () {
+            return $this->get('dn');
         });
 
-        if ($count <= 1) {
+        if (! $related->exists($model)) {
+            return;
+        }
+
+        if ($related->count() <= 1) {
             $this->getParent()->delete();
 
             return;

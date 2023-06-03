@@ -13,10 +13,12 @@ class HasManyTest extends TestCase
     public function test_detach_or_delete_parent_with_multiple_results()
     {
         $model = m::mock(Entry::class);
+        $model->shouldReceive('is')->once()->andReturnTrue();
         $model->shouldReceive('delete')->never();
 
         $relation = m::mock(HasMany::class)->makePartial();
-        $relation->shouldReceive('count')->withNoArgs()->andReturn(2);
+        $relation->shouldReceive('get')->with('dn')->andReturn(new Collection([$model, $model]));
+
         $relation->shouldReceive('detach')->with($model)->once();
 
         $relation->detachOrDeleteParent($model);
@@ -25,29 +27,45 @@ class HasManyTest extends TestCase
     public function test_detach_or_delete_parent_with_one_result()
     {
         $model = m::mock(Entry::class);
+        $model->shouldReceive('is')->once()->andReturnTrue();
         $model->shouldReceive('delete')->never();
 
         $related = m::mock(Entry::class);
         $related->shouldReceive('delete')->once();
 
         $relation = m::mock(HasMany::class)->makePartial();
-        $relation->shouldReceive('count')->withNoArgs()->andReturn(1);
+        $relation->shouldReceive('get')->with('dn')->andReturn(new Collection([$model]));
         $relation->shouldReceive('getParent')->once()->andReturn($related);
 
         $relation->detachOrDeleteParent($model);
     }
 
-    public function test_detach_or_delete_parent_with_no_results()
+    public function test_detach_or_delete_parent_with_single_non_matching_result()
     {
         $model = m::mock(Entry::class);
         $model->shouldReceive('delete')->never();
 
         $related = m::mock(Entry::class);
-        $related->shouldReceive('delete')->once();
+        $related->shouldReceive('delete')->never();
+
+        $other = m::mock(Entry::class);
+        $other->shouldReceive('is')->once()->with($model)->andReturnFalse();
 
         $relation = m::mock(HasMany::class)->makePartial();
-        $relation->shouldReceive('count')->withNoArgs()->andReturn(0);
-        $relation->shouldReceive('getParent')->once()->andReturn($related);
+        $relation->shouldReceive('get')->with('dn')->andReturn(
+            new Collection([$other])
+        );
+
+        $relation->detachOrDeleteParent($model);
+    }
+
+    public function test_detach_or_delete_parent_with_no_results_does_not_delete_parent()
+    {
+        $model = m::mock(Entry::class);
+        $model->shouldReceive('delete')->never();
+
+        $relation = m::mock(HasMany::class)->makePartial();
+        $relation->shouldReceive('get')->with('dn')->andReturn(new Collection());
 
         $relation->detachOrDeleteParent($model);
     }

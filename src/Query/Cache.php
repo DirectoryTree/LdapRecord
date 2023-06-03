@@ -39,13 +39,7 @@ class Cache
      */
     public function put(string $key, mixed $value, DateTimeInterface|DateInterval|int|null $ttl = null): bool
     {
-        $seconds = $this->secondsUntil($ttl);
-
-        if ($seconds <= 0) {
-            return $this->delete($key);
-        }
-
-        return $this->store->set($key, $value, $seconds);
+        return $this->store->set($key, $value, $this->secondsUntil($ttl));
     }
 
     /**
@@ -53,9 +47,7 @@ class Cache
      */
     public function remember(string $key, DateTimeInterface|DateInterval|int|null $ttl, Closure $callback): mixed
     {
-        $value = $this->get($key);
-
-        if (! is_null($value)) {
+        if (! is_null($value = $this->get($key))) {
             return $value;
         }
 

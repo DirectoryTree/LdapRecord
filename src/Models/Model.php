@@ -1166,6 +1166,13 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
             $newParentDn = $this->getParentDn($this->dn);
         }
 
+        // If the RDN we have been given is empty when parsed, we must
+        // have been given a string, with no attribute. In this case,
+        // we will create a new RDN using the current DN's head.
+        if ($this->newDn($rdn)->isEmpty()) {
+            $rdn = $this->getUpdateableRdn($rdn);
+        }
+
         // If the RDN and the new parent DN are the same as the current,
         // we will simply return here to prevent a rename operation
         // being sent, which would fail anyway in such case.
@@ -1174,13 +1181,6 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
          && $newParentDn === $this->getParentDn()
         ) {
             return;
-        }
-
-        // If the RDN we have been given is empty when parsed, we must
-        // have been given a string, with no attribute. In this case,
-        // we will create a new RDN using the current DN's head.
-        if ($this->newDn($rdn)->isEmpty()) {
-            $rdn = $this->getUpdateableRdn($rdn);
         }
 
         $this->dispatch('renaming', [$rdn, $newParentDn]);

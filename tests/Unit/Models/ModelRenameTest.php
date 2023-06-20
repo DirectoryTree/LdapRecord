@@ -93,7 +93,7 @@ class ModelRenameTest extends TestCase
             ->getLdapConnection()
             ->expect(
                 LdapFake::operation('rename')
-                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Тестирование\2c Имя\2c Побег')
+                    ->with('cn=John Doe,dc=acme,dc=org', $rdn = 'cn=Тестирование\2c Имя\2c Побег')
                     ->andReturnTrue()
             );
 
@@ -104,6 +104,8 @@ class ModelRenameTest extends TestCase
         $model->rename(
             $model->getCreatableRdn('Тестирование, Имя, Побег')
         );
+
+        $this->assertEquals($rdn, $model->getRdn());
     }
 
     public function test_rename_escaping_parent()
@@ -113,7 +115,7 @@ class ModelRenameTest extends TestCase
             ->expect(
                 LdapFake::operation('rename')->with(
                     'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org',
-                    'cn=Тестирование\2c Имя\2c Побег'
+                    $rdn = 'cn=Тестирование\2c Имя\2c Побег'
                 )->andReturnTrue()
             );
 
@@ -126,6 +128,8 @@ class ModelRenameTest extends TestCase
         $model->rename(
             $model->getCreatableRdn('Тестирование, Имя, Побег')
         );
+
+        $this->assertEquals($rdn, $model->getRdn());
     }
 
     public function test_move()

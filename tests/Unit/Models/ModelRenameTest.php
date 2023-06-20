@@ -87,6 +87,28 @@ class ModelRenameTest extends TestCase
         $model->rename('invalid');
     }
 
+    public function test_rename_with_same_name_does_not_send_request()
+    {
+        $model = new Entry();
+
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $model->rename('John Doe');
+
+        $this->assertEquals('John Doe', $model->getName());
+    }
+
+    public function test_rename_with_same_rdn_does_not_send_request()
+    {
+        $model = new Entry();
+
+        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+
+        $model->rename('cn=John Doe');
+
+        $this->assertEquals('cn=John Doe', $model->getRdn());
+    }
+
     public function test_rename_escaping()
     {
         DirectoryFake::setup()

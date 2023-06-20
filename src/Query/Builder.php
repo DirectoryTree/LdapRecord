@@ -182,7 +182,9 @@ class Builder
      */
     public function get(array|string $columns = ['*']): Collection|array
     {
-        return $this->onceWithColumns(Arr::wrap($columns), fn () => $this->query($this->getQuery()));
+        return $this->onceWithColumns(
+            Arr::wrap($columns), fn () => $this->query($this->getQuery())
+        );
     }
 
     /**
@@ -384,8 +386,16 @@ class Builder
     protected function runPaginate(string $filter, int $perPage, bool $isCritical): array
     {
         return $this->connection->run(
-            fn (LdapInterface $ldap) => (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap)
+            fn (LdapInterface $ldap) => $this->newPaginator($filter, $perPage, $isCritical)->execute($ldap)
         );
+    }
+
+    /**
+     * Make a new paginator instance.
+     */
+    protected function newPaginator(string $filter, int $perPage, bool $isCritical): Paginator
+    {
+        return new Paginator($this, $filter, $perPage, $isCritical);
     }
 
     /**
@@ -421,6 +431,9 @@ class Builder
             }
         };
 
+        // Connection isolation creates a new, temporary connection for the pagination
+        // request to occur on. This allows connections that do not support executing
+        // other queries during a pagination request, to do so without interruption.
         $isolate ? $this->connection->isolate(
             fn (Connection $replicate) => $chunk($this->clone()->setConnection($replicate))
         ) : $chunk($this);
@@ -436,8 +449,16 @@ class Builder
     protected function runChunk(string $filter, int $perPage, bool $isCritical): Generator
     {
         return $this->connection->run(
-            fn (LdapInterface $ldap) => (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap)
+            fn (LdapInterface $ldap) => $this->newLazyPaginator($filter, $perPage, $isCritical)->execute($ldap)
         );
+    }
+
+    /**
+     * Make a new lazy paginator instance.
+     */
+    protected function newLazyPaginator(string $filter, int $perPage, bool $isCritical): LazyPaginator
+    {
+        return new LazyPaginator($this, $filter, $perPage, $isCritical);
     }
 
     /**

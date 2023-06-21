@@ -41,6 +41,7 @@ class ModelRenameTest extends TestCase
         $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 
     public function test_rename_with_no_attribute()
@@ -53,6 +54,7 @@ class ModelRenameTest extends TestCase
         $this->assertEquals('cn=Jane Doe,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 
     public function test_rename_with_parent()
@@ -65,6 +67,7 @@ class ModelRenameTest extends TestCase
         $this->assertEquals('cn=Jane Doe,ou=Users,dc=acme,dc=org', $model->getDn());
         $this->assertEquals('Jane Doe', $model->getFirstAttribute('cn'));
         $this->assertSame(['Jane Doe'], $model->getOriginal()['cn']);
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 
     public function test_rename_does_not_occur_when_given_the_same_rdn_and_parent_dn()
@@ -95,7 +98,7 @@ class ModelRenameTest extends TestCase
 
         $model->rename('John Doe');
 
-        $this->assertEquals('John Doe', $model->getName());
+        $this->assertFalse($model->wasRecentlyRenamed);
     }
 
     public function test_rename_with_same_rdn_does_not_send_request()
@@ -106,7 +109,7 @@ class ModelRenameTest extends TestCase
 
         $model->rename('cn=John Doe');
 
-        $this->assertEquals('cn=John Doe', $model->getRdn());
+        $this->assertFalse($model->wasRecentlyRenamed);
     }
 
     public function test_rename_escaping()
@@ -128,6 +131,7 @@ class ModelRenameTest extends TestCase
         );
 
         $this->assertEquals($rdn, $model->getRdn());
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 
     public function test_rename_escaping_parent()
@@ -152,6 +156,7 @@ class ModelRenameTest extends TestCase
         );
 
         $this->assertEquals($rdn, $model->getRdn());
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 
     public function test_move()
@@ -171,6 +176,7 @@ class ModelRenameTest extends TestCase
         $model->move('ou=Users,dc=acme,dc=org');
 
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
+        $this->assertTrue($model->wasRecentlyRenamed);
     }
 }
 

@@ -10,6 +10,7 @@ use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Testing\ConnectionFake;
 use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
 class FakeDirectoryTest extends TestCase
@@ -63,6 +64,10 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
+        $conn->getLdapConnection()->expect(
+            LdapFake::operation('bind')->once()->andReturnErrorResponse()
+        );
+
         $this->assertFalse($conn->auth()->attempt('user', 'secret'));
     }
 
@@ -81,7 +86,11 @@ class FakeDirectoryTest extends TestCase
     {
         $conn = Container::getConnection('default');
 
-        $conn->getLdapConnection()->expect(['add' => true]);
+        $conn->getLdapConnection()->expect([
+            LdapFake::operation('add')->once()->andReturnTrue(),
+            LdapFake::operation('bind')->once()->andReturnErrorResponse(),
+            LdapFake::operation('bind')->once()->andReturnResponse(),
+        ]);
 
         $user = User::create(['cn' => 'John']);
 
@@ -97,6 +106,7 @@ class FakeDirectoryTest extends TestCase
         $conn = Container::getConnection('default');
 
         $conn->getLdapConnection()
+            ->expect(LdapFake::operation('bind')->andReturnErrorResponse())
             ->shouldReturnErrorNumber(200)
             ->shouldReturnError('Last Error')
             ->shouldReturnDiagnosticMessage('Diagnostic Message');
@@ -104,7 +114,7 @@ class FakeDirectoryTest extends TestCase
         try {
             $conn->auth()->bind('user', 'secret');
 
-            $this->fail('Bind exception not thrown.');
+            $this->fail('Bind exception was not thrown.');
         } catch (BindException $ex) {
             $detailedError = $ex->getDetailedError();
 

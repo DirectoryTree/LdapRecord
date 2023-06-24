@@ -4,7 +4,6 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;
-use LdapRecord\LdapResultResponse;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
 use LdapRecord\Query\Model\Builder;
@@ -102,15 +101,15 @@ class ModelScopeTest extends TestCase
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
             [
-                LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
                 LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
                     ['dn' => 'cn=John Doe,dc=local,dc=com'],
                 ]),
             ]
         );
 
-        $model = (new ModelWithDnScopeTestStub())
-            ->setRawAttributes(['dn' => 'cn=John Doe,dc=local,dc=com']);
+        $model = (new ModelWithDnScopeTestStub)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+        ]);
 
         $model->fresh();
 
@@ -121,7 +120,6 @@ class ModelScopeTest extends TestCase
     {
         DirectoryFake::setup()->getLdapConnection()->expect(
             [
-                LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
                 LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
                     ['dn' => 'cn=John Doe,dc=local,dc=com'],
                 ]),

@@ -37,7 +37,11 @@ class ConnectionEventsTest extends TestCase
 
     public function test_failed_connection_dispatches_proper_events()
     {
-        $conn = new Connection([], new LdapFake());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->andReturnErrorResponse()
+        );
+
+        $conn = new Connection([], $ldap);
 
         $dispatcher = m::mock(DispatcherInterface::class);
 

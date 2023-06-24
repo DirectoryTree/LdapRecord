@@ -52,8 +52,9 @@ class GuardTest extends TestCase
 
     public function test_bind_does_not_rebind_with_configured_user()
     {
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -62,8 +63,9 @@ class GuardTest extends TestCase
 
     public function test_bind_allows_null_username_and_password()
     {
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with(null, null)->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with(null, null)->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -72,8 +74,9 @@ class GuardTest extends TestCase
 
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnErrorResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnErrorResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -84,8 +87,9 @@ class GuardTest extends TestCase
 
     public function test_bind_as_administrator()
     {
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration([
             'username' => 'foo',
@@ -116,8 +120,9 @@ class GuardTest extends TestCase
             $firedBound = true;
         });
 
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -166,8 +171,9 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -191,8 +197,9 @@ class GuardTest extends TestCase
             $totalFired++;
         });
 
-        $ldap = (new LdapFake())
-            ->expect(LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse());
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
@@ -204,13 +211,12 @@ class GuardTest extends TestCase
 
     public function test_sasl_bind()
     {
-        $ldap = (new LdapFake())
-            ->expect(
-                LdapFake::operation('saslBind')
-                    ->once()
-                    ->with(null, null, ['mech' => 'GSSAPI'])
-                    ->andReturnTrue()
-            );
+        $ldap = (new LdapFake())->expect(
+            LdapFake::operation('saslBind')
+                ->once()
+                ->with(null, null, ['mech' => 'GSSAPI'])
+                ->andReturnTrue()
+        );
 
         $guard = new Guard($ldap, new DomainConfiguration([
             'use_sasl' => true,

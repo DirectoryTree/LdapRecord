@@ -113,9 +113,17 @@ class LdapFake implements LdapInterface
     /**
      * Set the fake LDAP host.
      */
-    public function setHost(string $host)
+    public function setHost(string $host): void
     {
         $this->host = $host;
+    }
+
+    /**
+     * Set the LDAP fake to always be bound.
+     */
+    public function shouldAlwaysBind(): static
+    {
+        return $this->expect(LdapFake::operation('bind')->andReturnResponse());
     }
 
     /**
@@ -389,7 +397,9 @@ class LdapFake implements LdapInterface
      */
     public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
     {
-        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
+            : new LdapResultResponse();
     }
 
     /**

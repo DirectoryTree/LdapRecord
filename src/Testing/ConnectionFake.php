@@ -38,7 +38,7 @@ class ConnectionFake extends Connection
      */
     public function actingAs(Model|string $user): static
     {
-        $this->ldap->shouldAuthenticateWith(
+        $this->ldap->shouldAllowBindWith(
             $user instanceof Model ? $user->getDn() : $user
         );
 

@@ -22,11 +22,11 @@ class LdapFakeTest extends TestCase
         $this->assertEquals('foo', $operation->getMethod());
     }
 
-    public function testShouldAuthenticateWith()
+    public function testShouldAllowBindWith()
     {
         $fake = new LdapFake();
 
-        $fake->shouldAuthenticateWith('foo');
+        $fake->shouldAllowBindWith('foo');
 
         $this->assertTrue($fake->hasExpectations('bind'));
 

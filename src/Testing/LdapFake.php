@@ -47,16 +47,6 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * Set the user that will pass binding.
-     */
-    public function shouldAuthenticateWith(string $dn): static
-    {
-        return $this->expect(
-            static::operation('bind')->with($dn, PHPUnit::anything())->andReturnResponse()
-        );
-    }
-
-    /**
      * Add an LDAP method expectation.
      */
     public function expect(LdapExpectation|array $expectations = []): static
@@ -119,11 +109,33 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * Set the LDAP fake to always be bound.
+     * Set the fake to allow any bind attempt.
      */
-    public function shouldAlwaysBind(): static
+    public function shouldAllowAnyBind(): static
     {
-        return $this->expect(LdapFake::operation('bind')->andReturnResponse());
+        return $this->expect(
+            static::operation('bind')->andReturnResponse()
+        );
+    }
+
+    /**
+     * Set the fake to allow any bind attempt with the given DN.
+     */
+    public function shouldAllowBindWith(string $dn): static
+    {
+        return $this->expect(
+            static::operation('bind')->with($dn, PHPUnit::anything())->andReturnResponse()
+        );
+    }
+
+    /**
+     * Set the user that will pass binding.
+     *
+     * @deprecated Use shouldAllowBindWith instead.
+     */
+    public function shouldAuthenticateWith(string $dn): static
+    {
+        return $this->shouldAllowBindWith($dn);
     }
 
     /**

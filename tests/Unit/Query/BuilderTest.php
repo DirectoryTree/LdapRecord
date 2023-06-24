@@ -981,7 +981,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $this->assertEquals($result, $b->get());
@@ -998,7 +998,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $this->assertEquals($result[0], $b->first());
@@ -1015,7 +1015,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 LdapFake::operation('search')->once()->andReturn([]),
                 LdapFake::operation('search')->once()->andReturn($result),
@@ -1041,7 +1041,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 LdapFake::operation('search')->once()->andReturn([]),
                 LdapFake::operation('search')->once()->andReturn($result),
@@ -1062,7 +1062,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 LdapFake::operation('search')->once()->andReturn([]),
                 LdapFake::operation('search')->once()->andReturn($result),
@@ -1083,7 +1083,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 LdapFake::operation('search')->once()->andReturn([]),
                 LdapFake::operation('search')->once()->andReturn($result),
@@ -1108,7 +1108,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $this->assertEquals($result[0], $b->sole());
@@ -1120,7 +1120,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => []]);
 
         $this->expectException(ObjectsNotFoundException::class);
@@ -1139,7 +1139,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $this->expectException(MultipleObjectsFoundException::class);
@@ -1245,7 +1245,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $this->assertEquals([
@@ -1270,7 +1270,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $result = $b->chunk(500, function ($results, $page) {
@@ -1300,7 +1300,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect(['search' => $result]);
 
         $result = $b->each(function ($object, $key) {
@@ -1330,7 +1330,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 'search' => $result,
                 'parseResult' => function (LdapExpectation $parseResult) use ($result) {
@@ -1376,7 +1376,7 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
-            ->shouldAlwaysBind()
+            ->shouldAllowAnyBind()
             ->expect([
                 'search' => $result,
                 'parseResult' => function (LdapExpectation $parseResult) use ($result) {

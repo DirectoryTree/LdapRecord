@@ -47,6 +47,14 @@ class LdapFake implements LdapInterface
     }
 
     /**
+     * Set the fake LDAP host.
+     */
+    public function setHost(string $host): void
+    {
+        $this->host = $host;
+    }
+
+    /**
      * Add an LDAP method expectation.
      */
     public function expect(LdapExpectation|array $expectations = []): static
@@ -98,14 +106,6 @@ class LdapFake implements LdapInterface
     public function removeExpectation(string $method, int $key): void
     {
         unset($this->expectations[$method][$key]);
-    }
-
-    /**
-     * Set the fake LDAP host.
-     */
-    public function setHost(string $host): void
-    {
-        $this->host = $host;
     }
 
     /**

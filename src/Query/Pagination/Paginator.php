@@ -44,7 +44,7 @@ class Paginator extends AbstractPaginator
             controls: $controls
         );
 
-        $controls = array_merge($response->controls ?? [], $controls);
+        $controls = array_merge($controls, $response->controls ?? []);
 
         $cookie = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'] ?? '';
 

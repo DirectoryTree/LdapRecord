@@ -37,18 +37,14 @@ class Paginator extends AbstractPaginator
      */
     protected function updateServerControls(LdapInterface $ldap, mixed $resource): void
     {
-        $errorCode = 0;
-        $dn = $errorMessage = $refs = null;
         $controls = $this->query->controls;
 
-        $ldap->parseResult(
-            $resource,
-            $errorCode,
-            $dn,
-            $errorMessage,
-            $refs,
-            $controls
+        $response = $ldap->parseResult(
+            result: $resource,
+            controls: $controls
         );
+
+        $controls = array_merge($response->controls ?? [], $controls);
 
         $cookie = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'] ?? '';
 

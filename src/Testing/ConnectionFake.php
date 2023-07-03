@@ -26,7 +26,7 @@ class ConnectionFake extends Connection
      */
     public static function make(array $config = [], string $ldap = LdapFake::class): static
     {
-        $connection = new static($config, new $ldap());
+        $connection = new static($config, new $ldap);
 
         $connection->configure();
 
@@ -79,5 +79,15 @@ class ConnectionFake extends Connection
     public function isConnected(): bool
     {
         return $this->connected ?: parent::isConnected();
+    }
+
+    /**
+     * Perform tear down tasks on the fake.
+     *
+     * @throws LdapExpectationException
+     */
+    public function tearDown(): void
+    {
+        $this->ldap->assertMinimumExpectationCounts();
     }
 }

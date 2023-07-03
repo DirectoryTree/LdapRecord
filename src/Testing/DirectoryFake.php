@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Testing;
 
+use LdapRecord\Connection;
 use LdapRecord\Container;
 
 class DirectoryFake
@@ -39,6 +40,7 @@ class DirectoryFake
     public static function tearDown(): void
     {
         foreach (static::$replaced as $name => $connection) {
+            Container::getConnection($name)->tearDown();
             Container::addConnection($connection, $name);
         }
 

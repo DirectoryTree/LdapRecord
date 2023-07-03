@@ -1260,27 +1260,54 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $result = [
+        $makeResult = fn ($objectclass) => [
             'count' => 1,
             [
                 'count' => 1,
-                'objectclass' => ['foo'],
+                'objectclass' => [$objectclass],
             ],
         ];
 
         $b->getConnection()
             ->getLdapConnection()
             ->shouldAllowAnyBind()
-            ->expect(['search' => $result]);
+            ->expect([
+                LdapFake::operation('search')->once()->andReturn($makeResult('foo')),
 
-        $result = $b->chunk(500, function ($results, $page) {
-            $this->assertEquals(1, $page);
-            $this->assertEquals([
-                [
-                    'count' => 1,
-                    'objectclass' => ['foo'],
-                ],
-            ], $results);
+                LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
+                    LDAP_CONTROL_PAGEDRESULTS => [
+                        'value' => [
+                            'size' => 1,
+                            'cookie' => '1234', // Indicate more pages to load.
+                        ],
+                    ],
+                ]),
+
+                LdapFake::operation('parseResult')->once()->with(fn ($results) => (
+                    $makeResult('foo') === $results
+                ))->andReturnResponse(), // First page search result being parsed.
+
+                LdapFake::operation('search')->once()->andReturn($makeResult('bar')), // Next page begins.
+
+                LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
+                    LDAP_CONTROL_PAGEDRESULTS => [
+                        'value' => [
+                            'size' => 1,
+                            'cookie' => '', // No more pages.
+                        ],
+                    ],
+                ]),
+
+                LdapFake::operation('parseResult')->once()->with(fn ($results) => (
+                    $makeResult('bar') === $results
+                ))->andReturnResponse(), // Secon page search result being parsed.
+            ]);
+
+        $result = $b->chunk(1, function ($results, $page) {
+            $this->assertEquals([[
+                'count' => 1,
+                'objectclass' => [$page === 1 ? 'foo' : 'bar'],
+            ]], $results);
         });
 
         $this->assertTrue($result);

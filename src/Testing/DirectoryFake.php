@@ -2,7 +2,6 @@
 
 namespace LdapRecord\Testing;
 
-use LdapRecord\Connection;
 use LdapRecord\Container;
 
 class DirectoryFake

@@ -16,6 +16,7 @@ use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
+use UnexpectedValueException;
 
 class ModelQueryTest extends TestCase
 {
@@ -439,7 +440,7 @@ class ModelQueryTest extends TestCase
     {
         Container::getNewInstance()->addConnection(new Connection());
 
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Cannot convert field [non-existent-date]');
 
         Entry::query()->where('non-existent-date', new \DateTime());

@@ -11,6 +11,7 @@ use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
+use UnexpectedValueException;
 
 class Builder extends BaseBuilder
 {
@@ -387,7 +388,7 @@ class Builder extends BaseBuilder
             $field = $this->model->normalizeAttributeKey($field);
 
             if (! $this->model->isDateAttribute($field)) {
-                throw new \UnexpectedValueException(
+                throw new UnexpectedValueException(
                     "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
                     .' Refer to https://ldaprecord.com/docs/core/v3/model-mutators/#date-mutators'
                 );

@@ -551,7 +551,6 @@ class LdapFake implements LdapInterface
                 }
             }
         }
-
     }
 
     /**

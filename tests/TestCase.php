@@ -12,6 +12,8 @@ class TestCase extends MockeryTestCase
      */
     protected function setUp(): void
     {
+        parent::setUp();
+
         // We will override the timezone while running our tests to ensure
         // we are using a consistent test environment, since we will
         // be testing various date/time related functions.

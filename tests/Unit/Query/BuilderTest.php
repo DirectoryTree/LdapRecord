@@ -4,12 +4,14 @@ namespace LdapRecord\Tests\Unit\Query;
 
 use DateTime;
 use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\LdapRecordException;
 use LdapRecord\LdapResultResponse;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\MultipleObjectsFoundException;
 use LdapRecord\Query\ObjectsNotFoundException;
 use LdapRecord\Query\Slice;
+use LdapRecord\Testing\DirectoryFake;
 use LdapRecord\Testing\LdapExpectation;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
@@ -18,7 +20,23 @@ class BuilderTest extends TestCase
 {
     protected function newBuilder(): Builder
     {
-        return new Builder(new Connection([], new LdapFake()));
+        return new Builder(Container::getDefaultConnection());
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Container::addConnection(new Connection());
+
+        DirectoryFake::setup();
+    }
+
+    protected function tearDown(): void
+    {
+        DirectoryFake::tearDown();
+
+        parent::tearDown();
     }
 
     public function test_builder_always_has_default_filter()
@@ -1151,14 +1169,11 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $ldap = $b->getConnection()->getLdapConnection();
+        $ldap = $b->getConnection()->getLdapConnection()->shouldAllowAnyBind();
 
         $ldap->expect([
-            'bind' => new LdapResultResponse(),
-            'search' => null,
-            LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
-            LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
-            LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
+            LdapFake::operation('search')->once()->andReturn(null),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->once()->andReturnTrue(),
         ]);
 
         $b->get();
@@ -1195,11 +1210,9 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
+            ->shouldAllowAnyBind()
             ->expect([
-                'bind' => new LdapResultResponse(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
+                LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, [])->once()->andReturnTrue(),
                 LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
                 LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
             ]);
@@ -1213,11 +1226,8 @@ class BuilderTest extends TestCase
 
         $b->getConnection()
             ->getLdapConnection()
+            ->shouldAllowAnyBind()
             ->expect([
-                'bind' => new LdapResultResponse(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_PROTOCOL_VERSION, 3)->once()->andReturnTrue(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_NETWORK_TIMEOUT, 5)->once()->andReturnTrue(),
-                LdapFake::operation('setOption')->with(LDAP_OPT_REFERRALS, 0)->once()->andReturnTrue(),
                 LdapFake::operation('add')->with('cn=John Doe', ['objectclass' => ['foo']])->andReturnTrue(),
             ]);
 
@@ -1260,19 +1270,16 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $makeResult = fn ($objectclass) => [
-            'count' => 1,
-            [
-                'count' => 1,
-                'objectclass' => [$objectclass],
-            ],
+        $pages = [
+            [['count' => 1, 'objectclass' => ['foo']]],
+            [['count' => 1, 'objectclass' => ['bar']]],
         ];
 
         $b->getConnection()
             ->getLdapConnection()
             ->shouldAllowAnyBind()
             ->expect([
-                LdapFake::operation('search')->once()->andReturn($makeResult('foo')),
+                LdapFake::operation('search')->once()->andReturn($pages[0]),
 
                 LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
                     LDAP_CONTROL_PAGEDRESULTS => [
@@ -1284,10 +1291,10 @@ class BuilderTest extends TestCase
                 ]),
 
                 LdapFake::operation('parseResult')->once()->with(fn ($results) => (
-                    $makeResult('foo') === $results
+                    $results === $pages[0]
                 ))->andReturnResponse(), // First page search result being parsed.
 
-                LdapFake::operation('search')->once()->andReturn($makeResult('bar')), // Next page begins.
+                LdapFake::operation('search')->once()->andReturn($pages[1]), // Next page begins.
 
                 LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
                     LDAP_CONTROL_PAGEDRESULTS => [
@@ -1299,15 +1306,13 @@ class BuilderTest extends TestCase
                 ]),
 
                 LdapFake::operation('parseResult')->once()->with(fn ($results) => (
-                    $makeResult('bar') === $results
-                ))->andReturnResponse(), // Secon page search result being parsed.
+                    $results === $pages[1]
+                ))->andReturnResponse(), // Second page search result being parsed.
             ]);
 
-        $result = $b->chunk(1, function ($results, $page) {
-            $this->assertEquals([[
-                'count' => 1,
-                'objectclass' => [$page === 1 ? 'foo' : 'bar'],
-            ]], $results);
+        $result = $b->chunk(1, function ($results, $page) use ($pages) {
+            // $page starts at 1:
+            $this->assertEquals($pages[--$page], $results);
         });
 
         $this->assertTrue($result);

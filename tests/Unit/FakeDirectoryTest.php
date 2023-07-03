@@ -24,6 +24,13 @@ class FakeDirectoryTest extends TestCase
         DirectoryFake::setup();
     }
 
+    protected function tearDown(): void
+    {
+        DirectoryFake::tearDown();
+
+        parent::tearDown();
+    }
+
     public function test_connection_is_replaced_with_fake()
     {
         $this->assertInstanceOf(ConnectionFake::class, Container::getConnection());

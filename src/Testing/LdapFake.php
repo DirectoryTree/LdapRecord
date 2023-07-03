@@ -3,7 +3,6 @@
 namespace LdapRecord\Testing;
 
 use Closure;
-use Exception;
 use LdapRecord\DetailedError;
 use LdapRecord\DetectsErrors;
 use LdapRecord\HandlesConnection;
@@ -20,6 +19,8 @@ class LdapFake implements LdapInterface
 
     /**
      * The expectations of the LDAP fake.
+     *
+     * @var array<string,LdapExpectation[]>
      */
     protected array $expectations = [];
 
@@ -497,7 +498,7 @@ class LdapFake implements LdapInterface
     /**
      * Resolve the methods expectations.
      *
-     * @throws Exception
+     * @throws LdapExpectationException
      */
     protected function resolveExpectation(string $method, array $args = []): mixed
     {
@@ -521,7 +522,7 @@ class LdapFake implements LdapInterface
             return $expectation->getExpectedValue();
         }
 
-        throw new Exception("LDAP method [$method] was unexpected.");
+        throw new LdapExpectationException("LDAP method [$method] was unexpected.");
     }
 
     /**
@@ -532,6 +533,25 @@ class LdapFake implements LdapInterface
         $this->shouldReturnError($expectation->getExpectedErrorMessage());
         $this->shouldReturnErrorNumber($expectation->getExpectedErrorCode());
         $this->shouldReturnDiagnosticMessage($expectation->getExpectedErrorDiagnosticMessage());
+    }
+
+    /**
+     * Assert that the expectations have been called their minimum amount of times.
+     *
+     * @throws LdapExpectationException
+     */
+    public function assertMinimumExpectationCounts(): void
+    {
+        foreach ($this->expectations as $method => $expectations) {
+            foreach ($expectations as $expectation) {
+                if (! $expectation->isIndefinite() && $expectation->getExpectedCount()) {
+                    $remaining = ($original = $expectation->getOriginalExpectedCount()) - $expectation->getExpectedCount();
+
+                    throw new LdapExpectationException("Method $method should be called $original times but was called $remaining times.");
+                }
+            }
+        }
+
     }
 
     /**

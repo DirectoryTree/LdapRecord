@@ -24,9 +24,14 @@ class LdapExpectation
     protected ?Exception $exception = null;
 
     /**
-     * The amount of times the expectation should be called.
+     * The tracked amount of times the expectation should be called.
      */
     protected int $count = 1;
+
+    /**
+     * The original amount of times the expectation should be called.
+     */
+    protected int $originalCount = 1;
 
     /**
      * The method that the expectation belongs to.
@@ -191,7 +196,7 @@ class LdapExpectation
     {
         $this->indefinitely = false;
 
-        $this->count = $count;
+        $this->originalCount = $this->count = $count;
 
         return $this;
     }
@@ -214,6 +219,14 @@ class LdapExpectation
     public function getExpectedCount(): int
     {
         return $this->count;
+    }
+
+    /**
+     * Get the original expected call count.
+     */
+    public function getOriginalExpectedCount(): int
+    {
+        return $this->originalCount;
     }
 
     /**
@@ -240,6 +253,14 @@ class LdapExpectation
     public function getExpectedValue(): mixed
     {
         return $this->value;
+    }
+
+    /**
+     * Determine whether the expectation can be called indefinitely.
+     */
+    public function isIndefinite(): bool
+    {
+        return $this->indefinitely;
     }
 
     /**

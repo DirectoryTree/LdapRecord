@@ -134,7 +134,7 @@ class LdapExpectation
     /**
      * Return an error LDAP result response.
      */
-    public function andReturnErrorResponse($code = 1, string $errorMessage = null): static
+    public function andReturnErrorResponse(int $code = 1, string $errorMessage = null): static
     {
         return $this->andReturnResponse($code, $errorMessage);
     }

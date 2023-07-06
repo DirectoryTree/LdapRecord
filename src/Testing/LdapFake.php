@@ -566,7 +566,7 @@ class LdapFake implements LdapInterface
             PHPUnit::assertArrayHasKey(
                 $key,
                 $methodArgs,
-                "LDAP method [$method] argument #{$argNumber} does not exist."
+                "LDAP method [$method] argument #$argNumber does not exist."
             );
 
             $constraint->evaluate(

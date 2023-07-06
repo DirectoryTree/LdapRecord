@@ -259,7 +259,7 @@ class Connection
      */
     public function replicate(): static
     {
-        return new static($this->configuration, new $this->ldap());
+        return new static($this->configuration, new $this->ldap);
     }
 
     /**

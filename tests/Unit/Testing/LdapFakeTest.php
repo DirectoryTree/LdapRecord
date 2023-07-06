@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Unit\Testing;
 use Exception;
 use LdapRecord\LdapResultResponse;
 use LdapRecord\Testing\LdapExpectation;
+use LdapRecord\Testing\LdapExpectationException;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use PHPUnit\Framework\Constraint\IsAnything;
@@ -12,7 +13,7 @@ use PHPUnit\Framework\Constraint\IsEqual;
 
 class LdapFakeTest extends TestCase
 {
-    public function testOperation()
+    public function test_operation()
     {
         $fake = new LdapFake();
 
@@ -22,7 +23,7 @@ class LdapFakeTest extends TestCase
         $this->assertEquals('foo', $operation->getMethod());
     }
 
-    public function testShouldAllowBindWith()
+    public function test_should_allow_bind_with()
     {
         $fake = new LdapFake();
 
@@ -37,7 +38,7 @@ class LdapFakeTest extends TestCase
         $this->assertInstanceOf(IsAnything::class, $expectation->getExpectedArgs()[1]);
     }
 
-    public function testExpect()
+    public function test_expect()
     {
         $fake = new LdapFake();
 
@@ -50,7 +51,7 @@ class LdapFakeTest extends TestCase
         $this->assertTrue($fake->hasExpectations('baz'));
     }
 
-    public function testRemoveExpectation()
+    public function test_remove_expectation()
     {
         $fake = new LdapFake();
 
@@ -70,7 +71,7 @@ class LdapFakeTest extends TestCase
         $this->assertFalse($fake->hasExpectations('foo'));
     }
 
-    public function testShouldReturnErrorNumber()
+    public function test_should_return_error_number()
     {
         $fake = new LdapFake();
 
@@ -79,7 +80,7 @@ class LdapFakeTest extends TestCase
         $this->assertEquals(10, $fake->errNo());
     }
 
-    public function testShouldReturnError()
+    public function test_should_return_error()
     {
         $fake = new LdapFake();
 
@@ -88,7 +89,7 @@ class LdapFakeTest extends TestCase
         $this->assertEquals('foo', $fake->getLastError());
     }
 
-    public function testShouldReturnDiagnosticMessage()
+    public function test_should_return_diagnostic_message()
     {
         $fake = new LdapFake();
 
@@ -97,7 +98,7 @@ class LdapFakeTest extends TestCase
         $this->assertEquals('foo', $fake->getDiagnosticMessage());
     }
 
-    public function testConnect()
+    public function test_connect()
     {
         $fake = new LdapFake();
 
@@ -110,7 +111,7 @@ class LdapFakeTest extends TestCase
         $this->assertFalse($fake->connect('host', 389));
     }
 
-    public function testBindWithoutExpectationThrowsException()
+    public function test_bind_without_expectation_throws_exception()
     {
         $fake = new LdapFake();
 
@@ -120,7 +121,7 @@ class LdapFakeTest extends TestCase
         $fake->bind('foo', 'bar');
     }
 
-    public function testBindWithExpectationReturnsResult()
+    public function test_bind_with_expectation_returns_result()
     {
         $fake = new LdapFake();
 
@@ -131,7 +132,7 @@ class LdapFakeTest extends TestCase
         $this->assertTrue($fake->isBound());
     }
 
-    public function testBindWithExpectationReturnsFailedResult()
+    public function test_bind_with_expectation_returns_failed_result()
     {
         $fake = new LdapFake();
 
@@ -142,7 +143,7 @@ class LdapFakeTest extends TestCase
         $this->assertFalse($fake->isBound());
     }
 
-    public function testClose()
+    public function test_close()
     {
         $fake = new LdapFake();
 
@@ -155,8 +156,33 @@ class LdapFakeTest extends TestCase
         $this->assertFalse($fake->close());
     }
 
-    public function testGetEntries()
+    public function test_get_entries()
     {
         $this->assertEquals(['foo', 'bar'], (new LdapFake())->getEntries(['foo', 'bar']));
+    }
+
+    public function test_assert_minimum_expectation_counts_does_not_throw_exception_on_indefinite_expectations()
+    {
+        $fake = (new LdapFake())->expect(
+            $expectation = LdapFake::operation('foo')
+        );
+
+        $this->assertTrue($expectation->isIndefinite());
+
+        $fake->assertMinimumExpectationCounts();
+    }
+
+    public function test_assert_minimum_expectation_counts_throws_exception_on_expected_count_not_met()
+    {
+        $fake = (new LdapFake())->expect(
+            $expectation = LdapFake::operation('foo')->once()
+        );
+
+        $this->assertFalse($expectation->isIndefinite());
+
+        $this->expectException(LdapExpectationException::class);
+        $this->expectExceptionMessage('Method foo should be called 1 times but was called 0 times');
+
+        $fake->assertMinimumExpectationCounts();
     }
 }

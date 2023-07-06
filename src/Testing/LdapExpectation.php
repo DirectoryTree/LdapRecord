@@ -24,14 +24,19 @@ class LdapExpectation
     protected ?Exception $exception = null;
 
     /**
-     * The tracked amount of times the expectation should be called.
+     * The tracked number of times the expectation should be called.
      */
     protected int $count = 1;
 
     /**
-     * The original amount of times the expectation should be called.
+     * The original number of times the expectation should be called.
      */
     protected int $originalCount = 1;
+
+    /**
+     * The actual number of times the expectation was called.
+     */
+    protected int $called = 0;
 
     /**
      * The method that the expectation belongs to.
@@ -230,6 +235,14 @@ class LdapExpectation
     }
 
     /**
+     * Get the count that the expectation was called.
+     */
+    public function getCalledCount(): int
+    {
+        return $this->called;
+    }
+
+    /**
      * Get the expected arguments.
      *
      * @return Constraint[]
@@ -296,13 +309,15 @@ class LdapExpectation
     }
 
     /**
-     * Decrement the call count of the expectation.
+     * Decrement the expected count of the expectation.
      */
-    public function decrementCallCount(): static
+    public function decrementExpectedCount(): static
     {
         if (! $this->indefinitely) {
             $this->count -= 1;
         }
+
+        $this->called++;
 
         return $this;
     }

@@ -42,7 +42,7 @@ class LdapExpectationTest extends TestCase
     {
         $expectation = (new LdapExpectation('method'))->times(3);
 
-        $expectation->decrementCallCount();
+        $expectation->decrementExpectedCount();
 
         $this->assertEquals(2, $expectation->getExpectedCount());
     }
@@ -53,9 +53,9 @@ class LdapExpectationTest extends TestCase
 
         $this->assertEquals(1, $expectation->getExpectedCount());
 
-        $expectation->decrementCallCount();
-        $expectation->decrementCallCount();
-        $expectation->decrementCallCount();
+        $expectation->decrementExpectedCount();
+        $expectation->decrementExpectedCount();
+        $expectation->decrementExpectedCount();
 
         $this->assertEquals(1, $expectation->getExpectedCount());
     }

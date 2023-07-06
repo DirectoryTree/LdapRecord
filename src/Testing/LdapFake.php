@@ -505,7 +505,7 @@ class LdapFake implements LdapInterface
         foreach ($this->getExpectations($method) as $key => $expectation) {
             $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
 
-            $expectation->decrementCallCount();
+            $expectation->decrementExpectedCount();
 
             if ($expectation->getExpectedCount() === 0) {
                 $this->removeExpectation($method, $key);

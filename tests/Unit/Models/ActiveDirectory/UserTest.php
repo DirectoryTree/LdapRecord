@@ -11,7 +11,10 @@ use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\Password;
 use LdapRecord\Models\Attributes\Timestamp;
+use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
 class UserTest extends TestCase
@@ -34,88 +37,91 @@ class UserTest extends TestCase
     {
         $this->expectException(ConnectionException::class);
 
-        new User(['unicodepwd' => 'password']);
+        new User(['password' => 'password']);
     }
 
     public function test_changing_password_requires_secure_connection()
     {
-        $user = (new User())->setRawAttributes(['dn' => 'foo']);
+        $user = (new User)->setRawAttributes(['dn' => 'foo']);
 
         $this->expectException(ConnectionException::class);
 
-        $user->unicodepwd = ['old', 'new'];
-    }
-
-    public function test_set_password_on_new_user()
-    {
-        $user = new UserPasswordTestStub();
-
-        $user->unicodepwd = 'foo';
-
-        $this->assertCount(1, $mods = $user->getModifications());
-
-        $this->assertEquals([
-            'attrib' => 'unicodepwd',
-            'modtype' => LDAP_MODIFY_BATCH_ADD,
-            'values' => [Password::encode('foo')],
-        ], $mods[0]);
-    }
-
-    public function test_set_password_on_existing_user()
-    {
-        $user = new UserPasswordTestStub();
-
-        $user->exists = true;
-
-        $user->unicodepwd = 'foo';
-
-        $this->assertCount(1, $mods = $user->getModifications());
-
-        $this->assertEquals([
-            'attrib' => 'unicodepwd',
-            'modtype' => LDAP_MODIFY_BATCH_REPLACE,
-            'values' => [Password::encode('foo')],
-        ], $mods[0]);
+        $user->password = ['old', 'new'];
     }
 
     public function test_set_password_behaves_identically_on_non_user_models()
     {
-        $user = new UserPasswordTestStub();
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(LdapFake::operation('isUsingSSL')->andReturnTrue());
+
+        $user = new User();
 
         $user->unicodepwd = 'foo';
 
-        $nonUser = new NonUserPasswordTestStub();
+        $nonUser = new Entry();
 
         $nonUser->unicodepwd = Password::encode('foo');
 
         $this->assertEquals($user->getModifications(), $nonUser->getModifications());
     }
 
-    public function test_password_mutator_alias_works()
+    public function test_create_user_with_password()
     {
-        $user = new UserPasswordTestStub(['password' => 'secret']);
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect([
+                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('add')->once()->with(fn ($dn) => true, fn ($attributes) => (
+                    $attributes['unicodepwd'] === [Password::encode('foobar')]
+                    && $attributes['useraccountcontrol'] = 512
+                ))->andReturnTrue(),
+            ]);
 
-        $this->assertEquals([Password::encode('secret')], $user->getModifications()[0]['values']);
+        $user = new User();
+
+        $user->password = 'foobar';
+        $user->userAccountControl = 512;
+
+        $user->save();
     }
 
-    public function test_changing_passwords()
+    public function test_update_user_with_password()
     {
-        $user = (new UserPasswordTestStub())->setRawAttributes(['dn' => 'foo']);
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect([
+                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('modifyBatch')->once()->with(
+                    function ($dn) {
+                        return $dn === 'cn=john,dc=local,dc=com';
+                    },
+                    function ($mods) {
+                        return count($mods) === 2
+                            && $mods[0] === [
+                                'attrib' => 'unicodepwd',
+                                'modtype' => LDAP_MODIFY_BATCH_REMOVE,
+                                'values' => [Password::encode('old')],
+                            ]
+                            && $mods[1] === [
+                                'attrib' => 'unicodepwd',
+                                'modtype' => LDAP_MODIFY_BATCH_ADD,
+                                'values' => [Password::encode('new')],
+                            ];
+                    }
+                )->andReturnTrue(),
+            ]);
 
-        $user->unicodepwd = ['bar', 'baz'];
+        $user = new User();
 
-        $this->assertEquals([
-            [
-                'attrib' => 'unicodepwd',
-                'modtype' => 2,
-                'values' => [Password::encode('bar')],
-            ],
-            [
-                'attrib' => 'unicodepwd',
-                'modtype' => 1,
-                'values' => [Password::encode('baz')],
-            ],
-        ], $user->getModifications());
+        $user->setRawAttributes([
+            'useraccountcontrol' => [512],
+            'dn' => ['cn=john,dc=local,dc=com'],
+        ]);
+
+        $user->password = ['old', 'new'];
+
+        $user->save();
     }
 
     public function test_reject_computer_object_class_is_a_default_scope()

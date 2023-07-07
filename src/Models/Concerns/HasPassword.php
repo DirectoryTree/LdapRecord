@@ -47,7 +47,6 @@ trait HasPassword
     /**
      * Alias for setting the password on the user.
      *
-     *
      * @throws ConnectionException
      */
     public function setUnicodepwdAttribute(array|string $password): void
@@ -124,14 +123,16 @@ trait HasPassword
      */
     protected function setPassword(string $password, string $attribute): void
     {
-        $modtype = $this->exists
-            ? LDAP_MODIFY_BATCH_REPLACE
-            : LDAP_MODIFY_BATCH_ADD;
+        if (! $this->exists) {
+            $this->setRawAttribute($attribute, $password);
+
+            return;
+        }
 
         $this->addModification(
             $this->newBatchModification(
                 $attribute,
-                $modtype,
+                LDAP_MODIFY_BATCH_REPLACE,
                 [$password]
             )
         );

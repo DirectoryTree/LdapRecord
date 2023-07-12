@@ -13,10 +13,11 @@ use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
+use Stringable;
 use UnexpectedValueException;
 
 /** @mixin Builder */
-abstract class Model implements ArrayAccess, Arrayable, JsonSerializable
+abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, Stringable
 {
     use EscapesValues;
     use Concerns\HasEvents;

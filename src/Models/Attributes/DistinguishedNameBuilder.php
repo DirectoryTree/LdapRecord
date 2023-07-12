@@ -4,8 +4,9 @@ namespace LdapRecord\Models\Attributes;
 
 use LdapRecord\EscapesValues;
 use LdapRecord\Support\Arr;
+use Stringable;
 
-class DistinguishedNameBuilder
+class DistinguishedNameBuilder implements Stringable
 {
     use EscapesValues;
 

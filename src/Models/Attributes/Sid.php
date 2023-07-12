@@ -3,8 +3,9 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
+use Stringable;
 
-class Sid
+class Sid implements Stringable
 {
     /**
      * The string SID value.

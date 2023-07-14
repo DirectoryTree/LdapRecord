@@ -181,7 +181,7 @@ class LdapFakeTest extends TestCase
         $this->assertFalse($expectation->isIndefinite());
 
         $this->expectException(LdapExpectationException::class);
-        $this->expectExceptionMessage('Method foo should be called 1 times but was called 0 times');
+        $this->expectExceptionMessage('Method [foo] should be called 1 times but was called 0 times');
 
         $fake->assertMinimumExpectationCounts();
     }

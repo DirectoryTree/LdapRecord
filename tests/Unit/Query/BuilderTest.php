@@ -1243,27 +1243,63 @@ class BuilderTest extends TestCase
 
     public function test_pagination()
     {
-        $b = $this->newBuilder();
-
-        $result = [
-            'count' => 1,
-            [
-                'count' => 1,
-                'objectclass' => ['foo'],
-            ],
+        $pages = [
+            [['count' => 1, 'objectclass' => ['foo'], 'dn' => ['cn=John,dc=local,dc=com']]],
+            [['count' => 1, 'objectclass' => ['bar'], 'dn' => ['cn=Jane,dc=local,dc=com']]],
         ];
+
+        $b = $this->newBuilder();
 
         $b->getConnection()
             ->getLdapConnection()
             ->shouldAllowAnyBind()
-            ->expect(['search' => $result]);
+            ->expect([
+                // Return the first page of results.
+                LdapFake::operation('search')->once()->andReturn($pages[0]),
 
-        $this->assertEquals([
-            [
-                'count' => 1,
-                'objectclass' => ['foo'],
-            ],
-        ], $b->paginate(500));
+                // Return the pagination response, indicating more pages to load.
+                LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
+                    LDAP_CONTROL_PAGEDRESULTS => [
+                        'value' => [
+                            'size' => 1,
+
+                            // Indicate more pages to load by returning a non-empty string as a cookie.
+                            'cookie' => '1234',
+                        ],
+                    ],
+                ]),
+
+                // Return the parsed results from the first page of the pagination request.
+                LdapFake::operation('parseResult')->once()->with(fn ($results) => (
+                    $results === $pages[0]
+                ))->andReturnResponse(),
+
+                // Return the next page of results.
+                LdapFake::operation('search')->once()->andReturn($pages[1]),
+
+                // Return the next pagination response, indicating *no more* pages to load.
+                LdapFake::operation('parseResult')->once()->andReturnResponse(controls: [
+                    LDAP_CONTROL_PAGEDRESULTS => [
+                        'value' => [
+                            'size' => 1,
+
+                            // Indicate that there are no more pages to load.
+                            'cookie' => null,
+                        ],
+                    ],
+                ]),
+
+                // Return the parsed results from the second page of the pagination request.
+                LdapFake::operation('parseResult')->once()->with(fn ($results) => (
+                    $results === $pages[1]
+                ))->andReturnResponse(),
+            ]);
+
+        $objects = $this->newBuilder()->paginate();
+
+        $this->assertCount(2, $objects);
+        $this->assertEquals($objects[0]['dn'][0], 'cn=John,dc=local,dc=com');
+        $this->assertEquals($objects[1]['dn'][0], 'cn=Jane,dc=local,dc=com');
     }
 
     public function test_chunk()

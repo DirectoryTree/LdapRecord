@@ -547,7 +547,7 @@ class LdapFake implements LdapInterface
                 if (! $expectation->isIndefinite() && $expectation->getExpectedCount()) {
                     $remaining = ($original = $expectation->getOriginalExpectedCount()) - $expectation->getExpectedCount();
 
-                    throw new LdapExpectationException("Method $method should be called $original times but was called $remaining times.");
+                    throw new LdapExpectationException("Method [$method] should be called $original times but was called $remaining times.");
                 }
             }
         }

@@ -952,7 +952,7 @@ class Builder
      */
     protected function prepareWhereValue(string $field, mixed $value = null, bool $raw = false): string
     {
-        return $raw ? $value : $this->escape($value);
+        return $raw ? $value : $this->escape($value)->get();
     }
 
     /**

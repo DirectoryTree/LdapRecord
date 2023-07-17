@@ -3,8 +3,9 @@
 namespace LdapRecord\Models\Attributes;
 
 use ReflectionClass;
+use Stringable;
 
-class AccountControl
+class AccountControl implements Stringable
 {
     public const SCRIPT = 1;
 

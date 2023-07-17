@@ -2,7 +2,9 @@
 
 namespace LdapRecord\Models\Attributes;
 
-class EscapedValue
+use Stringable;
+
+class EscapedValue implements Stringable
 {
     /**
      * The value to be escaped.

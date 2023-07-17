@@ -3,8 +3,9 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
+use Stringable;
 
-class Guid
+class Guid implements Stringable
 {
     /**
      * The string GUID value.

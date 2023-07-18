@@ -62,12 +62,22 @@ class GroupTest extends TestCase
         $group = $this->makeGroup($this->ou);
         $group->members()->associate($firstUser);
 
+        $this->assertEquals(
+            [$firstUser->getDn()],
+            $group->{$group->members()->getRelationKey()}
+        );
+
         $group->save();
 
         $secondUser = $this->makeUser($this->ou);
         $secondUser->save();
 
         $group->members()->attach($secondUser);
+
+        $this->assertEquals([
+            $firstUser->getDn(),
+            $secondUser->getDn(),
+        ], $group->{$group->members()->getRelationKey()});
 
         $this->assertCount(2, $group->members()->get());
     }
@@ -88,9 +98,19 @@ class GroupTest extends TestCase
 
         $group->save();
 
+        $this->assertEquals([
+            $firstUser->getDn(),
+            $secondUser->getDn(),
+        ], $group->{$group->members()->getRelationKey()});
+
         $this->assertCount(2, $group->members()->get());
 
         $group->members()->detach($secondUser);
+
+        $this->assertEquals(
+            [$firstUser->getDn()],
+            $group->{$group->members()->getRelationKey()}
+        );
 
         $group->refresh();
 
@@ -109,11 +129,21 @@ class GroupTest extends TestCase
         $group = $this->makeGroup($this->ou);
         $group->members()->associate([$firstUser, $secondUser]);
 
+        $this->assertEquals([
+            $firstUser->getDn(),
+            $secondUser->getDn(),
+        ], $group->{$group->members()->getRelationKey()});
+
         $group->save();
 
         $this->assertCount(2, $group->members()->get());
 
         $group->members()->dissociate($secondUser);
+
+        $this->assertEquals(
+            [$firstUser->getDn()],
+            $group->{$group->members()->getRelationKey()}
+        );
 
         $group->save();
 

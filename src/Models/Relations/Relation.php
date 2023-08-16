@@ -304,11 +304,11 @@ abstract class Relation
             );
         }
 
-        return $results->transform(function (Model $entry) use ($relationMap) {
-            $model = $this->determineModelFromRelated($entry, $relationMap);
-
-            return class_exists($model) ? $entry->convert(new $model()) : $entry;
-        });
+        return $results->transform(fn (Model $entry) => (
+            class_exists($model = $this->determineModelFromRelated($entry, $relationMap))
+                ? $entry->convert(new $model)
+                : $entry
+        ));
     }
 
     /**

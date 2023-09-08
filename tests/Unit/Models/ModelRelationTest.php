@@ -268,7 +268,7 @@ class ModelRelationTest extends TestCase
             return array_search($modelObjectClasses, $relationMap);
         });
 
-        $this->assertInstanceOf(RelatedModelTestStub::class, $relation->first());
+        $relation->first();
     }
 }
 

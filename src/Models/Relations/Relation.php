@@ -66,10 +66,6 @@ abstract class Relation
         $this->relationKey = $relationKey;
         $this->foreignKey = $foreignKey;
 
-        static::$modelResolver = function (array $modelObjectClasses, array $relationMap) {
-            return array_search($modelObjectClasses, $relationMap);
-        };
-
         $this->initRelation();
     }
 
@@ -333,12 +329,11 @@ abstract class Relation
             $model->getObjectClasses()
         );
 
-        return call_user_func(
-            static::$modelResolver,
-            $modelObjectClasses,
-            $relationMap,
-            $model,
-        );
+        $resolver = static::$modelResolver ?? function (array $modelObjectClasses, array $relationMap) {
+            return array_search($modelObjectClasses, $relationMap);
+        };
+
+        return call_user_func($resolver, $modelObjectClasses, $relationMap, $model);
     }
 
     /**

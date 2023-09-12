@@ -48,7 +48,7 @@ abstract class Relation
     /**
      * The callback to use for resolving relation models.
      */
-    protected static Closure $modelResolver;
+    protected static ?Closure $modelResolver = null;
 
     /**
      * The methods that should be passed along to a relation collection.
@@ -90,7 +90,7 @@ abstract class Relation
     /**
      * Set the callback to use for resolving models from relation results.
      */
-    public static function resolveModelsUsing(Closure $callback): void
+    public static function resolveModelsUsing(Closure $callback = null): void
     {
         static::$modelResolver = $callback;
     }

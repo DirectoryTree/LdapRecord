@@ -269,6 +269,9 @@ class ModelRelationTest extends TestCase
         });
 
         $relation->first();
+
+        // Reset static callback.
+        Relation::resolveModelsUsing(null);
     }
 }
 

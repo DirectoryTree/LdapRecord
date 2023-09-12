@@ -564,9 +564,11 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     public function hydrate(array $records): Collection
     {
         return $this->newCollection($records)->transform(function ($attributes) {
-            return $attributes instanceof static
-                ? $attributes
-                : static::newInstance()->setRawAttributes($attributes);
+            if ($attributes instanceof static) {
+                return $attributes;
+            }
+
+            return static::newInstance()->setRawAttributes($attributes);
         });
     }
 
@@ -1222,9 +1224,15 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      */
     public function getCreatableDn(string $name = null, string $attribute = null): string
     {
+        $query = $this->newQuery();
+
+        if ($this->in) {
+            $query->in($this->in);
+        }
+
         return implode(',', [
             $this->getCreatableRdn($name, $attribute),
-            $this->in ?? $this->newQuery()->getbaseDn(),
+            $query->getDn() ?? $query->getBaseDn(),
         ]);
     }
 

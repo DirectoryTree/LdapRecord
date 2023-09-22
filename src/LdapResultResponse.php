@@ -21,7 +21,7 @@ class LdapResultResponse
      */
     public function successful(): bool
     {
-        return $this->errorCode === 0 && empty($this->errorMessage);
+        return $this->errorCode === 0;
     }
 
     /**

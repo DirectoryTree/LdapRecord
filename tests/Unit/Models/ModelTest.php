@@ -349,6 +349,9 @@ class ModelTest extends TestCase
         $this->assertTrue($model->wasChanged('baz'));
         $this->assertTrue($model->wasChanged(['bar', 'baz']));
 
+        $this->assertTrue($model->isClean('foo'));
+        $this->assertFalse($model->isClean('bar'));
+
         $this->assertEquals([
             'bar' => [20],
             'baz' => [30],

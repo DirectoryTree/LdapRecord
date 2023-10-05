@@ -914,6 +914,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
 
         $this->dispatch('updated');
 
+        $this->syncChanges();
+
         $this->syncOriginal();
     }
 

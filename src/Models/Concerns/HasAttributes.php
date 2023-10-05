@@ -838,7 +838,7 @@ trait HasAttributes
      */
     public function hasAttribute(int|string $key): bool
     {
-        return [] !== ($this->attributes[$this->normalizeAttributeKey($key)] ?? []);
+        return ($this->attributes[$this->normalizeAttributeKey($key)] ?? []) !== [];
     }
 
     /**

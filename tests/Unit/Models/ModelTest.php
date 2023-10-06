@@ -340,11 +340,12 @@ class ModelTest extends TestCase
 
         $model->syncChanges();
 
+        $this->assertFalse($model->wasChanged(''));
+        $this->assertFalse($model->wasChanged([]));
         $this->assertFalse($model->wasChanged('foo'));
         $this->assertFalse($model->wasChanged(['foo']));
 
         $this->assertTrue($model->wasChanged());
-        $this->assertTrue($model->wasChanged([]));
         $this->assertTrue($model->wasChanged('bar'));
         $this->assertTrue($model->wasChanged('baz'));
         $this->assertTrue($model->wasChanged(['bar', 'baz']));

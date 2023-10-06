@@ -923,7 +923,7 @@ trait HasAttributes
      */
     public function wasChanged(array|string $attributes = null): bool
     {
-        if (empty($attributes)) {
+        if (func_num_args() === 0) {
             return count($this->changes) > 0;
         }
 

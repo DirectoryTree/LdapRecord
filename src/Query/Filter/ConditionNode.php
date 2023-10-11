@@ -88,16 +88,12 @@ class ConditionNode extends Node
             $filter,
             $this->operators,
             function ($operator, $filter) {
-                return explode($this->operator = $operator, $filter);
+                return explode($this->operator = $operator, $filter, 2);
             },
             function ($filter) {
                 throw new ParserException("Invalid query condition. No operator found in [$filter]");
             },
         );
-
-        if (count($components) !== 2) {
-            throw new ParserException("Invalid query filter [$filter]");
-        }
 
         return $components;
     }

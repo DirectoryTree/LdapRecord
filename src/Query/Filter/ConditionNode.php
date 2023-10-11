@@ -68,13 +68,9 @@ class ConditionNode extends Node
         $components = Str::whenContains(
             $filter,
             $this->operators,
-            fn ($operator, $filter) => explode($this->operator = $operator, $filter),
+            fn ($operator, $filter) => explode($this->operator = $operator, $filter, 2),
             fn ($filter) => throw new ParserException("Invalid query condition. No operator found in [$filter]"),
         );
-
-        if (count($components) !== 2) {
-            throw new ParserException("Invalid query filter [$filter]");
-        }
 
         return $components;
     }

@@ -85,6 +85,27 @@ class ParserTest extends TestCase
         $this->assertEquals('(&(objectCategory=person)(objectClass=contact)(|(sn=Smith)(sn=Johnson)))', Parser::assemble($group));
     }
 
+    public function test_parser_can_parse_value_with_equal_sign()
+    {
+        $nodes = Parser::parse('(&(objectClass=inetOrgPerson)(memberof=cn=foo,ou=Groups,dc=example,dc=org))');
+
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(GroupNode::class, $nodes[0]);
+
+        $this->assertCount(2, $nodes[0]->getNodes());
+
+        $groupNodes = $nodes[0]->getNodes();
+        $this->assertInstanceOf(ConditionNode::class, $groupNodes[0]);
+        $this->assertEquals('objectClass', $groupNodes[0]->getAttribute());
+        $this->assertEquals('=', $groupNodes[0]->getOperator());
+        $this->assertEquals('inetOrgPerson', $groupNodes[0]->getValue());
+
+        $this->assertInstanceOf(ConditionNode::class, $groupNodes[1]);
+        $this->assertEquals('memberof', $groupNodes[1]->getAttribute());
+        $this->assertEquals('=', $groupNodes[1]->getOperator());
+        $this->assertEquals('cn=foo,ou=Groups,dc=example,dc=org', $groupNodes[1]->getValue());
+    }
+
     public function test_parser_throws_exception_when_missing_open_parenthesis_is_detected()
     {
         $this->expectException(ParserException::class);
@@ -165,13 +186,6 @@ class ParserTest extends TestCase
         $node = Parser::parse('(foo=bar)')[0];
 
         $this->assertEquals('(foo=bar)', Parser::assemble($node));
-    }
-
-    public function test_parser_throws_exception_with_invalid_filter_with_additional_equals()
-    {
-        $this->expectExceptionMessage('Invalid query filter [foo=bar=baz]');
-
-        Parser::parse('(foo=bar=baz)');
     }
 
     public function test_parser_throws_exception_during_assemble_when_invalid_nodes_given()

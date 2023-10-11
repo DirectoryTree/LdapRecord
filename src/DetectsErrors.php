@@ -29,7 +29,7 @@ trait DetectsErrors
     /**
      * Determine if the error was caused by a size limit warning.
      *
-     * @param $error
+     * @param  $error
      * @return bool
      */
     protected function causedBySizeLimit($error)

@@ -121,7 +121,7 @@ class ConnectionManager
     /**
      * Remove a connection.
      *
-     * @param $name
+     * @param  $name
      * @return $this
      */
     public function remove($name)

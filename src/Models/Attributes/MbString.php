@@ -7,7 +7,7 @@ class MbString
     /**
      * Get the integer value of a specific character.
      *
-     * @param $string
+     * @param  $string
      * @return int
      */
     public static function ord($string)
@@ -26,7 +26,7 @@ class MbString
     /**
      * Get the character for a specific integer value.
      *
-     * @param $int
+     * @param  $int
      * @return string
      */
     public static function chr($int)
@@ -52,7 +52,7 @@ class MbString
     /**
      * Detects if the given string is UTF 8.
      *
-     * @param $string
+     * @param  $string
      * @return string|false
      */
     public static function isUtf8($string)

@@ -91,7 +91,7 @@ class Builder extends BaseBuilder
     /**
      * Get a new model query builder instance.
      */
-    public function newInstance(string $baseDn = null): static
+    public function newInstance(string $baseDn = null): BaseBuilder
     {
         return parent::newInstance($baseDn)->model($this->model);
     }

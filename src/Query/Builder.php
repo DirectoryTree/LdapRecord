@@ -156,7 +156,7 @@ class Builder
     /**
      * Returns a new Query Builder instance.
      */
-    public function newInstance(string $baseDn = null): static
+    public function newInstance(string $baseDn = null): Builder
     {
         return (new static($this->connection))->setDn(
             is_null($baseDn) ? $this->getDn() : $baseDn
@@ -166,7 +166,7 @@ class Builder
     /**
      * Returns a new nested Query Builder instance.
      */
-    public function newNestedInstance(Closure $closure = null): static
+    public function newNestedInstance(Closure $closure = null): Builder
     {
         $query = $this->newInstance()->nested();
 
@@ -1026,7 +1026,7 @@ class Builder
      */
     public function whereIn(string $field, array $values): static
     {
-        return $this->orFilter(function (self $query) use ($field, $values) {
+        return $this->orFilter(function (Builder $query) use ($field, $values) {
             foreach ($values as $value) {
                 $query->whereEquals($field, $value);
             }

@@ -236,7 +236,7 @@ class Builder extends BaseBuilder
      */
     protected function prepareAnrEquivalentQuery(string $value): static
     {
-        return $this->orFilter(function (self $query) use ($value) {
+        return $this->orFilter(function (Builder $query) use ($value) {
             foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }

@@ -91,7 +91,7 @@ class Builder extends BaseBuilder
     /**
      * Get a new model query builder instance.
      */
-    public function newInstance(string $baseDn = null): static
+    public function newInstance(string $baseDn = null): BaseBuilder
     {
         return parent::newInstance($baseDn)->model($this->model);
     }
@@ -236,7 +236,7 @@ class Builder extends BaseBuilder
      */
     protected function prepareAnrEquivalentQuery(string $value): static
     {
-        return $this->orFilter(function (self $query) use ($value) {
+        return $this->orFilter(function (BaseBuilder $query) use ($value) {
             foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }

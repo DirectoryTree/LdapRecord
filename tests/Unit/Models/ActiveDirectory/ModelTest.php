@@ -2,7 +2,11 @@
 
 namespace LdapRecord\Tests\Unit\Models\ActiveDirectory;
 
+use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Entry;
+use LdapRecord\Models\Relations\HasMany;
+use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -87,6 +91,26 @@ class ModelTest extends TestCase
         $m->restore();
 
         $this->assertEquals('CN=John Doe,DC=local,DC=com', $m->getDn());
+    }
+
+    public function test_relation_query_can_be_created()
+    {
+        Container::addConnection(new Connection);
+
+        $entry = new class extends Entry
+        {
+            public function relation(): HasMany
+            {
+                return $this->hasMany(Entry::class, 'dn');
+            }
+        };
+
+        /** @var HasMany $relation */
+        $relation = $entry->relation()->whereIn('foo', ['foo']);
+
+        $this->assertInstanceOf(HasMany::class, $relation);
+        $this->assertInstanceOf(ActiveDirectoryBuilder::class, $query = $relation->getQuery());
+        $this->assertEquals('(|(foo=\66\6f\6f))', $query->getQuery());
     }
 }
 

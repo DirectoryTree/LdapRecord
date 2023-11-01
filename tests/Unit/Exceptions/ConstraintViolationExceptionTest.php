@@ -17,7 +17,7 @@ class ConstraintViolationExceptionTest extends TestCase
         $error = new DetailedError(
             0,
             'Constraint violation',
-            $diagMessage = '0000052D: AtrErr: DSID-03190FD6'
+            '0000052D: AtrErr: DSID-03190FD6'
         );
 
         $e->setDetailedError($error);
@@ -34,7 +34,7 @@ class ConstraintViolationExceptionTest extends TestCase
         $error = new DetailedError(
             0,
             'Constraint violation',
-            $diagMessage = '00000056: AtrErr: DSID-03190FD6'
+            '00000056: AtrErr: DSID-03190FD6'
         );
 
         $e->setDetailedError($error);

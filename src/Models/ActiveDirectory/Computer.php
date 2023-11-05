@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use LdapRecord\Models\ActiveDirectory\Concerns\HasAccountControl;
 use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 use LdapRecord\Models\ActiveDirectory\Relations\HasOnePrimaryGroup;
 use LdapRecord\Models\Relations\HasMany;
@@ -9,6 +10,7 @@ use LdapRecord\Models\Relations\HasOne;
 
 class Computer extends Entry
 {
+    use HasAccountControl;
     use HasPrimaryGroup;
 
     /**

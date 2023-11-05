@@ -330,6 +330,40 @@ class ModelTest extends TestCase
         ], $model->getDirty());
     }
 
+    public function test_changed_attributes()
+    {
+        $model = new Entry(['foo' => 1, 'bar' => 2]);
+        $model->syncOriginal();
+        $model->foo = 1;
+        $model->bar = 20;
+        $model->baz = 30;
+
+        $model->syncChanges();
+
+        $this->assertFalse($model->wasChanged(''));
+        $this->assertFalse($model->wasChanged([]));
+        $this->assertFalse($model->wasChanged('foo'));
+        $this->assertFalse($model->wasChanged(['foo']));
+
+        $this->assertTrue($model->wasChanged());
+        $this->assertTrue($model->wasChanged('bar'));
+        $this->assertTrue($model->wasChanged('baz'));
+        $this->assertTrue($model->wasChanged(['bar', 'baz']));
+
+        $this->assertTrue($model->isClean('foo'));
+        $this->assertFalse($model->isClean('bar'));
+
+        $this->assertEquals([
+            'bar' => [20],
+            'baz' => [30],
+        ], $model->getChanges());
+
+        $model->discardChanges();
+
+        $this->assertEmpty($model->getChanges());
+        $this->assertEquals(['foo' => [1], 'bar' => [2]], $model->getAttributes());
+    }
+
     public function test_reset_integer_is_kept_in_tact_when_batch_modifications_are_generated()
     {
         $model = new Entry();

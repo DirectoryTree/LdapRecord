@@ -509,7 +509,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     protected function convertAttributesForJson(array $attributes = []): array
     {
         // If the model has a GUID set, we need to convert it to its
-        // string format, due to it being in binary. Otherwise
+        // string format, due to it being in binary. Otherwise,
         // we will receive a JSON serialization exception.
         if (isset($attributes[$this->guidKey])) {
             $attributes[$this->guidKey] = [$this->getConvertedGuid(
@@ -914,6 +914,8 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
 
         $this->dispatch('updated');
 
+        $this->syncChanges();
+
         $this->syncOriginal();
     }
 
@@ -1054,7 +1056,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
             ->in($this->dn)
             ->list()
             ->each(function (Model $model) {
-                $model->delete($recursive = true);
+                $model->delete(recursive: true);
             });
     }
 

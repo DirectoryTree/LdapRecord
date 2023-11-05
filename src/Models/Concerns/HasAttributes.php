@@ -21,6 +21,11 @@ trait HasAttributes
     protected array $original = [];
 
     /**
+     * The models changed attributes.
+     */
+    protected array $changes = [];
+
+    /**
      * The models attributes.
      */
     protected array $attributes = [];
@@ -207,7 +212,7 @@ trait HasAttributes
             return $value;
         }
 
-        return utf8_encode($value);
+        return mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1');
     }
 
     /**
@@ -253,6 +258,16 @@ trait HasAttributes
     public function syncOriginal(): static
     {
         $this->original = $this->attributes;
+
+        return $this;
+    }
+
+    /**
+     * Sync the changed attributes.
+     */
+    public function syncChanges(): static
+    {
+        $this->changes = $this->getDirty();
 
         return $this;
     }
@@ -823,7 +838,7 @@ trait HasAttributes
      */
     public function hasAttribute(int|string $key): bool
     {
-        return [] !== ($this->attributes[$this->normalizeAttributeKey($key)] ?? []);
+        return ($this->attributes[$this->normalizeAttributeKey($key)] ?? []) !== [];
     }
 
     /**
@@ -870,11 +885,55 @@ trait HasAttributes
     }
 
     /**
+     * Get the attributes that have been changed since the model was last saved.
+     */
+    public function getChanges(): array
+    {
+        return $this->changes;
+    }
+
+    /**
      * Determine if the given attribute is dirty.
      */
     public function isDirty(string $key): bool
     {
         return ! $this->originalIsEquivalent($key);
+    }
+
+    /**
+     * Determine if given attribute has remained the same.
+     */
+    public function isClean(string $key): bool
+    {
+        return ! $this->isDirty($key);
+    }
+
+    /**
+     * Discard attribute changes and reset the attributes to their original state.
+     */
+    public function discardChanges(): static
+    {
+        [$this->attributes, $this->changes] = [$this->original, []];
+
+        return $this;
+    }
+
+    /**
+     * Determine if the model or any of the given attribute(s) were changed when the model was last saved.
+     */
+    public function wasChanged(array|string $attributes = null): bool
+    {
+        if (func_num_args() === 0) {
+            return count($this->changes) > 0;
+        }
+
+        foreach ((array) $attributes as $attribute) {
+            if (array_key_exists($attribute, $this->changes)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

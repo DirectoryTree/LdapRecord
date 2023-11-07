@@ -886,7 +886,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
         // but filter out any empty attributes before sending them
         // to the server. LDAP servers will throw an exception if
         // attributes have been given empty or null values.
-        $query->insert($this->getDn(), array_filter($this->getAttributes()));
+        $this->dn = $query->insertAndGetDn($this->getDn(), array_filter($this->getAttributes()));
 
         $this->dispatch('created');
 
@@ -1190,12 +1190,10 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
 
         $this->dispatch('renaming', [$rdn, $newParentDn]);
 
-        $this->newQuery()->rename($this->dn, $rdn, $newParentDn, $deleteOldRdn);
-
         // If the model was successfully renamed, we will set
         // its new DN so any further updates to the model
         // can be performed without any issues.
-        $this->dn = implode(',', [$rdn, $newParentDn]);
+        $this->dn = $this->newQuery()->renameAndGetDn($this->dn, $rdn, $newParentDn, $deleteOldRdn);
 
         $map = $this->newDn($this->dn)->assoc();
 
@@ -1226,15 +1224,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      */
     public function getCreatableDn(string $name = null, string $attribute = null): string
     {
-        $query = $this->newQuery();
-
-        if ($this->in) {
-            $query->in($this->in);
-        }
-
         return implode(',', [
             $this->getCreatableRdn($name, $attribute),
-            $query->getDn() ?? $query->getBaseDn(),
+            $this->in ?? $this->newQuery()->getbaseDn(),
         ]);
     }
 

@@ -157,7 +157,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Set the models distinguished name.
+     * Set the model's distinguished name.
      */
     public function setDn(string $dn = null): static
     {
@@ -167,7 +167,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * A mutator for setting the models distinguished name.
+     * A mutator for setting the model's distinguished name.
      */
     public function setDnAttribute(string $dn): static
     {
@@ -175,7 +175,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * A mutator for setting the models distinguished name.
+     * A mutator for setting the model's distinguished name.
      */
     public function setDistinguishedNameAttribute(string $dn): static
     {

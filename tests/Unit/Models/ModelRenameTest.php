@@ -7,11 +7,9 @@ use LdapRecord\Container;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelDoesNotExistException;
-use LdapRecord\Query\Model\Builder;
 use LdapRecord\Testing\DirectoryFake;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
-use Mockery as m;
 
 class ModelRenameTest extends TestCase
 {
@@ -33,8 +31,17 @@ class ModelRenameTest extends TestCase
 
     public function test_rename()
     {
-        $model = new ModelRenameTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org')
+                    ->andReturnTrue()
+            );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=acme,dc=org',
+        ]);
 
         $model->rename('cn=Jane Doe');
 
@@ -44,10 +51,19 @@ class ModelRenameTest extends TestCase
         $this->assertTrue($model->wasRecentlyRenamed);
     }
 
-    public function test_rename_with_no_attribute()
+    public function test_rename_with_no_attribute_name()
     {
-        $model = new ModelRenameTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org')
+                    ->andReturnTrue()
+            );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=acme,dc=org',
+        ]);
 
         $model->rename('Jane Doe');
 
@@ -57,10 +73,19 @@ class ModelRenameTest extends TestCase
         $this->assertTrue($model->wasRecentlyRenamed);
     }
 
-    public function test_rename_with_parent()
+    public function test_rename_with_new_parent()
     {
-        $model = new ModelRenameWithParentTestStub();
-        $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org')
+                    ->andReturnTrue()
+            );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=acme,dc=org',
+        ]);
 
         $model->rename('cn=Jane Doe', 'ou=Users,dc=acme,dc=org');
 
@@ -177,47 +202,5 @@ class ModelRenameTest extends TestCase
 
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getDn());
         $this->assertTrue($model->wasRecentlyRenamed);
-    }
-}
-
-class ModelRenameTestStub extends Model
-{
-    public function newQuery(): Builder
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
-    }
-}
-
-class ModelRenameWithParentTestStub extends Model
-{
-    public function newQuery(): Builder
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Users,dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
-    }
-}
-
-class ModelMoveTestStub extends Model
-{
-    public function newQuery(): Builder
-    {
-        $builder = m::mock(Builder::class);
-        $builder->shouldReceive('rename')
-            ->with('cn=John Doe,dc=acme,dc=org', 'cn=John Doe', 'ou=Users,dc=acme,dc=org', true)
-            ->once()
-            ->andReturnTrue();
-
-        return $builder;
     }
 }

@@ -184,6 +184,29 @@ class ModelRenameTest extends TestCase
         $this->assertTrue($model->wasRecentlyRenamed);
     }
 
+    public function test_rename_with_base_dn_substitution()
+    {
+        Container::addConnection(
+            new Connection(['base_dn' => 'dc=local,dc=com'])
+        );
+
+        DirectoryFake::setup()
+            ->getLdapConnection()
+            ->expect(
+                LdapFake::operation('rename')
+                    ->with('cn=John Doe,dc=acme,dc=org', 'cn=Jane Doe', 'ou=Accounting,dc=local,dc=com')
+                    ->andReturnTrue()
+            );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=acme,dc=org',
+        ]);
+
+        $model->rename('Jane Doe', 'ou=Accounting,{base}');
+
+        $this->assertEquals('cn=Jane Doe,ou=Accounting,dc=local,dc=com', $model->getDn());
+    }
+
     public function test_move()
     {
         DirectoryFake::setup()

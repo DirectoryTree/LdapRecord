@@ -1391,7 +1391,7 @@ class Builder
         }
 
         return $this->connection->run(
-            fn (LdapInterface $ldap) => $ldap->add($dn, $attributes)
+            fn (LdapInterface $ldap) => $ldap->add($this->substituteBaseInDn($dn), $attributes)
         );
     }
 

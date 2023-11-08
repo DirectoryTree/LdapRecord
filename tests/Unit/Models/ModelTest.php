@@ -11,6 +11,8 @@ use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Testing\DirectoryFake;
+use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
 class ModelTest extends TestCase
@@ -136,7 +138,7 @@ class ModelTest extends TestCase
 
     public function test_creatable_dn()
     {
-        Container::getNewInstance()->addConnection(new Connection([
+        Container::addConnection(new Connection([
             'base_dn' => 'dc=acme,dc=org',
         ]));
 
@@ -282,7 +284,7 @@ class ModelTest extends TestCase
         $model->foo = ['bar', 'baz', 'zal'];
 
         $model->removeAttributeValue('missing', 'foo');
-        $this->assertEquals([], $model->missing);
+        $this->assertEmpty($model->missing);
 
         $model->removeAttributeValue('foo', 'bar');
         $this->assertEquals(['baz', 'zal'], $model->foo);
@@ -291,7 +293,7 @@ class ModelTest extends TestCase
         $this->assertEquals(['baz', 'zal'], $model->foo);
 
         $model->removeAttributeValue('foo', ['baz', 'zal', 'zee']);
-        $this->assertEquals([], $model->foo);
+        $this->assertEmpty($model->foo);
 
         $this->assertEmpty($model->getModifications());
     }
@@ -718,6 +720,8 @@ class ModelTest extends TestCase
 
     public function test_generated_dns_are_properly_escaped()
     {
+        Container::addConnection(new Connection);
+
         $model = new Entry();
 
         $model->inside('dc=local,dc=com');
@@ -725,6 +729,34 @@ class ModelTest extends TestCase
         $model->cn = "John\\,=+<>;\#Doe";
 
         $this->assertEquals('cn=John\5c\2c\3d\2b\3c\3e\3b\5c\23Doe,dc=local,dc=com', $model->getCreatableDn());
+    }
+
+    public function test_generated_dns_properly_substitute_base_on_creation()
+    {
+        Container::addConnection(new Connection([
+            'base_dn' => 'dc=local,dc=com',
+        ]));
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('add')
+                ->once()
+                ->with(
+                    'cn=foo,dc=local,dc=com',
+                    ['cn' => ['foo'], 'objectclass' => ['bar']]
+                )
+                ->andReturnTrue()
+        );
+
+        $model = new Entry();
+
+        $model->inside('{base}');
+
+        $model->cn = 'foo';
+        $model->objectclass = ['bar'];
+
+        $model->save();
+
+        $this->assertEquals('cn=foo,dc=local,dc=com', $model->getDn());
     }
 
     public function test_setting_dn_attributes_set_distinguished_name_on_model()

@@ -151,9 +151,9 @@ class ModelEventTest extends TestCase
 
 class ModelQueryBuilderSaveStub extends Builder
 {
-    public function insert(string $dn, array $attributes): bool
+    public function insertAndGetDn(string $dn, array $attributes): string|false
     {
-        return true;
+        return $dn;
     }
 
     public function update(string $dn, array $modifications): bool

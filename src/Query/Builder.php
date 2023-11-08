@@ -1402,11 +1402,9 @@ class Builder
             );
         }
 
-        $successful = $this->connection->run(
+        return $this->connection->run(
             fn (LdapInterface $ldap) => $ldap->add($dn, $attributes)
-        );
-
-        return $successful ? $dn : false;
+        ) ? $dn : false;
     }
 
     /**
@@ -1474,11 +1472,9 @@ class Builder
     {
         $newParentDn = $this->substituteBaseDn($newParentDn);
 
-        $successful = $this->connection->run(
+        return $this->connection->run(
             fn (LdapInterface $ldap) => $ldap->rename($dn, $rdn, $newParentDn, $deleteOldRdn)
-        );
-
-        return $successful ? implode(',', [$rdn, $newParentDn]) : false;
+        ) ? implode(',', [$rdn, $newParentDn]) : false;
     }
 
     /**

@@ -1,5 +1,3 @@
-<!-- readme.md -->
-
 <p align="center">
     <img src="https://ldaprecord.com/logo.svg" width="400">
 </p>

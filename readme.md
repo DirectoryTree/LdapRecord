@@ -1,20 +1,12 @@
 <p align="center">
-    <img src="https://ldaprecord.com/logo.svg" width="400">
+<img src="https://ldaprecord.com/logo.svg" width="400">
 </p>
 
 <p align="center">
-    <a href="https://github.com/DirectoryTree/LdapRecord/actions">
-        <img src="https://img.shields.io/github/actions/workflow/status/directorytree/ldaprecord/run-tests.yml?branch=master&style=flat-square">
-    </a>
-    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord">
-        <img src="https://img.shields.io/packagist/dt/DirectoryTree/LdapRecord.svg?style=flat-square"/>
-    </a>
-    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord">
-        <img src="https://img.shields.io/packagist/v/DirectoryTree/LdapRecord.svg?style=flat-square"/>
-    </a>
-    <a href="https://packagist.org/packages/DirectoryTree/LdapRecord">
-        <img src="https://img.shields.io/github/license/DirectoryTree/LdapRecord.svg?style=flat-square"/>
-    </a>
+<a href="https://github.com/DirectoryTree/LdapRecord/actions"><img src="https://img.shields.io/github/actions/workflow/status/directorytree/ldaprecord/run-tests.yml?branch=master&style=flat-square"></a>
+<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/dt/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/v/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
+<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/github/license/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
 </p>
 
 <p align="center">

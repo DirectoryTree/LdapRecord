@@ -764,7 +764,7 @@ class Builder
     /**
      * Finds many records by the specified attribute.
      */
-    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection
+    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection|array
     {
         $query = $this->select($columns);
 

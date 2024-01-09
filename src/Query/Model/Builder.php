@@ -161,6 +161,14 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection
+    {
+        return parent::findManyBy($attribute, $values, $columns);
+    }
+
+    /**
      * Finds a record using ambiguous name resolution.
      */
     public function findByAnr(array|string $value, array|string $columns = ['*']): Model|Collection|null

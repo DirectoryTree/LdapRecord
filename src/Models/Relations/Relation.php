@@ -275,8 +275,8 @@ abstract class Relation
     protected function getForeignValueFromModel(Model $model): ?string
     {
         return $this->foreignKeyIsDistinguishedName()
-                ? $model->getDn()
-                : $this->getFirstAttributeValue($model, $this->foreignKey);
+            ? $model->getDn()
+            : $this->getFirstAttributeValue($model, $this->foreignKey);
     }
 
     /**
@@ -292,18 +292,8 @@ abstract class Relation
      */
     protected function transformResults(Collection $results): Collection
     {
-        $relationMap = [];
-
-        foreach ($this->related as $relation) {
-            $relationMap[$relation] = $this->normalizeObjectClasses(
-                $relation::$objectClasses
-            );
-        }
-
         return $results->transform(fn (Model $entry) => (
-            class_exists($model = $this->determineModelFromRelated($entry, $relationMap))
-                ? $entry->convert(new $model)
-                : $entry
+            $entry->morph($this->related, static::$modelResolver)
         ));
     }
 
@@ -313,36 +303,5 @@ abstract class Relation
     protected function foreignKeyIsDistinguishedName(): bool
     {
         return in_array($this->foreignKey, ['dn', 'distinguishedname']);
-    }
-
-    /**
-     * Determine the model from the given relation map.
-     *
-     * @return class-string|bool
-     */
-    protected function determineModelFromRelated(Model $model, array $relationMap): string|bool
-    {
-        // We must normalize all the related models object class
-        // names to the same case so we are able to properly
-        // determine the owning model from search results.
-        $modelObjectClasses = $this->normalizeObjectClasses(
-            $model->getObjectClasses()
-        );
-
-        $resolver = static::$modelResolver ?? function (array $modelObjectClasses, array $relationMap) {
-            return array_search($modelObjectClasses, $relationMap);
-        };
-
-        return call_user_func($resolver, $modelObjectClasses, $relationMap, $model);
-    }
-
-    /**
-     * Sort and normalize the object classes.
-     */
-    protected function normalizeObjectClasses(array $classes): array
-    {
-        sort($classes);
-
-        return array_map('strtolower', $classes);
     }
 }

@@ -149,7 +149,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Returns the models distinguished name.
+     * Get the models distinguished name.
      */
     public function getDn(): ?string
     {
@@ -260,20 +260,15 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      */
     protected static function getRootDseModel(): string
     {
-        $instance = (new static());
+        $instance = new static();
 
-        switch (true) {
-            case $instance instanceof Types\ActiveDirectory:
-                return ActiveDirectory\Entry::class;
-            case $instance instanceof Types\DirectoryServer:
-                return DirectoryServer\Entry::class;
-            case $instance instanceof Types\OpenLDAP:
-                return OpenLDAP\Entry::class;
-            case $instance instanceof Types\FreeIPA:
-                return FreeIPA\Entry::class;
-            default:
-                return Entry::class;
-        }
+        return match (true) {
+            $instance instanceof Types\ActiveDirectory => ActiveDirectory\Entry::class,
+            $instance instanceof Types\DirectoryServer => DirectoryServer\Entry::class,
+            $instance instanceof Types\OpenLDAP => OpenLDAP\Entry::class,
+            $instance instanceof Types\FreeIPA => FreeIPA\Entry::class,
+            default => Entry::class,
+        };
     }
 
     /**
@@ -281,7 +276,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      */
     public static function query(): Builder
     {
-        return (new static())->newQuery();
+        return (new static)->newQuery();
     }
 
     /**
@@ -395,7 +390,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Returns the models distinguished name when the model is converted to a string.
+     * Get the models distinguished name when the model is converted to a string.
      */
     public function __toString(): string
     {
@@ -806,7 +801,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Determines if the DN is inside of the parent DN.
+     * Determine if the DN is inside the parent DN.
      */
     protected function dnIsInside(Model|string $dn = null, Model|string $parentDn = null): bool
     {
@@ -1253,7 +1248,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Determines if the given modification is valid.
+     * Determine if the given modification is valid.
      */
     protected function isValidModification(mixed $mod): bool
     {

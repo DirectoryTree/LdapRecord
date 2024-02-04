@@ -78,7 +78,7 @@ class Grammar
     }
 
     /**
-     * Assembles all of the "raw" filters on the query.
+     * Assembles all the "raw" filters on the query.
      */
     protected function compileRaws(Builder $builder): string
     {
@@ -127,9 +127,9 @@ class Grammar
      */
     protected function queryCanBeWrappedInSingleOrStatement(Builder $query): bool
     {
-        return $this->has($query, 'or', '>=', 1) &&
-            $this->has($query, 'and', '<=', 1) &&
-            $this->has($query, 'raw', '=', 0);
+        return $this->has($query, 'or', '>=', 1)
+            && $this->has($query, 'and', '<=', 1)
+            && $this->has($query, 'raw', '=', 0);
     }
 
     /**

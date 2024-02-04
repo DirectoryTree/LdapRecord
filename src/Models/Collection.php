@@ -20,7 +20,7 @@ class Collection extends QueryCollection
     }
 
     /**
-     * Determine if the collection contains all of the given models, or any models.
+     * Determine if the collection contains all the given models, or any models.
      */
     public function exists($models = null): bool
     {

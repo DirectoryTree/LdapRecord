@@ -99,11 +99,11 @@ class BatchModification
     }
 
     /**
-     * Normalize all of the attribute values.
+     * Normalize all the attribute values.
      */
     protected function normalizeAttributeValues(array|string $values = []): array
     {
-        // We must convert all of the values to strings. Only strings can
+        // We must convert all the values to strings. Only strings can
         // be used in batch modifications, otherwise we will we will
         // receive an LDAP exception while attempting to save.
         return array_map('strval', (array) $values);

@@ -587,7 +587,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Morph the model into a one of matching models or fail.
+     * Morph the model into a one of matching models or throw an exception.
      */
     public function morphOrFail(array $models, callable $resolver = null): Model
     {

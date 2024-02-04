@@ -7,6 +7,8 @@ use DateTimeInterface;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\ContainerException;
+use LdapRecord\Models\ActiveDirectory\Group;
+use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\BatchModification;
 use LdapRecord\Models\Entry;
@@ -14,6 +16,7 @@ use LdapRecord\Models\Model;
 use LdapRecord\Testing\DirectoryFake;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
+use RuntimeException;
 
 class ModelTest extends TestCase
 {
@@ -794,6 +797,46 @@ class ModelTest extends TestCase
         $model->distinguishedname = 'foo';
         $this->assertEquals('foo', $model->getDn());
         $this->assertEquals(['foo'], $model->getAttributes()['distinguishedname']);
+    }
+
+    public function test_morph()
+    {
+        $entry = new Entry([
+            'objectclass' => User::$objectClasses,
+        ]);
+
+        $this->assertInstanceOf(Entry::class, $entry->morph([Group::class]));
+        $this->assertInstanceOf(User::class, $entry->morph([Group::class, User::class]));
+    }
+
+    public function test_morph_or_fail()
+    {
+        $entry = new Entry([
+            'objectclass' => User::$objectClasses,
+        ]);
+
+        $this->assertInstanceOf(User::class, $entry->morph([Group::class, User::class]));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The model could not be morphed into any of the given models.');
+
+        $entry->morphOrFail([Group::class]);
+    }
+
+    public function test_morph_with_custom_resolver_callback()
+    {
+        $entry = new Entry([
+            'objectclass' => User::$objectClasses,
+        ]);
+
+        $group = $entry->morph([Group::class, User::class], function (array $objectClasses, array $models) use ($entry) {
+            $this->assertEqualsCanonicalizing($entry->getObjectClasses(), $objectClasses);
+            $this->assertEquals([Group::class, User::class], array_keys($models));
+
+            return Group::class;
+        });
+
+        $this->assertInstanceOf(Group::class, $group);
     }
 }
 

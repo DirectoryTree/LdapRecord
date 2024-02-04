@@ -617,7 +617,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
             );
         }
 
-        $objectClasses = $this->normalizeObjectClasses(
+        $objectClasses = static::$morphCache[static::class] ??= $this->normalizeObjectClasses(
             $model->getObjectClasses()
         );
 

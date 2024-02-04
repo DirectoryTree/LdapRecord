@@ -799,37 +799,37 @@ class ModelTest extends TestCase
         $this->assertEquals(['foo'], $model->getAttributes()['distinguishedname']);
     }
 
-    public function test_morph()
+    public function test_morph_into()
     {
         $entry = new Entry([
             'objectclass' => User::$objectClasses,
         ]);
 
-        $this->assertInstanceOf(Entry::class, $entry->morph([Group::class]));
-        $this->assertInstanceOf(User::class, $entry->morph([Group::class, User::class]));
+        $this->assertInstanceOf(Entry::class, $entry->morphInto([Group::class]));
+        $this->assertInstanceOf(User::class, $entry->morphInto([Group::class, User::class]));
     }
 
-    public function test_morph_or_fail()
+    public function test_morph_into_or_fail()
     {
         $entry = new Entry([
             'objectclass' => User::$objectClasses,
         ]);
 
-        $this->assertInstanceOf(User::class, $entry->morph([Group::class, User::class]));
+        $this->assertInstanceOf(User::class, $entry->morphInto([Group::class, User::class]));
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The model could not be morphed into any of the given models.');
 
-        $entry->morphOrFail([Group::class]);
+        $entry->morphIntoOrFail([Group::class]);
     }
 
-    public function test_morph_with_custom_resolver_callback()
+    public function test_morph_into_with_custom_resolver_callback()
     {
         $entry = new Entry([
             'objectclass' => User::$objectClasses,
         ]);
 
-        $group = $entry->morph([Group::class, User::class], function (array $objectClasses, array $models) use ($entry) {
+        $group = $entry->morphInto([Group::class, User::class], function (array $objectClasses, array $models) use ($entry) {
             $this->assertEqualsCanonicalizing($entry->getObjectClasses(), $objectClasses);
             $this->assertEquals([Group::class, User::class], array_keys($models));
 

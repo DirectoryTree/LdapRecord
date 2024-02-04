@@ -577,7 +577,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Morph the model into a one of matching models using their object classes.
      */
-    public function morph(array $models, callable $resolver = null): Model
+    public function morphInto(array $models, callable $resolver = null): Model
     {
         if (class_exists($model = $this->determineMorphModel($this, $models, $resolver))) {
             return $this->convert(new $model);
@@ -589,9 +589,9 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Morph the model into a one of matching models or throw an exception.
      */
-    public function morphOrFail(array $models, callable $resolver = null): Model
+    public function morphIntoOrFail(array $models, callable $resolver = null): Model
     {
-        $model = $this->morph($models, $resolver);
+        $model = $this->morphInto($models, $resolver);
 
         if ($model instanceof $this) {
             throw new RuntimeException(

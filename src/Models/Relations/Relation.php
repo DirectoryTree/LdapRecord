@@ -292,8 +292,7 @@ abstract class Relation
      */
     protected function transformResults(Collection $results): Collection
     {
-        return $results->transform(fn (Model $entry) =>
-            $entry->morph($this->related, static::$modelResolver)
+        return $results->transform(fn (Model $entry) => $entry->morphInto($this->related, static::$modelResolver)
         );
     }
 

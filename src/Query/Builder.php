@@ -925,9 +925,9 @@ class Builder
         // If we have been provided with two arguments not a "has" or
         // "not has" operator, we'll assume the developer is creating
         // an "equals" clause and set the proper operator in place.
-        if (func_num_args() === 2 && ! in_array($operator, ['*', '!*'])) {
-            [$value, $operator] = [$operator, '='];
-        }
+        [$value, $operator] = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
+        );
 
         if (! in_array($operator, $this->grammar->getOperators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
@@ -941,6 +941,28 @@ class Builder
         $this->addFilter($boolean, compact('field', 'operator', 'value'));
 
         return $this;
+    }
+
+    /**
+     * Prepare the value and operator for a where clause.
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function prepareValueAndOperator(mixed $value, mixed $operator, bool $useDefault = false): array
+    {
+        if ($useDefault) {
+            return [$operator, '='];
+        }
+
+        return [$value, $operator];
+    }
+
+    /**
+     * Determine if the operator requires a value to be present.
+     */
+    protected function operatorRequiresValue(mixed $operator): bool
+    {
+        return in_array($operator, ['*', '!*']);
     }
 
     /**
@@ -1111,6 +1133,10 @@ class Builder
      */
     public function orWhere(array|string $field, string $operator = null, string $value = null): static
     {
+        [$value, $operator] = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
+        );
+
         return $this->where($field, $operator, $value, 'or');
     }
 

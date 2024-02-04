@@ -93,7 +93,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
-            $related = m::mock(ModelHasManyStub::class);
+            $related = m::mock(ModelHasManyStub::class)->makePartial();
 
             $related->shouldReceive('getDn')->andReturn('bar');
             $related->shouldReceive('convert')->once()->andReturnSelf();
@@ -120,7 +120,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
         $query->shouldReceive('chunk')->once()->with(1000, m::on(function ($callback) {
-            $related = m::mock(ModelHasManyStub::class);
+            $related = m::mock(ModelHasManyStub::class)->makePartial();
 
             $related->shouldReceive('getDn')->andReturn('bar');
             $related->shouldReceive('convert')->once()->andReturnSelf();
@@ -210,7 +210,7 @@ class ModelHasManyTest extends TestCase
         $parent->shouldReceive('getDn')->andReturn('foo');
         $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
 
-        $related = m::mock(Entry::class);
+        $related = m::mock(Entry::class)->makePartial();
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
         $related->shouldReceive('convert')->once()->andReturnSelf();
         $related->shouldReceive('removeAttribute')->once()->with('member', 'foo')->andReturnTrue();

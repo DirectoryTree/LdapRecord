@@ -14,6 +14,7 @@ use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Query\Builder as BaseBuilder;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
+use RuntimeException;
 use Stringable;
 use UnexpectedValueException;
 
@@ -70,9 +71,14 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     protected ?string $connection = null;
 
     /**
-     * The attribute key that contains the models object GUID.
+     * The attribute key containing the models object GUID.
      */
     protected string $guidKey = 'objectguid';
+
+    /**
+     * The array of the model's modifications.
+     */
+    protected array $modifications = [];
 
     /**
      * The array of booted models.
@@ -80,14 +86,14 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     protected static array $booted = [];
 
     /**
-     * Contains the models modifications.
-     */
-    protected array $modifications = [];
-
-    /**
      * The array of global scopes on the model.
      */
     protected static array $globalScopes = [];
+
+    /**
+     * The morph model cache containing object classes and their corresponding models.
+     */
+    protected static array $morphCache = [];
 
     /**
      * Constructor.
@@ -120,7 +126,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Clear the list of booted models so they will be re-booted.
+     * Clear the list of booted models, so they will be re-booted.
      */
     public static function clearBootedModels(): void
     {
@@ -566,6 +572,70 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
 
             return static::newInstance()->setRawAttributes($attributes);
         });
+    }
+
+    /**
+     * Morph the model into a one of matching models using their object classes.
+     */
+    public function morphInto(array $models, callable $resolver = null): Model
+    {
+        if (class_exists($model = $this->determineMorphModel($this, $models, $resolver))) {
+            return $this->convert(new $model);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Morph the model into a one of matching models or throw an exception.
+     */
+    public function morphIntoOrFail(array $models, callable $resolver = null): Model
+    {
+        $model = $this->morphInto($models, $resolver);
+
+        if ($model instanceof $this) {
+            throw new RuntimeException(
+                'The model could not be morphed into any of the given models.'
+            );
+        }
+
+        return $model;
+    }
+
+    /**
+     * Determine the model to morph into from the given models.
+     *
+     * @return class-string|bool
+     */
+    protected function determineMorphModel(Model $model, array $models, callable $resolver = null): string|bool
+    {
+        $morphModelMap = [];
+
+        foreach ($models as $modelClass) {
+            $morphModelMap[$modelClass] = static::$morphCache[$modelClass] ??= $this->normalizeObjectClasses(
+                $modelClass::$objectClasses
+            );
+        }
+
+        $objectClasses = $this->normalizeObjectClasses(
+            $model->getObjectClasses()
+        );
+
+        $resolver ??= function (array $objectClasses, array $morphModelMap) {
+            return array_search($objectClasses, $morphModelMap);
+        };
+
+        return $resolver($objectClasses, $morphModelMap);
+    }
+
+    /**
+     * Sort and normalize the object classes.
+     */
+    protected function normalizeObjectClasses(array $classes): array
+    {
+        sort($classes);
+
+        return array_map('strtolower', $classes);
     }
 
     /**

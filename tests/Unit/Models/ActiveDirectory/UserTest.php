@@ -249,6 +249,15 @@ class UserTest extends TestCase
 
         $this->assertSame(0, $user->accountExpires);
     }
+
+    public function test_correct_auth_identifier_is_returned()
+    {
+        $guid = '270db4d0-249d-46a7-9cc5-eb695d9af9ac';
+
+        $user = new User(['objectguid' => $guid]);
+
+        $this->assertEquals($guid, $user->getAuthIdentifier());
+    }
 }
 
 class UserPasswordTestStub extends User

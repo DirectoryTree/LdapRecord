@@ -176,6 +176,24 @@ class BuilderTest extends TestCase
         $this->assertEquals('\74\65\73\74', $where['value']);
     }
 
+    public function test_where_clauses_with_no_operator_uses_equals_by_default()
+    {
+        $b = $this->newBuilder();
+
+        $b->where('cn', 'foo');
+        $b->orWhere('cn', 'bar');
+
+        $where = $b->filters['and'][0];
+        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('=', $where['operator']);
+        $this->assertEquals('\66\6f\6f', $where['value']);
+
+        $orWhere = $b->filters['or'][0];
+        $this->assertEquals('cn', $orWhere['field']);
+        $this->assertEquals('=', $orWhere['operator']);
+        $this->assertEquals('\62\61\72', $orWhere['value']);
+    }
+
     public function test_where_with_array()
     {
         $b = $this->newBuilder();

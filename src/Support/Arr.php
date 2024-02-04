@@ -39,7 +39,7 @@ class Arr
     }
 
     /**
-     * Return the first element in an array passing a given truth test.
+     * Get the first element in an array passing a given truth test.
      */
     public static function first(iterable $array, callable $callback = null, mixed $default = null): mixed
     {
@@ -63,7 +63,7 @@ class Arr
     }
 
     /**
-     * Return the last element in an array passing a given truth test.
+     * Get the last element in an array passing a given truth test.
      *
      * @param  array  $array
      */

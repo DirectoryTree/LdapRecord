@@ -15,7 +15,7 @@ class DetailedError
     }
 
     /**
-     * Returns the LDAP error code.
+     * Get the LDAP error code.
      */
     public function getErrorCode(): int
     {
@@ -23,7 +23,7 @@ class DetailedError
     }
 
     /**
-     * Returns the LDAP error message.
+     * Get the LDAP error message.
      */
     public function getErrorMessage(): string
     {
@@ -31,7 +31,7 @@ class DetailedError
     }
 
     /**
-     * Returns the LDAP diagnostic message.
+     * Get the LDAP diagnostic message.
      */
     public function getDiagnosticMessage(): ?string
     {

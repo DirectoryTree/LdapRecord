@@ -285,7 +285,7 @@ trait HasAttributes
     }
 
     /**
-     * Returns the models attribute by its key.
+     * Get the models attribute by its key.
      */
     public function getAttribute(string $key = null, mixed $default = null): mixed
     {
@@ -630,7 +630,7 @@ trait HasAttributes
     }
 
     /**
-     * Returns the first attribute by the specified key.
+     * Get the first attribute by the specified key.
      */
     public function getFirstAttribute(string $key, mixed $default = null): mixed
     {
@@ -842,7 +842,7 @@ trait HasAttributes
     }
 
     /**
-     * Returns the number of attributes.
+     * Get the number of attributes.
      */
     public function countAttributes(): int
     {

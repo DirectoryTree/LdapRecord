@@ -208,7 +208,7 @@ class Builder
     }
 
     /**
-     * Compiles and returns the current query string.
+     * Compile the query into an LDAP filter string.
      */
     public function getQuery(): string
     {
@@ -222,7 +222,7 @@ class Builder
     }
 
     /**
-     * Returns the unescaped query.
+     * Get the unescaped query.
      */
     public function getUnescapedQuery(): string
     {
@@ -230,7 +230,7 @@ class Builder
     }
 
     /**
-     * Returns the current Grammar instance.
+     * Get the current Grammar instance.
      */
     public function getGrammar(): Grammar
     {
@@ -238,7 +238,7 @@ class Builder
     }
 
     /**
-     * Returns the current Cache instance.
+     * Get the current Cache instance.
      */
     public function getCache(): ?Cache
     {
@@ -246,7 +246,7 @@ class Builder
     }
 
     /**
-     * Returns the current Connection instance.
+     * Get the current Connection instance.
      */
     public function getConnection(): Connection
     {
@@ -254,7 +254,7 @@ class Builder
     }
 
     /**
-     * Returns the query type.
+     * Get the query type.
      */
     public function getType(): string
     {
@@ -300,7 +300,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      */
-    protected function substituteBaseDn(Model|string $dn = null): string
+    public function substituteBaseDn(Model|string $dn = null): string
     {
         return str_replace('{base}', $this->baseDn ?? '', (string) $dn);
     }
@@ -607,7 +607,7 @@ class Builder
     }
 
     /**
-     * Returns the cache key.
+     * Get the cache key.
      */
     protected function getCacheKey(string $query): string
     {
@@ -627,7 +627,7 @@ class Builder
     }
 
     /**
-     * Returns the first entry in a search result.
+     * Get the first entry in a search result.
      */
     public function first(array|string $columns = ['*']): Model|array|null
     {
@@ -637,7 +637,7 @@ class Builder
     }
 
     /**
-     * Returns the first entry in a search result.
+     * Get the first entry in a search result.
      *
      * If no entry is found, an exception is thrown.
      *
@@ -653,7 +653,7 @@ class Builder
     }
 
     /**
-     * Return the first entry in a result, or execute the callback.
+     * Get the first entry in a result, or execute the callback.
      */
     public function firstOr(Closure $callback): mixed
     {

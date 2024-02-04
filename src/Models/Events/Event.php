@@ -20,7 +20,7 @@ abstract class Event
     }
 
     /**
-     * Returns the model that generated the event.
+     * Get the model that generated the event.
      */
     public function getModel(): Model
     {

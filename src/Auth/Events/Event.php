@@ -32,7 +32,7 @@ abstract class Event
     }
 
     /**
-     * Returns the events connection.
+     * Get the event's connection.
      */
     public function getConnection(): LdapInterface
     {
@@ -40,7 +40,7 @@ abstract class Event
     }
 
     /**
-     * Returns the authentication events username.
+     * Get the authentication event's username.
      */
     public function getUsername(): ?string
     {
@@ -48,7 +48,7 @@ abstract class Event
     }
 
     /**
-     * Returns the authentication events password.
+     * Get the authentication event's password.
      */
     public function getPassword(): ?string
     {

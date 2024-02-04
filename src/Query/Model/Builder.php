@@ -81,7 +81,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Returns the model being queried for.
+     * Get the model being queried for.
      */
     public function getModel(): Model
     {

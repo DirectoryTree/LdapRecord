@@ -30,7 +30,7 @@ class LdapRecordException extends Exception
     }
 
     /**
-     * Returns the detailed error.
+     * Get the detailed error.
      */
     public function getDetailedError(): ?DetailedError
     {

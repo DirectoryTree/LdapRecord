@@ -7,7 +7,7 @@ use Closure;
 class Helpers
 {
     /**
-     * Return the default value of the given value.
+     * Get the default value of the given value.
      */
     public static function value(mixed $value, mixed ...$args): mixed
     {

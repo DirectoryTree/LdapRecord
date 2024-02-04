@@ -119,7 +119,7 @@ interface LdapInterface
     public function canChangePasswords(): bool;
 
     /**
-     * Returns the full LDAP host URL.
+     * Get the full LDAP host URL.
      *
      * Ex: ldap://192.168.1.1:386
      */
@@ -140,7 +140,7 @@ interface LdapInterface
     public function getEntries(mixed $result): array;
 
     /**
-     * Returns the entry identifier for first entry in the result.
+     * Get the entry identifier for first entry in the result.
      *
      * @see https://www.php.net/manual/en/function.ldap-first-entry.php
      *
@@ -396,31 +396,31 @@ interface LdapInterface
     public function freeResult(mixed $result): bool;
 
     /**
-     * Returns the error number of the last command executed.
+     * Get the error number of the last command executed.
      *
      * @see http://php.net/manual/en/function.ldap-errno.php
      */
     public function errNo(): ?int;
 
     /**
-     * Returns the error string of the specified error number.
+     * Get the error string of the specified error number.
      *
      * @see http://php.net/manual/en/function.ldap-err2str.php
      */
     public function err2Str(int $number): string;
 
     /**
-     * Returns the LDAP protocol to utilize for the current connection.
+     * Get the LDAP protocol to utilize for the current connection.
      */
     public function getProtocol(): string;
 
     /**
-     * Returns the extended error code of the last command.
+     * Get the extended error code of the last command.
      */
     public function getExtendedError(): ?string;
 
     /**
-     * Return the diagnostic Message.
+     * Get the diagnostic message.
      */
     public function getDiagnosticMessage(): ?string;
 }

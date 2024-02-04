@@ -114,7 +114,7 @@ class DomainConfiguration
     }
 
     /**
-     * Returns the value for the specified configuration options.
+     * Get the value for the specified configuration options.
      *
      * @throws ConfigurationException When the option specified does not exist.
      */

@@ -111,7 +111,7 @@ class Logger
     }
 
     /**
-     * Returns the operational name of the given event.
+     * Get the operational name of the given event.
      */
     protected function getOperationName($event): string
     {

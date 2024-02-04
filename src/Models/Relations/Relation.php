@@ -252,7 +252,7 @@ abstract class Relation
     }
 
     /**
-     * Returns the escaped foreign key value for use in an LDAP filter from the model.
+     * Get the escaped foreign key value for use in an LDAP filter from the model.
      */
     protected function getEscapedForeignValueFromModel(Model $model): string
     {

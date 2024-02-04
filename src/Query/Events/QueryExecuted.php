@@ -28,7 +28,7 @@ class QueryExecuted
     }
 
     /**
-     * Returns the LDAP filter that was used for the query.
+     * Get the LDAP filter that was used for the query.
      */
     public function getQuery(): Builder
     {
@@ -36,7 +36,7 @@ class QueryExecuted
     }
 
     /**
-     * Returns the number of milliseconds it took to execute the query.
+     * Get the number of milliseconds it took to execute the query.
      */
     public function getTime(): ?float
     {

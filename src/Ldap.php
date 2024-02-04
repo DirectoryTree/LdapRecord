@@ -418,7 +418,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * Returns the extended error hex code of the last command.
+     * Get the extended error hex code of the last command.
      */
     public function getExtendedErrorHex(): ?string
     {
@@ -430,7 +430,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * Returns the extended error code of the last command.
+     * Get the extended error code of the last command.
      */
     public function getExtendedErrorCode(): string|false
     {

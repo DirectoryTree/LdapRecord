@@ -51,7 +51,7 @@ class Guid implements Stringable
     }
 
     /**
-     * Returns the string value of the GUID.
+     * Get the string value of the GUID.
      */
     public function __toString(): string
     {
@@ -59,7 +59,7 @@ class Guid implements Stringable
     }
 
     /**
-     * Returns the string value of the GUID.
+     * Get the string value of the GUID.
      */
     public function getValue(): string
     {
@@ -107,7 +107,7 @@ class Guid implements Stringable
     }
 
     /**
-     * Returns the string variant of a binary GUID.
+     * Get the string variant of a binary GUID.
      */
     protected function binaryGuidToString(string $binary): ?string
     {
@@ -127,7 +127,7 @@ class Guid implements Stringable
     }
 
     /**
-     * Return the specified section of the hexadecimal string.
+     * Get the specified section of the hexadecimal string.
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *

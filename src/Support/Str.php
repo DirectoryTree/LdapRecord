@@ -39,7 +39,7 @@ class Str
     }
 
     /**
-     * Return the remainder of a string after the last occurrence of a given value.
+     * Get the remainder of a string after the last occurrence of a given value.
      */
     public static function afterLast(string $subject, string $search): string
     {
@@ -121,7 +121,7 @@ class Str
     }
 
     /**
-     * Returns the number of substring occurrences.
+     * Get the number of substring occurrences.
      */
     public static function substrCount(string $haystack, string $needle, int $offset = 0, int $length = null): int
     {

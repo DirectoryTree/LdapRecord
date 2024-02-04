@@ -37,7 +37,7 @@ class Sid implements Stringable
     }
 
     /**
-     * Returns the string value of the SID.
+     * Get the string value of the SID.
      */
     public function __toString(): string
     {
@@ -45,7 +45,7 @@ class Sid implements Stringable
     }
 
     /**
-     * Returns the string value of the SID.
+     * Get the string value of the SID.
      */
     public function getValue(): string
     {
@@ -53,7 +53,7 @@ class Sid implements Stringable
     }
 
     /**
-     * Returns the binary variant of the SID.
+     * Get the binary variant of the SID.
      */
     public function getBinary(): string
     {
@@ -74,7 +74,7 @@ class Sid implements Stringable
     }
 
     /**
-     * Returns the string variant of a binary SID.
+     * Get the string variant of a binary SID.
      */
     protected function binarySidToString(string $binary): ?string
     {

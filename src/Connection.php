@@ -75,7 +75,7 @@ class Connection
     {
         $this->setConfiguration($config);
 
-        $this->setLdapConnection($ldap ?? new Ldap());
+        $this->setLdapConnection($ldap ?? new Ldap);
 
         $this->failed = function () {
             $this->dispatch(new Events\ConnectionFailed($this));

@@ -305,7 +305,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      */
-    protected function substituteBaseDn(Model|string $dn = null): string
+    public function substituteBaseDn(Model|string $dn = null): string
     {
         return str_replace(static::BASE_DN_PLACEHOLDER, $this->baseDn ?? '', (string) $dn);
     }

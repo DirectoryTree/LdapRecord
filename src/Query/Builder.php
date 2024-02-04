@@ -26,6 +26,11 @@ class Builder
     use EscapesValues;
 
     /**
+     * The base distinguished name placeholder.
+     */
+    public const BASE_DN_PLACEHOLDER = '{base}';
+
+    /**
      * The selected columns to retrieve on the query.
      */
     public ?array $columns = null;
@@ -302,7 +307,7 @@ class Builder
      */
     protected function substituteBaseDn(Model|string $dn = null): string
     {
-        return str_replace('{base}', $this->baseDn ?? '', (string) $dn);
+        return str_replace(static::BASE_DN_PLACEHOLDER, $this->baseDn ?? '', (string) $dn);
     }
 
     /**

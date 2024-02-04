@@ -74,6 +74,15 @@ class UserTest extends TestCase
         [, $newAlgo] = Password::getHashMethodAndAlgo($new['values'][0]);
         $this->assertEquals(Password::CRYPT_SALT_TYPE_SHA512, $newAlgo);
     }
+
+    public function test_correct_auth_identifier_is_returned()
+    {
+        $entryUuid = 'foo';
+
+        $user = new User(['entryuuid' => $entryUuid]);
+
+        $this->assertEquals($entryUuid, $user->getAuthIdentifier());
+    }
 }
 
 class OpenLDAPUserTestStub extends User

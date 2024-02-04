@@ -33,6 +33,14 @@ class User extends Entry implements Authenticatable
     ];
 
     /**
+     * Get the unique identifier for the user.
+     */
+    public function getAuthIdentifier(): ?string
+    {
+        return $this->getFirstAttribute($this->guidKey);
+    }
+
+    /**
      * The groups relationship.
      */
     public function groups(): HasMany

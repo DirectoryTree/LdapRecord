@@ -945,8 +945,6 @@ class Builder
 
     /**
      * Prepare the value and operator for a where clause.
-     *
-     * @throws \InvalidArgumentException
      */
     public function prepareValueAndOperator(mixed $value, mixed $operator, bool $useDefault = false): array
     {

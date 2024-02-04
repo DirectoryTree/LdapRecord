@@ -700,7 +700,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      */
     public function newDn(string $dn = null): DistinguishedName
     {
-        if (str_contains($dn, BaseBuilder::BASE_DN_PLACEHOLDER)) {
+        if (! is_null($dn) && str_contains($dn, BaseBuilder::BASE_DN_PLACEHOLDER)) {
             $dn = $this->newQuery()->substituteBaseDn($dn);
         }
 

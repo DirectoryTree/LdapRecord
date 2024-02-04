@@ -28,7 +28,7 @@ class BuilderScopeTest extends TestCase
     {
         $b = new Builder(new Connection());
 
-        $b->setModel(new Entry());
+        $b->setModel(new Entry);
 
         $b->withGlobalScope('foo', new TestModelScope());
 
@@ -78,7 +78,7 @@ class BuilderScopeTest extends TestCase
         }))->andReturn([]);
 
         $b = new Builder($connection);
-        $b->setModel(new Entry());
+        $b->setModel(new Entry);
 
         $b->withGlobalScope('foo', function ($query) {
             $query->whereRaw('foo', '=', 'bar');

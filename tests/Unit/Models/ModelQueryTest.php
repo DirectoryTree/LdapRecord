@@ -148,7 +148,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ContainerException::class);
 
-        (new Entry())->create();
+        (new Entry)->create();
     }
 
     public function test_create_without_dn()
@@ -157,7 +157,7 @@ class ModelQueryTest extends TestCase
 
         Container::addConnection(new Connection);
 
-        (new Entry())->create();
+        (new Entry)->create();
     }
 
     public function test_create_with_substituted_base()
@@ -236,7 +236,7 @@ class ModelQueryTest extends TestCase
 
         $this->expectException(ModelDoesNotExistException::class);
 
-        (new Entry())->update();
+        (new Entry)->update();
     }
 
     public function test_update_without_changes_does_not_attempt_update()

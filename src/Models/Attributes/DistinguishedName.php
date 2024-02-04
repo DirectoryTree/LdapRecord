@@ -188,10 +188,7 @@ class DistinguishedName implements Stringable
      */
     public function multi(): array
     {
-        return array_map(
-            fn ($rdn) => static::explodeRdn($rdn),
-            $this->rdns()
-        );
+        return array_map(fn ($rdn) => static::explodeRdn($rdn), $this->rdns());
     }
 
     /**
@@ -254,8 +251,18 @@ class DistinguishedName implements Stringable
     public function isEmpty(): bool
     {
         return empty(
-            array_filter($this->values())
+            array_filter(
+                array_map('trim', $this->values())
+            )
         );
+    }
+
+    /**
+     * Determine if the distinguished name is not empty.
+     */
+    public function isNotEmpty(): bool
+    {
+        return ! $this->isEmpty();
     }
 
     /**
@@ -271,16 +278,11 @@ class DistinguishedName implements Stringable
      */
     public function isChildOf(self $parent): bool
     {
-        if (
-            empty($components = $this->components()) ||
-            empty($parentComponents = $parent->components())
-        ) {
+        if (! $this->isComparable($this->parent(), $parent->get())) {
             return false;
         }
 
-        array_shift($components);
-
-        return $this->compare($components, $parentComponents);
+        return $this->normalize($this->parent()) === $this->normalize($parent->get());
     }
 
     /**
@@ -296,36 +298,34 @@ class DistinguishedName implements Stringable
      */
     public function isDescendantOf(self $ancestor): bool
     {
-        if (
-            empty($components = $this->components()) ||
-            empty($ancestorComponents = $ancestor->components())
-        ) {
+        if (! $this->isComparable($this->parent(), $ancestor->get())) {
             return false;
         }
 
-        if (! $length = count($components) - count($ancestorComponents)) {
+        return str_ends_with(
+            $this->normalize($this->parent()),
+            $this->normalize($ancestor->get())
+        );
+    }
+
+    /**
+     * Determine if the current distinguished name is a sibling of the given distinguished name.
+     */
+    public function isSiblingOf(self $sibling): bool
+    {
+        if (! $this->isComparable($this->parent(), $sibling->parent())) {
             return false;
         }
 
-        array_splice($components, $offset = 0, $length);
-
-        return $this->compare($components, $ancestorComponents);
+        return $this->normalize($this->parent()) === $this->normalize($sibling->parent());
     }
 
     /**
-     * Compare whether the two distinguished name values are equal.
+     * Determine if the distinguished names are comparable.
      */
-    protected function compare(array $values, array $other): bool
+    protected function isComparable(?string $first, ?string $second): bool
     {
-        return $this->recase($values) == $this->recase($other);
-    }
-
-    /**
-     * Recase the array values.
-     */
-    protected function recase(array $values): array
-    {
-        return array_map([$this, 'normalize'], $values);
+        return static::make($first)->isNotEmpty() && static::make($second)->isNotEmpty();
     }
 
     /**

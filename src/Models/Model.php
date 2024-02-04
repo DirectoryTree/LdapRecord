@@ -11,6 +11,7 @@ use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Query\Builder as BaseBuilder;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
 use Stringable;
@@ -695,10 +696,14 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     }
 
     /**
-     * Create a new Distinguished Name object.
+     * Create a new distinguished name.
      */
     public function newDn(string $dn = null): DistinguishedName
     {
+        if (str_contains($dn, BaseBuilder::BASE_DN_PLACEHOLDER)) {
+            $dn = $this->newQuery()->substituteBaseDn($dn);
+        }
+
         return new DistinguishedName($dn);
     }
 
@@ -771,6 +776,16 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     {
         return $this->newDn($this->getDn())->isChildOf(
             $this->newDn((string) $parent)
+        );
+    }
+
+    /**
+     * Determine if the current model is a sibling of the given.
+     */
+    public function isSiblingOf(Model|string $model = null): bool
+    {
+        return $this->newDn($this->getDn())->isSiblingOf(
+            $this->newDn((string) $model)
         );
     }
 

@@ -97,7 +97,7 @@ class ModelRenameTest extends TestCase
 
     public function test_rename_does_not_occur_when_given_the_same_rdn_and_parent_dn()
     {
-        $model = (new Entry())->setRawAttributes([
+        $model = (new Entry)->setRawAttributes([
             'dn' => 'cn=John Doe,dc=acme,dc=org',
         ]);
 

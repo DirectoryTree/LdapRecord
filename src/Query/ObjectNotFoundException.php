@@ -21,7 +21,7 @@ class ObjectNotFoundException extends LdapRecordException
      */
     public static function forQuery(string $query, string $baseDn = null): static
     {
-        return (new static())->setQuery($query, $baseDn);
+        return (new static)->setQuery($query, $baseDn);
     }
 
     /**

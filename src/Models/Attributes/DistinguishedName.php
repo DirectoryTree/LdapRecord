@@ -188,9 +188,7 @@ class DistinguishedName implements Stringable
      */
     public function multi(): array
     {
-        return array_map(fn ($rdn) =>
-            static::explodeRdn($rdn)
-        , $this->rdns());
+        return array_map(fn ($rdn) => static::explodeRdn($rdn), $this->rdns());
     }
 
     /**

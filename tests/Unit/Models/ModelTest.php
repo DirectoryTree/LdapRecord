@@ -720,7 +720,7 @@ class ModelTest extends TestCase
         $ou = new Entry();
         $ou->setDn('ou=users,dc=local,dc=com');
         $this->assertTrue($ou->isDescendantOf('{base}'));
-        $this->assertTrue($ou->isSiblingOf('ou=admins,ou=ASDAd,{base}'));
+        $this->assertTrue($ou->isSiblingOf('ou=admins,{base}'));
         $this->assertTrue($ou->isParentOf('cn=foo,ou=users,{base}'));
         $this->assertTrue($ou->isAncestorOf('cn=foo,ou=users,{base}'));
 

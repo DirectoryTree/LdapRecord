@@ -50,22 +50,22 @@ class ModelTest extends TestCase
 
     public function test_fill()
     {
-        $this->assertEmpty((new Entry())->getDn());
-        $this->assertEmpty((new Entry())->getAttributes());
-        $this->assertNull((new Entry())->getAttribute());
+        $this->assertEmpty((new Entry)->getDn());
+        $this->assertEmpty((new Entry)->getAttributes());
+        $this->assertNull((new Entry)->getAttribute());
         $this->assertEquals(['foo' => ['bar']], (new Entry(['foo' => 'bar']))->getAttributes());
-        $this->assertEquals(['bar' => ['baz']], (new Entry())->fill(['bar' => 'baz'])->getAttributes());
-        $this->assertEquals(2, (new Entry())->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes());
+        $this->assertEquals(['bar' => ['baz']], (new Entry)->fill(['bar' => 'baz'])->getAttributes());
+        $this->assertEquals(2, (new Entry)->fill(['foo' => 'bar', 'baz' => 'foo'])->countAttributes());
     }
 
     public function test_getting_object_guid_key()
     {
-        $this->assertEquals('objectguid', (new Entry())->getObjectGuidKey());
+        $this->assertEquals('objectguid', (new Entry)->getObjectGuidKey());
     }
 
     public function test_getting_object_classes()
     {
-        $this->assertEmpty((new Entry())->getObjectClasses());
+        $this->assertEmpty((new Entry)->getObjectClasses());
         $this->assertEquals(['foo', 'bar'], (new Entry(['objectclass' => ['foo', 'bar']]))->getObjectClasses());
     }
 
@@ -89,37 +89,37 @@ class ModelTest extends TestCase
 
     public function test_getting_name()
     {
-        $model = (new Entry())->setDn('cn=John Doe,dc=acme,dc=org');
+        $model = (new Entry)->setDn('cn=John Doe,dc=acme,dc=org');
         $this->assertEquals('John Doe', $model->getName());
 
-        $model = (new Entry())->setDn('cn=John,dc=acme');
+        $model = (new Entry)->setDn('cn=John,dc=acme');
         $this->assertEquals('John', $model->getName());
 
-        $model = (new Entry())->setDn('dn=test=test=test');
+        $model = (new Entry)->setDn('dn=test=test=test');
         $this->assertEquals('test=test=test', $model->getName());
 
-        $model = (new Entry())->setDn('dc=acme');
+        $model = (new Entry)->setDn('dc=acme');
         $this->assertEquals('acme', $model->getName());
 
         // Invalid DN.
-        $model = (new Entry())->setDn('invalid');
+        $model = (new Entry)->setDn('invalid');
         $this->assertNull($model->getName());
 
-        $this->assertNull((new Entry())->getName());
+        $this->assertNull((new Entry)->getName());
     }
 
     public function test_getting_rdn()
     {
-        $model = (new Entry())->setDn('cn=John Doe,dc=acme,dc=org');
+        $model = (new Entry)->setDn('cn=John Doe,dc=acme,dc=org');
         $this->assertEquals('cn=John Doe', $model->getRdn());
 
-        $model = (new Entry())->setDn('cn=John Doe');
+        $model = (new Entry)->setDn('cn=John Doe');
         $this->assertEquals('cn=John Doe', $model->getRdn());
 
-        $model = (new Entry())->setDn('dc=acme,dc=org');
+        $model = (new Entry)->setDn('dc=acme,dc=org');
         $this->assertEquals('dc=acme', $model->getRdn());
 
-        $this->assertNull((new Entry())->getRdn());
+        $this->assertNull((new Entry)->getRdn());
     }
 
     public function test_creatable_rdn()
@@ -149,13 +149,13 @@ class ModelTest extends TestCase
         $model = new Entry();
         $this->assertEquals('cn=,dc=acme,dc=org', $model->getCreatableDn());
 
-        $model = (new Entry())->inside('ou=Users,dc=acme,dc=org');
+        $model = (new Entry)->inside('ou=Users,dc=acme,dc=org');
         $this->assertEquals('cn=,ou=Users,dc=acme,dc=org', $model->getCreatableDn());
 
         $model->cn = 'John Doe';
         $this->assertEquals('cn=John Doe,ou=Users,dc=acme,dc=org', $model->getCreatableDn());
 
-        $model = (new Entry(['cn' => 'John Doe']))->inside((new Entry())->setDn('ou=Test,dc=acme,dc=org'));
+        $model = (new Entry(['cn' => 'John Doe']))->inside((new Entry)->setDn('ou=Test,dc=acme,dc=org'));
         $this->assertEquals('cn=John Doe,ou=Test,dc=acme,dc=org', $model->getCreatableDn());
     }
 
@@ -470,7 +470,7 @@ class ModelTest extends TestCase
         $model->setDn('baz');
         $model->setConnection('other');
 
-        $converted = $model->convert(new Entry());
+        $converted = $model->convert(new Entry);
         $this->assertEquals($model, $converted);
         $this->assertEquals('baz', $converted->getDn());
         $this->assertEquals('other', $converted->getConnectionName());
@@ -479,7 +479,7 @@ class ModelTest extends TestCase
         $model->setDn('foo');
         $model->setRawAttributes(['bar' => 'baz']);
 
-        $converted = $model->convert(new Entry());
+        $converted = $model->convert(new Entry);
         $this->assertTrue($converted->exists);
         $this->assertEquals($model, $converted);
     }
@@ -599,7 +599,7 @@ class ModelTest extends TestCase
 
     public function test_modifications_are_not_stacked()
     {
-        $model = (new Entry())->setRawAttributes([
+        $model = (new Entry)->setRawAttributes([
             'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
             'name' => ['Name'],
@@ -615,11 +615,11 @@ class ModelTest extends TestCase
 
     public function test_is()
     {
-        $model = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+        $model = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
 
-        $match = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+        $match = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
 
-        $notMatch = (new Entry())->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
+        $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
 
         $this->assertFalse($model->is());
 
@@ -630,11 +630,11 @@ class ModelTest extends TestCase
 
     public function test_is_not()
     {
-        $model = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+        $model = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
 
-        $match = (new Entry())->setDn('cn=john doe,dc=local,dc=com');
+        $match = (new Entry)->setDn('cn=john doe,dc=local,dc=com');
 
-        $notMatch = (new Entry())->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
+        $notMatch = (new Entry)->setDn('cn=john doe,dc=local,dc=com')->setConnection('foo');
 
         $this->assertTrue($model->isNot());
 
@@ -694,7 +694,7 @@ class ModelTest extends TestCase
         $model->setDn('ou=foo,dc=bar,dc=baz');
         $this->assertFalse($model->isChildOf('dc=baz'));
         $this->assertTrue($model->isChildOf('dc=bar,dc=baz'));
-        $this->assertTrue($model->isChildOf((new Entry())->setDn('dc=bar,dc=baz')));
+        $this->assertTrue($model->isChildOf((new Entry)->setDn('dc=bar,dc=baz')));
     }
 
     public function test_is_parent_of()
@@ -708,7 +708,28 @@ class ModelTest extends TestCase
         $model->setDn('dc=baz');
         $this->assertFalse($model->isParentOf('ou=foo,dc=bar,dc=baz'));
         $this->assertTrue($model->isParentOf('dc=bar,dc=baz'));
-        $this->assertTrue($model->isParentOf((new Entry())->setDn('dc=bar,dc=baz')));
+        $this->assertTrue($model->isParentOf((new Entry)->setDn('dc=bar,dc=baz')));
+    }
+
+    public function test_dn_comparison_methods_can_use_base_dn_substitution()
+    {
+        Container::addConnection(new Connection([
+            'base_dn' => 'dc=local,dc=com',
+        ]));
+
+        $ou = new Entry();
+        $ou->setDn('ou=users,dc=local,dc=com');
+        $this->assertTrue($ou->isDescendantOf('{base}'));
+        $this->assertTrue($ou->isSiblingOf('ou=admins,ou=ASDAd,{base}'));
+        $this->assertTrue($ou->isParentOf('cn=foo,ou=users,{base}'));
+        $this->assertTrue($ou->isAncestorOf('cn=foo,ou=users,{base}'));
+
+        $child = new Entry();
+        $child->setDn('cn=foo,ou=users,dc=local,dc=com');
+        $this->assertTrue($child->isDescendantOf('{base}'));
+        $this->assertTrue($child->isChildOf('ou=users,{base}'));
+        $this->assertTrue($child->isDescendantOf('ou=users,{base}'));
+        $this->assertTrue($child->isSiblingOf('cn=bar,ou=users,{base}'));
     }
 
     public function test_create_fills_attributes()

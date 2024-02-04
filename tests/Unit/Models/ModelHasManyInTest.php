@@ -25,7 +25,7 @@ class ModelHasManyInTest extends TestCase
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
-        $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry());
+        $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry);
 
         $model = new ModelHasManyInStub();
         $model->bar = ['baz'];
@@ -40,7 +40,7 @@ class ModelHasManyInTest extends TestCase
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
-        $query->shouldReceive('findBy')->once()->with('foreign', 'baz')->andReturn(new Entry());
+        $query->shouldReceive('findBy')->once()->with('foreign', 'baz')->andReturn(new Entry);
 
         $model = new ModelHasManyInStub();
         $model->bar = ['baz'];

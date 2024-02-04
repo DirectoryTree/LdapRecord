@@ -116,6 +116,7 @@ class DistinguishedNameTest extends TestCase
         $this->assertFalse($dn->isAncestorOf(new DistinguishedName('dc=bar,dc=baz')));
         $this->assertFalse($dn->isAncestorOf(new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=zal')));
         $this->assertFalse($dn->isAncestorOf(new DistinguishedName('ou=foo,dc=bar,dc=baz')));
+
         $this->assertTrue($dn->isAncestorOf(new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz')));
         $this->assertTrue($dn->isAncestorOf(new DistinguishedName('cn=John Doe,ou=foo,DC=BAR,DC=BAZ')));
         $this->assertTrue($dn->isAncestorOf(new DistinguishedName('cn=John Doe,ou=zal,ou=foo,DC=BAR,DC=BAZ')));
@@ -139,6 +140,7 @@ class DistinguishedNameTest extends TestCase
         $this->assertFalse($dn->isDescendantOf(new DistinguishedName('dc=bar')));
         $this->assertFalse($dn->isDescendantOf(new DistinguishedName('dc=foo,dc=baz')));
         $this->assertFalse($dn->isDescendantOf(new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz')));
+
         $this->assertTrue($dn->isDescendantOf(new DistinguishedName('ou=foo,dc=bar,dc=baz')));
         $this->assertTrue($dn->isDescendantOf(new DistinguishedName('ou=foo,DC=BAR,DC=BAZ')));
         $this->assertTrue($dn->isDescendantOf(new DistinguishedName('ou=foo,DC=BAR,DC=BAZ')));
@@ -157,6 +159,22 @@ class DistinguishedNameTest extends TestCase
 
         $dn = new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz');
         $this->assertTrue($dn->isChildOf(new DistinguishedName('ou=foo,dc=bar,dc=baz')));
+    }
+
+    public function test_is_sibling_of()
+    {
+        $dn = new DistinguishedName(null);
+        $this->assertFalse($dn->isSiblingOf(new DistinguishedName(null)));
+
+        $dn = new DistinguishedName('cn=bar');
+        $this->assertFalse($dn->isSiblingOf(new DistinguishedName('ou=foo')));
+
+        $dn = new DistinguishedName('dc=bar');
+        $this->assertFalse($dn->isSiblingOf(new DistinguishedName('ou=foo,dc=bar')));
+
+        $dn = new DistinguishedName('cn=John Doe,ou=foo,dc=bar,dc=baz');
+        $this->assertFalse($dn->isSiblingOf(new DistinguishedName('ou=foo,dc=bar,dc=baz')));
+        $this->assertTrue($dn->isSiblingOf(new DistinguishedName('cn=Jane Doe,ou=foo,dc=bar,dc=baz')));
     }
 
     public function test_is_parent_of()

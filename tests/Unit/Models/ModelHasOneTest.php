@@ -31,7 +31,7 @@ class ModelHasOneTest extends TestCase
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
-        $query->shouldReceive('find')->once()->with('foo')->andReturn(new Entry());
+        $query->shouldReceive('find')->once()->with('foo')->andReturn(new Entry);
 
         $this->assertEquals($related, $relation->get()->first());
     }

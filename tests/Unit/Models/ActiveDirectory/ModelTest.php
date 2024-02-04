@@ -77,7 +77,7 @@ class ModelTest extends TestCase
 
     public function test_restore_returns_false_when_object_is_not_deleted()
     {
-        $this->assertFalse((new Entry())->isDeleted());
+        $this->assertFalse((new Entry)->isDeleted());
         $this->assertFalse((new Entry(['isdeleted' => 'false']))->isDeleted());
     }
 

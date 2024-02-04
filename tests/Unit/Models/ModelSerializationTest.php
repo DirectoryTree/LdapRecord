@@ -44,7 +44,7 @@ class ModelSerializationTest extends TestCase
         $guid = new Guid('2bba564a-4f95-4cb0-97b0-94c0e3458621');
         $sid = new Sid('S-1-5-21-1004336348-1177238915-682003330-512');
 
-        $model = (new Entry())->setRawAttributes([
+        $model = (new Entry)->setRawAttributes([
             'objectguid' => [$guid->getBinary()],
             'objectsid' => [$sid->getBinary()],
         ]);

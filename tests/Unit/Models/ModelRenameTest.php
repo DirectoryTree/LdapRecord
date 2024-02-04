@@ -17,7 +17,7 @@ class ModelRenameTest extends TestCase
     {
         parent::setUp();
 
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
 
         Model::clearBootedModels();
     }

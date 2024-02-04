@@ -20,7 +20,7 @@ class ModelRelationTest extends TestCase
     {
         parent::setUp();
 
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
     }
 
     public function test_has_parent()

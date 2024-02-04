@@ -19,7 +19,7 @@ class ModelTest extends TestCase
 
     public function test_entry_uuid_is_always_added_to_select_list_with_asterisk_when_no_selects_have_been_added()
     {
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
 
         $model = new Entry();
 
@@ -33,7 +33,7 @@ class ModelTest extends TestCase
 
     public function test_entry_uuid_is_added_to_a_select_list_without_asterisk_when_selects_have_been_added()
     {
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
 
         $model = new Entry();
 

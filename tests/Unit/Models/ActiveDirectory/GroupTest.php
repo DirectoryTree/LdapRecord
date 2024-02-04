@@ -13,7 +13,7 @@ class GroupTest extends TestCase
     {
         parent::setUp();
 
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
     }
 
     public function test_rid_accessor_works()

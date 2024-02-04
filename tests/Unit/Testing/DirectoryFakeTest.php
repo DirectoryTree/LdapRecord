@@ -21,7 +21,7 @@ class DirectoryFakeTest extends TestCase
 
     public function testSetupCreatesConnectedFakeConnectionAndLdapInstance()
     {
-        Container::addConnection(new Connection());
+        Container::addConnection(new Connection);
 
         $fake = DirectoryFake::setup();
 

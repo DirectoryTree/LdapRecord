@@ -152,7 +152,7 @@ class BatchModification
     }
 
     /**
-     * Determines if the batch modification is valid in its current state.
+     * Determine if the batch modification is valid in its current state.
      */
     public function isValid(): bool
     {
@@ -237,7 +237,7 @@ class BatchModification
     }
 
     /**
-     * Determines if the given modtype is valid.
+     * Determine if the given modtype is valid.
      */
     protected function isValidType(int $type): bool
     {

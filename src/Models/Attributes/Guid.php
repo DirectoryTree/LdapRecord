@@ -27,7 +27,7 @@ class Guid implements Stringable
     ];
 
     /**
-     * Determines if the specified GUID is valid.
+     * Determine if the specified GUID is valid.
      */
     public static function isValid(string $guid): bool
     {

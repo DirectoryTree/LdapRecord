@@ -308,7 +308,7 @@ abstract class Relation
     }
 
     /**
-     * Determines if the foreign key is a distinguished name.
+     * Determine if the foreign key is a distinguished name.
      */
     protected function foreignKeyIsDistinguishedName(): bool
     {
@@ -316,7 +316,7 @@ abstract class Relation
     }
 
     /**
-     * Determines the model from the given relation map.
+     * Determine the model from the given relation map.
      *
      * @return class-string|bool
      */

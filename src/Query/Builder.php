@@ -55,7 +55,7 @@ class Builder
     public int $limit = 0;
 
     /**
-     * Determines whether the current query is paginated.
+     * Determine whether the current query is paginated.
      */
     public bool $paginated = false;
 
@@ -75,12 +75,12 @@ class Builder
     protected string $type = 'search';
 
     /**
-     * Determines whether the query is nested.
+     * Determine whether the query is nested.
      */
     protected bool $nested = false;
 
     /**
-     * Determines whether the query should be cached.
+     * Determine whether the query should be cached.
      */
     protected bool $caching = false;
 
@@ -95,7 +95,7 @@ class Builder
     protected ?DateTimeInterface $cacheUntil = null;
 
     /**
-     * Determines whether the query cache must be flushed.
+     * Determine whether the query cache must be flushed.
      */
     protected bool $flushCache = false;
 

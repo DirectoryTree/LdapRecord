@@ -13,7 +13,7 @@ class Sid implements Stringable
     protected string $value;
 
     /**
-     * Determines if the specified SID is valid.
+     * Determine if the specified SID is valid.
      */
     public static function isValid(string $sid): bool
     {

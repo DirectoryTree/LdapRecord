@@ -91,7 +91,7 @@ class Builder extends BaseBuilder
     /**
      * Get a new model query builder instance.
      */
-    public function newInstance(string $baseDn = null): BaseBuilder
+    public function newInstance(?string $baseDn = null): BaseBuilder
     {
         return parent::newInstance($baseDn)->model($this->model);
     }
@@ -216,7 +216,7 @@ class Builder extends BaseBuilder
      *
      * @throws ModelNotFoundException
      */
-    protected function throwNotFoundException(string $query, string $dn = null): void
+    protected function throwNotFoundException(string $query, ?string $dn = null): void
     {
         throw ModelNotFoundException::forQuery($query, $dn);
     }
@@ -350,7 +350,7 @@ class Builder extends BaseBuilder
     /**
      * Remove all or passed registered global scopes.
      */
-    public function withoutGlobalScopes(array $scopes = null): static
+    public function withoutGlobalScopes(?array $scopes = null): static
     {
         if (! is_array($scopes)) {
             $scopes = array_keys($this->scopes);

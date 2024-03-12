@@ -10,10 +10,10 @@ use LdapRecord\Tests\Integration\Concerns\SetupTestOu;
 
 class GroupTest extends TestCase
 {
-    use MakesUsers;
     use MakesGroups;
-    use SetupTestOu;
+    use MakesUsers;
     use SetupTestConnection;
+    use SetupTestOu;
 
     protected function setUp(): void
     {

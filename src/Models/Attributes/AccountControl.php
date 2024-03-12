@@ -61,7 +61,7 @@ class AccountControl implements Stringable
     /**
      * Constructor.
      */
-    public function __construct(int $flag = null)
+    public function __construct(?int $flag = null)
     {
         if (! is_null($flag)) {
             $this->applyFlags($flag);

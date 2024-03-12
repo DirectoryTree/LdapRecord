@@ -9,8 +9,8 @@ use LdapRecord\Models\Relations\HasMany;
 
 class User extends Entry implements Authenticatable
 {
-    use HasPassword;
     use CanAuthenticate;
+    use HasPassword;
 
     /**
      * The password's attribute name.

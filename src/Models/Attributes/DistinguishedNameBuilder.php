@@ -50,7 +50,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Prepend an RDN onto the DN.
      */
-    public function prepend(array|string $attribute, string $value = null): static
+    public function prepend(array|string $attribute, ?string $value = null): static
     {
         array_unshift(
             $this->components,
@@ -63,7 +63,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Append an RDN onto the DN.
      */
-    public function append(array|string $attribute, string $value = null): static
+    public function append(array|string $attribute, ?string $value = null): static
     {
         array_push(
             $this->components,
@@ -76,7 +76,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Componentize the attribute and value.
      */
-    protected function componentize(array|string $attribute, string $value = null): array
+    protected function componentize(array|string $attribute, ?string $value = null): array
     {
         // Here we will make the assumption that an array of
         // RDN's have been given if the value is null, and
@@ -107,7 +107,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Make an appendable component array from the attribute and value.
      */
-    protected function makeAppendableComponent(string|array $attribute, string $value = null): array
+    protected function makeAppendableComponent(string|array $attribute, ?string $value = null): array
     {
         return [trim($attribute), $this->escape(trim($value))->forDn()];
     }
@@ -115,7 +115,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Pop an RDN off of the end of the DN.
      */
-    public function pop(int $amount = 1, array &$removed = null): static
+    public function pop(int $amount = 1, ?array &$removed = null): static
     {
         $removed = array_map(
             fn ($component) => DistinguishedName::makeRdn($component),
@@ -128,7 +128,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Shift an RDN off of the beginning of the DN.
      */
-    public function shift(int $amount = 1, array &$removed = null): static
+    public function shift(int $amount = 1, ?array &$removed = null): static
     {
         $removed = array_map(
             fn ($component) => DistinguishedName::makeRdn($component),
@@ -151,7 +151,7 @@ class DistinguishedNameBuilder implements Stringable
     /**
      * Get the components of the DN.
      */
-    public function components(string $type = null): array
+    public function components(?string $type = null): array
     {
         return is_null($type)
             ? $this->components

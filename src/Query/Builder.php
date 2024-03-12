@@ -151,7 +151,7 @@ class Builder
     /**
      * Set the cache to store query results.
      */
-    public function setCache(Cache $cache = null): static
+    public function setCache(?Cache $cache = null): static
     {
         $this->cache = $cache;
 
@@ -161,7 +161,7 @@ class Builder
     /**
      * Returns a new Query Builder instance.
      */
-    public function newInstance(string $baseDn = null): Builder
+    public function newInstance(?string $baseDn = null): Builder
     {
         return (new static($this->connection))->setDn(
             is_null($baseDn) ? $this->getDn() : $baseDn
@@ -171,7 +171,7 @@ class Builder
     /**
      * Returns a new nested Query Builder instance.
      */
-    public function newNestedInstance(Closure $closure = null): Builder
+    public function newNestedInstance(?Closure $closure = null): Builder
     {
         $query = $this->newInstance()->nested();
 
@@ -269,7 +269,7 @@ class Builder
     /**
      * Set the base distinguished name of the query.
      */
-    public function setBaseDn(Model|string $dn = null): static
+    public function setBaseDn(Model|string|null $dn = null): static
     {
         $this->baseDn = $this->substituteBaseDn($dn);
 
@@ -295,7 +295,7 @@ class Builder
     /**
      * Set the distinguished name for the query.
      */
-    public function setDn(Model|string $dn = null): static
+    public function setDn(Model|string|null $dn = null): static
     {
         $this->dn = $this->substituteBaseDn($dn);
 
@@ -305,7 +305,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      */
-    public function substituteBaseDn(Model|string $dn = null): string
+    public function substituteBaseDn(Model|string|null $dn = null): string
     {
         return str_replace(static::BASE_DN_PLACEHOLDER, $this->baseDn ?? '', (string) $dn);
     }
@@ -313,7 +313,7 @@ class Builder
     /**
      * Alias for setting the distinguished name for the query.
      */
-    public function in(Model|string $dn = null): static
+    public function in(Model|string|null $dn = null): static
     {
         return $this->setDn($dn);
     }
@@ -715,7 +715,7 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    protected function throwNotFoundException(string $query, string $dn = null): void
+    protected function throwNotFoundException(string $query, ?string $dn = null): void
     {
         throw ObjectNotFoundException::forQuery($query, $dn);
     }
@@ -981,7 +981,7 @@ class Builder
      *
      * Values given to this method are not escaped.
      */
-    public function whereRaw(array|string $field, string $operator = null, mixed $value = null): static
+    public function whereRaw(array|string $field, ?string $operator = null, mixed $value = null): static
     {
         return $this->where($field, $operator, $value, 'and', true);
     }
@@ -1134,7 +1134,7 @@ class Builder
     /**
      * Adds an 'or where' clause to the current query.
      */
-    public function orWhere(array|string $field, string $operator = null, string $value = null): static
+    public function orWhere(array|string $field, ?string $operator = null, ?string $value = null): static
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
@@ -1148,7 +1148,7 @@ class Builder
      *
      * Values given to this method are not escaped.
      */
-    public function orWhereRaw(array|string $field, string $operator = null, string $value = null): static
+    public function orWhereRaw(array|string $field, ?string $operator = null, ?string $value = null): static
     {
         return $this->where($field, $operator, $value, 'or', true);
     }
@@ -1376,7 +1376,7 @@ class Builder
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      */
-    public function cache(DateTimeInterface $until = null, bool $flush = false, string $key = null): static
+    public function cache(?DateTimeInterface $until = null, bool $flush = false, ?string $key = null): static
     {
         $this->caching = true;
         $this->cacheKey = $key;
@@ -1617,7 +1617,7 @@ class Builder
     /**
      * Logs the given executed query information by firing its query event.
      */
-    protected function logQuery(Builder $query, string $type, float $time = null): void
+    protected function logQuery(Builder $query, string $type, ?float $time = null): void
     {
         $args = [$query, $time];
 

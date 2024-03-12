@@ -90,7 +90,7 @@ abstract class Relation
     /**
      * Set the callback to use for resolving models from relation results.
      */
-    public static function resolveModelsUsing(Closure $callback = null): void
+    public static function resolveModelsUsing(?Closure $callback = null): void
     {
         static::$modelResolver = $callback;
     }

@@ -224,7 +224,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritDoc}
      */
-    public function compare(string $dn, string $attribute, string $value, array $controls = null): bool|int
+    public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -364,7 +364,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function bind(string $dn = null, string $password = null, array $controls = null): LdapResultResponse
+    public function bind(?string $dn = null, ?string $password = null, ?array $controls = null): LdapResultResponse
     {
         $result = $this->resolveExpectation(__FUNCTION__, func_get_args());
 
@@ -376,7 +376,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritDoc}
      */
-    public function saslBind(string $dn = null, string $password = null, array $options = null): bool
+    public function saslBind(?string $dn = null, ?string $password = null, ?array $options = null): bool
     {
         return $this->bound = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -384,7 +384,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
+    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -392,7 +392,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
+    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -400,7 +400,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, array $controls = null): mixed
+    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -408,7 +408,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function parseResult(mixed $result, int &$errorCode = 0, string &$dn = null, string &$errorMessage = null, array &$referrals = null, array &$controls = null): LdapResultResponse|false
+    public function parseResult(mixed $result, int &$errorCode = 0, ?string &$dn = null, ?string &$errorMessage = null, ?array &$referrals = null, ?array &$controls = null): LdapResultResponse|false
     {
         return $this->hasExpectations(__FUNCTION__)
             ? $this->resolveExpectation(__FUNCTION__, func_get_args())

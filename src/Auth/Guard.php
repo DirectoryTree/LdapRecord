@@ -73,7 +73,7 @@ class Guard
      * @throws BindException
      * @throws \LdapRecord\ConnectionException
      */
-    public function bind(string $username = null, string $password = null): void
+    public function bind(?string $username = null, ?string $password = null): void
     {
         $this->fireAuthEvent('binding', $username, $password);
 
@@ -102,7 +102,7 @@ class Guard
      *
      * @throws \LdapRecord\ConnectionException
      */
-    protected function authenticate(string $username = null, string $password = null): bool
+    protected function authenticate(?string $username = null, ?string $password = null): bool
     {
         if ($this->configuration->get('use_sasl') ?? false) {
             return $this->connection->saslBind(
@@ -139,7 +139,7 @@ class Guard
     /**
      * Set the event dispatcher instance.
      */
-    public function setDispatcher(DispatcherInterface $dispatcher = null): void
+    public function setDispatcher(?DispatcherInterface $dispatcher = null): void
     {
         $this->events = $dispatcher;
     }
@@ -147,7 +147,7 @@ class Guard
     /**
      * Fire an authentication event.
      */
-    protected function fireAuthEvent(string $name, string $username = null, string $password = null): void
+    protected function fireAuthEvent(string $name, ?string $username = null, ?string $password = null): void
     {
         if (isset($this->events)) {
             $event = implode('\\', [Events::class, ucfirst($name)]);

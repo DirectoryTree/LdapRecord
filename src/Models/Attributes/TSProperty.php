@@ -77,7 +77,7 @@ class TSProperty
     /**
      * Pass binary TSProperty data to construct its object representation.
      */
-    public function __construct(string|int $value = null)
+    public function __construct(string|int|null $value = null)
     {
         if ($value) {
             $this->decode(bin2hex($value));

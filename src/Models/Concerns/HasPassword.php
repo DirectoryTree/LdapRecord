@@ -143,7 +143,7 @@ trait HasPassword
      *
      * @throws LdapRecordException
      */
-    protected function getHashedPassword(string $method, string $password, string $salt = null): string
+    protected function getHashedPassword(string $method, string $password, ?string $salt = null): string
     {
         if (! method_exists(Password::class, $method)) {
             throw new LdapRecordException("Password hashing method [{$method}] does not exist.");

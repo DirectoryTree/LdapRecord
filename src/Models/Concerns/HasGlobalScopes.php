@@ -14,7 +14,7 @@ trait HasGlobalScopes
      *
      * @throws InvalidArgumentException
      */
-    public static function addGlobalScope(Scope|Closure|string $scope, Closure $implementation = null): void
+    public static function addGlobalScope(Scope|Closure|string $scope, ?Closure $implementation = null): void
     {
         if (is_string($scope) && ! is_null($implementation)) {
             static::$globalScopes[static::class][$scope] = $implementation;

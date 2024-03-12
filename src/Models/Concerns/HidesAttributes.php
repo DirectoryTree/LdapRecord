@@ -45,7 +45,7 @@ trait HidesAttributes
     /**
      * Add hidden attributes for the model.
      */
-    public function addHidden(array|string $attributes = null): void
+    public function addHidden(array|string|null $attributes = null): void
     {
         $this->hidden = array_merge(
             $this->hidden,
@@ -77,7 +77,7 @@ trait HidesAttributes
     /**
      * Add visible attributes for the model.
      */
-    public function addVisible(array|string $attributes = null): void
+    public function addVisible(array|string|null $attributes = null): void
     {
         $this->visible = array_merge(
             $this->visible,

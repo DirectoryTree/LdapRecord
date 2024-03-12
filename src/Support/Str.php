@@ -123,7 +123,7 @@ class Str
     /**
      * Get the number of substring occurrences.
      */
-    public static function substrCount(string $haystack, string $needle, int $offset = 0, int $length = null): int
+    public static function substrCount(string $haystack, string $needle, int $offset = 0, ?int $length = null): int
     {
         if (! is_null($length)) {
             return substr_count($haystack, $needle, $offset, $length);

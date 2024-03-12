@@ -101,7 +101,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @throws \LdapRecord\LdapRecordException
      */
-    public function restore(string $newParentDn = null): bool
+    public function restore(?string $newParentDn = null): bool
     {
         if (! $this->isDeleted()) {
             return false;

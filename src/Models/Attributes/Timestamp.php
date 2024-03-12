@@ -170,7 +170,7 @@ class Timestamp
      *
      * @throws \Exception
      */
-    protected function convertWindowsIntegerTimeToDateTime(string|int $value = null): DateTime|int|false
+    protected function convertWindowsIntegerTimeToDateTime(string|int|null $value = null): DateTime|int|false
     {
         if (is_null($value) || $value === '') {
             return false;

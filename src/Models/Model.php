@@ -19,16 +19,16 @@ use Stringable;
 use UnexpectedValueException;
 
 /** @mixin Builder */
-abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, Stringable
+abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, Stringable
 {
-    use EscapesValues;
-    use Concerns\HasEvents;
-    use Concerns\HasScopes;
     use Concerns\HasAttributes;
+    use Concerns\HasEvents;
     use Concerns\HasGlobalScopes;
-    use Concerns\HidesAttributes;
     use Concerns\HasRelationships;
+    use Concerns\HasScopes;
+    use Concerns\HidesAttributes;
     use Concerns\SerializesProperties;
+    use EscapesValues;
 
     /**
      * Indicates if the model exists in the directory.
@@ -166,7 +166,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Set the model's distinguished name.
      */
-    public function setDn(string $dn = null): static
+    public function setDn(?string $dn = null): static
     {
         $this->dn = $dn;
 
@@ -208,7 +208,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Set the connection associated with the model.
      */
-    public function setConnection(string $name = null): static
+    public function setConnection(?string $name = null): static
     {
         $this->connection = $name;
 
@@ -226,7 +226,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Begin querying the model on a given connection.
      */
-    public static function on(string $connection = null): Builder
+    public static function on(?string $connection = null): Builder
     {
         $instance = new static();
 
@@ -248,7 +248,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    public static function getRootDse(string $connection = null): Model
+    public static function getRootDse(?string $connection = null): Model
     {
         /** @var Model $model */
         $model = static::getRootDseModel();
@@ -325,7 +325,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Resolve a connection instance.
      */
-    public static function resolveConnection(string $connection = null): Connection
+    public static function resolveConnection(?string $connection = null): Connection
     {
         return static::getConnectionContainer()->getConnection($connection);
     }
@@ -407,7 +407,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Returns a new batch modification.
      */
-    public function newBatchModification(string $attribute = null, int $type = null, array $values = []): BatchModification
+    public function newBatchModification(?string $attribute = null, ?int $type = null, array $values = []): BatchModification
     {
         return new BatchModification($attribute, $type, $values);
     }
@@ -545,7 +545,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if two models have the same distinguished name and belong to the same connection.
      */
-    public function is(Model $model = null): bool
+    public function is(?Model $model = null): bool
     {
         return ! is_null($model)
             && $this->dn == $model->getDn()
@@ -555,7 +555,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if two models are not the same.
      */
-    public function isNot(Model $model = null): bool
+    public function isNot(?Model $model = null): bool
     {
         return ! $this->is($model);
     }
@@ -577,7 +577,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Morph the model into a one of matching models using their object classes.
      */
-    public function morphInto(array $models, callable $resolver = null): Model
+    public function morphInto(array $models, ?callable $resolver = null): Model
     {
         if (class_exists($model = $this->determineMorphModel($this, $models, $resolver))) {
             return $this->convert(new $model);
@@ -589,7 +589,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Morph the model into a one of matching models or throw an exception.
      */
-    public function morphIntoOrFail(array $models, callable $resolver = null): Model
+    public function morphIntoOrFail(array $models, ?callable $resolver = null): Model
     {
         $model = $this->morphInto($models, $resolver);
 
@@ -607,7 +607,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      *
      * @return class-string|bool
      */
-    protected function determineMorphModel(Model $model, array $models, callable $resolver = null): string|bool
+    protected function determineMorphModel(Model $model, array $models, ?callable $resolver = null): string|bool
     {
         $morphModelMap = [];
 
@@ -736,7 +736,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the name of the model, or the given DN.
      */
-    public function getName(string $dn = null): ?string
+    public function getName(?string $dn = null): ?string
     {
         return $this->newDn($dn ?? $this->dn)->name();
     }
@@ -744,7 +744,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the head attribute of the model, or the given DN.
      */
-    public function getHead(string $dn = null): ?string
+    public function getHead(?string $dn = null): ?string
     {
         return $this->newDn($dn ?? $this->dn)->head();
     }
@@ -752,7 +752,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the RDN of the model, of the given DN.
      */
-    public function getRdn(string $dn = null): ?string
+    public function getRdn(?string $dn = null): ?string
     {
         return $this->newDn($dn ?? $this->dn)->relative();
     }
@@ -760,7 +760,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the parent distinguished name of the model, or the given DN.
      */
-    public function getParentDn(string $dn = null): ?string
+    public function getParentDn(?string $dn = null): ?string
     {
         return $this->newDn($dn ?? $this->dn)->parent();
     }
@@ -768,7 +768,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Create a new distinguished name.
      */
-    public function newDn(string $dn = null): DistinguishedName
+    public function newDn(?string $dn = null): DistinguishedName
     {
         if (! is_null($dn) && str_contains($dn, BaseBuilder::BASE_DN_PLACEHOLDER)) {
             $dn = $this->newQuery()->substituteBaseDn($dn);
@@ -806,7 +806,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the model's string GUID.
      */
-    public function getConvertedGuid(string $guid = null): ?string
+    public function getConvertedGuid(?string $guid = null): ?string
     {
         try {
             return $this->newObjectGuid(
@@ -820,7 +820,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get the model's binary GUID.
      */
-    public function getBinaryGuid(string $guid = null): ?string
+    public function getBinaryGuid(?string $guid = null): ?string
     {
         try {
             return $this->newObjectGuid(
@@ -842,7 +842,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the current model is a direct descendant of the given.
      */
-    public function isChildOf(Model|string $parent = null): bool
+    public function isChildOf(Model|string|null $parent = null): bool
     {
         return $this->newDn($this->getDn())->isChildOf(
             $this->newDn((string) $parent)
@@ -852,7 +852,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the current model is a sibling of the given.
      */
-    public function isSiblingOf(Model|string $model = null): bool
+    public function isSiblingOf(Model|string|null $model = null): bool
     {
         return $this->newDn($this->getDn())->isSiblingOf(
             $this->newDn((string) $model)
@@ -862,7 +862,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the current model is a direct ascendant of the given.
      */
-    public function isParentOf(Model|string $child = null): bool
+    public function isParentOf(Model|string|null $child = null): bool
     {
         return $this->newDn($this->getDn())->isParentOf(
             $this->newDn((string) $child)
@@ -872,7 +872,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the current model is a descendant of the given.
      */
-    public function isDescendantOf(Model|string $model = null): bool
+    public function isDescendantOf(Model|string|null $model = null): bool
     {
         return $this->dnIsInside($this->getDn(), $model);
     }
@@ -880,7 +880,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the current model is a ancestor of the given.
      */
-    public function isAncestorOf(Model|string $model = null): bool
+    public function isAncestorOf(Model|string|null $model = null): bool
     {
         return $this->dnIsInside($model, $this->getDn());
     }
@@ -888,7 +888,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Determine if the DN is inside the parent DN.
      */
-    protected function dnIsInside(Model|string $dn = null, Model|string $parentDn = null): bool
+    protected function dnIsInside(Model|string|null $dn = null, Model|string|null $parentDn = null): bool
     {
         return $this->newDn((string) $dn)->isDescendantOf(
             $this->newDn($parentDn)
@@ -1239,7 +1239,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
      */
-    public function rename(string $rdn, Model|string $newParentDn = null, bool $deleteOldRdn = true): void
+    public function rename(string $rdn, Model|string|null $newParentDn = null, bool $deleteOldRdn = true): void
     {
         $this->assertExists();
 
@@ -1302,7 +1302,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get a distinguished name that is creatable for the model.
      */
-    public function getCreatableDn(string $name = null, string $attribute = null): string
+    public function getCreatableDn(?string $name = null, ?string $attribute = null): string
     {
         return implode(',', [
             $this->getCreatableRdn($name, $attribute),
@@ -1313,7 +1313,7 @@ abstract class Model implements ArrayAccess, Arrayable, JsonSerializable, String
     /**
      * Get a creatable (escaped) RDN for the model.
      */
-    public function getCreatableRdn(string $name = null, string $attribute = null): string
+    public function getCreatableRdn(?string $name = null, ?string $attribute = null): string
     {
         $attribute = $attribute ?? $this->getCreatableRdnAttribute();
 

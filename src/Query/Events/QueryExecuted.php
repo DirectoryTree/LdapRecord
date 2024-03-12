@@ -21,7 +21,7 @@ class QueryExecuted
     /**
      * Constructor.
      */
-    public function __construct(Builder $query, float $time = null)
+    public function __construct(Builder $query, ?float $time = null)
     {
         $this->query = $query;
         $this->time = $time;

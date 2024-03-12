@@ -287,7 +287,7 @@ trait HasAttributes
     /**
      * Get the models attribute by its key.
      */
-    public function getAttribute(string $key = null, mixed $default = null): mixed
+    public function getAttribute(?string $key = null, mixed $default = null): mixed
     {
         if (! $key) {
             return null;
@@ -372,7 +372,7 @@ trait HasAttributes
     /**
      * Determine whether an attribute should be cast to a native type.
      */
-    public function hasCast(string $key, array|string $types = null): bool
+    public function hasCast(string $key, array|string|null $types = null): bool
     {
         if (array_key_exists($key, $this->getCasts())) {
             return ! $types || in_array($this->getCastType($key), (array) $types, true);
@@ -921,7 +921,7 @@ trait HasAttributes
     /**
      * Determine if the model or any of the given attribute(s) were changed when the model was last saved.
      */
-    public function wasChanged(array|string $attributes = null): bool
+    public function wasChanged(array|string|null $attributes = null): bool
     {
         if (func_num_args() === 0) {
             return count($this->changes) > 0;

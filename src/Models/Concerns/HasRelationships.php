@@ -37,7 +37,7 @@ trait HasRelationships
     /**
      * Get a relationship by its name.
      */
-    public function getRelation(string $relationName = null): ?Relation
+    public function getRelation(?string $relationName = null): ?Relation
     {
         if (is_null($relationName)) {
             return null;

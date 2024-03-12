@@ -41,7 +41,7 @@ class Arr
     /**
      * Get the first element in an array passing a given truth test.
      */
-    public static function first(iterable $array, callable $callback = null, mixed $default = null): mixed
+    public static function first(iterable $array, ?callable $callback = null, mixed $default = null): mixed
     {
         if (is_null($callback)) {
             if (empty($array)) {
@@ -67,7 +67,7 @@ class Arr
      *
      * @param  array  $array
      */
-    public static function last(iterable $array, callable $callback = null, mixed $default = null): mixed
+    public static function last(iterable $array, ?callable $callback = null, mixed $default = null): mixed
     {
         if (is_null($callback)) {
             return empty($array) ? Helpers::value($default) : end($array);

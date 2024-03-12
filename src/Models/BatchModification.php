@@ -40,7 +40,7 @@ class BatchModification
     /**
      * Constructor.
      */
-    public function __construct(string $attribute = null, int $type = null, array $values = [])
+    public function __construct(?string $attribute = null, ?int $type = null, array $values = [])
     {
         $this->setAttribute($attribute)
             ->setType($type)
@@ -50,7 +50,7 @@ class BatchModification
     /**
      * Make a new batch modification instance.
      */
-    public static function make(string $attribute = null, int $type = null, array $values = []): self
+    public static function make(?string $attribute = null, ?int $type = null, array $values = []): self
     {
         return new static($attribute, $type, $values);
     }
@@ -76,7 +76,7 @@ class BatchModification
     /**
      * Set the attribute of the modification.
      */
-    public function setAttribute(string $attribute = null): static
+    public function setAttribute(?string $attribute = null): static
     {
         $this->attribute = $attribute;
 
@@ -128,7 +128,7 @@ class BatchModification
     /**
      * Set the type of the modification.
      */
-    public function setType(int $type = null): static
+    public function setType(?int $type = null): static
     {
         if (is_null($type)) {
             return $this;

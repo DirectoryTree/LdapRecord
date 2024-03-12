@@ -37,7 +37,7 @@ class Slice implements ArrayAccess, IteratorAggregate, JsonSerializable
     /**
      * Constructor.
      */
-    public function __construct(Collection|array $items, int $total, int $perPage, int $currentPage = null)
+    public function __construct(Collection|array $items, int $total, int $perPage, ?int $currentPage = null)
     {
         $this->items = $items;
         $this->total = $total;

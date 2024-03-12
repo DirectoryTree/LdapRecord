@@ -22,6 +22,14 @@ trait CanAuthenticate
     }
 
     /**
+     * Get the name of the password attribute for the user.
+     */
+    public function getAuthPasswordName(): string
+    {
+        return 'password';
+    }
+
+    /**
      * Get the token value for the "remember me" session.
      */
     public function getRememberToken(): string

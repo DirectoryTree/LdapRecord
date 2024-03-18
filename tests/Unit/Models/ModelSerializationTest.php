@@ -18,6 +18,7 @@ class ModelSerializationTest extends TestCase
         $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime());
 
         $model = (new User())->setRawAttributes([
+            'cn' => 'René',
             'whenchanged' => [(string) $whenchanged],
             'lastlogon' => [(string) $lastlogon],
         ]);
@@ -31,6 +32,8 @@ class ModelSerializationTest extends TestCase
         $this->assertInstanceOf(User::class, $unserializedAndUnencoded);
 
         $this->assertTrue($model->is($unserializedAndUnencoded));
+
+        $this->assertEquals($model->getOriginal()['cn'], $unserializedAndUnencoded->getOriginal()['cn']);
 
         $this->assertEquals($model->getOriginal()['lastlogon'], $unserializedAndUnencoded->getOriginal()['lastlogon']);
         $this->assertEquals($model->getOriginal()['whenchanged'], $unserializedAndUnencoded->getOriginal()['whenchanged']);

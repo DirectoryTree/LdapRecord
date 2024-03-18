@@ -220,7 +220,7 @@ trait HasAttributes
      */
     protected function decodeValue(string $value): string
     {
-        if (MbString::isLoaded() && MbString::isUtf8($value)) {
+        if (MbString::isLoaded() && ! MbString::isUtf8($value)) {
             return mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1');
         }
 

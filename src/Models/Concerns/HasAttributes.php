@@ -113,9 +113,9 @@ trait HasAttributes
      */
     public function arrayToOriginal(array $attributes): array
     {
-        return $this->decodeAttributes(
-            $this->convertAttributesFromJson($attributes)
-        );
+        $attributes = $this->decodeAttributes($attributes);
+
+        return $this->convertAttributesFromJson($attributes);
     }
 
     /**
@@ -125,9 +125,9 @@ trait HasAttributes
     {
         $attributes = $this->restoreDateAttributesFromArray($attributes);
 
-        return $this->decodeAttributes(
-            $this->convertAttributesFromJson($attributes)
-        );
+        $attributes = $this->decodeAttributes($attributes);
+
+        return $this->convertAttributesFromJson($attributes);
     }
 
     /**

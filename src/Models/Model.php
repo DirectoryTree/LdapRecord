@@ -527,6 +527,15 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     protected function convertAttributesFromJson(array $attributes = []): array
     {
+        // Here we are converting the model's GUID and SID attributes
+        // back to their original values from serialization, so that
+        // their original value may be used and compared against.
+        if (isset($attributes[$this->guidKey])) {
+            $attributes[$this->guidKey] = [$this->getBinaryGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
+        }
+
         return $attributes;
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Tests\Models;
+namespace LdapRecord\Tests\Unit\Models;
 
 use DateTime;
 use LdapRecord\Models\ActiveDirectory\Entry;

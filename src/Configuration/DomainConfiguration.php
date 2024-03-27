@@ -47,6 +47,9 @@ class DomainConfiguration
         // Whether or not to use SASL when connecting.
         'use_sasl' => false,
 
+        // Whether or not to allow insecure password changes.
+        'allow_insecure_password_changes' => false,
+
         // SASL options
         'sasl_options' => [
             'mech' => null,

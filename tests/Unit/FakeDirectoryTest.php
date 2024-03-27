@@ -53,6 +53,7 @@ class FakeDirectoryTest extends TestCase
             'use_tls' => true,
             'use_ssl' => false,
             'use_sasl' => false,
+            'allow_insecure_password_changes' => false,
             'timeout' => 5,
             'version' => 3,
             'follow_referrals' => false,

@@ -276,9 +276,7 @@ class Ldap implements LdapInterface
 
         $response = $this->parseResult($result);
 
-        $this->bound = $response && $response->successful();
-
-        $this->secure = $this->secure ?: $this->bound && $this->isUsingSSL();
+        $this->handleBindResponse($response);
 
         return $response;
     }

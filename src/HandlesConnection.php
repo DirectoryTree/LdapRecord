@@ -153,6 +153,16 @@ trait HandlesConnection
     }
 
     /**
+     * Handle the bind response.
+     */
+    protected function handleBindResponse(LdapResultResponse $response): void
+    {
+        $this->bound = $response->successful();
+
+        $this->secure = $this->secure ?: $this->bound && $this->isUsingSSL();
+    }
+
+    /**
      * Convert warnings to exceptions for the given operation.
      *
      * @throws LdapRecordException

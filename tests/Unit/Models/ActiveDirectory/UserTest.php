@@ -40,6 +40,17 @@ class UserTest extends TestCase
         new User(['password' => 'password']);
     }
 
+    public function test_setting_password_is_allowed_when_allow_insecure_password_changes_is_enabled()
+    {
+        Container::getDefaultConnection()
+            ->getConfiguration()
+            ->set('allow_insecure_password_changes', true);
+
+        $user = new User(['password' => 'password']);
+
+        $this->assertCount(1, $user->getModifications());
+    }
+
     public function test_changing_password_requires_secure_connection()
     {
         $user = (new User)->setRawAttributes(['dn' => 'foo']);

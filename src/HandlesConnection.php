@@ -23,9 +23,14 @@ trait HandlesConnection
     protected mixed $connection = null;
 
     /**
-     * The bound status of the connection.
+     * Whether the connection is bound.
      */
     protected bool $bound = false;
+
+    /**
+     * Whether the connection is secured over TLS or SSL.
+     */
+    protected bool $secure = false;
 
     /**
      * Whether the connection must be bound over SSL.
@@ -59,6 +64,14 @@ trait HandlesConnection
     public function isBound(): bool
     {
         return $this->bound;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSecure(): bool
+    {
+        return $this->secure;
     }
 
     /**

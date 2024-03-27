@@ -109,6 +109,11 @@ interface LdapInterface
     public function isBound(): bool;
 
     /**
+     * Determine if the connection is secure over TLS or SSL.
+     */
+    public function isSecure(): bool;
+
+    /**
      * Determine if the connection has been created.
      */
     public function isConnected(): bool;

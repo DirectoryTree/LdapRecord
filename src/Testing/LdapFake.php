@@ -330,7 +330,7 @@ class LdapFake implements LdapInterface
      */
     public function startTLS(): bool
     {
-        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+        return $this->secure = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**

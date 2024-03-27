@@ -58,7 +58,7 @@ class GuardTest extends TestCase
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
-        $this->assertNull($guard->bind('user', 'pass'));
+        $guard->bind('user', 'pass');
     }
 
     public function test_bind_allows_null_username_and_password()
@@ -69,7 +69,7 @@ class GuardTest extends TestCase
 
         $guard = new Guard($ldap, new DomainConfiguration());
 
-        $this->assertNull($guard->bind());
+        $guard->bind();
     }
 
     public function test_bind_always_throws_exception_on_invalid_credentials()
@@ -96,7 +96,7 @@ class GuardTest extends TestCase
             'password' => 'bar',
         ]));
 
-        $this->assertNull($guard->bindAsConfiguredUser());
+        $guard->bindAsConfiguredUser();
     }
 
     public function test_binding_events_are_fired_during_bind()
@@ -230,5 +230,26 @@ class GuardTest extends TestCase
         $guard->bindAsConfiguredUser();
 
         $this->assertTrue($ldap->isBound());
+    }
+
+    public function test_tls_is_upgraded_once()
+    {
+        $ldap = (new LdapFake())->expect([
+            LdapFake::operation('bind')->once()->with('admin', 'password')->andReturnResponse(),
+            LdapFake::operation('startTLS')->once()->andReturnTrue(),
+            LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse(1),
+        ]);
+
+        $ldap->tls();
+
+        $this->assertFalse($ldap->isSecure());
+
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'username' => 'admin',
+            'password' => 'password',
+        ]));
+
+        $this->assertFalse($guard->attempt('foo', 'bar'));
+        $this->assertTrue($ldap->isSecure());
     }
 }

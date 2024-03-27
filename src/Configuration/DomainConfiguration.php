@@ -47,7 +47,7 @@ class DomainConfiguration
         // Whether or not to use SASL when connecting.
         'use_sasl' => false,
 
-        // Whether or not to allow insecure password changes.
+        // Whether or not to allow password changes over plaintext (non SSL or TLS)
         'allow_insecure_password_changes' => false,
 
         // SASL options

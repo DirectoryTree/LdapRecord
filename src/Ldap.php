@@ -150,7 +150,7 @@ class Ldap implements LdapInterface
      */
     public function startTLS(): bool
     {
-        return $this->executeFailableOperation(function () {
+        return $this->secure = $this->executeFailableOperation(function () {
             return ldap_start_tls($this->connection);
         });
     }
@@ -276,7 +276,7 @@ class Ldap implements LdapInterface
 
         $response = $this->parseResult($result);
 
-        $this->bound = $response && $response->successful();
+        $this->handleBindResponse($response);
 
         return $response;
     }

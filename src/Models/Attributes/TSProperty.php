@@ -202,7 +202,7 @@ class TSProperty
      * Decode the property by inspecting the nibbles of each blob, checking
      * the control, and adding up the results into a final value.
      *
-     * @param  bool  $string  Whether or not this is simple string data.
+     * @param  bool  $string  Whether this is simple string data.
      */
     protected function decodePropValue(string $hex, bool $string = false): string
     {

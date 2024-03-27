@@ -38,16 +38,16 @@ class DomainConfiguration
         // The password to use for binding.
         'password' => '',
 
-        // Whether or not to use SSL when connecting.
+        // Whether to use SSL when connecting.
         'use_ssl' => false,
 
-        // Whether or not to use TLS when connecting.
+        // Whether to use TLS when connecting.
         'use_tls' => false,
 
-        // Whether or not to use SASL when connecting.
+        // Whether to use SASL when connecting.
         'use_sasl' => false,
 
-        // Whether or not to allow password changes over plaintext (non SSL or TLS)
+        // Whether to allow password changes over plaintext.
         'allow_insecure_password_changes' => false,
 
         // SASL options
@@ -59,7 +59,7 @@ class DomainConfiguration
             'props' => null,
         ],
 
-        // Whether or not follow referrals is enabled when performing LDAP operations.
+        // Whether follow referrals is enabled when performing LDAP operations.
         'follow_referrals' => false,
 
         // Custom LDAP options.

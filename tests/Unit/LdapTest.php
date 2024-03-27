@@ -88,11 +88,10 @@ class LdapTest extends TestCase
 
     public function test_set_options()
     {
-        $ldap = (new LdapFake())
-            ->expect([
-                LdapFake::operation('setOption')->once()->with(1, 'value')->andReturnTrue(),
-                LdapFake::operation('setOption')->once()->with(2, 'value')->andReturnTrue(),
-            ]);
+        $ldap = (new LdapFake())->expect([
+            LdapFake::operation('setOption')->once()->with(1, 'value')->andReturnTrue(),
+            LdapFake::operation('setOption')->once()->with(2, 'value')->andReturnTrue(),
+        ]);
 
         $ldap->setOptions([1 => 'value', 2 => 'value']);
     }
@@ -104,5 +103,51 @@ class LdapTest extends TestCase
         $ldap->shouldReceive('errNo')->once()->andReturn(0);
 
         $this->assertNull($ldap->getDetailedError());
+    }
+
+    public function test_is_secure_after_binding_with_an_ssl_connection()
+    {
+        $ldap = (new LdapFake())->expect([
+            LdapFake::operation('bind')->once()->andReturnResponse(),
+        ]);
+
+        $ldap->ssl();
+
+        $this->assertFalse($ldap->isSecure());
+
+        $ldap->bind('foo', 'bar');
+
+        $this->assertTrue($ldap->isSecure());
+    }
+
+    public function test_is_secure_after_starting_tls()
+    {
+        $ldap = (new LdapFake())->expect([
+            LdapFake::operation('startTLS')->once()->andReturnTrue(),
+        ]);
+
+        $this->assertFalse($ldap->isSecure());
+
+        $ldap->startTLS();
+
+        $this->assertTrue($ldap->isSecure());
+    }
+
+    public function test_is_secure_after_starting_tls_but_failing_bind()
+    {
+        $ldap = (new LdapFake())->expect([
+            LdapFake::operation('startTLS')->once()->andReturnTrue(),
+            LdapFake::operation('bind')->once()->andReturnResponse(1),
+        ]);
+
+        $this->assertFalse($ldap->isSecure());
+
+        $ldap->startTLS();
+
+        $this->assertTrue($ldap->isSecure());
+
+        $ldap->bind('foo', 'bar');
+
+        $this->assertTrue($ldap->isSecure());
     }
 }

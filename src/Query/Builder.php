@@ -25,6 +25,16 @@ class Builder
 {
     use EscapesValues;
 
+    public const TYPE_SEARCH = 'search';
+
+    public const TYPE_READ = 'read';
+
+    public const TYPE_CHUNK = 'chunk';
+
+    public const TYPE_LIST = 'list';
+
+    public const TYPE_PAGINATE = 'paginate';
+
     /**
      * The base distinguished name placeholder.
      */
@@ -77,7 +87,7 @@ class Builder
     /**
      * The default query type.
      */
-    protected string $type = 'search';
+    protected string $type = self::TYPE_SEARCH;
 
     /**
      * Determine whether the query is nested.
@@ -376,7 +386,7 @@ class Builder
 
         $pages = $this->getCachedResponse($query, $callback);
 
-        $this->logQuery($this, 'paginate', $this->getElapsedTime($start));
+        $this->logQuery($this, self::TYPE_PAGINATE, $this->getElapsedTime($start));
 
         return $this->process($pages);
     }
@@ -439,7 +449,7 @@ class Builder
             fn (Connection $replicate) => $chunk($this->clone()->setConnection($replicate))
         ) : $chunk($this);
 
-        $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+        $this->logQuery($this, self::TYPE_CHUNK, $this->getElapsedTime($start));
 
         return true;
     }
@@ -1336,7 +1346,7 @@ class Builder
      */
     public function read(): static
     {
-        $this->type = 'read';
+        $this->type = self::TYPE_READ;
 
         return $this;
     }
@@ -1346,17 +1356,25 @@ class Builder
      */
     public function list(): static
     {
-        $this->type = 'list';
+        $this->type = self::TYPE_LIST;
 
         return $this;
     }
 
     /**
-     * Set the query to search the entire directory on the base distinguished name.
+     * Alias for the "search" method.
      */
     public function recursive(): static
     {
-        $this->type = 'search';
+        return $this->search();
+    }
+
+    /**
+     * Set the query to search the entire directory on the base distinguished name.
+     */
+    public function search(): static
+    {
+        $this->type = self::TYPE_SEARCH;
 
         return $this;
     }
@@ -1621,15 +1639,15 @@ class Builder
     {
         $args = [$query, $time];
 
-        $event = match ($type) {
-            'read' => new Events\Read(...$args),
-            'chunk' => new Events\Chunk(...$args),
-            'listing' => new Events\Listing(...$args),
-            'paginate' => new Events\Paginate(...$args),
-            default => new Events\Search(...$args),
-        };
-
-        $this->fireQueryEvent($event);
+        $this->fireQueryEvent(
+            match ($type) {
+                self::TYPE_READ => new Events\Read(...$args),
+                self::TYPE_CHUNK => new Events\Chunk(...$args),
+                self::TYPE_LIST => new Events\Listing(...$args),
+                self::TYPE_PAGINATE => new Events\Paginate(...$args),
+                default => new Events\Search(...$args),
+            }
+        );
     }
 
     /**

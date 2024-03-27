@@ -165,10 +165,16 @@ trait HasPassword
     {
         $connection = $this->getConnection();
 
+        $config = $connection->getConfiguration();
+
+        if ($config->get('allow_insecure_password_changes') === true) {
+            return;
+        }
+
         if ($connection->isConnected()) {
             $secure = $connection->getLdapConnection()->canChangePasswords();
         } else {
-            $secure = $connection->getConfiguration()->get('use_ssl') || $connection->getConfiguration()->get('use_tls');
+            $secure = $config->get('use_ssl') || $config->get('use_tls');
         }
 
         if (! $secure) {

@@ -98,6 +98,7 @@ class DomainConfigurationTest extends TestCase
             'use_ssl' => false,
             'use_tls' => false,
             'use_sasl' => false,
+            'allow_insecure_password_changes' => false,
             'sasl_options' => [
                 'mech' => null,
                 'realm' => null,

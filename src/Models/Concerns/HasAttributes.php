@@ -113,9 +113,9 @@ trait HasAttributes
      */
     public function arrayToOriginal(array $attributes): array
     {
-        return $this->decodeAttributes(
-            $this->convertAttributesFromJson($attributes)
-        );
+        $attributes = $this->decodeAttributes($attributes);
+
+        return $this->convertAttributesFromJson($attributes);
     }
 
     /**
@@ -125,9 +125,9 @@ trait HasAttributes
     {
         $attributes = $this->restoreDateAttributesFromArray($attributes);
 
-        return $this->decodeAttributes(
-            $this->convertAttributesFromJson($attributes)
-        );
+        $attributes = $this->decodeAttributes($attributes);
+
+        return $this->convertAttributesFromJson($attributes);
     }
 
     /**
@@ -220,7 +220,7 @@ trait HasAttributes
      */
     protected function decodeValue(string $value): string
     {
-        if (MbString::isLoaded() && MbString::isUtf8($value)) {
+        if (MbString::isLoaded() && ! MbString::isUtf8($value)) {
             return mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1');
         }
 
@@ -287,7 +287,7 @@ trait HasAttributes
     /**
      * Get the models attribute by its key.
      */
-    public function getAttribute(string $key = null, mixed $default = null): mixed
+    public function getAttribute(?string $key = null, mixed $default = null): mixed
     {
         if (! $key) {
             return null;
@@ -372,7 +372,7 @@ trait HasAttributes
     /**
      * Determine whether an attribute should be cast to a native type.
      */
-    public function hasCast(string $key, array|string $types = null): bool
+    public function hasCast(string $key, array|string|null $types = null): bool
     {
         if (array_key_exists($key, $this->getCasts())) {
             return ! $types || in_array($this->getCastType($key), (array) $types, true);
@@ -921,7 +921,7 @@ trait HasAttributes
     /**
      * Determine if the model or any of the given attribute(s) were changed when the model was last saved.
      */
-    public function wasChanged(array|string $attributes = null): bool
+    public function wasChanged(array|string|null $attributes = null): bool
     {
         if (func_num_args() === 0) {
             return count($this->changes) > 0;

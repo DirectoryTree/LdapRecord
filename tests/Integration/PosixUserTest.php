@@ -13,10 +13,10 @@ use LdapRecord\Tests\Integration\Concerns\SetupTestOu;
 
 class PosixUserTest extends TestCase
 {
-    use SetupTestOu;
     use MakePosixUsers;
     use MakesPosixGroups;
     use SetupTestConnection;
+    use SetupTestOu;
 
     protected function setUp(): void
     {

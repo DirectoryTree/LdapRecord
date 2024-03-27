@@ -25,7 +25,7 @@ class Password
     /**
      * Make a salted md5 password.
      */
-    public static function smd5(string $password, string $salt = null): string
+    public static function smd5(string $password, ?string $salt = null): string
     {
         return '{SMD5}'.static::makeHash($password, 'md5', null, $salt ?? random_bytes(4));
     }
@@ -33,7 +33,7 @@ class Password
     /**
      * Make a salted SHA password.
      */
-    public static function ssha(string $password, string $salt = null): string
+    public static function ssha(string $password, ?string $salt = null): string
     {
         return '{SSHA}'.static::makeHash($password, 'sha1', null, $salt ?? random_bytes(4));
     }
@@ -41,7 +41,7 @@ class Password
     /**
      * Make a salted SSHA256 password.
      */
-    public static function ssha256(string $password, string $salt = null): string
+    public static function ssha256(string $password, ?string $salt = null): string
     {
         return '{SSHA256}'.static::makeHash($password, 'hash', 'sha256', $salt ?? random_bytes(4));
     }
@@ -49,7 +49,7 @@ class Password
     /**
      * Make a salted SSHA384 password.
      */
-    public static function ssha384(string $password, string $salt = null): string
+    public static function ssha384(string $password, ?string $salt = null): string
     {
         return '{SSHA384}'.static::makeHash($password, 'hash', 'sha384', $salt ?? random_bytes(4));
     }
@@ -57,7 +57,7 @@ class Password
     /**
      * Make a salted SSHA512 password.
      */
-    public static function ssha512(string $password, string $salt = null): string
+    public static function ssha512(string $password, ?string $salt = null): string
     {
         return '{SSHA512}'.static::makeHash($password, 'hash', 'sha512', $salt ?? random_bytes(4));
     }
@@ -113,7 +113,7 @@ class Password
     /**
      * Crypt password with an MD5 salt.
      */
-    public static function md5Crypt(string $password, string $salt = null): string
+    public static function md5Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_MD5, $salt);
     }
@@ -121,7 +121,7 @@ class Password
     /**
      * Crypt password with a SHA256 salt.
      */
-    public static function sha256Crypt(string $password, string $salt = null): string
+    public static function sha256Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_SHA256, $salt);
     }
@@ -129,7 +129,7 @@ class Password
     /**
      * Crypt a password with a SHA512 salt.
      */
-    public static function sha512Crypt(string $password, string $salt = null): string
+    public static function sha512Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_SHA512, $salt);
     }
@@ -137,7 +137,7 @@ class Password
     /**
      * Make a new password hash.
      */
-    protected static function makeHash(string $password, string $method, string $algo = null, string $salt = null): string
+    protected static function makeHash(string $password, string $method, ?string $algo = null, ?string $salt = null): string
     {
         $params = $algo ? [$algo, $password.$salt] : [$password.$salt];
 
@@ -147,7 +147,7 @@ class Password
     /**
      * Make a hashed password.
      */
-    protected static function makeCrypt(string $password, int $type, string $salt = null): string
+    protected static function makeCrypt(string $password, int $type, ?string $salt = null): string
     {
         return crypt($password, $salt ?? static::makeCryptSalt($type));
     }

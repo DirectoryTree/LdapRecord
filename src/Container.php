@@ -26,7 +26,7 @@ class Container
     /**
      * Set the container instance.
      */
-    public static function setInstance(self $container = null): ?static
+    public static function setInstance(?self $container = null): ?static
     {
         return static::$instance = $container;
     }

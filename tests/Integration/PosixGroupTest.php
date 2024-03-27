@@ -12,10 +12,10 @@ use LdapRecord\Tests\Integration\Fixtures\PosixGroup;
 
 class PosixGroupTest extends TestCase
 {
-    use SetupTestOu;
     use MakePosixUsers;
     use MakesPosixGroups;
     use SetupTestConnection;
+    use SetupTestOu;
 
     protected function setUp(): void
     {

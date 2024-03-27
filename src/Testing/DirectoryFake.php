@@ -18,7 +18,7 @@ class DirectoryFake
      *
      * @throws \LdapRecord\ContainerException
      */
-    public static function setup(string $name = null): ConnectionFake
+    public static function setup(?string $name = null): ConnectionFake
     {
         $name = $name ?? Container::getDefaultConnectionName();
 

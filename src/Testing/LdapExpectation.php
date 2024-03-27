@@ -130,7 +130,7 @@ class LdapExpectation
     /**
      * The error message to return from the expectation.
      */
-    public function andReturnError(int $errorCode = 1, string $errorMessage = 'Unknown error', string $diagnosticMessage = null): static
+    public function andReturnError(int $errorCode = 1, string $errorMessage = 'Unknown error', ?string $diagnosticMessage = null): static
     {
         $this->errors = true;
 
@@ -144,7 +144,7 @@ class LdapExpectation
     /**
      * Return an error LDAP result response.
      */
-    public function andReturnErrorResponse(int $code = 1, string $errorMessage = null): static
+    public function andReturnErrorResponse(int $code = 1, ?string $errorMessage = null): static
     {
         return $this->andReturnResponse($code, $errorMessage);
     }
@@ -154,8 +154,8 @@ class LdapExpectation
      */
     public function andReturnResponse(
         int $errorCode = 0,
-        string $matchedDn = null,
-        string $errorMessage = null,
+        ?string $matchedDn = null,
+        ?string $errorMessage = null,
         array $referrals = [],
         array $controls = []
     ): static {

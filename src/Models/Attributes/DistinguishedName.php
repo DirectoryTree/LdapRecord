@@ -18,7 +18,7 @@ class DistinguishedName implements Stringable
     /**
      * Constructor.
      */
-    public function __construct(string $value = null)
+    public function __construct(?string $value = null)
     {
         $this->value = trim((string) $value);
     }
@@ -34,7 +34,7 @@ class DistinguishedName implements Stringable
     /**
      * Alias of the "build" method.
      */
-    public static function of(string $value = null): DistinguishedNameBuilder
+    public static function of(?string $value = null): DistinguishedNameBuilder
     {
         return static::build($value);
     }
@@ -42,7 +42,7 @@ class DistinguishedName implements Stringable
     /**
      * Get a new DN builder object from the given DN.
      */
-    public static function build(string $value = null): DistinguishedNameBuilder
+    public static function build(?string $value = null): DistinguishedNameBuilder
     {
         return new DistinguishedNameBuilder($value);
     }
@@ -50,7 +50,7 @@ class DistinguishedName implements Stringable
     /**
      * Make a new distinguished name instance.
      */
-    public static function make(string $value = null): static
+    public static function make(?string $value = null): static
     {
         return new static($value);
     }
@@ -58,7 +58,7 @@ class DistinguishedName implements Stringable
     /**
      * Determine if the given value is a valid distinguished name.
      */
-    public static function isValid(string $value = null): bool
+    public static function isValid(?string $value = null): bool
     {
         return ! static::make($value)->isEmpty();
     }
@@ -110,7 +110,7 @@ class DistinguishedName implements Stringable
     /**
      * Set the underlying value.
      */
-    public function set(string $value = null): static
+    public function set(?string $value = null): static
     {
         $this->value = $value;
 

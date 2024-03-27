@@ -14,8 +14,8 @@ use Psr\SimpleCache\CacheInterface;
 class CacheTest extends TestCase
 {
     use MakesUsers;
-    use SetupTestOu;
     use SetupTestConnection;
+    use SetupTestOu;
 
     protected function setUp(): void
     {
@@ -24,7 +24,7 @@ class CacheTest extends TestCase
         $this->setupTestOu();
     }
 
-    protected function resetConnection(array $params = [], CacheInterface $cache = null): void
+    protected function resetConnection(array $params = [], ?CacheInterface $cache = null): void
     {
         Container::flush();
 

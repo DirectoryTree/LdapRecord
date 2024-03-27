@@ -24,7 +24,7 @@ abstract class Event
     /**
      * Constructor.
      */
-    public function __construct(LdapInterface $connection, string $username = null, string $password = null)
+    public function __construct(LdapInterface $connection, ?string $username = null, ?string $password = null)
     {
         $this->connection = $connection;
         $this->username = $username;

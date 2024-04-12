@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Tests\Unit\Log;
 
-use Exception;
+use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Events\Logger;
@@ -40,7 +40,7 @@ class EventLoggerTest extends TestCase
 
         $ldap->connect('localhost');
 
-        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret', new Exception());
+        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret', new BindException());
 
         $logger = m::mock(LoggerInterface::class);
 

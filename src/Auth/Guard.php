@@ -91,9 +91,11 @@ class Guard
 
             $this->fireAuthEvent('bound', $username, $password);
         } catch (Exception $e) {
-            $this->fireAuthEvent('failed', $username, $password);
+            $exception = BindException::withDetailedError($e, $this->connection->getDetailedError());
 
-            throw BindException::withDetailedError($e, $this->connection->getDetailedError());
+            $this->fireAuthEvent('failed', $username, $password, $exception);
+
+            throw $exception;
         }
     }
 
@@ -147,12 +149,12 @@ class Guard
     /**
      * Fire an authentication event.
      */
-    protected function fireAuthEvent(string $name, ?string $username = null, ?string $password = null): void
+    protected function fireAuthEvent(string $name, ?string $username = null, ?string $password = null, ...$args): void
     {
         if (isset($this->events)) {
             $event = implode('\\', [Events::class, ucfirst($name)]);
 
-            $this->events->fire(new $event($this->connection, $username, $password));
+            $this->events->fire(new $event($this->connection, $username, $password, ...$args));
         }
     }
 }

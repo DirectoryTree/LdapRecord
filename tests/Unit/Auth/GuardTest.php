@@ -104,27 +104,6 @@ class GuardTest extends TestCase
 
     public function test_binding_events_are_fired_during_bind()
     {
-        $events = m::mock(Dispatcher::class);
-        $events->shouldReceive('fire')->once()->with(m::on(fn ($event) => $event instanceof Binding));
-        $events->shouldReceive('fire')->once()->with(m::on(
-            fn ($event) => $event instanceof Failed && $event->getException() instanceof BindException)
-        );
-
-        $this->expectException(BindException::class);
-
-        $ldap = (new LdapFake)->expect(
-            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andThrow(new Exception('foo'))
-        );
-
-        $guard = new Guard($ldap, new DomainConfiguration());
-
-        $guard->setDispatcher($events);
-
-        $guard->bind('johndoe', 'secret');
-    }
-
-    public function test_bind_failed_event_includes_exception_thrown()
-    {
         $events = new Dispatcher();
 
         $events->listen(Bound::class, function (Bound $event) use (&$firedBound) {
@@ -136,6 +115,27 @@ class GuardTest extends TestCase
 
         $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
+        );
+
+        $guard = new Guard($ldap, new DomainConfiguration());
+
+        $guard->setDispatcher($events);
+
+        $guard->bind('johndoe', 'secret');
+    }
+
+    public function test_bind_failed_event_includes_exception_thrown()
+    {
+        $events = m::mock(Dispatcher::class);
+        $events->shouldReceive('fire')->once()->with(m::on(fn ($event) => $event instanceof Binding));
+        $events->shouldReceive('fire')->once()->with(m::on(
+            fn ($event) => $event instanceof Failed && $event->getException() instanceof BindException)
+        );
+
+        $this->expectException(BindException::class);
+
+        $ldap = (new LdapFake)->expect(
+            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andThrow(new Exception('foo'))
         );
 
         $guard = new Guard($ldap, new DomainConfiguration());

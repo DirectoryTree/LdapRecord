@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Unit\Log;
 
+use Exception;
 use LdapRecord\Auth\Events\Bound;
 use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Events\Logger;
@@ -35,11 +36,11 @@ class EventLoggerTest extends TestCase
 
     public function test_failed_auth_event_reports_result()
     {
-        $ldap = (new LdapFake())->shouldReturnError('Invalid Credentials');
+        $ldap = (new LdapFake)->shouldReturnError('Invalid Credentials');
 
         $ldap->connect('localhost');
 
-        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret');
+        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret', new Exception());
 
         $logger = m::mock(LoggerInterface::class);
 
@@ -54,7 +55,7 @@ class EventLoggerTest extends TestCase
 
     public function test_queries_are_logged()
     {
-        $ldap = (new LdapFake())->expect(['search' => []]);
+        $ldap = (new LdapFake)->expect(['search' => []]);
 
         $conn = new ConnectionFake([
             'base_dn' => 'dc=local,dc=com',

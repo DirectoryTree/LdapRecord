@@ -2,10 +2,12 @@
 
 namespace LdapRecord\Tests\Unit\Auth;
 
+use Exception;
 use LdapRecord\Auth\BindException;
 use LdapRecord\Auth\Events\Attempting;
 use LdapRecord\Auth\Events\Binding;
 use LdapRecord\Auth\Events\Bound;
+use LdapRecord\Auth\Events\Failed;
 use LdapRecord\Auth\Events\Passed;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Auth\PasswordRequiredException;
@@ -15,6 +17,7 @@ use LdapRecord\Events\Dispatcher;
 use LdapRecord\Ldap;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
+use Mockery as m;
 
 class GuardTest extends TestCase
 {
@@ -38,7 +41,7 @@ class GuardTest extends TestCase
 
     public function test_attempt_binds_the_given_credentials_and_rebinds_with_configured_user()
     {
-        $ldap = (new LdapFake())
+        $ldap = (new LdapFake)
             ->expect(LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnResponse())
             ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
 
@@ -52,7 +55,7 @@ class GuardTest extends TestCase
 
     public function test_bind_does_not_rebind_with_configured_user()
     {
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnResponse()
         );
 
@@ -63,7 +66,7 @@ class GuardTest extends TestCase
 
     public function test_bind_allows_null_username_and_password()
     {
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with(null, null)->andReturnResponse()
         );
 
@@ -74,7 +77,7 @@ class GuardTest extends TestCase
 
     public function test_bind_always_throws_exception_on_invalid_credentials()
     {
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnErrorResponse()
         );
 
@@ -87,7 +90,7 @@ class GuardTest extends TestCase
 
     public function test_bind_as_administrator()
     {
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse()
         );
 
@@ -101,17 +104,28 @@ class GuardTest extends TestCase
 
     public function test_binding_events_are_fired_during_bind()
     {
+        $events = m::mock(Dispatcher::class);
+        $events->shouldReceive('fire')->once()->with(m::on(fn ($event) => $event instanceof Binding));
+        $events->shouldReceive('fire')->once()->with(m::on(
+            fn ($event) => $event instanceof Failed && $event->getException() instanceof BindException)
+        );
+
+        $this->expectException(BindException::class);
+
+        $ldap = (new LdapFake)->expect(
+            LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andThrow(new Exception('foo'))
+        );
+
+        $guard = new Guard($ldap, new DomainConfiguration());
+
+        $guard->setDispatcher($events);
+
+        $guard->bind('johndoe', 'secret');
+    }
+
+    public function test_bind_failed_event_includes_exception_thrown()
+    {
         $events = new Dispatcher();
-
-        $firedBinding = false;
-        $firedBound = false;
-
-        $events->listen(Binding::class, function (Binding $event) use (&$firedBinding) {
-            $this->assertEquals('johndoe', $event->getUsername());
-            $this->assertEquals('secret', $event->getPassword());
-
-            $firedBinding = true;
-        });
 
         $events->listen(Bound::class, function (Bound $event) use (&$firedBound) {
             $this->assertEquals('johndoe', $event->getUsername());
@@ -120,7 +134,7 @@ class GuardTest extends TestCase
             $firedBound = true;
         });
 
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
@@ -129,9 +143,6 @@ class GuardTest extends TestCase
         $guard->setDispatcher($events);
 
         $guard->bind('johndoe', 'secret');
-
-        $this->assertTrue($firedBinding);
-        $this->assertTrue($firedBound);
     }
 
     public function test_auth_events_are_fired_during_attempt()
@@ -171,7 +182,7 @@ class GuardTest extends TestCase
             $firedPassed = true;
         });
 
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
@@ -197,7 +208,7 @@ class GuardTest extends TestCase
             $totalFired++;
         });
 
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
@@ -211,7 +222,7 @@ class GuardTest extends TestCase
 
     public function test_sasl_bind()
     {
-        $ldap = (new LdapFake())->expect(
+        $ldap = (new LdapFake)->expect(
             LdapFake::operation('saslBind')
                 ->once()
                 ->with(null, null, ['mech' => 'GSSAPI'])
@@ -234,7 +245,7 @@ class GuardTest extends TestCase
 
     public function test_tls_is_only_upgraded_once_on_subsequent_binds()
     {
-        $ldap = (new LdapFake())->expect([
+        $ldap = (new LdapFake)->expect([
             LdapFake::operation('bind')->once()->with('admin', 'password')->andReturnResponse(),
             LdapFake::operation('startTLS')->once()->andReturnTrue(),
             LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse(1),

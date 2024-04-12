@@ -23,7 +23,7 @@ class Failed extends Event
     }
 
     /**
-     * Get the exception that was thrown.
+     * Get the exception that was thrown during the bind attempt.
      */
     public function getException(): Exception
     {

@@ -513,7 +513,6 @@ trait HasAttributes
         }
 
         return $value;
-
     }
 
     /**

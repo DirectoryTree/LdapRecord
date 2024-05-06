@@ -690,12 +690,14 @@ trait HasAttributes
 
         if ($this->hasSetMutator($key)) {
             return $this->setMutatedAttributeValue($key, $value);
-        } elseif (
+        }
+
+        if (
             $value &&
             $this->isDateAttribute($key) &&
             ! $this->valueIsResetInteger($value)
         ) {
-            $value = $this->fromDateTime($value, $this->getDates()[$key]);
+            $value = (string) $this->fromDateTime($value, $this->getDates()[$key]);
         }
 
         if ($this->isJsonCastable($key) && ! is_null($value)) {

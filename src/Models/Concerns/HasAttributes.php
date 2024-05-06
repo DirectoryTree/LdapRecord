@@ -345,8 +345,21 @@ trait HasAttributes
         // array key case so they are merged properly.
         return array_merge(
             array_change_key_case($this->defaultDates),
-            array_change_key_case($this->dates)
+            array_change_key_case($this->dates),
+            array_change_key_case($this->getDateCasts()),
         );
+    }
+
+    /**
+     * Get the attributes casts that should be mutated to dates.
+     */
+    protected function getDateCasts(): array
+    {
+        return array_map(function (string $cast) {
+            return explode(':', $cast, 2)[1];
+        }, array_filter($this->getCasts(), function ($cast) {
+            return $this->isDateTimeCast($cast);
+        }));
     }
 
     /**
@@ -488,7 +501,7 @@ trait HasAttributes
     /**
      * Cast the given attribute to JSON.
      */
-    protected function castAttributeAsJson(string $key, string $value): string
+    protected function castAttributeAsJson(string $key, mixed $value): string
     {
         $value = $this->asJson($value);
 
@@ -496,10 +509,22 @@ trait HasAttributes
             $class = get_class($this);
             $message = json_last_error_msg();
 
-            throw new Exception("Unable to encode attribute [{$key}] for model [{$class}] to JSON: {$message}.");
+            throw new Exception("Unable to encode attribute [$key] for model [$class] to JSON: $message.");
         }
 
         return $value;
+
+    }
+
+    /**
+     * Cast the given attribute to an LDAP primitive type.
+     */
+    protected function castAttributeAsPrimitive(string $key, mixed $value): string
+    {
+        return match ($this->getCastType($key)) {
+            'bool', 'boolean' => $this->fromBoolean($value),
+            default => (string) $value,
+        };
     }
 
     /**
@@ -540,13 +565,23 @@ trait HasAttributes
     }
 
     /**
-     * Cast the value to a boolean.
+     * Cast the value from an LDAP boolean string to a primitive boolean.
      */
     protected function asBoolean(mixed $value): bool
     {
-        $map = ['true' => true, 'false' => false];
+        return match (strtolower($value)) {
+            'true' => true,
+            'false' => false,
+            default => (bool) $value,
+        };
+    }
 
-        return $map[strtolower($value)] ?? (bool) $value;
+    /**
+     * Cast the value from a primitive boolean to an LDAP boolean string.
+     */
+    protected function fromBoolean(bool $value): string
+    {
+        return $value ? 'TRUE' : 'FALSE';
     }
 
     /**
@@ -666,6 +701,8 @@ trait HasAttributes
 
         if ($this->isJsonCastable($key) && ! is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
+        } elseif ($this->hasCast($key) && ! is_null($value)) {
+            $value = $this->castAttributeAsPrimitive($key, $value);
         }
 
         $this->attributes[$key] = Arr::wrap($value);

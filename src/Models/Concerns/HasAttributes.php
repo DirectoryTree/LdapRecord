@@ -578,8 +578,12 @@ trait HasAttributes
     /**
      * Cast the value from a primitive boolean to an LDAP boolean string.
      */
-    protected function fromBoolean(bool $value): string
+    protected function fromBoolean(mixed $value): string
     {
+        if (is_string($value)) {
+            $value = $this->asBoolean($value);
+        }
+
         return $value ? 'TRUE' : 'FALSE';
     }
 

@@ -28,6 +28,10 @@ class ModelAttributeCastTest extends TestCase
         $this->assertTrue($model->booleanAttribute);
         $this->assertEquals($model->getRawAttribute('booleanAttribute'), ['TRUE']);
 
+        $model->booleanAttribute = 'false';
+        $this->assertFalse($model->booleanAttribute);
+        $this->assertEquals($model->getRawAttribute('booleanAttribute'), ['FALSE']);
+
         // Casing differences
 
         $model = (new ModelCastStub)->setRawAttributes(['boolAttribute' => ['true']]);

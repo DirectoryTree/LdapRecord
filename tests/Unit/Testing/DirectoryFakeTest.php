@@ -30,4 +30,17 @@ class DirectoryFakeTest extends TestCase
         $this->assertInstanceOf(ConnectionFake::class, $fake);
         $this->assertInstanceOf(LdapFake::class, $fake->getLdapConnection());
     }
+
+    public function testTearDownFlushesContainer()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup();
+
+        $this->assertCount(1, Container::getConnections());
+
+        DirectoryFake::tearDown();
+
+        $this->assertCount(0, Container::getConnections());
+    }
 }

@@ -40,8 +40,9 @@ class DirectoryFake
     {
         foreach (static::$replaced as $name => $connection) {
             Container::getConnection($name)->tearDown();
-            Container::addConnection($connection, $name);
         }
+
+        Container::flush();
 
         static::$replaced = [];
     }

@@ -78,7 +78,7 @@ class User extends Entry implements Authenticatable
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the user is apart of.
+     * Retrieves groups that the user is a part of.
      */
     public function groups(): HasMany
     {
@@ -98,7 +98,7 @@ class User extends Entry implements Authenticatable
     /**
      * The primary group relationship of the current user.
      *
-     * Retrieves the primary group the user is apart of.
+     * Retrieves the primary group the user is a part of.
      */
     public function primaryGroup(): HasOne
     {

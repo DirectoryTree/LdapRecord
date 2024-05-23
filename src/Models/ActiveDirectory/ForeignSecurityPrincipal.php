@@ -16,7 +16,7 @@ class ForeignSecurityPrincipal extends Entry
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the current security principal is apart of.
+     * Retrieves groups that the current security principal is a part of.
      */
     public function groups(): HasMany
     {

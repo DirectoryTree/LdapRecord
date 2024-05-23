@@ -20,7 +20,7 @@ class Group extends Entry
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the current group is apart of.
+     * Retrieves groups that the current group is a part of.
      */
     public function groups(): HasMany
     {

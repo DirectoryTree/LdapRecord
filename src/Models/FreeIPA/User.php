@@ -17,7 +17,7 @@ class User extends Entry
     ];
 
     /**
-     * Retrieve groups that the current user is apart of.
+     * Retrieve groups that the current user is a part of.
      */
     public function groups(): HasMany
     {

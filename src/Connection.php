@@ -135,7 +135,11 @@ class Connection
     {
         $this->configure();
 
-        $this->ldap->connect($this->host, $this->configuration->get('port'));
+        $this->ldap->connect(
+            $this->host,
+            $this->configuration->get('port'),
+            $this->configuration->get('protocol')
+        );
     }
 
     /**

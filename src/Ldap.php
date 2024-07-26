@@ -158,10 +158,10 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function connect(string|array $hosts = [], int $port = 389): bool
+    public function connect(string|array $hosts = [], int $port = 389, ?string $protocol = null): bool
     {
         $this->bound = false;
-
+        $this->protocol = $protocol;
         $this->host = $this->makeConnectionUris($hosts, $port);
 
         $this->connection = $this->executeFailableOperation(function () {
@@ -182,9 +182,10 @@ class Ldap implements LdapInterface
             $result = @ldap_close($this->connection);
         }
 
-        $this->connection = null;
         $this->bound = false;
         $this->host = null;
+        $this->protocol = null;
+        $this->connection = null;
 
         return $result;
     }

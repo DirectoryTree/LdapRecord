@@ -16,6 +16,11 @@ trait HandlesConnection
     protected ?string $host = null;
 
     /**
+     * The LDAP protocol to use.
+     */
+    protected ?string $protocol = null;
+
+    /**
      * The LDAP connection resource.
      *
      * @var Connection
@@ -141,7 +146,11 @@ trait HandlesConnection
      */
     public function getProtocol(): string
     {
-        return $this->isUsingSSL() ? LdapInterface::PROTOCOL_SSL : LdapInterface::PROTOCOL;
+        return $this->protocol ?: (
+            $this->isUsingSSL()
+                ? LdapInterface::PROTOCOL_SSL
+                : LdapInterface::PROTOCOL
+        );
     }
 
     /**

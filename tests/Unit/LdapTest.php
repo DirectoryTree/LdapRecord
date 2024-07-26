@@ -13,6 +13,7 @@ class LdapTest extends TestCase
     public function test_construct_defaults()
     {
         $ldap = new Ldap();
+
         $this->assertFalse($ldap->isUsingTLS());
         $this->assertFalse($ldap->isUsingSSL());
         $this->assertFalse($ldap->isBound());

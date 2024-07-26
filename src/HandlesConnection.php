@@ -16,7 +16,7 @@ trait HandlesConnection
     protected ?string $host = null;
 
     /**
-     * The LDAP protocol to use.
+     * The LDAP protocol to use (ldap:// or ldaps://).
      */
     protected ?string $protocol = null;
 

@@ -29,7 +29,7 @@ class DomainConfiguration
         // The port to use for connecting to your hosts.
         'port' => LdapInterface::PORT,
 
-        // The protocol to use for connecting to your hosts.
+        // The protocol to use for connecting to your hosts (ldap:// or ldaps://).
         'protocol' => null,
 
         // The base distinguished name of your domain.

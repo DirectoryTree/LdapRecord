@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit;
 
 use LdapRecord\Ldap;
+use LdapRecord\LdapInterface;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -12,11 +13,11 @@ class LdapTest extends TestCase
     public function test_construct_defaults()
     {
         $ldap = new Ldap();
-
         $this->assertFalse($ldap->isUsingTLS());
         $this->assertFalse($ldap->isUsingSSL());
         $this->assertFalse($ldap->isBound());
         $this->assertNull($ldap->getConnection());
+        $this->assertEquals($ldap->getProtocol(), LdapInterface::PROTOCOL);
     }
 
     public function test_host_arrays_are_properly_processed()
@@ -28,13 +29,13 @@ class LdapTest extends TestCase
         $this->assertEquals('ldap://dc01:500 ldap://dc02:500', $ldap->getHost());
     }
 
-    public function test_host_strings_are_properly_processed()
+    public function test_host_strings_are_properly_created()
     {
         $ldap = new LdapFake();
 
-        $ldap->connect('dc01', $port = 500);
+        $ldap->connect('dc01', $port = 500, 'foo://');
 
-        $this->assertEquals('ldap://dc01:500', $ldap->getHost());
+        $this->assertEquals('foo://dc01:500', $ldap->getHost());
     }
 
     public function test_get_default_protocol()

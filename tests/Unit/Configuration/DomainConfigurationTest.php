@@ -36,6 +36,7 @@ class DomainConfigurationTest extends TestCase
         $config = new DomainConfiguration();
 
         $this->assertEquals(389, $config->get('port'));
+        $this->assertNull($config->get('protocol'));
         $this->assertEmpty($config->get('hosts'));
         $this->assertEquals(0, $config->get('follow_referrals'));
         $this->assertEmpty($config->get('username'));
@@ -50,6 +51,7 @@ class DomainConfigurationTest extends TestCase
     {
         $config = new DomainConfiguration([
             'port' => 500,
+            'protocol' => 'foo://',
             'base_dn' => 'dc=corp,dc=org',
             'hosts' => ['dc1', 'dc2'],
             'follow_referrals' => false,
@@ -67,6 +69,7 @@ class DomainConfigurationTest extends TestCase
         ]);
 
         $this->assertEquals(500, $config->get('port'));
+        $this->assertEquals('foo://', $config->get('protocol'));
         $this->assertEquals('dc=corp,dc=org', $config->get('base_dn'));
         $this->assertEquals(['dc1', 'dc2'], $config->get('hosts'));
         $this->assertEquals('username', $config->get('username'));
@@ -92,6 +95,7 @@ class DomainConfigurationTest extends TestCase
             'timeout' => 5,
             'version' => 3,
             'port' => 389,
+            'protocol' => null,
             'base_dn' => '',
             'username' => '',
             'password' => '',

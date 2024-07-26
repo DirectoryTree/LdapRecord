@@ -50,6 +50,7 @@ class FakeDirectoryTest extends TestCase
             'username' => 'user',
             'password' => 'pass',
             'port' => 389,
+            'protocol' => null,
             'use_tls' => true,
             'use_ssl' => false,
             'use_sasl' => false,

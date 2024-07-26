@@ -336,10 +336,10 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function connect(string|array $hosts = [], int $port = 389): bool
+    public function connect(string|array $hosts = [], int $port = 389, ?string $protocol = null): bool
     {
         $this->bound = false;
-
+        $this->protocol = $protocol;
         $this->host = $this->makeConnectionUris($hosts, $port);
 
         return $this->connection = $this->hasExpectations(__FUNCTION__)
@@ -352,9 +352,10 @@ class LdapFake implements LdapInterface
      */
     public function close(): bool
     {
-        $this->connection = null;
         $this->bound = false;
         $this->host = null;
+        $this->protocol = null;
+        $this->connection = null;
 
         return $this->hasExpectations(__FUNCTION__)
             ? $this->resolveExpectation(__FUNCTION__)

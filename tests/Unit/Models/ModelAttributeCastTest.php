@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Unit\Models;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Tests\TestCase;
+use RuntimeException;
 
 class ModelAttributeCastTest extends TestCase
 {
@@ -200,6 +201,27 @@ class ModelAttributeCastTest extends TestCase
         $model->windowsIntDateTime = new \DateTime('2020-10-02 02:22:09');
         $this->assertEquals($model->getRawAttribute('windowsIntDateTime'), ['132460789290000000']);
     }
+
+    public function test_get_dates()
+    {
+        $dates = (new ModelCastStub)->getDates();
+
+        $this->assertEquals([
+            'createtimestamp' => 'ldap',
+            'modifytimestamp' => 'ldap',
+            'ldapdatetime' => 'ldap',
+            'windowsdatetime' => 'windows',
+            'windowsintdatetime' => 'windows-int',
+        ], $dates);
+    }
+
+    public function test_get_dates_throws_exception_when_no_format_is_provided()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Invalid date cast [datetime]. A date cast must be in the format 'datetime:format'.");
+
+        (new ModelDateCastWithNoFormatStub)->getDates();
+    }
 }
 
 class ModelCastStub extends Model
@@ -221,5 +243,12 @@ class ModelCastStub extends Model
         'ldapDateTime' => 'datetime:ldap',
         'windowsDateTime' => 'datetime:windows',
         'windowsIntDateTime' => 'datetime:windows-int',
+    ];
+}
+
+class ModelDateCastWithNoFormatStub extends Model
+{
+    protected array $casts = [
+        'attribute' => 'datetime',
     ];
 }

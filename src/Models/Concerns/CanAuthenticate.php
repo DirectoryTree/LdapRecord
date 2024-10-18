@@ -40,7 +40,9 @@ trait CanAuthenticate
     /**
      * Set the token value for the "remember me" session.
      */
-    public function setRememberToken($value): void {}
+    public function setRememberToken($value): void
+    {
+    }
 
     /**
      * Get the column name for the "remember me" token.

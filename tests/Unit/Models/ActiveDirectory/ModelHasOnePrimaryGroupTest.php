@@ -42,5 +42,7 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
 class UserSaveModelStub extends User
 {
-    public function save(array $attributes = []): void {}
+    public function save(array $attributes = []): void
+    {
+    }
 }

@@ -13,7 +13,8 @@ class LdapResultResponse
         public readonly ?string $errorMessage = null,
         public readonly ?array $referrals = null,
         public readonly ?array $controls = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Determine if the LDAP response indicates a successful status.

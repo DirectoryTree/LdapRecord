@@ -63,4 +63,6 @@ class ConnectionFakeTest extends TestCase
     }
 }
 
-class ExtendedLdapFake extends LdapFake {}
+class ExtendedLdapFake extends LdapFake
+{
+}

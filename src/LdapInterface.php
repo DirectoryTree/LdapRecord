@@ -5,7 +5,7 @@ namespace LdapRecord;
 use LDAP\Connection;
 
 /**
- * @see https://ldap.com/ldap-oid-reference-guide/
+ * @see https://ldap.com/ldap-oid-reference-guide
  * @see http://msdn.microsoft.com/en-us/library/cc223359.aspx
  * @see https://help.univention.com/t/openldap-debug-level/19301
  */

@@ -66,11 +66,11 @@ class UserTest extends TestCase
             ->getLdapConnection()
             ->expect(LdapFake::operation('isUsingSSL')->andReturnTrue());
 
-        $user = new User();
+        $user = new User;
 
         $user->unicodepwd = 'foo';
 
-        $nonUser = new Entry();
+        $nonUser = new Entry;
 
         $nonUser->unicodepwd = Password::encode('foo');
 
@@ -89,7 +89,7 @@ class UserTest extends TestCase
                 ))->andReturnTrue(),
             ]);
 
-        $user = new User();
+        $user = new User;
 
         $user->password = 'foobar';
         $user->userAccountControl = 512;
@@ -123,7 +123,7 @@ class UserTest extends TestCase
                 )->andReturnTrue(),
             ]);
 
-        $user = new User();
+        $user = new User;
 
         $user->setRawAttributes([
             'useraccountcontrol' => [512],
@@ -137,7 +137,7 @@ class UserTest extends TestCase
 
     public function test_reject_computer_object_class_is_a_default_scope()
     {
-        $this->assertInstanceOf(RejectComputerObjectClass::class, (new User())->getGlobalScopes()[RejectComputerObjectClass::class]);
+        $this->assertInstanceOf(RejectComputerObjectClass::class, (new User)->getGlobalScopes()[RejectComputerObjectClass::class]);
     }
 
     public function test_scope_where_has_mailbox_is_applied()
@@ -163,7 +163,7 @@ class UserTest extends TestCase
             Carbon::now()->subMinutes(10)
         );
 
-        $user = (new User())->setRawAttributes(
+        $user = (new User)->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
@@ -177,7 +177,7 @@ class UserTest extends TestCase
             Carbon::now()->subMinutes(10)
         );
 
-        $user = (new User())->setRawAttributes(
+        $user = (new User)->setRawAttributes(
             ['lockouttime' => [$lockoutTime]]
         );
 
@@ -187,12 +187,12 @@ class UserTest extends TestCase
 
     public function test_user_with_no_account_control_returns_zero_value()
     {
-        $this->assertEquals(0, (new User())->accountControl()->getValue());
+        $this->assertEquals(0, (new User)->accountControl()->getValue());
     }
 
     public function test_user_with_account_control_returns_hydrated_account_control_instance()
     {
-        $uac = (new User())->setRawAttribute('useraccountcontrol', '514')->accountControl();
+        $uac = (new User)->setRawAttribute('useraccountcontrol', '514')->accountControl();
 
         $this->assertSame(514, $uac->getValue());
         $this->assertTrue($uac->hasFlag(AccountControl::ACCOUNTDISABLE));
@@ -202,7 +202,7 @@ class UserTest extends TestCase
 
     public function test_user_can_have_account_control_object_set_on_attribute()
     {
-        $user = new User();
+        $user = new User;
 
         $uac = $user->accountControl();
 
@@ -213,7 +213,7 @@ class UserTest extends TestCase
 
     public function test_user_is_disabled()
     {
-        $user = new User();
+        $user = new User;
 
         $this->assertFalse($user->isDisabled());
 
@@ -228,7 +228,7 @@ class UserTest extends TestCase
 
     public function test_user_is_enabled()
     {
-        $user = new User();
+        $user = new User;
 
         $this->assertTrue($user->isEnabled());
 
@@ -243,7 +243,7 @@ class UserTest extends TestCase
 
     public function test_account_expires_with_maximum()
     {
-        $user = new User();
+        $user = new User;
 
         $max = Timestamp::WINDOWS_INT_MAX;
 
@@ -254,7 +254,7 @@ class UserTest extends TestCase
 
     public function test_account_expires_with_minimum()
     {
-        $user = new User();
+        $user = new User;
 
         $user->accountExpires = 0;
 
@@ -273,11 +273,7 @@ class UserTest extends TestCase
 
 class UserPasswordTestStub extends User
 {
-    protected function assertSecureConnection(): void
-    {
-    }
+    protected function assertSecureConnection(): void {}
 }
 
-class NonUserPasswordTestStub extends Model
-{
-}
+class NonUserPasswordTestStub extends Model {}

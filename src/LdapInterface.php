@@ -40,70 +40,70 @@ interface LdapInterface
     public const PORT_SSL = 636;
 
     /**
-     * Entry and exit from routines.
+     * Print entry and exit from routines.
      *
      * @var int
      */
     public const DEBUG_TRACE = 1;
 
     /**
-     * Packet activity.
+     * Print packet activity.
      *
      * @var int
      */
     public const DEBUG_PACKETS = 2;
 
     /**
-     * Data arguments from requests.
+     * Print data arguments from requests.
      *
      * @var int
      */
     public const DEBUG_ARGS = 4;
 
     /**
-     * Connection activity.
+     * Print connection activity.
      *
      * @var int
      */
     public const DEBUG_CONNS = 8;
 
     /**
-     * Encoding and decoding of data.
+     * Print encoding and decoding of data.
      *
      * @var int
      */
     public const DEBUG_BER = 16;
 
     /**
-     * Search filters.
+     * Print search filters.
      *
      * @var int
      */
     public const DEBUG_FILTER = 32;
 
     /**
-     * Configuration file processing.
+     * Print configuration file processing.
      *
      * @var int
      */
     public const DEBUG_CONFIG = 64;
 
     /**
-     * Access Control List activities.
+     * Print Access Control List activities.
      *
      * @var int
      */
     public const DEBUG_ACL = 128;
 
     /**
-     * Operational statistics.
+     * Print operational statistics.
      *
      * @var int
      */
     public const DEBUG_STATS = 256;
 
     /**
-     * More detailed statistics.
+     * Print more detailed statistics.
      *
      * @var int
      */
@@ -117,35 +117,35 @@ interface LdapInterface
     public const DEBUG_SHELL = 1024;
 
     /**
-     * Entry parsing.
+     * Print entry parsing.
      *
      * @var int
      */
     public const DEBUG_PARSE = 2048;
 
     /**
-     * LDAPSync replication.
+     * Print LDAPSync replication.
      *
      * @var int
      */
     public const DEBUG_SYNC = 16384;
 
     /**
-     * Referral activities.
+     * Print referral activities.
      *
      * @var int
      */
     public const DEBUG_REFERRAL = 32768;
 
     /**
-     * Error conditions.
+     * Print error conditions.
      *
      * @var int
      */
     public const DEBUG_ERROR = 32768;
 
     /**
-     * All levels of debug.
+     * Print all levels of debug.
      *
      * @var int
      */

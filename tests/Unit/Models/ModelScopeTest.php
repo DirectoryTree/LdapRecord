@@ -151,7 +151,8 @@ class ModelWithGlobalScopeTestStub extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('foo', function () {});
+        static::addGlobalScope('foo', function () {
+        });
         static::addGlobalScope(new ScopeTestStub);
     }
 

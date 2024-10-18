@@ -4,4 +4,6 @@ namespace LdapRecord\Testing;
 
 use Exception;
 
-class LdapExpectationException extends Exception {}
+class LdapExpectationException extends Exception
+{
+}

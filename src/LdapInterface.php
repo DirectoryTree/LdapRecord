@@ -40,7 +40,7 @@ interface LdapInterface
     public const PORT_SSL = 636;
 
     /**
-     *  Entry and exit from routines.
+     * Entry and exit from routines.
      *
      * @var int
      */

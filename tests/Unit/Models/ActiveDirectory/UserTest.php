@@ -273,11 +273,7 @@ class UserTest extends TestCase
 
 class UserPasswordTestStub extends User
 {
-    protected function assertSecureConnection(): void
-    {
-    }
+    protected function assertSecureConnection(): void {}
 }
 
-class NonUserPasswordTestStub extends Model
-{
-}
+class NonUserPasswordTestStub extends Model {}

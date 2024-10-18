@@ -104,8 +104,7 @@ class ModelHasManyTest extends TestCase
             return true;
         }));
 
-        $relation->chunk(1000, function () {
-        });
+        $relation->chunk(1000, function () {});
     }
 
     public function test_recursive_chunk()
@@ -137,8 +136,7 @@ class ModelHasManyTest extends TestCase
             return true;
         }));
 
-        $relation->recursive()->chunk(1000, function () {
-        });
+        $relation->recursive()->chunk(1000, function () {});
     }
 
     public function test_page_size_can_be_set()

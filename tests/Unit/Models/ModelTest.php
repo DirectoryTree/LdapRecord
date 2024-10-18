@@ -842,9 +842,7 @@ class ModelTest extends TestCase
 
 class ModelCreateTestStub extends Model
 {
-    public function save(array $attributes = []): void
-    {
-    }
+    public function save(array $attributes = []): void {}
 }
 
 class ModelWithDatesStub extends Model

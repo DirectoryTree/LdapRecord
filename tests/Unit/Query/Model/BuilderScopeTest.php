@@ -42,8 +42,7 @@ class BuilderScopeTest extends TestCase
     {
         $b = new Builder(new Connection);
 
-        $b->withGlobalScope('foo', function () {
-        });
+        $b->withGlobalScope('foo', function () {});
 
         $b->withoutGlobalScope('foo');
 
@@ -54,10 +53,8 @@ class BuilderScopeTest extends TestCase
     {
         $b = new Builder(new Connection);
 
-        $b->withGlobalScope('foo', function () {
-        });
-        $b->withGlobalScope('bar', function () {
-        });
+        $b->withGlobalScope('foo', function () {});
+        $b->withGlobalScope('bar', function () {});
 
         $b->withoutGlobalScopes(['foo', 'bar']);
 

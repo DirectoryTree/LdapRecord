@@ -15,7 +15,7 @@ class LdapFakeTest extends TestCase
 {
     public function test_operation()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $operation = $fake->operation('foo');
 
@@ -25,7 +25,7 @@ class LdapFakeTest extends TestCase
 
     public function test_should_allow_bind_with()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->shouldAllowBindWith('foo');
 
@@ -40,7 +40,7 @@ class LdapFakeTest extends TestCase
 
     public function test_expect()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->expect(['foo' => 'bar']);
         $fake->expect($fake->operation('bar'));
@@ -53,7 +53,7 @@ class LdapFakeTest extends TestCase
 
     public function test_remove_expectation()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->expect([
             'foo' => 'bar',
@@ -73,7 +73,7 @@ class LdapFakeTest extends TestCase
 
     public function test_should_return_error_number()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->shouldReturnErrorNumber(10);
 
@@ -82,7 +82,7 @@ class LdapFakeTest extends TestCase
 
     public function test_should_return_error()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->shouldReturnError('foo');
 
@@ -91,7 +91,7 @@ class LdapFakeTest extends TestCase
 
     public function test_should_return_diagnostic_message()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->shouldReturnDiagnosticMessage('foo');
 
@@ -100,11 +100,11 @@ class LdapFakeTest extends TestCase
 
     public function test_connect()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $this->assertTrue($fake->connect('host', 389));
 
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->expect(['connect' => false]);
 
@@ -113,7 +113,7 @@ class LdapFakeTest extends TestCase
 
     public function test_bind_without_expectation_throws_exception()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('LDAP method [bind] was unexpected.');
@@ -123,9 +123,9 @@ class LdapFakeTest extends TestCase
 
     public function test_bind_with_expectation_returns_result()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
-        $fake->expect(['bind' => $response = new LdapResultResponse()]);
+        $fake->expect(['bind' => $response = new LdapResultResponse]);
 
         $this->assertSame($response, $fake->bind('foo', 'bar'));
 
@@ -134,7 +134,7 @@ class LdapFakeTest extends TestCase
 
     public function test_bind_with_expectation_returns_failed_result()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->expect(['bind' => $response = new LdapResultResponse(1)]);
 
@@ -145,11 +145,11 @@ class LdapFakeTest extends TestCase
 
     public function test_close()
     {
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $this->assertTrue($fake->close());
 
-        $fake = new LdapFake();
+        $fake = new LdapFake;
 
         $fake->expect(['close' => false]);
 
@@ -158,12 +158,12 @@ class LdapFakeTest extends TestCase
 
     public function test_get_entries()
     {
-        $this->assertEquals(['foo', 'bar'], (new LdapFake())->getEntries(['foo', 'bar']));
+        $this->assertEquals(['foo', 'bar'], (new LdapFake)->getEntries(['foo', 'bar']));
     }
 
     public function test_assert_minimum_expectation_counts_does_not_throw_exception_on_indefinite_expectations()
     {
-        $fake = (new LdapFake())->expect(
+        $fake = (new LdapFake)->expect(
             $expectation = LdapFake::operation('foo')
         );
 
@@ -174,7 +174,7 @@ class LdapFakeTest extends TestCase
 
     public function test_assert_minimum_expectation_counts_throws_exception_on_expected_count_not_met()
     {
-        $fake = (new LdapFake())->expect(
+        $fake = (new LdapFake)->expect(
             $expectation = LdapFake::operation('foo')->once()
         );
 

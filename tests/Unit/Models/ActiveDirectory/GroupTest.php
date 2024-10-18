@@ -18,7 +18,7 @@ class GroupTest extends TestCase
 
     public function test_rid_accessor_works()
     {
-        $group = new Group();
+        $group = new Group;
         $this->assertEmpty($group->rid);
 
         $group = new Group(['objectsid' => 'S-1-5']);
@@ -33,7 +33,7 @@ class GroupTest extends TestCase
 
     public function test_primary_group_members_query()
     {
-        $group = new Group();
+        $group = new Group;
 
         $group->setRawAttributes(['objectsid' => 'S-1-5-2141378235-513']);
 

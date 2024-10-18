@@ -11,17 +11,17 @@ class ModelAttributeAppendsTest extends TestCase
     {
         $this->assertEquals([
             'foo' => ['bar'],
-        ], (new ModelAttributeAppendsTestStub())->toArray());
+        ], (new ModelAttributeAppendsTestStub)->toArray());
     }
 
     public function test_get_appends()
     {
-        $this->assertEquals(['foo'], (new ModelAttributeAppendsTestStub())->getAppends());
+        $this->assertEquals(['foo'], (new ModelAttributeAppendsTestStub)->getAppends());
     }
 
     public function test_set_appends()
     {
-        $model = new ModelAttributeAppendsTestStub();
+        $model = new ModelAttributeAppendsTestStub;
 
         $model->setAppends(['bar']);
 
@@ -30,12 +30,12 @@ class ModelAttributeAppendsTest extends TestCase
 
     public function test_has_appended()
     {
-        $this->assertTrue((new ModelAttributeAppendsTestStub())->hasAppended('foo'));
+        $this->assertTrue((new ModelAttributeAppendsTestStub)->hasAppended('foo'));
     }
 
     public function test_appends_with_hyphenated_property()
     {
-        $model = new ModelAttributeAppendsTestStub();
+        $model = new ModelAttributeAppendsTestStub;
 
         $model->setAppends(['foo-bar']);
 

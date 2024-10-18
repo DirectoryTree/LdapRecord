@@ -23,7 +23,7 @@ class GuardTest extends TestCase
 {
     public function test_attempt_throws_exception_with_an_empty_username()
     {
-        $guard = new Guard(new Ldap(), new DomainConfiguration());
+        $guard = new Guard(new Ldap, new DomainConfiguration);
 
         $this->expectException(UsernameRequiredException::class);
 
@@ -32,7 +32,7 @@ class GuardTest extends TestCase
 
     public function test_attempt_throws_exception_with_an_empty_password()
     {
-        $guard = new Guard(new Ldap(), new DomainConfiguration());
+        $guard = new Guard(new Ldap, new DomainConfiguration);
 
         $this->expectException(PasswordRequiredException::class);
 
@@ -59,7 +59,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->bind('user', 'pass');
     }
@@ -70,7 +70,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with(null, null)->andReturnResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->bind();
     }
@@ -81,7 +81,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('user', 'pass')->andReturnErrorResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $this->expectException(BindException::class);
 
@@ -104,7 +104,7 @@ class GuardTest extends TestCase
 
     public function test_binding_events_are_fired_during_bind()
     {
-        $events = new Dispatcher();
+        $events = new Dispatcher;
 
         $events->listen(Bound::class, function (Bound $event) use (&$firedBound) {
             $this->assertEquals('johndoe', $event->getUsername());
@@ -117,7 +117,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 
@@ -138,7 +138,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andThrow(new Exception('foo'))
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 
@@ -147,7 +147,7 @@ class GuardTest extends TestCase
 
     public function test_auth_events_are_fired_during_attempt()
     {
-        $events = new Dispatcher();
+        $events = new Dispatcher;
 
         $firedBinding = false;
         $firedBound = false;
@@ -186,7 +186,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 
@@ -200,7 +200,7 @@ class GuardTest extends TestCase
 
     public function test_all_auth_events_can_be_listened_to_with_wildcard()
     {
-        $events = new Dispatcher();
+        $events = new Dispatcher;
 
         $totalFired = 0;
 
@@ -212,7 +212,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('johndoe', 'secret')->andReturnResponse()
         );
 
-        $guard = new Guard($ldap, new DomainConfiguration());
+        $guard = new Guard($ldap, new DomainConfiguration);
 
         $guard->setDispatcher($events);
 

@@ -10,7 +10,7 @@ trait MakePosixUsers
 {
     protected function makePosixUser(Model $ou, array $attributes = []): PosixAccount
     {
-        return (new PosixAccount())
+        return (new PosixAccount)
             ->inside($ou)
             ->fill(array_merge([
                 'uid' => $this->faker()->userName(),

@@ -14,10 +14,10 @@ class ModelSerializationTest extends TestCase
 {
     public function testModelWithTimestampsCanBeSerializedAndEncoded()
     {
-        $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime());
-        $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime());
+        $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime);
+        $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime);
 
-        $model = (new User())->setRawAttributes([
+        $model = (new User)->setRawAttributes([
             'cn' => 'René',
             'whenchanged' => [(string) $whenchanged],
             'lastlogon' => [(string) $lastlogon],

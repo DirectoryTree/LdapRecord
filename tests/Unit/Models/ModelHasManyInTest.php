@@ -27,13 +27,13 @@ class ModelHasManyInTest extends TestCase
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
         $query->shouldReceive('find')->once()->with('baz')->andReturn(new Entry);
 
-        $model = new ModelHasManyInStub();
+        $model = new ModelHasManyInStub;
         $model->bar = ['baz'];
 
         $collection = $model->relation($query)->get();
 
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertEquals(new Entry(), $collection->first());
+        $this->assertEquals(new Entry, $collection->first());
     }
 
     public function test_get_with_alternate_foreign_key()
@@ -42,13 +42,13 @@ class ModelHasManyInTest extends TestCase
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
         $query->shouldReceive('findBy')->once()->with('foreign', 'baz')->andReturn(new Entry);
 
-        $model = new ModelHasManyInStub();
+        $model = new ModelHasManyInStub;
         $model->bar = ['baz'];
 
         $collection = $model->relation($query, 'foreign')->get();
 
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertEquals(new Entry(), $collection->first());
+        $this->assertEquals(new Entry, $collection->first());
     }
 }
 

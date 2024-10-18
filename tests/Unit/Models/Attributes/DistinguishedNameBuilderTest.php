@@ -134,7 +134,7 @@ class DistinguishedNameBuilderTest extends TestCase
 
     public function test_components_arrays_and_strings_can_be_passed_to_append_and_prepend()
     {
-        $dn = (new DistinguishedNameBuilder())
+        $dn = (new DistinguishedNameBuilder)
             ->prepend([
                 'cn=John Doe',
                 ['dc', 'local'],
@@ -144,7 +144,7 @@ class DistinguishedNameBuilderTest extends TestCase
 
         $this->assertEquals('cn=John Doe,dc=local,dc=com', $dn);
 
-        $dn = (new DistinguishedNameBuilder())
+        $dn = (new DistinguishedNameBuilder)
             ->append([
                 'cn=John Doe',
                 ['dc', 'local'],

@@ -19,7 +19,7 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
     public function test_attach_sets_users_primary_group_id()
     {
-        $user = new UserSaveModelStub();
+        $user = new UserSaveModelStub;
 
         $group = new Group(['objectsid' => 'S-1-111-222-513']);
 
@@ -42,7 +42,5 @@ class ModelHasOnePrimaryGroupTest extends TestCase
 
 class UserSaveModelStub extends User
 {
-    public function save(array $attributes = []): void
-    {
-    }
+    public function save(array $attributes = []): void {}
 }

@@ -29,7 +29,7 @@ class ModelTest extends TestCase
 
     public function test_model_must_have_default_connection()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->exists);
         $this->expectException(ContainerException::class);
         $model->getConnection();
@@ -37,7 +37,7 @@ class ModelTest extends TestCase
 
     public function test_model_can_create_new_instances()
     {
-        $model = new Entry();
+        $model = new Entry;
         $new = $model->newInstance(['foo' => 'bar']);
         $this->assertEquals($model->getConnectionName(), $new->getConnectionName());
         $this->assertEquals(['foo' => ['bar']], $new->getAttributes());
@@ -46,7 +46,7 @@ class ModelTest extends TestCase
 
     public function test_boot_is_called_upon_creation()
     {
-        new ModelBootingTestStub();
+        new ModelBootingTestStub;
         $this->assertTrue(ModelBootingTestStub::isBooted());
         $this->assertEquals([ModelBootingTestStub::class => true], ModelBootingTestStub::booted());
     }
@@ -74,7 +74,7 @@ class ModelTest extends TestCase
 
     public function test_getting_and_setting_dn()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setDn('foo');
         $this->assertEquals('foo', $model->getDn());
         $this->assertEquals('foo', (string) $model);
@@ -82,7 +82,7 @@ class ModelTest extends TestCase
 
     public function test_getting_parent_dn()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setDn('cn=user,dc=acme,dc=org');
         $this->assertEquals('dc=acme,dc=org', $model->getParentDn($model->getDn()));
         $this->assertEquals('dc=acme,dc=org', $model->getParentDn());
@@ -127,7 +127,7 @@ class ModelTest extends TestCase
 
     public function test_creatable_rdn()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertEquals('cn=', $model->getCreatableRdn());
 
         $model->cn = 'John Doe';
@@ -145,11 +145,11 @@ class ModelTest extends TestCase
             'base_dn' => 'dc=acme,dc=org',
         ]));
 
-        $model = new Entry();
+        $model = new Entry;
         $model->cn = 'foo';
         $this->assertEquals('cn=foo,dc=acme,dc=org', $model->getCreatableDn());
 
-        $model = new Entry();
+        $model = new Entry;
         $this->assertEquals('cn=,dc=acme,dc=org', $model->getCreatableDn());
 
         $model = (new Entry)->inside('ou=Users,dc=acme,dc=org');
@@ -164,7 +164,7 @@ class ModelTest extends TestCase
 
     public function test_raw_attribute_filling_sets_dn()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['dn' => 'bar']);
         $this->assertTrue($model->exists);
@@ -177,14 +177,14 @@ class ModelTest extends TestCase
 
     public function test_raw_attribute_filling_sets_original()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setRawAttributes(['foo' => 'bar']);
         $this->assertEquals(['foo' => 'bar'], $model->getOriginal());
     }
 
     public function test_raw_attribute_filling_removes_count_keys_recursively()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes([
             'count' => 1,
@@ -210,7 +210,7 @@ class ModelTest extends TestCase
 
     public function test_attribute_manipulation()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->cn = 'foo';
         $this->assertEquals(['foo'], $model->cn);
         $this->assertTrue(isset($model->cn));
@@ -232,7 +232,7 @@ class ModelTest extends TestCase
 
     public function test_has_attribute()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->hasAttribute('foo'));
 
         $model->foo = null;
@@ -256,7 +256,7 @@ class ModelTest extends TestCase
 
     public function test_setting_first_attribute()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->foo = ['bar', 'baz'];
 
         $model->setFirstAttribute('foo', 'zal');
@@ -267,7 +267,7 @@ class ModelTest extends TestCase
 
     public function test_adding_attribute_values()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->foo = ['bar', 'baz'];
 
         $model->addAttributeValue('foo', 'zal');
@@ -283,7 +283,7 @@ class ModelTest extends TestCase
 
     public function test_removing_attribute_values()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->foo = ['bar', 'baz', 'zal'];
 
         $model->removeAttributeValue('missing', 'foo');
@@ -303,7 +303,7 @@ class ModelTest extends TestCase
 
     public function test_attribute_keys_are_normalized()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->FOO = 1;
         $model->BARbAz = 2;
         $model->foo_bar = 3;
@@ -371,7 +371,7 @@ class ModelTest extends TestCase
 
     public function test_reset_integer_is_kept_in_tact_when_batch_modifications_are_generated()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['pwdlastset' => 'value']);
 
@@ -500,7 +500,7 @@ class ModelTest extends TestCase
             ],
         ];
 
-        $model = new Entry();
+        $model = new Entry;
         $model->setConnection('other');
 
         $collection = $model->hydrate($records);
@@ -516,39 +516,39 @@ class ModelTest extends TestCase
 
     public function test_add_modification()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->addModification(['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]);
         $this->assertEquals([['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]], $model->getModifications());
 
-        $model = new Entry();
+        $model = new Entry;
         $model->addModification(new BatchModification('foo', 3, ['bar']));
         $this->assertEquals([['attrib' => 'foo', 'values' => ['bar'], 'modtype' => 3]], $model->getModifications());
     }
 
     public function test_add_modification_without_attrib()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->expectException(\InvalidArgumentException::class);
         $model->addModification(['values' => ['Changed'], 'modtype' => 3]);
     }
 
     public function test_add_modification_without_modtype()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->expectException(\InvalidArgumentException::class);
         $model->addModification(['attrib' => 'foo', 'values' => ['bar']]);
     }
 
     public function test_add_modification_without_values()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->addModification(['attrib' => 'foo', 'modtype' => 3]);
         $this->assertEquals([['attrib' => 'foo', 'modtype' => 3]], $model->getModifications());
     }
 
     public function test_set_modifications()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setModifications([
             ['attrib' => 'foo', 'modtype' => 3, 'values' => ['bar']],
             new BatchModification('bar', 3, ['baz']),
@@ -562,7 +562,7 @@ class ModelTest extends TestCase
 
     public function test_modifications_are_created_from_dirty()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setRawAttributes([
             'cn' => ['Common Name'],
             'samaccountname' => ['Account Name'],
@@ -593,7 +593,7 @@ class ModelTest extends TestCase
 
     public function test_modifications_that_contain_identical_values_are_not_used()
     {
-        $model = new Entry();
+        $model = new Entry;
         $model->setRawAttributes(['useraccountcontrol' => 512]);
         $model->useraccountcontrol = '512';
 
@@ -648,7 +648,7 @@ class ModelTest extends TestCase
 
     public function test_is_descendent_of()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->isDescendantOf());
         $this->assertFalse($model->isDescendantOf(''));
 
@@ -659,7 +659,7 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isDescendantOf('ou=bar,dc=acme,dc=org'));
         $this->assertTrue($model->isDescendantOf('ou=bar,dc=ACME,dc=org'));
 
-        $parent = new Entry();
+        $parent = new Entry;
         $parent->setDn('ou=bar,dc=acme,dc=org');
         $this->assertTrue($model->isDescendantOf($parent));
 
@@ -669,7 +669,7 @@ class ModelTest extends TestCase
 
     public function test_is_ancestor_of()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->isAncestorOf());
         $this->assertFalse($model->isAncestorOf(''));
 
@@ -677,7 +677,7 @@ class ModelTest extends TestCase
         $this->assertTrue($model->isAncestorOf('cn=foo,ou=bar,dc=acme,dc=org'));
         $this->assertTrue($model->isAncestorOf('cn=foo,ou=test,ou=bar,dc=acme,dc=org'));
 
-        $child = new Entry();
+        $child = new Entry;
         $child->setDn('cn=foo,ou=bar,dc=acme,dc=org');
         $this->assertTrue($model->isAncestorOf($child));
 
@@ -687,7 +687,7 @@ class ModelTest extends TestCase
 
     public function test_is_child_of()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->isChildOf());
 
         $model->setDn('dc=bar,dc=baz');
@@ -702,7 +702,7 @@ class ModelTest extends TestCase
 
     public function test_is_parent_of()
     {
-        $model = new Entry();
+        $model = new Entry;
         $this->assertFalse($model->isParentOf());
 
         $model->setDn('dc=bar,dc=baz');
@@ -720,14 +720,14 @@ class ModelTest extends TestCase
             'base_dn' => 'dc=local,dc=com',
         ]));
 
-        $ou = new Entry();
+        $ou = new Entry;
         $ou->setDn('ou=users,dc=local,dc=com');
         $this->assertTrue($ou->isDescendantOf('{base}'));
         $this->assertTrue($ou->isSiblingOf('ou=admins,{base}'));
         $this->assertTrue($ou->isParentOf('cn=foo,ou=users,{base}'));
         $this->assertTrue($ou->isAncestorOf('cn=foo,ou=users,{base}'));
 
-        $child = new Entry();
+        $child = new Entry;
         $child->setDn('cn=foo,ou=users,dc=local,dc=com');
         $this->assertTrue($child->isDescendantOf('{base}'));
         $this->assertTrue($child->isChildOf('ou=users,{base}'));
@@ -746,7 +746,7 @@ class ModelTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->inside('dc=local,dc=com');
 
@@ -771,7 +771,7 @@ class ModelTest extends TestCase
                 ->andReturnTrue()
         );
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->inside('{base}');
 
@@ -788,12 +788,12 @@ class ModelTest extends TestCase
         $this->assertEquals('foo', (new Entry(['distinguishedname' => 'foo']))->getDn());
         $this->assertEquals('foo', Entry::make(['distinguishedname' => 'foo'])->getDn());
 
-        $model = new Entry();
+        $model = new Entry;
         $model->dn = 'foo';
         $this->assertEquals('foo', $model->getDn());
         $this->assertEquals(['foo'], $model->getAttributes()['dn']);
 
-        $model = new Entry();
+        $model = new Entry;
         $model->distinguishedname = 'foo';
         $this->assertEquals('foo', $model->getDn());
         $this->assertEquals(['foo'], $model->getAttributes()['distinguishedname']);
@@ -842,9 +842,7 @@ class ModelTest extends TestCase
 
 class ModelCreateTestStub extends Model
 {
-    public function save(array $attributes = []): void
-    {
-    }
+    public function save(array $attributes = []): void {}
 }
 
 class ModelWithDatesStub extends Model

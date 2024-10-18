@@ -9,7 +9,7 @@ class GrammarTest extends TestCase
 {
     public function test_wrap()
     {
-        $g = new Grammar();
+        $g = new Grammar;
 
         $wrapped = $g->wrap('test');
 
@@ -20,7 +20,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_prefix()
     {
-        $g = new Grammar();
+        $g = new Grammar;
 
         $wrapped = $g->wrap('test', '(!');
 
@@ -31,7 +31,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_suffix()
     {
-        $g = new Grammar();
+        $g = new Grammar;
 
         $wrapped = $g->wrap('test', null, '=)');
 
@@ -42,7 +42,7 @@ class GrammarTest extends TestCase
 
     public function test_wrap_both()
     {
-        $g = new Grammar();
+        $g = new Grammar;
 
         $wrapped = $g->wrap('test', '(!prefix', 'suffix)');
 
@@ -59,6 +59,6 @@ class GrammarTest extends TestCase
             'ends_with', 'not_ends_with', 'contains', 'not_contains',
         ];
 
-        $this->assertEquals($expected, (new Grammar())->getOperators());
+        $this->assertEquals($expected, (new Grammar)->getOperators());
     }
 }

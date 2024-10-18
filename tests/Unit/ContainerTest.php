@@ -22,7 +22,7 @@ class ContainerTest extends TestCase
 
     public function test_set_as_global()
     {
-        $container = new Container();
+        $container = new Container;
 
         $container->setAsGlobal();
 
@@ -33,8 +33,8 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->addConnection($default = new Connection());
-        $container->addConnection($other = new Connection(), 'other');
+        $container->addConnection($default = new Connection);
+        $container->addConnection($other = new Connection, 'other');
 
         $this->assertSame($default, $container->getDefaultConnection());
         $this->assertSame($other, $container->getConnection('other'));
@@ -44,8 +44,8 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->addConnection(new Connection());
-        $container->addConnection(new Connection(), 'other');
+        $container->addConnection(new Connection);
+        $container->addConnection(new Connection, 'other');
 
         $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
         $this->assertInstanceOf(Connection::class, $container->getConnection('default'));
@@ -61,7 +61,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->addConnection(new Connection());
+        $container->addConnection(new Connection);
 
         $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
         $this->assertInstanceOf(Connection::class, Container::getConnection('default'));
@@ -85,7 +85,7 @@ class ContainerTest extends TestCase
 
         $container->setDefaultConnection('other');
 
-        $container->addConnection(new Connection());
+        $container->addConnection(new Connection);
 
         $this->assertInstanceOf(Connection::class, $container->getConnection('other'));
         $this->assertInstanceOf(Connection::class, $container->getDefaultConnection());
@@ -103,11 +103,11 @@ class ContainerTest extends TestCase
 
         $this->assertFalse($container->hasConnection('default'));
 
-        $container->addConnection(new Connection());
+        $container->addConnection(new Connection);
 
         $this->assertTrue($container->hasConnection('default'));
 
-        $container->addConnection(new Connection(), 'other');
+        $container->addConnection(new Connection, 'other');
 
         $this->assertTrue($container->hasConnection('other'));
     }
@@ -116,8 +116,8 @@ class ContainerTest extends TestCase
     {
         $container = Container::getNewInstance();
 
-        $container->addConnection(new Connection());
-        $container->addConnection(new Connection(), 'other');
+        $container->addConnection(new Connection);
+        $container->addConnection(new Connection, 'other');
 
         $container->removeConnection('non-existent');
 
@@ -139,8 +139,8 @@ class ContainerTest extends TestCase
         $container = Container::getNewInstance();
 
         $connections = [
-            'default' => new Connection(),
-            'other' => new Connection(),
+            'default' => new Connection,
+            'other' => new Connection,
         ];
 
         $container->addConnection($connections['default']);
@@ -153,7 +153,7 @@ class ContainerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $event = new Binding(new Ldap(), 'username', 'password');
+        $event = new Binding(new Ldap, 'username', 'password');
 
         $dispatcher = $container->getDispatcher();
 
@@ -193,7 +193,7 @@ class ContainerTest extends TestCase
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Query\Events\*'));
         $this->assertCount(0, $dispatcher->getListeners('LdapRecord\Models\Events\*'));
 
-        $container->setLogger(new NullLogger());
+        $container->setLogger(new NullLogger);
 
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Auth\Events\*'));
         $this->assertCount(1, $dispatcher->getListeners('LdapRecord\Query\Events\*'));

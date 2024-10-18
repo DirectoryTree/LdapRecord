@@ -12,9 +12,9 @@ class ModelAccessorMutatorTest extends TestCase
 {
     public function test_model_uses_accessor()
     {
-        $model = new ModelAccessorStub();
+        $model = new ModelAccessorStub;
 
-        $date = new DateTime();
+        $date = new DateTime;
 
         $model->createtimestamp = $date;
 
@@ -29,14 +29,14 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_accessor_is_used_when_attribute_is_null()
     {
-        $model = new ModelAccessorStub();
+        $model = new ModelAccessorStub;
 
         $this->assertEquals('zax', $model->zax);
     }
 
     public function test_model_uses_accessor_with_hyphen()
     {
-        $model = new ModelAccessorStub();
+        $model = new ModelAccessorStub;
 
         $this->assertEquals('baz-other', $model->getAttribute('foo-bar'));
         $this->assertEquals(['baz'], $model->toArray()['foo-bar']);
@@ -49,7 +49,7 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_model_uses_mutator()
     {
-        $model = new ModelMutatorStub();
+        $model = new ModelMutatorStub;
 
         $model->foo = 'setter-';
 
@@ -61,7 +61,7 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_uses_mutator_with_hypen()
     {
-        $model = new ModelMutatorStub();
+        $model = new ModelMutatorStub;
 
         $model->foo_bar = 'setter';
 
@@ -75,8 +75,8 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_dates_to_ldap_type()
     {
-        $model = new ModelDateMutatorStub();
-        $date = new Carbon();
+        $model = new ModelDateMutatorStub;
+        $date = new Carbon;
 
         $model->createtimestamp = $date;
 
@@ -88,8 +88,8 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_dates_to_windows_type()
     {
-        $model = new ModelDateMutatorStub();
-        $date = new Carbon();
+        $model = new ModelDateMutatorStub;
+        $date = new Carbon;
 
         $model->whenchanged = $date;
 
@@ -101,8 +101,8 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_dates_to_windows_integer_type()
     {
-        $model = new ModelDateMutatorStub();
-        $date = new Carbon();
+        $model = new ModelDateMutatorStub;
+        $date = new Carbon;
 
         $model->accountexpires = $date;
 
@@ -118,7 +118,7 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_from_ldap_type_to_date()
     {
-        $model = new ModelDateAccessorStub();
+        $model = new ModelDateAccessorStub;
 
         $this->assertInstanceOf(Carbon::class, $model->createtimestamp);
         $this->assertInstanceOf(Carbon::class, $model->CreateTimestamp);
@@ -134,7 +134,7 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_from_windows_type_to_date()
     {
-        $model = new ModelDateAccessorStub();
+        $model = new ModelDateAccessorStub;
 
         $this->assertInstanceOf(Carbon::class, $model->whenchanged);
         $this->assertInstanceOf(Carbon::class, $model->WhenChanged);
@@ -150,7 +150,7 @@ class ModelAccessorMutatorTest extends TestCase
 
     public function test_models_mutate_from_windows_integer_type_to_date()
     {
-        $model = new ModelDateAccessorStub();
+        $model = new ModelDateAccessorStub;
 
         $this->assertInstanceOf(Carbon::class, $model->accountexpires);
         $this->assertInstanceOf(Carbon::class, $model->AccountExpires);

@@ -1231,7 +1231,7 @@ class BuilderTest extends TestCase
             ->shouldAllowAnyBind()
             ->expect([
                 LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, [])->once()->andReturnTrue(),
-                LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse()),
+                LdapFake::operation('parseResult')->once()->andReturn(new LdapResultResponse),
                 LdapFake::operation('read')->once()->with($dn, '(objectclass=*)', ['*'])->andReturn($results),
             ]);
 
@@ -1432,7 +1432,7 @@ class BuilderTest extends TestCase
                                 && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
                                 && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
                         },
-                    ])->andReturn(new LdapResultResponse());
+                    ])->andReturn(new LdapResultResponse);
                 },
             ]);
 
@@ -1478,7 +1478,7 @@ class BuilderTest extends TestCase
                                 && $controls[LDAP_CONTROL_SORTREQUEST]['value'] === [['attr' => 'cn', 'reverse' => false]]
                                 && $controls[LDAP_CONTROL_VLVREQUEST]['value'] === ['before' => 0, 'after' => 99, 'offset' => 1, 'count' => 0];
                         },
-                    ])->andReturn(new LdapResultResponse());
+                    ])->andReturn(new LdapResultResponse);
                 },
             ]);
 

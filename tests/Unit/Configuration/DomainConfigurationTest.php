@@ -17,14 +17,14 @@ class DomainConfigurationTest extends TestCase
 
     public function test_getting_options()
     {
-        $config = new DomainConfiguration();
+        $config = new DomainConfiguration;
 
         $this->assertEmpty($config->get('username'));
     }
 
     public function test_setting_options()
     {
-        $config = new DomainConfiguration();
+        $config = new DomainConfiguration;
 
         $config->set('username', 'foo');
 
@@ -33,7 +33,7 @@ class DomainConfigurationTest extends TestCase
 
     public function test_default_options()
     {
-        $config = new DomainConfiguration();
+        $config = new DomainConfiguration;
 
         $this->assertEquals(389, $config->get('port'));
         $this->assertNull($config->get('protocol'));
@@ -88,7 +88,7 @@ class DomainConfigurationTest extends TestCase
 
     public function test_get_all()
     {
-        $config = new DomainConfiguration();
+        $config = new DomainConfiguration;
 
         $this->assertEquals([
             'hosts' => [],

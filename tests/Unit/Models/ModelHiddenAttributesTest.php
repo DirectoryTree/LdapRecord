@@ -10,7 +10,7 @@ class ModelHiddenAttributesTest extends TestCase
 {
     public function test_attributes_can_be_added_to_hidden_and_visible()
     {
-        $m = new Entry();
+        $m = new Entry;
 
         $m->setVisible(['foo', 'bar']);
         $this->assertEquals(['foo', 'bar'], $m->getVisible());

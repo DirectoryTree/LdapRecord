@@ -11,7 +11,7 @@ class AuthGuardFakeTest extends TestCase
 {
     public function testBindAsConfiguredUserAlwaysReturnsNull()
     {
-        $guard = new AuthGuardFake(new LdapFake(), new DomainConfiguration());
+        $guard = new AuthGuardFake(new LdapFake, new DomainConfiguration);
 
         $this->assertNull($guard->bindAsConfiguredUser());
     }

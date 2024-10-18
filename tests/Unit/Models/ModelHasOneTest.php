@@ -27,7 +27,7 @@ class ModelHasOneTest extends TestCase
 
         $parent = $relation->getParent();
         $parent->shouldReceive('getFirstAttribute')->once()->with('manager')->andReturn('foo');
-        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection([$related = new Entry()]));
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection([$related = new Entry]));
 
         $query = $relation->getQuery();
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
@@ -40,7 +40,7 @@ class ModelHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $related = new Entry();
+        $related = new Entry;
         $related->setDn('foo');
 
         $parent = $relation->getParent();

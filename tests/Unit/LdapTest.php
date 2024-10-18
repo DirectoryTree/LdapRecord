@@ -12,7 +12,7 @@ class LdapTest extends TestCase
 {
     public function test_construct_defaults()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $this->assertFalse($ldap->isUsingTLS());
         $this->assertFalse($ldap->isUsingSSL());
@@ -23,7 +23,7 @@ class LdapTest extends TestCase
 
     public function test_host_arrays_are_properly_processed()
     {
-        $ldap = new LdapFake();
+        $ldap = new LdapFake;
 
         $ldap->connect(['dc01', 'dc02'], $port = 500);
 
@@ -32,7 +32,7 @@ class LdapTest extends TestCase
 
     public function test_host_strings_are_properly_created()
     {
-        $ldap = new LdapFake();
+        $ldap = new LdapFake;
 
         $ldap->connect('dc01', $port = 500, 'foo://');
 
@@ -41,14 +41,14 @@ class LdapTest extends TestCase
 
     public function test_get_default_protocol()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $this->assertEquals('ldap://', $ldap->getProtocol());
     }
 
     public function test_get_protocol_ssl()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $ldap->ssl();
 
@@ -57,7 +57,7 @@ class LdapTest extends TestCase
 
     public function test_get_host()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $ldap->connect('192.168.1.1');
 
@@ -66,14 +66,14 @@ class LdapTest extends TestCase
 
     public function test_get_host_is_null_without_connecting()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $this->assertNull($ldap->getHost());
     }
 
     public function test_can_change_passwords()
     {
-        $ldap = new Ldap();
+        $ldap = new Ldap;
 
         $ldap->ssl();
 
@@ -90,7 +90,7 @@ class LdapTest extends TestCase
 
     public function test_set_options()
     {
-        $ldap = (new LdapFake())->expect([
+        $ldap = (new LdapFake)->expect([
             LdapFake::operation('setOption')->once()->with(1, 'value')->andReturnTrue(),
             LdapFake::operation('setOption')->once()->with(2, 'value')->andReturnTrue(),
         ]);
@@ -109,7 +109,7 @@ class LdapTest extends TestCase
 
     public function test_is_secure_after_binding_with_an_ssl_connection()
     {
-        $ldap = (new LdapFake())->expect([
+        $ldap = (new LdapFake)->expect([
             LdapFake::operation('bind')->once()->andReturnResponse(),
         ]);
 
@@ -124,7 +124,7 @@ class LdapTest extends TestCase
 
     public function test_is_secure_after_starting_tls()
     {
-        $ldap = (new LdapFake())->expect([
+        $ldap = (new LdapFake)->expect([
             LdapFake::operation('startTLS')->once()->andReturnTrue(),
         ]);
 
@@ -137,7 +137,7 @@ class LdapTest extends TestCase
 
     public function test_is_secure_after_starting_tls_but_failing_bind()
     {
-        $ldap = (new LdapFake())->expect([
+        $ldap = (new LdapFake)->expect([
             LdapFake::operation('startTLS')->once()->andReturnTrue(),
             LdapFake::operation('bind')->once()->andReturnResponse(1),
         ]);

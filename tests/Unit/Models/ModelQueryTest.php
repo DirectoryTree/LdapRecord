@@ -28,9 +28,9 @@ class ModelQueryTest extends TestCase
 
         $this->assertInstanceOf(Connection::class, Entry::resolveConnection());
 
-        Container::addConnection(new Connection(), 'other');
+        Container::addConnection(new Connection, 'other');
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setConnection('other');
 
@@ -42,7 +42,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $this->assertEquals($model, Entry::query()->getModel());
         $this->assertEquals($model, $model->newQuery()->getModel());
@@ -52,7 +52,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $query = $model->newQueryWithoutScopes();
 
@@ -105,7 +105,7 @@ class ModelQueryTest extends TestCase
 
     public function test_on()
     {
-        Container::addConnection(new Connection(), 'other');
+        Container::addConnection(new Connection, 'other');
 
         $query = Entry::on('other');
 
@@ -170,7 +170,7 @@ class ModelQueryTest extends TestCase
             LdapFake::operation('add')->once()->with('cn=foo,dc=foo,dc=bar')->andReturnTrue(),
         );
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setDn('cn=foo,{base}');
         $model->fill(['cn' => 'foo', 'objectclass' => 'bar']);
@@ -199,7 +199,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ModelDoesNotExistException::class);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->addAttribute('foo', 'bar');
     }
@@ -270,7 +270,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ModelDoesNotExistException::class);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->replaceAttribute('foo', 'bar');
     }
@@ -299,7 +299,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ModelDoesNotExistException::class);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->delete();
     }
@@ -347,7 +347,7 @@ class ModelQueryTest extends TestCase
     {
         $this->expectException(ModelDoesNotExistException::class);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->delete();
     }
@@ -391,7 +391,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
         $model->setDn('ou=Users,dc=acme,dc=org');
 
         $query = $model->descendants();
@@ -405,7 +405,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
         $model->setDn('ou=Office,ou=Users,dc=acme,dc=org');
 
         $query = $model->ancestors();
@@ -419,7 +419,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
         $model->setDn('ou=Users,dc=acme,dc=org');
 
         $query = $model->siblings();
@@ -440,7 +440,7 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $datetime = new DateTime();
+        $datetime = new DateTime;
 
         $query = ModelQueryDateConversionTest::query()->newInstance()
             ->whereRaw('standard', '=', $datetime)
@@ -459,7 +459,7 @@ class ModelQueryTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Cannot convert field [non-existent-date]');
 
-        Entry::query()->where('non-existent-date', new DateTime());
+        Entry::query()->where('non-existent-date', new DateTime);
     }
 }
 
@@ -483,7 +483,7 @@ class ModelAllTest extends Model
     {
         $query = m::mock(Builder::class);
         $query->shouldReceive('select')->once()->with(['*'])->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection());
+        $query->shouldReceive('paginate')->once()->withNoArgs()->andReturn(new Collection);
 
         return $query;
     }

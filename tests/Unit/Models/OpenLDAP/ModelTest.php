@@ -21,7 +21,7 @@ class ModelTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $query = $model->newQuery();
 
@@ -35,7 +35,7 @@ class ModelTest extends TestCase
     {
         Container::addConnection(new Connection);
 
-        $model = new Entry();
+        $model = new Entry;
 
         $query = $model->newQuery()->select(['foo']);
 

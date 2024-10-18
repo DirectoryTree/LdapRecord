@@ -32,7 +32,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp(Timestamp::TYPE_LDAP);
 
-        $date = new DateTime();
+        $date = new DateTime;
 
         $this->assertEquals($date, $timestamp->toDateTime($date));
     }
@@ -41,10 +41,10 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp(Timestamp::TYPE_LDAP);
 
-        $date = new DateTime();
+        $date = new DateTime;
         $this->assertEquals($date->format('YmdHis\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime())->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis').'-0500', $timestamp->fromDateTime($date));
     }
 
@@ -52,10 +52,10 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS);
 
-        $date = new DateTime();
+        $date = new DateTime;
         $this->assertEquals($date->format('YmdHis.0\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime())->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis.0').'-0500', $timestamp->fromDateTime($date));
     }
 
@@ -63,7 +63,7 @@ class TimestampTest extends TestCase
     {
         $timestamp = new Timestamp(Timestamp::TYPE_WINDOWS_INT);
 
-        $date = (new DateTime())->setTimestamp($this->unixTimestamp);
+        $date = (new DateTime)->setTimestamp($this->unixTimestamp);
 
         $this->assertEquals('132460789290000000', $timestamp->fromDateTime($date));
     }

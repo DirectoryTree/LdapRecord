@@ -33,7 +33,7 @@ class ModelEventTest extends TestCase
 
         Container::getInstance()->setDispatcher($dispatcher);
 
-        (new ModelEventSaveStub())->save();
+        (new ModelEventSaveStub)->save();
     }
 
     public function test_save_quietly_does_not_fire_any_events()
@@ -44,7 +44,7 @@ class ModelEventTest extends TestCase
 
         Container::getInstance()->setDispatcher($dispatcher);
 
-        (new ModelEventSaveStub())->saveQuietly();
+        (new ModelEventSaveStub)->saveQuietly();
 
         $this->assertEquals($dispatcher, Container::getInstance()->getDispatcher());
     }
@@ -71,7 +71,7 @@ class ModelEventTest extends TestCase
             )
             ->andReturnTrue();
 
-        $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
+        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -109,7 +109,7 @@ class ModelEventTest extends TestCase
                 ],
             ])->andReturnTrue();
 
-        $ldap = (new LdapFake())->expect(['isBound' => true, $modifyBatchExpectation]);
+        $ldap = (new LdapFake)->expect(['isBound' => true, $modifyBatchExpectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -133,7 +133,7 @@ class ModelEventTest extends TestCase
 
         $expectation = LdapFake::operation('delete')->once()->with('cn=foo,dc=bar,dc=baz')->andReturnTrue();
 
-        $ldap = (new LdapFake())->expect(['isBound' => true, $expectation]);
+        $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
 
         $query = new Builder(new Connection([], $ldap));
 
@@ -166,7 +166,7 @@ class ModelEventSaveStub extends Model
 {
     public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
     {
-        return (new ModelQueryBuilderSaveStub(new Connection()))->setModel($this);
+        return (new ModelQueryBuilderSaveStub(new Connection))->setModel($this);
     }
 
     public function refresh(): bool

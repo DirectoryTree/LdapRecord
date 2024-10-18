@@ -10,7 +10,7 @@ trait MakesGroups
 {
     protected function makeGroup(Model $ou, array $attributes = []): Group
     {
-        return (new Group())
+        return (new Group)
             ->inside($ou)
             ->fill(array_merge(
                 ['cn' => $this->faker()->name()],

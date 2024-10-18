@@ -12,7 +12,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo', function ($foo) {
             $_SERVER['__event.test'] = $foo;
@@ -27,7 +27,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo', function ($foo) {
             $this->assertTrue(true);
@@ -46,7 +46,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo.bar', function () {
             $_SERVER['__event.test'] = 'regular';
@@ -69,7 +69,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo.*', function () {
             $_SERVER['__event.test'] = 'cached_wildcard';
@@ -92,7 +92,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo', function () {
             $_SERVER['__event.test'] = 'foo';
@@ -109,7 +109,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo.*', function () {
             $_SERVER['__event.test'] = 'foo';
@@ -124,7 +124,7 @@ class DispatcherTest extends TestCase
 
     public function test_listeners_can_be_found()
     {
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $this->assertFalse($d->hasListeners('foo'));
 
@@ -137,7 +137,7 @@ class DispatcherTest extends TestCase
 
     public function test_wildcard_listeners_can_be_found()
     {
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $this->assertFalse($d->hasListeners('foo.*'));
 
@@ -150,7 +150,7 @@ class DispatcherTest extends TestCase
 
     public function test_event_passed_first_to_wildcards()
     {
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo.*', function ($event, $data) {
             $this->assertEquals('foo.bar', $event);
@@ -159,7 +159,7 @@ class DispatcherTest extends TestCase
 
         $d->fire('foo.bar', ['first', 'second']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen('foo.bar', function ($first, $second) {
             $this->assertEquals('first', $first);
@@ -173,13 +173,13 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen(ExampleEvent::class, function () {
             $_SERVER['__event.test'] = 'baz';
         });
 
-        $d->fire(new ExampleEvent());
+        $d->fire(new ExampleEvent);
 
         $this->assertSame('baz', $_SERVER['__event.test']);
     }
@@ -188,13 +188,13 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen(SomeEventInterface::class, function () {
             $_SERVER['__event.test'] = 'bar';
         });
 
-        $d->fire(new AnotherEvent());
+        $d->fire(new AnotherEvent);
 
         $this->assertSame('bar', $_SERVER['__event.test']);
     }
@@ -203,7 +203,7 @@ class DispatcherTest extends TestCase
     {
         unset($_SERVER['__event.test']);
 
-        $d = new Dispatcher();
+        $d = new Dispatcher;
 
         $d->listen(AnotherEvent::class, function () {
             $_SERVER['__event.test1'] = 'fooo';
@@ -211,7 +211,7 @@ class DispatcherTest extends TestCase
 
         $d->listen(SomeEventInterface::class, ExampleListener::class);
 
-        $d->fire(new AnotherEvent());
+        $d->fire(new AnotherEvent);
 
         $this->assertSame('fooo', $_SERVER['__event.test1']);
         $this->assertSame('baar', $_SERVER['__event.test2']);

@@ -9,7 +9,7 @@ trait MakesUsers
 {
     protected function makeUser(Model $ou, array $attributes = []): User
     {
-        return (new User())
+        return (new User)
             ->inside($ou)
             ->fill(array_merge([
                 'uid' => $this->faker()->userName(),

@@ -108,7 +108,7 @@ class ModelRenameTest extends TestCase
 
     public function test_rename_without_existing_model()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $this->expectException(ModelDoesNotExistException::class);
 
@@ -117,7 +117,7 @@ class ModelRenameTest extends TestCase
 
     public function test_rename_with_same_name_does_not_send_request()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
@@ -128,7 +128,7 @@ class ModelRenameTest extends TestCase
 
     public function test_rename_with_same_rdn_does_not_send_request()
     {
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
@@ -147,7 +147,7 @@ class ModelRenameTest extends TestCase
                     ->andReturnTrue()
             );
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 
@@ -170,7 +170,7 @@ class ModelRenameTest extends TestCase
                 )->andReturnTrue()
             );
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes([
             'dn' => 'cn=Джон Доу,ou=Тест\2C Группа\2C С\2C Запятые,dc=acme,dc=org',
@@ -217,7 +217,7 @@ class ModelRenameTest extends TestCase
                     ->andReturnTrue()
             );
 
-        $model = new Entry();
+        $model = new Entry;
 
         $model->setRawAttributes(['dn' => 'cn=John Doe,dc=acme,dc=org']);
 

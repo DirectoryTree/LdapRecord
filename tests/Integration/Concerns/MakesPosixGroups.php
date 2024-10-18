@@ -10,7 +10,7 @@ trait MakesPosixGroups
 {
     protected function makePosixGroup(Model $ou, array $attributes = []): PosixGroup
     {
-        return (new PosixGroup())
+        return (new PosixGroup)
             ->inside($ou)
             ->fill(array_merge([
                 'cn' => $this->faker()->name(),

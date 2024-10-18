@@ -9,7 +9,7 @@ class AccountControlTest extends TestCase
 {
     public function test_default_value_is_zero()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $this->assertEquals(0, $ac->getValue());
         $this->assertIsInt($ac->getValue());
@@ -17,7 +17,7 @@ class AccountControlTest extends TestCase
 
     public function test_all_options_are_applied_correctly()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $values = array_values($ac->getAllFlags());
 
@@ -75,7 +75,7 @@ class AccountControlTest extends TestCase
 
     public function test_can_be_casted_to_int()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $this->assertEquals(0, $ac->__toInt());
         $this->assertEquals(0, $ac->getValue());
@@ -84,7 +84,7 @@ class AccountControlTest extends TestCase
 
     public function test_can_be_casted_to_string()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $this->assertEquals('0', (string) $ac);
         $this->assertEquals('0', $ac->__toString());
@@ -107,7 +107,7 @@ class AccountControlTest extends TestCase
 
     public function test_has()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $ac
             ->setAccountIsLocked()
@@ -123,7 +123,7 @@ class AccountControlTest extends TestCase
 
     public function test_doesnt_have()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $ac
             ->setAccountIsLocked()
@@ -139,7 +139,7 @@ class AccountControlTest extends TestCase
 
     public function test_values_are_overwritten()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $ac->setAccountIsNormal()
             ->setAccountIsNormal()
@@ -150,7 +150,7 @@ class AccountControlTest extends TestCase
 
     public function test_values_can_be_set()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $ac->setAccountIsNormal()->setAccountIsDisabled();
 
@@ -165,7 +165,7 @@ class AccountControlTest extends TestCase
 
     public function test_values_can_be_added()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         // Values are overwritten.
         $ac->setFlag(AccountControl::ACCOUNTDISABLE);
@@ -176,7 +176,7 @@ class AccountControlTest extends TestCase
 
     public function test_values_can_be_removed()
     {
-        $ac = new AccountControl();
+        $ac = new AccountControl;
 
         $ac->setAccountIsNormal()->setAccountIsDisabled();
 

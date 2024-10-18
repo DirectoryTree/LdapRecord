@@ -65,7 +65,7 @@ class HasManyTest extends TestCase
         $model->shouldReceive('delete')->never();
 
         $relation = m::mock(HasMany::class)->makePartial();
-        $relation->shouldReceive('get')->with('dn')->andReturn(new Collection());
+        $relation->shouldReceive('get')->with('dn')->andReturn(new Collection);
 
         $relation->detachOrDeleteParent($model);
     }

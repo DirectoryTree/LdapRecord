@@ -10,7 +10,7 @@ class ConstraintViolationExceptionTest extends TestCase
 {
     public function test_caused_by_password_policy()
     {
-        $e = new ConstraintViolationException();
+        $e = new ConstraintViolationException;
 
         $this->assertFalse($e->causedByPasswordPolicy());
 
@@ -27,7 +27,7 @@ class ConstraintViolationExceptionTest extends TestCase
 
     public function test_caused_by_incorrect_password()
     {
-        $e = new ConstraintViolationException();
+        $e = new ConstraintViolationException;
 
         $this->assertFalse($e->causedByIncorrectPassword());
 

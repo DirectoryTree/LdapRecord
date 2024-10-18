@@ -27,7 +27,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertInstanceOf(
             ModelRelationTestStub::class,
-            (new ModelRelationTestStub())->relation()->getParent()
+            (new ModelRelationTestStub)->relation()->getParent()
         );
     }
 
@@ -35,7 +35,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             [RelatedModelTestStub::class],
-            (new ModelRelationTestStub())->relation()->getRelated()
+            (new ModelRelationTestStub)->relation()->getRelated()
         );
     }
 
@@ -43,7 +43,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertInstanceOf(
             Builder::class,
-            (new ModelRelationTestStub())->relation()->getQuery()
+            (new ModelRelationTestStub)->relation()->getQuery()
         );
     }
 
@@ -51,12 +51,12 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             Entry::class,
-            (new ModelRelationTestStub())->relation()->getDefaultModel()
+            (new ModelRelationTestStub)->relation()->getDefaultModel()
         );
 
         $this->assertInstanceOf(
             Entry::class,
-            (new ModelRelationTestStub())->relation()->getNewDefaultModel()
+            (new ModelRelationTestStub)->relation()->getNewDefaultModel()
         );
     }
 
@@ -64,7 +64,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             ['and' => [], 'or' => [], 'raw' => []],
-            (new ModelRelationTestStub())->relation()->getQuery()->filters
+            (new ModelRelationTestStub)->relation()->getQuery()->filters
         );
     }
 
@@ -72,7 +72,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertInstanceOf(
             Entry::class,
-            (new ModelRelationTestStub())->relation()->getQuery()->getModel()
+            (new ModelRelationTestStub)->relation()->getQuery()->getModel()
         );
     }
 
@@ -80,7 +80,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             'foo',
-            (new ModelRelationTestStub())->relation()->getRelationKey()
+            (new ModelRelationTestStub)->relation()->getRelationKey()
         );
     }
 
@@ -88,13 +88,13 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             'bar',
-            (new ModelRelationTestStub())->relation()->getForeignKey()
+            (new ModelRelationTestStub)->relation()->getForeignKey()
         );
     }
 
     public function test_get()
     {
-        $collection = (new ModelRelationTestStub())->relation()->get('foo');
+        $collection = (new ModelRelationTestStub)->relation()->get('foo');
 
         $this->assertEmpty($collection);
         $this->assertInstanceOf(Collection::class, $collection);
@@ -102,7 +102,7 @@ class ModelRelationTest extends TestCase
 
     public function test_get_results()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
         $collection = $relation->get('foo');
 
         $this->assertEmpty($collection);
@@ -112,14 +112,14 @@ class ModelRelationTest extends TestCase
 
     public function test_exists()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
 
         $this->assertFalse($relation->exists());
 
-        $related = new Entry();
+        $related = new Entry;
         $related->setDn('cn=foo,dc=local,dc=com');
 
-        $unrelated = new Entry();
+        $unrelated = new Entry;
         $unrelated->setDn('cn=bar,dc=local,dc=com');
 
         $relation->setResults([$related]);
@@ -141,14 +141,14 @@ class ModelRelationTest extends TestCase
 
     public function test_contains()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
 
         $this->assertFalse($relation->contains('foo'));
 
-        $related = new Entry();
+        $related = new Entry;
         $related->setDn('cn=foo,dc=local,dc=com');
 
-        $unrelated = new Entry();
+        $unrelated = new Entry;
         $unrelated->setDn('cn=bar,dc=local,dc=com');
 
         $relation->setResults([$related]);
@@ -167,18 +167,18 @@ class ModelRelationTest extends TestCase
 
     public function test_count()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
 
-        $relation->setResults([new Entry(), new Entry()]);
+        $relation->setResults([new Entry, new Entry]);
 
         $this->assertEquals(2, $relation->count());
     }
 
     public function test_relation_default_model_uses_parent_connection()
     {
-        Container::addConnection(new Connection(), 'other');
+        Container::addConnection(new Connection, 'other');
 
-        $model = new ModelRelationTestStub();
+        $model = new ModelRelationTestStub;
 
         $model->setConnection($connection = 'other');
 
@@ -189,9 +189,9 @@ class ModelRelationTest extends TestCase
 
     public function test_relation_query_uses_models_parent_connection()
     {
-        Container::addConnection($connection = new Connection(), 'other');
+        Container::addConnection($connection = new Connection, 'other');
 
-        $model = new ModelRelationTestStub();
+        $model = new ModelRelationTestStub;
 
         $model->setConnection($connectionName = 'other');
 
@@ -205,7 +205,7 @@ class ModelRelationTest extends TestCase
 
     public function test_parent_model_scope_is_removed_from_relation_query()
     {
-        $relation = (new ModelRelationWithScopeTestStub())->relation();
+        $relation = (new ModelRelationWithScopeTestStub)->relation();
 
         $query = $relation->getRelationQuery();
 
@@ -221,7 +221,7 @@ class ModelRelationTest extends TestCase
         $escapedDnCharacters = ['\\', ',', '=', '+', '<', '>', ';', '"', '#'];
         $escapedFilterCharacters = ['\\', '*', '(', ')', "\x00"];
 
-        $model = new ModelWithHasManyRelationTestStub();
+        $model = new ModelWithHasManyRelationTestStub;
 
         $characters = implode('', array_merge($escapedDnCharacters, $escapedFilterCharacters));
 
@@ -237,9 +237,9 @@ class ModelRelationTest extends TestCase
 
     public function test_related_models_are_determined_with_out_of_order_object_classes()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
 
-        $related = new Entry();
+        $related = new Entry;
 
         // Setting the object classes out of order with the related test stub.
         $related->objectclass = ['bar', 'foo'];
@@ -252,9 +252,9 @@ class ModelRelationTest extends TestCase
 
     public function test_related_models_can_be_resolved_with_resolver_callback()
     {
-        $relation = (new ModelRelationTestStub())->relation();
+        $relation = (new ModelRelationTestStub)->relation();
 
-        $related = new Entry();
+        $related = new Entry;
 
         $related->objectclass = ['bar', 'foo'];
         $related->setDn('cn=foo,dc=local,dc=com');
@@ -313,7 +313,7 @@ class ModelRelationWithScopeTestStub extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new ModelRelationScopeTestStub());
+        static::addGlobalScope(new ModelRelationScopeTestStub);
     }
 
     public function relation(): HasMany

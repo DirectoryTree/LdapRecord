@@ -17,9 +17,9 @@ class BuilderCacheTest extends TestCase
 {
     public function test_cache_is_set_from_connection_onto_new_query_builders()
     {
-        $conn = new Connection();
+        $conn = new Connection;
 
-        $conn->setCache(new ArrayCacheStore());
+        $conn->setCache(new ArrayCacheStore);
 
         $query = $conn->query();
 
@@ -29,9 +29,9 @@ class BuilderCacheTest extends TestCase
 
     public function test_cache_is_set_onto_new_model_query_builders()
     {
-        $conn = new Connection();
+        $conn = new Connection;
 
-        $conn->setCache(new ArrayCacheStore());
+        $conn->setCache(new ArrayCacheStore);
 
         $container = Container::getInstance();
         $container->setDefaultConnection('default');
@@ -46,7 +46,7 @@ class BuilderCacheTest extends TestCase
     public function test_cache_key_generation_connects_to_server_when_not_connected()
     {
         $ldap = (new LdapFake)->expect(
-            LdapFake::operation('bind')->andReturn(new LdapResultResponse())
+            LdapFake::operation('bind')->andReturn(new LdapResultResponse)
         );
 
         $ldap->setHost($host = 'localhost');

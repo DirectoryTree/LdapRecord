@@ -26,7 +26,7 @@ class UserTest extends TestCase
 
     public function test_settings_users_password_uses_ssha_algo()
     {
-        $user = new OpenLDAPUserTestStub();
+        $user = new OpenLDAPUserTestStub;
 
         $user->password = 'secret';
 
@@ -37,7 +37,7 @@ class UserTest extends TestCase
 
     public function test_algo_is_automatically_detected_when_changing_a_users_password()
     {
-        $user = (new OpenLDAPUserTestStub())->setRawAttributes([
+        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
             'userpassword' => [
                 '{MD5}Xr4ilOzQ4PCOq3aQ0qbuaQ==',
             ],
@@ -55,7 +55,7 @@ class UserTest extends TestCase
 
     public function test_algo_and_salt_is_automatically_detected_when_changing_a_users_password()
     {
-        $user = (new OpenLDAPUserTestStub())->setRawAttributes([
+        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
             'userpassword' => [
                 Password::sha512crypt('secret'),
             ],
@@ -87,7 +87,5 @@ class UserTest extends TestCase
 
 class OpenLDAPUserTestStub extends User
 {
-    protected function assertSecureConnection(): void
-    {
-    }
+    protected function assertSecureConnection(): void {}
 }

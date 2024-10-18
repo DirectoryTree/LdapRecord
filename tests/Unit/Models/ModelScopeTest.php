@@ -24,7 +24,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_can_be_added_to_models()
     {
-        $model = new ModelWithGlobalScopeTestStub();
+        $model = new ModelWithGlobalScopeTestStub;
 
         $this->assertInstanceOf(\Closure::class, $model->getGlobalScopes()['foo']);
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
@@ -35,16 +35,16 @@ class ModelScopeTest extends TestCase
         $this->assertFalse(ModelWithGlobalScopeTestStub::hasGlobalScope('foo'));
         $this->assertFalse(ModelWithGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
 
-        new ModelWithGlobalScopeTestStub();
+        new ModelWithGlobalScopeTestStub;
 
         $this->assertTrue(ModelWithGlobalScopeTestStub::hasGlobalScope('foo'));
         $this->assertTrue(ModelWithGlobalScopeTestStub::hasGlobalScope(ScopeTestStub::class));
-        $this->assertCount(2, (new ModelWithGlobalScopeTestStub())->getGlobalScopes());
+        $this->assertCount(2, (new ModelWithGlobalScopeTestStub)->getGlobalScopes());
     }
 
     public function test_scopes_are_applied_to_query()
     {
-        $query = (new ModelWithGlobalScopeTestStub())->newQuery()->applyScopes();
+        $query = (new ModelWithGlobalScopeTestStub)->newQuery()->applyScopes();
 
         $this->assertEquals([
             'field' => 'foo',
@@ -55,7 +55,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_pagination_request()
     {
-        $query = (new ModelWithGlobalScopeTestStub())->newQuery();
+        $query = (new ModelWithGlobalScopeTestStub)->newQuery();
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([
@@ -67,7 +67,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_not_stacked_multiple_times()
     {
-        $query = (new ModelWithGlobalScopeTestStub())->newQuery();
+        $query = (new ModelWithGlobalScopeTestStub)->newQuery();
         $query->getQuery();
         $query->getQuery();
 
@@ -151,9 +151,8 @@ class ModelWithGlobalScopeTestStub extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('foo', function () {
-        });
-        static::addGlobalScope(new ScopeTestStub());
+        static::addGlobalScope('foo', function () {});
+        static::addGlobalScope(new ScopeTestStub);
     }
 
     public function newQueryBuilder(Connection $connection): Builder

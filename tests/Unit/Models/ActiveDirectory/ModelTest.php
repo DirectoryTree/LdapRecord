@@ -83,7 +83,7 @@ class ModelTest extends TestCase
 
     public function test_restore()
     {
-        $m = (new TestModelRestoreStub())->setRawAttributes([
+        $m = (new TestModelRestoreStub)->setRawAttributes([
             'isdeleted' => ['true'],
             'dn' => ['CN=John Doe\0ADEL:0eeaf35f-a619-4435-a2c7-d99b58dfcb77,CN=Deleted Objects,DC=local,DC=com'],
         ]);

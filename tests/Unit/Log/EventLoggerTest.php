@@ -17,7 +17,7 @@ class EventLoggerTest extends TestCase
 {
     public function test_auth_events_are_logged()
     {
-        $ldap = new LdapFake();
+        $ldap = new LdapFake;
 
         $ldap->connect('localhost');
 
@@ -40,7 +40,7 @@ class EventLoggerTest extends TestCase
 
         $ldap->connect('localhost');
 
-        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret', new BindException());
+        $event = new Failed($ldap, 'jdoe@acme.org', 'super-secret', new BindException);
 
         $logger = m::mock(LoggerInterface::class);
 

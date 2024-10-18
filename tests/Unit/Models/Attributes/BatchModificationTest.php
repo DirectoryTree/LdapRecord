@@ -10,7 +10,7 @@ class BatchModificationTest extends TestCase
 {
     public function test_build_with_original()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setOriginal('Test');
         $modification->setAttribute('cn');
@@ -23,7 +23,7 @@ class BatchModificationTest extends TestCase
 
     public function test_build_without_original()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setAttribute('cn');
         $modification->setValues(['New CN']);
@@ -35,7 +35,7 @@ class BatchModificationTest extends TestCase
 
     public function test_build_with_original_and_null_value()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setOriginal('Test');
         $modification->setAttribute('cn');
@@ -48,7 +48,7 @@ class BatchModificationTest extends TestCase
 
     public function test_build_without_original_and_null_value()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setAttribute('cn');
         $modification->setValues([null]);
@@ -62,7 +62,7 @@ class BatchModificationTest extends TestCase
     {
         $original = ['foo', 'bar'];
 
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setAttribute('member');
         $modification->setOriginal($original);
@@ -78,7 +78,7 @@ class BatchModificationTest extends TestCase
     {
         $original = ['foo', 'bar'];
 
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setAttribute('member');
         $modification->setOriginal($original);
@@ -92,7 +92,7 @@ class BatchModificationTest extends TestCase
 
     public function test_get()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setValues(['test']);
         $modification->setAttribute('cn');
@@ -111,14 +111,14 @@ class BatchModificationTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setType(100);
     }
 
     public function test_set_values()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setValues(['test']);
 
@@ -127,7 +127,7 @@ class BatchModificationTest extends TestCase
 
     public function test_set_type()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setType(1);
 
@@ -136,7 +136,7 @@ class BatchModificationTest extends TestCase
 
     public function test_set_attribute()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setAttribute('test');
 
@@ -145,7 +145,7 @@ class BatchModificationTest extends TestCase
 
     public function test_set_original()
     {
-        $modification = new BatchModification();
+        $modification = new BatchModification;
 
         $modification->setOriginal(['testing']);
 
@@ -164,7 +164,7 @@ class BatchModificationTest extends TestCase
 
     public function test_values_are_converted_to_strings()
     {
-        $class = new class()
+        $class = new class
         {
             public function __toString()
             {
@@ -175,7 +175,7 @@ class BatchModificationTest extends TestCase
         $modification = new BatchModification('attribute', 1, [
             (int) 500,
             (float) 10.5,
-            new $class(),
+            new $class,
         ]);
 
         $this->assertIsString($modification->getValues()[0]);
@@ -199,7 +199,7 @@ class BatchModificationTest extends TestCase
     public function test_is_not_valid()
     {
         // Empty modification
-        $mod1 = new BatchModification();
+        $mod1 = new BatchModification;
 
         // Building a modification which only contains an attribute and empty type & value.
         $mod2 = new BatchModification('attribute');
@@ -211,10 +211,10 @@ class BatchModificationTest extends TestCase
 
     public function test_modification_values_are_converted_to_string()
     {
-        $mod = new BatchModification();
+        $mod = new BatchModification;
 
-        $mod->setOriginal([(new AccountControl())->setAccountIsNormal()]);
-        $mod->setValues([(new AccountControl())->setAccountIsNormal()]);
+        $mod->setOriginal([(new AccountControl)->setAccountIsNormal()]);
+        $mod->setValues([(new AccountControl)->setAccountIsNormal()]);
 
         $this->assertIsString($mod->getOriginal()[0]);
         $this->assertIsString($mod->getValues()[0]);

@@ -28,7 +28,7 @@ class ModelHasManyTest extends TestCase
 
     public function test_relation_name_is_guessed()
     {
-        $this->assertEquals('relation', (new ModelHasManyStub())->relation()->getRelationName());
+        $this->assertEquals('relation', (new ModelHasManyStub)->relation()->getRelationName());
     }
 
     public function test_get_results()
@@ -37,13 +37,13 @@ class ModelHasManyTest extends TestCase
 
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
-        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection);
 
         $query = $relation->getQuery();
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related = new Entry()]));
+        $query->shouldReceive('paginate')->once()->with(1000)->andReturn(new Collection([$related = new Entry]));
 
         $collection = $relation->getResults();
 
@@ -57,10 +57,10 @@ class ModelHasManyTest extends TestCase
 
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
-        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection);
 
         $child = m::mock(HasMany::class)->shouldAllowMockingProtectedMethods();
-        $child->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([new Entry()]));
+        $child->shouldReceive('getRecursiveResults')->once()->with(['bar'])->andReturn(new Collection([new Entry]));
 
         $related = m::mock(ModelHasManyStub::class)->makePartial();
         $related->shouldReceive('getDn')->andReturn('bar');
@@ -104,8 +104,7 @@ class ModelHasManyTest extends TestCase
             return true;
         }));
 
-        $relation->chunk(1000, function () {
-        });
+        $relation->chunk(1000, function () {});
     }
 
     public function test_recursive_chunk()
@@ -137,8 +136,7 @@ class ModelHasManyTest extends TestCase
             return true;
         }));
 
-        $relation->recursive()->chunk(1000, function () {
-        });
+        $relation->recursive()->chunk(1000, function () {});
     }
 
     public function test_page_size_can_be_set()
@@ -147,7 +145,7 @@ class ModelHasManyTest extends TestCase
 
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
-        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection);
 
         $relation->setPageSize(500);
 
@@ -155,7 +153,7 @@ class ModelHasManyTest extends TestCase
         $query->shouldReceive('escape')->once()->with('foo')->andReturn(new EscapedValue('foo'));
         $query->shouldReceive('getSelects')->once()->withNoArgs()->andReturn(['*']);
         $query->shouldReceive('whereRaw')->once()->with('member', '=', 'foo')->andReturnSelf();
-        $query->shouldReceive('paginate')->once()->with(500)->andReturn(new Collection());
+        $query->shouldReceive('paginate')->once()->with(500)->andReturn(new Collection);
 
         $this->assertInstanceOf(Collection::class, $relation->getResults());
     }
@@ -208,7 +206,7 @@ class ModelHasManyTest extends TestCase
 
         $parent = $relation->getParent();
         $parent->shouldReceive('getDn')->andReturn('foo');
-        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection());
+        $parent->shouldReceive('newCollection')->once()->andReturn(new Collection);
 
         $related = m::mock(Entry::class)->makePartial();
         $related->shouldReceive('getObjectClasses')->once()->andReturn([]);
@@ -229,7 +227,7 @@ class ModelHasManyTest extends TestCase
     {
         $this->assertEquals(
             '(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group)))',
-            (new ModelHasManyStubWithManyRelated())->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
+            (new ModelHasManyStubWithManyRelated)->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
         );
     }
 
@@ -237,7 +235,7 @@ class ModelHasManyTest extends TestCase
     {
         $this->assertEquals(
             '(objectclass=*)',
-            (new ModelHasManyStub())->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
+            (new ModelHasManyStub)->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
         );
     }
 

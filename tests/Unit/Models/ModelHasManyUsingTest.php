@@ -21,7 +21,7 @@ class ModelHasManyUsingTest extends TestCase
 
         $relation->using($relation->getParent(), 'member');
 
-        $related = new Entry();
+        $related = new Entry;
         $related->setRawAttributes(['dn' => 'foo']);
 
         $relation->attach($related);
@@ -38,7 +38,7 @@ class ModelHasManyUsingTest extends TestCase
 
         $relation->using($relation->getParent(), 'member');
 
-        $related = new Entry();
+        $related = new Entry;
         $related->setRawAttributes(['dn' => 'foo']);
 
         $relation->detach($related);

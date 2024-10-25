@@ -1313,7 +1313,7 @@ class Builder
      */
     public function hasSelects(): bool
     {
-        return count($this->columns) > 0;
+        return count($this->columns ?? []) > 0;
     }
 
     /**

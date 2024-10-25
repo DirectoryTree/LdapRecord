@@ -86,6 +86,8 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
+        $this->assertFalse($b->hasSelects());
+
         $b->select('test');
 
         $this->assertTrue($b->hasSelects());

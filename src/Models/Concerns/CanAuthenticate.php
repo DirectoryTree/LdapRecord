@@ -19,7 +19,7 @@ trait CanAuthenticate
     public function getAuthIdentifier(): string
     {
         return $this->getConvertedGuid(
-            $this->getAttribute($this->getAuthIdentifierName())
+            $this->getFirstAttribute($this->getAuthIdentifierName())
         );
     }
 
@@ -50,7 +50,10 @@ trait CanAuthenticate
     /**
      * Set the token value for the "remember me" session.
      */
-    public function setRememberToken($value): void {}
+    public function setRememberToken($value): void
+    {
+        // Do nothing.
+    }
 
     /**
      * Get the column name for the "remember me" token.

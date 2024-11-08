@@ -14,6 +14,16 @@ trait CanAuthenticate
     }
 
     /**
+     * Get the unique identifier for the user.
+     */
+    public function getAuthIdentifier(): string
+    {
+        return $this->getConvertedGuid(
+            $this->getAttribute($this->getAuthIdentifierName())
+        );
+    }
+
+    /**
      * Get the password for the user.
      */
     public function getAuthPassword(): string

@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit\Query;
 
 use DateTime;
+use InvalidArgumentException;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\LdapRecordException;
@@ -109,7 +110,7 @@ class BuilderTest extends TestCase
 
     public function test_adding_filter_with_invalid_bindings_throws_exception()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         // Missing 'value' key.
         $this->newBuilder()->addFilter('and', [
@@ -120,7 +121,7 @@ class BuilderTest extends TestCase
 
     public function test_adding_invalid_filter_type_throws_exception()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->newBuilder()->addFilter('non-existent', [
             'field' => 'cn',
@@ -467,7 +468,7 @@ class BuilderTest extends TestCase
 
     public function test_where_invalid_operator()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $b = $this->newBuilder();
 
@@ -476,7 +477,7 @@ class BuilderTest extends TestCase
 
     public function test_or_where_invalid_operator()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $b = $this->newBuilder();
 
@@ -1023,6 +1024,80 @@ class BuilderTest extends TestCase
             ->expect(['search' => $result]);
 
         $this->assertEquals($result, $b->get());
+    }
+
+    public function test_order_by()
+    {
+        $b = $this->newBuilder();
+
+        $b->orderBy('foo', 'asc');
+
+        $this->assertEquals($b->controls, [
+            LDAP_CONTROL_SORTREQUEST => [
+                'oid' => LDAP_CONTROL_SORTREQUEST,
+                'isCritical' => true,
+                'value' => [
+                    [
+                        'attr' => 'foo',
+                        'reverse' => false,
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function test_order_by_desc()
+    {
+        $b = $this->newBuilder();
+
+        $b->orderByDesc('foo');
+
+        $this->assertEquals($b->controls, [
+            LDAP_CONTROL_SORTREQUEST => [
+                'oid' => LDAP_CONTROL_SORTREQUEST,
+                'isCritical' => true,
+                'value' => [
+                    [
+                        'attr' => 'foo',
+                        'reverse' => true,
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function test_order_by_with_options()
+    {
+        $b = $this->newBuilder();
+
+        $b->orderBy('foo', 'asc', [
+            'oid' => $oid = '2.5.13.2',
+        ]);
+
+        $this->assertEquals($b->controls, [
+            LDAP_CONTROL_SORTREQUEST => [
+                'oid' => LDAP_CONTROL_SORTREQUEST,
+                'isCritical' => true,
+                'value' => [
+                    [
+                        'attr' => 'foo',
+                        'reverse' => false,
+                        'oid' => $oid,
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function test_has_order_by()
+    {
+        $b = $this->newBuilder();
+
+        $this->assertFalse($b->hasOrderBy());
+
+        $b->orderBy('foo', 'asc');
+
+        $this->assertTrue($b->hasOrderBy());
     }
 
     public function test_first()

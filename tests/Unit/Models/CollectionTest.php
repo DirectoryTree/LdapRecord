@@ -9,6 +9,84 @@ use LdapRecord\Tests\TestCase;
 
 class CollectionTest extends TestCase
 {
+    public function test_exists_with_no_parameters()
+    {
+        $collection = new Collection;
+
+        $this->assertFalse(
+            $collection->exists()
+        );
+
+        $collection = new Collection([new User]);
+
+        $this->assertTrue(
+            $collection->exists()
+        );
+    }
+
+    public function test_exists_with_dn()
+    {
+        $user = new User(['dn' => 'cn=John Doe']);
+
+        $collection = new Collection([$user]);
+
+        $this->assertTrue(
+            $collection->exists('cn=John Doe')
+        );
+
+        $this->assertFalse(
+            $collection->exists('cn=Jane Doe')
+        );
+    }
+
+    public function test_exists_with_multiple_dns()
+    {
+        $user = new User(['dn' => 'cn=John Doe']);
+
+        $collection = new Collection([$user]);
+
+        $this->assertTrue(
+            $collection->exists(['cn=John Doe'])
+        );
+
+        $this->assertFalse(
+            $collection->exists(['cn=Jane Doe', 'cn=Foo Bar'])
+        );
+    }
+
+    public function test_exists_with_model()
+    {
+        $user = new User(['dn' => 'cn=John Doe']);
+
+        $collection = new Collection([$user]);
+
+        $this->assertTrue(
+            $collection->exists($user)
+        );
+
+        $this->assertFalse(
+            $collection->exists(new User(['dn' => 'cn=Jane Doe']))
+        );
+    }
+
+    public function test_exists_with_model_collection()
+    {
+        $user = new User(['dn' => 'cn=John Doe']);
+
+        $collection = new Collection([$user]);
+
+        $this->assertTrue(
+            $collection->exists(new Collection([$user]))
+        );
+
+        $this->assertFalse(
+            $collection->exists(new Collection([
+                new User(['dn' => 'cn=Jane Doe']),
+                new User(['dn' => 'cn=Foo Bar']),
+            ]))
+        );
+    }
+
     public function test_contains_with_closure()
     {
         $user = new User(['cn' => 'John Doe']);

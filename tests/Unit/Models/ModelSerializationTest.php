@@ -19,6 +19,7 @@ class ModelSerializationTest extends TestCase
 
         $model = (new User)->setRawAttributes([
             'cn' => 'René',
+            'dn' => 'cn=René',
             'whenchanged' => [(string) $whenchanged],
             'lastlogon' => [(string) $lastlogon],
         ]);
@@ -48,6 +49,7 @@ class ModelSerializationTest extends TestCase
         $sid = new Sid('S-1-5-21-1004336348-1177238915-682003330-512');
 
         $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=Foo Bar',
             'objectguid' => [$guid->getBinary()],
             'objectsid' => [$sid->getBinary()],
         ]);

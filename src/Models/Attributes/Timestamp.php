@@ -185,11 +185,14 @@ class Timestamp
      */
     protected function convertWindowsTimeToDateTime($value)
     {
-        return DateTime::createFromFormat(
-            str_contains((string) $value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
-            $value,
-            new DateTimeZone('UTC')
-        );
+        $format = 'YmdHis.0T';
+        if (str_contains((string) $value, '000Z')) {
+            $format = 'YmdHis.000\Z';
+        } elseif (str_contains((string) $value, '0Z')) {
+            $format = 'YmdHis.0\Z';
+        }
+
+        return DateTime::createFromFormat($format, $value, new DateTimeZone('UTC'));
     }
 
     /**

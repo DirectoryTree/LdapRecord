@@ -14,6 +14,7 @@ class TimestampTest extends TestCase
     protected $offsetLdapTimestamp = '20201002021244-0500';
 
     protected $utcindowsTimestamp = '20201002021618.0Z';
+    protected $utcindowsMillisecTimestamp = '20231106080944.000Z';
     protected $offsetWindowsTimestamp = '20201002021618.0-0500';
 
     protected $windowsIntegerTime = '132460789290000000';
@@ -89,6 +90,10 @@ class TimestampTest extends TestCase
         $datetime = $timestamp->toDateTime($this->utcindowsTimestamp);
         $this->assertEquals('UTC', $datetime->timezone->getName());
         $this->assertEquals('Fri Oct 02 2020 02:16:18 GMT+0000', $datetime->toString());
+
+        $datetime = $timestamp->toDateTime($this->utcindowsMillisecTimestamp);
+        $this->assertEquals('UTC', $datetime->timezone->getName());
+        $this->assertEquals('Mon Nov 06 2023 08:09:44 GMT+0000', $datetime->toString());
 
         $datetime = $timestamp->toDateTime($this->offsetWindowsTimestamp);
         $this->assertEquals('-05:00', $datetime->timezone->getName());

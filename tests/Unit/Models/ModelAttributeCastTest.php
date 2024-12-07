@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Unit\Models;
 
+use DateTime;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Collection;
 use LdapRecord\Tests\TestCase;
@@ -174,7 +175,7 @@ class ModelAttributeCastTest extends TestCase
 
         // Reverse casting
 
-        $model->ldapDateTime = new \DateTime('2020-10-02 02:12:44');
+        $model->ldapDateTime = new DateTime('2020-10-02 02:12:44');
         $this->assertEquals($model->getRawAttribute('ldapDateTime'), ['20201002021244Z']);
     }
 
@@ -186,7 +187,7 @@ class ModelAttributeCastTest extends TestCase
 
         // Reverse casting
 
-        $model->windowsDateTime = new \DateTime('2020-10-02 02:16:18');
+        $model->windowsDateTime = new DateTime('2020-10-02 02:16:18');
         $this->assertEquals($model->getRawAttribute('windowsDateTime'), ['20201002021618.0Z']);
     }
 
@@ -198,7 +199,7 @@ class ModelAttributeCastTest extends TestCase
 
         // Reverse casting
 
-        $model->windowsIntDateTime = new \DateTime('2020-10-02 02:22:09');
+        $model->windowsIntDateTime = new DateTime('2020-10-02 02:22:09');
         $this->assertEquals($model->getRawAttribute('windowsIntDateTime'), ['132460789290000000']);
     }
 

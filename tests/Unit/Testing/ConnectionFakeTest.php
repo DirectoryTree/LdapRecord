@@ -7,12 +7,12 @@ use LdapRecord\Tests\TestCase;
 
 class ConnectionFakeTest extends TestCase
 {
-    public function testMake()
+    public function test_make()
     {
         $this->assertInstanceOf(ConnectionFake::class, ConnectionFake::make());
     }
 
-    public function testMakeWithConfig()
+    public function test_make_with_config()
     {
         $fake = $fake = ConnectionFake::make([
             'hosts' => ['foo', 'bar'],
@@ -25,14 +25,14 @@ class ConnectionFakeTest extends TestCase
         $this->assertTrue($config->get('use_tls'));
     }
 
-    public function testMakeWithCustomLdapFake()
+    public function test_make_with_custom_ldap_fake()
     {
         $fake = ConnectionFake::make([], ExtendedLdapFake::class);
 
         $this->assertInstanceOf(ExtendedLdapFake::class, $fake->getLdapConnection());
     }
 
-    public function testActingAsWithModel()
+    public function test_acting_as_with_model()
     {
         $fake = ConnectionFake::make();
 
@@ -49,7 +49,7 @@ class ConnectionFakeTest extends TestCase
         $this->assertTrue($fake->auth()->attempt($user->getDn(), 'secret', $stayBound = true));
     }
 
-    public function testActingAsWithDn()
+    public function test_acting_as_with_dn()
     {
         $fake = ConnectionFake::make();
 

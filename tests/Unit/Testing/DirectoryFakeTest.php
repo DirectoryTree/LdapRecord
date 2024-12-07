@@ -12,14 +12,14 @@ use LdapRecord\Tests\TestCase;
 
 class DirectoryFakeTest extends TestCase
 {
-    public function testSetupThrowsExceptionWhenNoConnectionHasBeenConfigured()
+    public function test_setup_throws_exception_when_no_connection_has_been_configured()
     {
         $this->expectException(ContainerException::class);
 
         DirectoryFake::setup();
     }
 
-    public function testSetupCreatesConnectedFakeConnectionAndLdapInstance()
+    public function test_setup_creates_connected_fake_connection_and_ldap_instance()
     {
         Container::addConnection(new Connection);
 
@@ -31,7 +31,7 @@ class DirectoryFakeTest extends TestCase
         $this->assertInstanceOf(LdapFake::class, $fake->getLdapConnection());
     }
 
-    public function testTearDownFlushesContainer()
+    public function test_tear_down_flushes_container()
     {
         Container::addConnection(new Connection);
 

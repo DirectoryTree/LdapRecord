@@ -12,7 +12,7 @@ use LdapRecord\Tests\TestCase;
 
 class ModelSerializationTest extends TestCase
 {
-    public function testModelWithTimestampsCanBeSerializedAndEncoded()
+    public function test_model_with_timestamps_can_be_serialized_and_encoded()
     {
         $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime);
         $lastlogon = (new Timestamp('windows-int'))->fromDateTime(new DateTime);
@@ -43,7 +43,7 @@ class ModelSerializationTest extends TestCase
         $this->assertEquals($model->getAttributes()['whenchanged'], $unserializedAndUnencoded->getAttributes()['whenchanged']);
     }
 
-    public function testModelWithBinaryGuidAndSidCanBeSerializedAndEncoded()
+    public function test_model_with_binary_guid_and_sid_can_be_serialized_and_encoded()
     {
         $guid = new Guid('2bba564a-4f95-4cb0-97b0-94c0e3458621');
         $sid = new Sid('S-1-5-21-1004336348-1177238915-682003330-512');

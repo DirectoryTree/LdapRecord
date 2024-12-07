@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use DateTimeInterface;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\TestCase;
@@ -20,7 +21,7 @@ class ModelAccessorMutatorTest extends TestCase
 
         $this->assertEquals(['bar'], $model->getAttributes()['foo']);
         $this->assertEquals(['barbaz'], $model->toArray()['foo']);
-        $this->assertEquals([$date->format(\DateTimeInterface::ISO8601)], $model->toArray()['createtimestamp']);
+        $this->assertEquals([$date->format(DateTimeInterface::ISO8601)], $model->toArray()['createtimestamp']);
         $this->assertEquals('barbaz', $model->foo);
         $this->assertEquals('barbaz', $model->getAttribute('foo'));
         $this->assertEquals('barbaz', $model->getFirstAttribute('foo'));

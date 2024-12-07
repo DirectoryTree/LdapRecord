@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit\Models\Attributes;
 
 use DateTime;
+use DateTimeZone;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Tests\TestCase;
@@ -11,7 +12,9 @@ class TimestampTest extends TestCase
 {
     protected int $unixTimestamp = 1601605329;
 
-    protected string $utcLdapTimestamp = '20201002021244Z';
+    protected string $utcLdapTimestamp = '20201002021240Z';
+
+    protected string $utcLdapMillisecondsTimestamp = '20231106080944.000Z';
 
     protected string $offsetLdapTimestamp = '20201002021244-0500';
 
@@ -44,7 +47,7 @@ class TimestampTest extends TestCase
         $date = new DateTime;
         $this->assertEquals($date->format('YmdHis\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime)->setTimezone(new DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis').'-0500', $timestamp->fromDateTime($date));
     }
 
@@ -55,7 +58,7 @@ class TimestampTest extends TestCase
         $date = new DateTime;
         $this->assertEquals($date->format('YmdHis.0\Z'), $timestamp->fromDateTime($date));
 
-        $date = (new DateTime)->setTimezone(new \DateTimeZone('EST'));
+        $date = (new DateTime)->setTimezone(new DateTimeZone('EST'));
         $this->assertEquals($date->format('YmdHis.0').'-0500', $timestamp->fromDateTime($date));
     }
 
@@ -76,13 +79,17 @@ class TimestampTest extends TestCase
 
         $this->assertInstanceOf(DateTime::class, $datetime);
         $this->assertEquals('UTC', $datetime->timezone->getName());
-        $this->assertEquals('Fri Oct 02 2020 02:12:44 GMT+0000', $datetime->toString());
+        $this->assertEquals('Fri Oct 02 2020 02:12:40 GMT+0000', $datetime->toString());
 
         $datetime = $timestamp->toDateTime($this->offsetLdapTimestamp);
 
         $this->assertInstanceOf(DateTime::class, $datetime);
         $this->assertEquals('-05:00', $datetime->timezone->getName());
         $this->assertEquals('Fri Oct 02 2020 02:12:44 GMT-0500', $datetime->toString());
+
+        $datetime = $timestamp->toDateTime($this->utcLdapMillisecondsTimestamp);
+        $this->assertEquals('UTC', $datetime->timezone->getName());
+        $this->assertEquals('Mon Nov 06 2023 08:09:44 GMT+0000', $datetime->toString());
     }
 
     public function test_windows_type_can_be_converted_to_date()

@@ -128,8 +128,8 @@ class Timestamp
     protected function convertLdapTimeToDateTime(string $value): DateTime|false
     {
         return DateTime::createFromFormat(match (true) {
-            str_ends_with($value, '000Z') => 'YmdHis.000\Z',
-            str_ends_with($value, '0Z') => 'YmdHis.0\Z',
+            str_ends_with($value, '.000Z') => 'YmdHis.000\Z',
+            str_ends_with($value, '.0Z') => 'YmdHis.0\Z',
             str_ends_with($value, 'Z') => 'YmdHis\Z',
             default => 'YmdHisT',
         }, $value);
@@ -153,7 +153,7 @@ class Timestamp
     protected function convertWindowsTimeToDateTime(string $value): DateTime|false
     {
         return DateTime::createFromFormat(match (true) {
-            str_ends_with($value, '0Z') => 'YmdHis.0\Z',
+            str_ends_with($value, '.0Z') => 'YmdHis.0\Z',
             default => 'YmdHis.0T'
         }, $value, new DateTimeZone('UTC'));
     }

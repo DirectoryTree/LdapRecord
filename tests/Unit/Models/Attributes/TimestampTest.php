@@ -12,7 +12,7 @@ class TimestampTest extends TestCase
 {
     protected int $unixTimestamp = 1601605329;
 
-    protected string $utcLdapTimestamp = '20201002021244Z';
+    protected string $utcLdapTimestamp = '20201002021240Z';
 
     protected string $utcLdapMillisecondsTimestamp = '20231106080944.000Z';
 
@@ -79,7 +79,7 @@ class TimestampTest extends TestCase
 
         $this->assertInstanceOf(DateTime::class, $datetime);
         $this->assertEquals('UTC', $datetime->timezone->getName());
-        $this->assertEquals('Fri Oct 02 2020 02:12:44 GMT+0000', $datetime->toString());
+        $this->assertEquals('Fri Oct 02 2020 02:12:40 GMT+0000', $datetime->toString());
 
         $datetime = $timestamp->toDateTime($this->offsetLdapTimestamp);
 

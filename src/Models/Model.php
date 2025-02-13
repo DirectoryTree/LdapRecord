@@ -984,7 +984,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
         // attributes have been given empty or null values.
         $this->dn = $query->insertAndGetDn($this->getDn(), $attributes);
 
-        $this->setRawAttributes($attributes);
+        $this->attributes = $attributes;
 
         $this->dispatch('created');
 

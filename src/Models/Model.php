@@ -973,11 +973,18 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
 
         $this->dispatch('creating');
 
+        // Some PHP versions prevent non-numerically indexed arrays
+        // from being sent to the server. To prevent this, we will
+        // convert the attributes to a numerically indexed array.
+        $attributes = array_map('array_values', array_filter($this->getAttributes()));
+
         // Here we perform the insert of new object in the directory,
         // but filter out any empty attributes before sending them
         // to the server. LDAP servers will throw an exception if
         // attributes have been given empty or null values.
-        $this->dn = $query->insertAndGetDn($this->getDn(), array_filter($this->getAttributes()));
+        $this->dn = $query->insertAndGetDn($this->getDn(), $attributes);
+
+        $this->setRawAttributes($attributes);
 
         $this->dispatch('created');
 

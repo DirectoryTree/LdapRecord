@@ -974,8 +974,8 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
         $this->dispatch('creating');
 
         // Some PHP versions prevent non-numerically indexed arrays
-        // from being sent to the server. To prevent this, we will
-        // convert the attributes to a numerically indexed array.
+        // from being sent to the server. To resolve this, we will
+        // convert the attributes to numerically indexed arrays.
         $attributes = array_map('array_values', array_filter($this->getAttributes()));
 
         // Here we perform the insert of new object in the directory,

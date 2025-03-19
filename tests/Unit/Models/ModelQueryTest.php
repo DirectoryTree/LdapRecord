@@ -57,7 +57,7 @@ class ModelQueryTest extends TestCase
         $query = $model->newQueryWithoutScopes();
 
         $this->assertEquals($model, $query->getModel());
-        $this->assertEquals(['and' => [], 'or' => [], 'raw' => []], $query->filters);
+        $this->assertEquals(['and' => [], 'or' => [], 'raw' => []], $query->getQuery()->filters);
     }
 
     public function test_new_query_has_connection_base_dn()

@@ -5,7 +5,6 @@ namespace LdapRecord\Tests\Unit\Models\OpenLDAP;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\OpenLDAP\Entry;
-use LdapRecord\Models\OpenLDAP\Scopes\AddEntryUuidToSelects;
 use LdapRecord\Tests\TestCase;
 
 class ModelTest extends TestCase
@@ -25,10 +24,7 @@ class ModelTest extends TestCase
 
         $query = $model->newQuery();
 
-        $query->getQuery();
-
         $this->assertEquals([$model->getGuidKey(), '*'], $query->getSelects());
-        $this->assertInstanceOf(AddEntryUuidToSelects::class, $query->appliedScopes()[AddEntryUuidToSelects::class]);
     }
 
     public function test_entry_uuid_is_added_to_a_select_list_without_asterisk_when_selects_have_been_added()
@@ -37,11 +33,8 @@ class ModelTest extends TestCase
 
         $model = new Entry;
 
-        $query = $model->newQuery()->select(['foo']);
-
-        $query->getQuery();
+        $query = $model->newQuery()->select('foo');
 
         $this->assertEquals([$model->getGuidKey(), 'foo', 'objectclass'], $query->getSelects());
-        $this->assertInstanceOf(AddEntryUuidToSelects::class, $query->appliedScopes()[AddEntryUuidToSelects::class]);
     }
 }

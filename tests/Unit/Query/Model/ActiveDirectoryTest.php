@@ -4,6 +4,7 @@ namespace LdapRecord\Tests\Unit\Query\Model;
 
 use LdapRecord\Connection;
 use LdapRecord\Models\ActiveDirectory\Entry;
+use LdapRecord\Query\Builder;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
@@ -12,7 +13,9 @@ class ActiveDirectoryTest extends TestCase
 {
     protected function newBuilder(): ActiveDirectoryBuilder
     {
-        return (new ActiveDirectoryBuilder(new Connection([], new LdapFake)))->setModel(new Entry);
+        return new ActiveDirectoryBuilder(
+            new Entry, new Builder(new Connection([], new LdapFake))
+        );
     }
 
     public function test_where_member_of()
@@ -21,7 +24,7 @@ class ActiveDirectoryTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = false);
 
-        $where = $b->filters['and'][0];
+        $where = $b->getQuery()->filters['and'][0];
 
         $this->assertEquals('memberof', $where['field']);
         $this->assertEquals('=', $where['operator']);
@@ -35,7 +38,7 @@ class ActiveDirectoryTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = true);
 
-        $where = $b->filters['and'][0];
+        $where = $b->getQuery()->filters['and'][0];
 
         $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
         $this->assertEquals('=', $where['operator']);
@@ -50,7 +53,7 @@ class ActiveDirectoryTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = false);
 
-        $where = $b->filters['or'][1];
+        $where = $b->getQuery()->filters['or'][1];
 
         $this->assertEquals('memberof', $where['field']);
         $this->assertEquals('=', $where['operator']);
@@ -68,7 +71,7 @@ class ActiveDirectoryTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = true);
 
-        $where = $b->filters['or'][1];
+        $where = $b->getQuery()->filters['or'][1];
 
         $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
         $this->assertEquals('=', $where['operator']);

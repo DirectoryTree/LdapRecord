@@ -157,7 +157,7 @@ class ModelWithGlobalScopeTestStub extends Model
 
     public function newQueryBuilder(Connection $connection): Builder
     {
-        return new ModelBuilderTestStub($connection);
+        return new ModelBuilderTestStub($this, $connection->query());
     }
 }
 

@@ -51,7 +51,7 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->select(['testing']);
+        $b->select('testing');
 
         $this->assertEquals([
             'testing',

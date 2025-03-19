@@ -16,7 +16,6 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
-use LdapRecord\Query\Model\Builder as ModelBuilder;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
@@ -115,16 +114,6 @@ class Builder
     protected bool $flushCache = false;
 
     /**
-     * The current connection instance.
-     */
-    protected Connection $connection;
-
-    /**
-     * The current grammar instance.
-     */
-    protected Grammar $grammar;
-
-    /**
      * The current cache instance.
      */
     protected ?Cache $cache = null;
@@ -132,11 +121,10 @@ class Builder
     /**
      * Constructor.
      */
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
-        $this->grammar = new Grammar;
-    }
+    public function __construct(
+        protected Connection $connection,
+        protected Grammar $grammar = new Grammar,
+    ) {}
 
     /**
      * Set the current connection.
@@ -195,7 +183,7 @@ class Builder
     /**
      * Executes the LDAP query.
      */
-    public function get(array|string $columns = ['*']): Collection|array
+    public function get(array|string $columns = ['*']): array
     {
         return $this->onceWithColumns(
             Arr::wrap($columns), fn () => $this->query($this->getQuery())
@@ -245,7 +233,7 @@ class Builder
     }
 
     /**
-     * Get the current Grammar instance.
+     * Get the current grammar instance.
      */
     public function getGrammar(): Grammar
     {
@@ -253,7 +241,7 @@ class Builder
     }
 
     /**
-     * Get the current Cache instance.
+     * Get the current cache instance.
      */
     public function getCache(): ?Cache
     {
@@ -261,7 +249,7 @@ class Builder
     }
 
     /**
-     * Get the current Connection instance.
+     * Get the current connection instance.
      */
     public function getConnection(): Connection
     {
@@ -339,20 +327,9 @@ class Builder
     }
 
     /**
-     * Returns a new query for the given model.
-     */
-    public function model(Model $model): ModelBuilder
-    {
-        return $model->newQueryBuilder($this->connection)
-            ->setCache($this->connection->getCache())
-            ->setBaseDn($this->baseDn)
-            ->setModel($model);
-    }
-
-    /**
      * Performs the specified query on the current LDAP connection.
      */
-    public function query(string $query): Collection|array
+    public function query(string $query): array
     {
         $start = microtime(true);
 
@@ -371,7 +348,7 @@ class Builder
     /**
      * Paginates the current LDAP query.
      */
-    public function paginate(int $pageSize = 1000, bool $isCritical = false): Collection|array
+    public function paginate(int $pageSize = 1000, bool $isCritical = false): array
     {
         $this->paginated = true;
 
@@ -485,9 +462,7 @@ class Builder
         // list view will always be returned, regardless of the offset being larger
         // than the result itself. In this case, we will manually return an empty
         // response so that no objects are deceivingly included in the slice.
-        $objects = $page > max((int) ceil($total / $perPage), 1)
-            ? ($this instanceof ModelBuilder ? $this->model->newCollection() : [])
-            : $results;
+        $objects = $page > max((int) ceil($total / $perPage), 1) ? [] : $results;
 
         return new Slice($objects, $total, $perPage, $page);
     }
@@ -495,7 +470,7 @@ class Builder
     /**
      * Get the results of a query for a given page.
      */
-    public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Collection|array
+    public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): array
     {
         if (! $this->hasOrderBy()) {
             $this->orderBy($orderBy, $orderByDir);
@@ -514,7 +489,7 @@ class Builder
     /**
      * Processes and converts the given LDAP results into models.
      */
-    protected function process(array $results): mixed
+    protected function process(array $results): array
     {
         unset($results['count']);
 
@@ -644,7 +619,7 @@ class Builder
     /**
      * Get the first entry in a search result.
      */
-    public function first(array|string $columns = ['*']): Model|array|null
+    public function first(array|string $columns = ['*']): ?array
     {
         return Arr::first(
             $this->limit(1)->get($columns)
@@ -658,7 +633,7 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    public function firstOrFail(array|string $columns = ['*']): Model|array
+    public function firstOrFail(array|string $columns = ['*']): array
     {
         if (! $record = $this->first($columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
@@ -681,7 +656,7 @@ class Builder
      * @throws ObjectsNotFoundException
      * @throws MultipleObjectsFoundException
      */
-    public function sole(array|string $columns = ['*']): Model|array
+    public function sole(array|string $columns = ['*']): array
     {
         $result = $this->limit(2)->get($columns);
 
@@ -731,11 +706,9 @@ class Builder
     }
 
     /**
-     * Finds a record by the specified attribute and value.
-     *
-     * @return Model|static|null
+     * Find a record by the specified attribute and value.
      */
-    public function findBy(string $attribute, string $value, array|string $columns = ['*']): Model|array|null
+    public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?array
     {
         try {
             return $this->findByOrFail($attribute, $value, $columns);
@@ -745,13 +718,13 @@ class Builder
     }
 
     /**
-     * Finds a record by the specified attribute and value.
+     * Find a record by the specified attribute and value.
      *
      * If no record is found an exception is thrown.
      *
      * @throws ObjectNotFoundException
      */
-    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): Model|array
+    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): array
     {
         return $this->whereEquals($attribute, $value)->firstOrFail($columns);
     }
@@ -759,7 +732,7 @@ class Builder
     /**
      * Find many records by distinguished name.
      */
-    public function findMany(array|string $dns, array|string $columns = ['*']): Collection|array
+    public function findMany(array|string $dns, array|string $columns = ['*']): array
     {
         if (empty($dns)) {
             return $this->process([]);
@@ -777,9 +750,9 @@ class Builder
     }
 
     /**
-     * Finds many records by the specified attribute.
+     * Find many records by the specified attribute.
      */
-    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection|array
+    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): array
     {
         $query = $this->select($columns);
 
@@ -791,9 +764,9 @@ class Builder
     }
 
     /**
-     * Finds a record by its distinguished name.
+     * Find a record by its distinguished name.
      */
-    public function find(array|string $dn, array|string $columns = ['*']): Collection|Model|array|null
+    public function find(array|string $dn, array|string $columns = ['*']): ?array
     {
         if (is_array($dn)) {
             return $this->findMany($dn, $columns);
@@ -801,19 +774,19 @@ class Builder
 
         try {
             return $this->findOrFail($dn, $columns);
-        } catch (ObjectNotFoundException $e) {
+        } catch (ObjectNotFoundException) {
             return null;
         }
     }
 
     /**
-     * Finds a record by its distinguished name.
+     * Find a record by its distinguished name.
      *
      * Fails upon no records returned.
      *
      * @throws ObjectNotFoundException
      */
-    public function findOrFail(string $dn, array|string $columns = ['*']): Model|array
+    public function findOrFail(string $dn, array|string $columns = ['*']): array
     {
         return $this->setDn($dn)
             ->read()
@@ -822,7 +795,7 @@ class Builder
     }
 
     /**
-     * Adds the inserted fields to query on the current LDAP connection.
+     * Select the given columns to retrieve.
      */
     public function select(array|string $columns = ['*']): static
     {
@@ -1339,6 +1312,8 @@ class Builder
         // we need to ensure we always select the object class, as
         // this is used for constructing models properly.
         $selects[] = 'objectclass';
+
+        ray($selects);
 
         return $selects;
     }

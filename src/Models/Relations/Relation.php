@@ -141,9 +141,7 @@ abstract class Relation
      */
     protected function getResultsWithColumns(array|string $columns): Collection
     {
-        if (is_null($this->query->columns)) {
-            $this->query->select($columns);
-        }
+        $this->query->select($columns);
 
         return $this->getResults();
     }

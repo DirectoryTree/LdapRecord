@@ -270,10 +270,10 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
         $instance = new static;
 
         return match (true) {
-            $instance instanceof Types\ActiveDirectory => ActiveDirectory\Entry::class,
-            $instance instanceof Types\DirectoryServer => DirectoryServer\Entry::class,
-            $instance instanceof Types\OpenLDAP => OpenLDAP\Entry::class,
             $instance instanceof Types\FreeIPA => FreeIPA\Entry::class,
+            $instance instanceof Types\OpenLDAP => OpenLDAP\Entry::class,
+            $instance instanceof Types\DirectoryServer => DirectoryServer\Entry::class,
+            $instance instanceof Types\ActiveDirectory => ActiveDirectory\Entry::class,
             default => Entry::class,
         };
     }
@@ -301,9 +301,9 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     public function newQueryWithoutScopes(): Builder
     {
-        return static::resolveConnection(
-            $this->getConnectionName()
-        )->query()->model($this);
+        return $this->newQueryBuilder(
+            static::resolveConnection($this->getConnectionName())
+        );
     }
 
     /**
@@ -311,7 +311,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     public function newQueryBuilder(Connection $connection): Builder
     {
-        return new Builder($connection);
+        return new Builder($this, $connection->query());
     }
 
     /**

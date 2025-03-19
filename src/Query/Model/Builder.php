@@ -10,15 +10,17 @@ use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
-use LdapRecord\Query\Builder as BaseBuilder;
+use LdapRecord\Query\Builder as QueryBuilder;
+use LdapRecord\Query\MultipleObjectsFoundException;
+use LdapRecord\Support\ForwardsCalls;
 use UnexpectedValueException;
 
-class Builder extends BaseBuilder
+/**
+ * @mixin \LdapRecord\Query\Builder
+ */
+class Builder
 {
-    /**
-     * The model being queried.
-     */
-    protected Model $model;
+    use ForwardsCalls;
 
     /**
      * The global scopes to be applied.
@@ -36,15 +38,50 @@ class Builder extends BaseBuilder
     protected array $appliedScopes = [];
 
     /**
+     * The methods that should be returned from query builder.
+     *
+     * @var string[]
+     */
+    protected $passthru = [
+        'getdn',
+        'gettype',
+        'getcache',
+        'getbasedn',
+        'getselects',
+        'getconnection',
+        'getunescapedquery',
+        'escape',
+        'exists',
+        'existsor',
+        'doesntexist',
+    ];
+
+    /**
+     * Constructor.
+     */
+    public function __construct(
+        protected Model $model,
+        protected QueryBuilder $query,
+    ) {
+        $this->query->select([$this->model->getGuidKey(), '*']);
+    }
+
+    /**
      * Dynamically handle calls into the query instance.
      */
-    public function __call(string $method, array $parameters): static
+    public function __call(string $method, array $parameters): mixed
     {
         if (method_exists($this->model, $scope = 'scope'.ucfirst($method))) {
             return $this->callScope([$this->model, $scope], $parameters);
         }
 
-        return parent::__call($method, $parameters);
+        if (in_array(strtolower($method), $this->passthru)) {
+            return $this->toBase()->{$method}(...$parameters);
+        }
+
+        $this->forwardCallTo($this->query, $method, $parameters);
+
+        return $this;
     }
 
     /**
@@ -58,114 +95,145 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Get the attributes to select on the search.
-     */
-    public function getSelects(): array
-    {
-        // Here we will ensure the models GUID attribute is always
-        // selected. In some LDAP directories, the attribute is
-        // virtual and must be requested for specifically.
-        return array_values(array_unique(
-            array_merge([$this->model->getGuidKey()], parent::getSelects())
-        ));
-    }
-
-    /**
-     * Set the model instance for the model being queried.
-     */
-    public function setModel(Model $model): static
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
-    /**
-     * Get the model being queried for.
-     */
-    public function getModel(): Model
-    {
-        return $this->model;
-    }
-
-    /**
-     * Get a new model query builder instance.
-     */
-    public function newInstance(?string $baseDn = null): BaseBuilder
-    {
-        return parent::newInstance($baseDn)->model($this->model);
-    }
-
-    /**
-     * {@inheritDoc}
+     * Get the first record from the query.
      */
     public function first(array|string $columns = ['*']): ?Model
     {
-        return parent::first($columns);
+        return $this->limit(1)->get($columns)->first();
     }
 
     /**
-     * {@inheritDoc}
+     * Get the first record from the query or throw an exception if none is found.
+     *
+     * @throws ModelNotFoundException
      */
     public function firstOrFail(array|string $columns = ['*']): Model
     {
-        return parent::firstOrFail($columns);
+        if (! is_null($model = $this->first($columns))) {
+            return $model;
+        }
+
+        $this->throwNotFoundException(
+            $this->query->getUnescapedQuery(),
+            $this->query->getDn()
+        );
     }
 
     /**
-     * {@inheritDoc}
+     * Get the first record from the query or throw if none is found, or if more than one is found.
+     *
+     * @throws ModelNotFoundException
+     * @throws MultipleObjectsFoundException
      */
     public function sole(array|string $columns = ['*']): Model
     {
-        return parent::sole($columns);
+        $result = $this->limit(2)->get($columns);
+
+        if ($result->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        if ($result->count() > 1) {
+            throw new MultipleObjectsFoundException;
+        }
+
+        return $result->first();
     }
 
     /**
-     * {@inheritDoc}
+     * Find a record by its DN or an array of DNs.
      */
     public function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
     {
-        return $this->afterScopes(fn () => parent::find($dn, $columns));
+        if (is_array($dn)) {
+            return $this->findMany($dn, $columns);
+        }
+
+        return $this->setDn($dn)->first($columns);
     }
 
     /**
-     * {@inheritDoc}
+     * Find a record by DN or throw an exception if not found.
+     *
+     * @throws ModelNotFoundException
      */
     public function findOrFail(string $dn, array|string $columns = ['*']): Model
     {
-        return parent::findOrFail($dn, $columns);
+        $entry = $this->find($dn, $columns);
+
+        if (! $entry instanceof Model) {
+            $this->throwNotFoundException(
+                $this->query->getUnescapedQuery(),
+                $this->query->getDn()
+            );
+        }
+
+        return $entry;
     }
 
     /**
-     * {@inheritDoc}
+     * Find a record by the given attribute and value or throw if not found.
+     *
+     * @throws ModelNotFoundException
      */
     public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): Model
     {
-        return parent::findByOrFail($attribute, $value, $columns);
+        $entry = $this->findBy($attribute, $value, $columns);
+
+        if (! $entry) {
+            $this->throwNotFoundException(
+                $this->query->getUnescapedQuery(),
+                $this->query->getDn()
+            );
+        }
+
+        return $entry;
     }
 
     /**
-     * {@inheritDoc}
+     * Find a record by the given attribute and value.
      */
     public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?Model
     {
-        return parent::findBy($attribute, $value, $columns);
+        return $this->whereEquals($attribute, $value)->first($columns);
     }
 
     /**
-     * {@inheritDoc}
+     * Find multiple records by the given DN or array of DNs.
      */
     public function findMany(array|string $dns, array|string $columns = ['*']): Collection
     {
-        return parent::findMany($dns, $columns);
+        $dns = (array) $dns;
+
+        $collection = $this->model->newCollection();
+
+        foreach ($dns as $dn) {
+            if ($entry = $this->find($dn, $columns)) {
+                $collection->push($entry);
+            }
+        }
+
+        return $collection;
     }
 
     /**
-     * {@inheritDoc}
+     * Find multiple records by the given attribute and array of values.
      */
     public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection
     {
-        return parent::findManyBy($attribute, $values, $columns);
+        $this->select($columns);
+
+        if (empty($values)) {
+            return $this->model->newCollection();
+        }
+
+        $this->orFilter(function (self $query) use ($attribute, $values) {
+            foreach ($values as $value) {
+                $query->whereEquals($attribute, $value);
+            }
+        });
+
+        return $this->get($columns);
     }
 
     /**
@@ -196,16 +264,14 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Finds a record using ambiguous name resolution.
-     *
-     * If a record is not found, an exception is thrown.
+     * Find a record using ambiguous name resolution.
      *
      * @throws ModelNotFoundException
      */
     public function findByAnrOrFail(string $value, array|string $columns = ['*']): Model
     {
         if (! $entry = $this->findByAnr($value, $columns)) {
-            $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
+            $this->throwNotFoundException($this->getUnescapedQuery(), $this->query->getDn());
         }
 
         return $entry;
@@ -222,7 +288,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Finds multiple records using ambiguous name resolution.
+     * Find multiple records using ambiguous name resolution.
      */
     public function findManyByAnr(array $values = [], array|string $columns = ['*']): Collection
     {
@@ -244,7 +310,7 @@ class Builder extends BaseBuilder
      */
     protected function prepareAnrEquivalentQuery(string $value): static
     {
-        return $this->orFilter(function (BaseBuilder $query) use ($value) {
+        return $this->orFilter(function (self $query) use ($value) {
             foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }
@@ -252,7 +318,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Finds a record by its string GUID.
+     * Find a record by its string GUID.
      */
     public function findByGuid(string $guid, array|string $columns = ['*']): ?Model
     {
@@ -264,7 +330,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Finds a record by its string GUID or throw an exception.
+     * Find a record by its string GUID or throw an exception.
      *
      * @throws ModelNotFoundException
      */
@@ -280,21 +346,37 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritdoc}
+     * Get the base query builder instance.
      */
-    public function getQuery(): string
+    public function toBase(): QueryBuilder
     {
-        return $this->afterScopes(fn () => parent::getQuery());
+        return $this->applyScopes()->getQuery();
     }
 
     /**
-     * Apply the query scopes and execute the callback.
+     * Get the underlying model instance.
      */
-    protected function afterScopes(Closure $callback): mixed
+    public function getModel(): Model
     {
-        $this->applyScopes();
+        return $this->model;
+    }
 
-        return $callback();
+    /**
+     * Set the underlying model instance.
+     */
+    public function setModel(Model $model): static
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Get the underlying query builder instance.
+     */
+    public function getQuery(): QueryBuilder
+    {
+        return $this->query;
     }
 
     /**
@@ -380,31 +462,80 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Processes and converts the given LDAP results into models.
+     * Execute the query and get the results.
      */
-    protected function process(array $results): Collection
+    public function get(array|string $columns = ['*']): Collection
     {
-        return $this->model->hydrate(parent::process($results));
+        $builder = $this->applyScopes();
+
+        $models = $builder->getModels($columns);
+
+        return $builder->getModel()->newCollection($models);
     }
 
     /**
-     * {@inheritdoc}
+     * Select the given columns to retrieve.
      */
-    protected function prepareWhereValue(string $field, mixed $value = null, $raw = false): string
+    public function select(array|string $columns): static
     {
-        if ($value instanceof DateTime) {
-            $field = $this->model->normalizeAttributeKey($field);
+        // If selects are being overridden, then we need to ensure
+        // the GUID key is always selected so that it may be
+        // returned in the results for model hydration.
+        $columns = array_values(array_unique(
+            array_merge([$this->model->getGuidKey()], (array) $columns)
+        ));
 
-            if (! $this->model->isDateAttribute($field)) {
-                throw new UnexpectedValueException(
-                    "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
-                    .' Refer to https://ldaprecord.com/docs/core/v3/model-mutators/#date-mutators'
-                );
-            }
+        $this->query->select($columns);
 
-            $value = $this->model->fromDateTime($value, $this->model->getDates()[$field]);
+        return $this;
+    }
+
+    /**
+     * Get the hydrated models from the query.
+     */
+    public function getModels(array|string $columns = ['*']): array
+    {
+        return $this->model->hydrate(
+            $this->query->get($columns)
+        )->all();
+    }
+
+    /**
+     * Prepare the given field and value for usage in a where filter.
+     *
+     * @throws UnexpectedValueException
+     */
+    protected function prepareWhereValue(string $field, mixed $value = null): mixed
+    {
+        if (! $value instanceof DateTime) {
+            return $value;
         }
 
-        return parent::prepareWhereValue($field, $value, $raw);
+        $field = $this->model->normalizeAttributeKey($field);
+
+        if (! $this->model->isDateAttribute($field)) {
+            throw new UnexpectedValueException(
+                "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
+                .' Refer to https://ldaprecord.com/docs/core/v3/model-mutators/#date-mutators'
+            );
+        }
+
+        return $this->model->fromDateTime($value, $this->model->getDates()[$field]);
+    }
+
+    /**
+     * Clone the model query builder.
+     */
+    public function clone(): static
+    {
+        return clone $this;
+    }
+
+    /**
+     * Force a clone of the underlying query builder when cloning.
+     */
+    public function __clone(): void
+    {
+        $this->query = clone $this->query;
     }
 }

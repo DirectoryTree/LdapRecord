@@ -29,6 +29,24 @@ class ActiveDirectoryTest extends TestCase
         $this->assertEquals('(memberof=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
+    public function test_where_member_of_substitutes_base_dn()
+    {
+        $b = $this->newBuilder();
+        $b->setBaseDn('dc=org,dc=acme');
+        $b->whereMemberOf('cn=Accounting,{base}');
+        $where = $b->filters['and'][0];
+        $this->assertEquals('memberof', $where['field']);
+        $this->assertEquals('=', $where['operator']);
+        $this->assertEquals(
+            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
+            $where['value']
+        );
+        $this->assertEquals(
+            '(memberof=cn=Accounting,dc=org,dc=acme)',
+            $b->getUnescapedQuery()
+        );
+    }
+
     public function test_where_member_of_nested()
     {
         $b = $this->newBuilder();
@@ -43,6 +61,24 @@ class ActiveDirectoryTest extends TestCase
         $this->assertEquals('(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
+    public function test_where_member_of_nested_substitutes_base_dn()
+    {
+        $b = $this->newBuilder();
+        $b->setBaseDn('dc=org,dc=acme');
+        $b->whereMemberOf('cn=Accounting,{base}', $nested = true);
+        $where = $b->filters['and'][0];
+        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
+        $this->assertEquals('=', $where['operator']);
+        $this->assertEquals(
+            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
+            $where['value']
+        );
+        $this->assertEquals(
+            '(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)',
+            $b->getUnescapedQuery()
+        );
+    }
+
     public function test_or_where_member_of()
     {
         $b = $this->newBuilder();
@@ -55,6 +91,25 @@ class ActiveDirectoryTest extends TestCase
         $this->assertEquals('memberof', $where['field']);
         $this->assertEquals('=', $where['operator']);
         $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
+        $this->assertEquals(
+            '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
+            $b->getUnescapedQuery()
+        );
+    }
+
+    public function test_or_where_member_of_substitutes_base_dn()
+    {
+        $b = $this->newBuilder();
+        $b->setBaseDn('dc=org,dc=acme');
+        $b->orWhereEquals('cn', 'John Doe');
+        $b->orWhereMemberOf('cn=Accounting,{base}');
+        $where = $b->filters['or'][1];
+        $this->assertEquals('memberof', $where['field']);
+        $this->assertEquals('=', $where['operator']);
+        $this->assertEquals(
+            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
+            $where['value']
+        );
         $this->assertEquals(
             '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()

@@ -783,6 +783,28 @@ class ModelTest extends TestCase
         $this->assertEquals('cn=foo,dc=local,dc=com', $model->getDn());
     }
 
+    public function test_attribute_values_are_numerically_indexed_on_create()
+    {
+        Container::addConnection(new Connection([
+            'base_dn' => 'dc=local,dc=com',
+        ]));
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('add')->once()->with(fn ($dn) => true, fn ($attributes) => (
+                collect($attributes)->every(fn ($values) => array_is_list($values))
+            ))->andReturnTrue(),
+        );
+
+        $model = new Entry;
+
+        $model->objectclass = ['bar'];
+        $model->cn = ['invalid' => 'John Doe'];
+
+        $model->save();
+
+        $this->assertEquals($model->cn, ['John Doe']);
+    }
+
     public function test_setting_dn_attributes_set_distinguished_name_on_model()
     {
         $this->assertEquals('foo', (new Entry(['distinguishedname' => 'foo']))->getDn());

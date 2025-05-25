@@ -50,10 +50,86 @@ class Builder
         'getselects',
         'getconnection',
         'getunescapedquery',
+        'getquery',
+        'getgrammar',
+        'getfilters',
+        'hasselects',
+        'hasorderby',
+        'hascontrol',
         'escape',
         'exists',
         'existsor',
         'doesntexist',
+        'query',
+        'paginate',
+        'slice',
+        'forpage',
+        'chunk',
+        'each',
+        'newinstance',
+        'newnestedinstance',
+        'substitutebasedn',
+        'insertandgetdn',
+    ];
+
+    /**
+     * The methods that should be delegated to the query builder and return $this.
+     *
+     * @var string[]
+     */
+    protected $delegated = [
+        'orderby',
+        'orderbydesc',
+        'rawfilter',
+        'andfilter',
+        'orfilter',
+        'notfilter',
+
+        'whereapproximatelyequals',
+        'wherecontains',
+        'wherenotcontains',
+        'wherein',
+        'wherebetween',
+        'wherestartswith',
+        'wherenotstartswith',
+        'whereendswith',
+        'wherenotendswith',
+        'wheredeleted',
+        'withdeleted',
+        'addcontrol',
+
+        'orwherehas',
+        'orwherenothas',
+        'orwhereequals',
+        'orwherenotequals',
+        'orwhereapproximatelyequals',
+        'orwherecontains',
+        'orwherenotcontains',
+        'orwherestartswith',
+        'orwherenotstartswith',
+        'orwhereendswith',
+        'orwherenotendswith',
+        'addfilter',
+        'clearfilters',
+        'setconnection',
+        'setgrammar',
+        'setcache',
+        'setbasedn',
+        'nested',
+        'cache',
+        'cachefor',
+        'cacheforever',
+        'cachekey',
+        'flushcache',
+        'read',
+        'list',
+        'insert',
+        'update',
+        'updateattribute',
+        'delete',
+        'deleteattribute',
+        'rename',
+        'move',
     ];
 
     /**
@@ -71,14 +147,27 @@ class Builder
      */
     public function __call(string $method, array $parameters): mixed
     {
+        // First, check if this is a model scope
         if (method_exists($this->model, $scope = 'scope'.ucfirst($method))) {
             return $this->callScope([$this->model, $scope], $parameters);
         }
 
-        if (in_array(strtolower($method), $this->passthru)) {
+        $lowerMethod = strtolower($method);
+
+        // Methods that should return values directly from the base query builder
+        if (in_array($lowerMethod, $this->passthru)) {
             return $this->toBase()->{$method}(...$parameters);
         }
 
+        // Methods that should be delegated and return $this for chaining
+        if (in_array($lowerMethod, $this->delegated)) {
+            $this->forwardCallTo($this->query, $method, $parameters);
+
+            return $this;
+        }
+
+        // For any other method, forward to the query builder and return $this
+        // This maintains backward compatibility while following Laravel's pattern
         $this->forwardCallTo($this->query, $method, $parameters);
 
         return $this;
@@ -354,6 +443,24 @@ class Builder
     }
 
     /**
+     * Get a base query builder instance without applying scopes.
+     */
+    public function getQuery(): QueryBuilder
+    {
+        return $this->query;
+    }
+
+    /**
+     * Set the underlying query builder instance.
+     */
+    public function setQuery(QueryBuilder $query): static
+    {
+        $this->query = $query;
+
+        return $this;
+    }
+
+    /**
      * Get the underlying model instance.
      */
     public function getModel(): Model
@@ -369,14 +476,6 @@ class Builder
         $this->model = $model;
 
         return $this;
-    }
-
-    /**
-     * Get the underlying query builder instance.
-     */
-    public function getQuery(): QueryBuilder
-    {
-        return $this->query;
     }
 
     /**
@@ -491,6 +590,123 @@ class Builder
     }
 
     /**
+     * Add a new select column to the query.
+     */
+    public function addSelect(array|string $column): static
+    {
+        $this->query->addSelect($column);
+
+        return $this;
+    }
+
+    /**
+     * Add a where clause to the query with proper value preparation.
+     */
+    public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    {
+        // If we have a value that needs preparation (like DateTime), handle it
+        if (! is_array($field) && $value !== null && ! $raw) {
+            $value = $this->prepareWhereValue($field, $value);
+        }
+
+        $this->query->where($field, $operator, $value, $boolean, $raw);
+
+        return $this;
+    }
+
+    /**
+     * Add a raw where clause to the query.
+     */
+    public function whereRaw(array|string $field, ?string $operator = null, mixed $value = null): static
+    {
+        $this->query->whereRaw($field, $operator, $value);
+
+        return $this;
+    }
+
+    /**
+     * Add an or where clause to the query.
+     */
+    public function orWhere(array|string $field, ?string $operator = null, ?string $value = null): static
+    {
+        $this->query->orWhere($field, $operator, $value);
+
+        return $this;
+    }
+
+    /**
+     * Add a raw or where clause to the query.
+     */
+    public function orWhereRaw(array|string $field, ?string $operator = null, ?string $value = null): static
+    {
+        $this->query->orWhereRaw($field, $operator, $value);
+
+        return $this;
+    }
+
+    /**
+     * Add a where equals clause to the query.
+     */
+    public function whereEquals(string $field, string $value): static
+    {
+        return $this->where($field, '=', $value);
+    }
+
+    /**
+     * Add a where not equals clause to the query.
+     */
+    public function whereNotEquals(string $field, string $value): static
+    {
+        return $this->where($field, '!', $value);
+    }
+
+    /**
+     * Add a where has clause to the query.
+     */
+    public function whereHas(string $field): static
+    {
+        return $this->where($field, '*');
+    }
+
+    /**
+     * Add a where not has clause to the query.
+     */
+    public function whereNotHas(string $field): static
+    {
+        return $this->where($field, '!*');
+    }
+
+    /**
+     * Set the distinguished name for the query (alias for setDn).
+     */
+    public function in(Model|string|null $dn = null): static
+    {
+        $this->query->in($dn);
+
+        return $this;
+    }
+
+    /**
+     * Set the distinguished name for the query.
+     */
+    public function setDn(Model|string|null $dn = null): static
+    {
+        $this->query->setDn($dn);
+
+        return $this;
+    }
+
+    /**
+     * Set the size limit of the current query.
+     */
+    public function limit(int $limit = 0): static
+    {
+        $this->query->limit($limit);
+
+        return $this;
+    }
+
+    /**
      * Get the hydrated models from the query.
      */
     public function getModels(array|string $columns = ['*']): array
@@ -529,6 +745,22 @@ class Builder
     public function clone(): static
     {
         return clone $this;
+    }
+
+    /**
+     * Create a new instance of the model query builder.
+     */
+    public function newModelQuery(): static
+    {
+        return $this->model->newQuery();
+    }
+
+    /**
+     * Create a new query builder instance without any model constraints.
+     */
+    public function newQueryWithoutScopes(): static
+    {
+        return $this->model->newQueryWithoutScopes();
     }
 
     /**

@@ -86,18 +86,24 @@ class HasMany extends OneToMany
                 return false;
             }
 
-            $models->when($this->recursive, function (Collection $models) use ($pageSize, $callback, $loaded) {
-                $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
-                    if ($relation = $model->getRelation($this->relationName)) {
-                        $loaded[] = $model->getDn();
+            if (! $this->recursive) {
+                return true;
+            }
 
-                        return $relation->recursive()->chunkRelation($pageSize, $callback, $loaded);
-                    }
-                });
-            });
+            foreach ($models as $model) {
+                if (! $relation = $model->getRelation($this->relationName)) {
+                    continue;
+                }
+
+                $loaded[] = $model->getDn();
+
+                if ($relation->recursive()->chunkRelation($pageSize, $callback, $loaded) === false) {
+                    return false;
+                }
+            }
 
             return true;
-        });
+        }) ?? false;
     }
 
     /**

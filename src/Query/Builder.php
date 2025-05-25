@@ -419,18 +419,20 @@ class Builder
 
                 $page++;
             }
+
+            return true;
         };
 
         // Connection isolation creates a new, temporary connection for the pagination
         // request to occur on. This allows connections that do not support executing
         // other queries during a pagination request, to do so without interruption.
-        $isolate ? $this->connection->isolate(
+        $result = $isolate ? $this->connection->isolate(
             fn (Connection $replicate) => $chunk($this->clone()->setConnection($replicate))
         ) : $chunk($this);
 
         $this->logQuery($this, self::TYPE_CHUNK, $this->getElapsedTime($start));
 
-        return true;
+        return $result;
     }
 
     /**

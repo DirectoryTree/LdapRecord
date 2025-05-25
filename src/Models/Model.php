@@ -287,6 +287,14 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     }
 
     /**
+     * Find a model by its distinguished name.
+     */
+    public static function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
+    {
+        return (new static)->newQueryWithoutScopes()->find($dn, $columns);
+    }
+
+    /**
      * Get a new query for builder filtered by the current models object classes.
      */
     public function newQuery(): Builder
@@ -548,7 +556,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
             return false;
         }
 
-        return $this->newQuery()->find($this->dn);
+        return $this->newQueryWithoutScopes()->find($this->dn);
     }
 
     /**

@@ -50,7 +50,6 @@ class Builder
         'getselects',
         'getconnection',
         'getunescapedquery',
-        'getquery',
         'getgrammar',
         'getfilters',
         'hasselects',
@@ -69,6 +68,7 @@ class Builder
         'newinstance',
         'newnestedinstance',
         'substitutebasedn',
+        'renameandgetdn',
         'insertandgetdn',
     ];
 
@@ -80,10 +80,6 @@ class Builder
     protected $delegated = [
         'orderby',
         'orderbydesc',
-        'rawfilter',
-        'andfilter',
-        'orfilter',
-        'notfilter',
 
         'whereapproximatelyequals',
         'wherecontains',
@@ -238,7 +234,7 @@ class Builder
             return $this->findMany($dn, $columns);
         }
 
-        return $this->setDn($dn)->first($columns);
+        return $this->setDn($dn)->read()->first($columns);
     }
 
     /**
@@ -439,11 +435,11 @@ class Builder
      */
     public function toBase(): QueryBuilder
     {
-        return $this->applyScopes()->getQuery();
+        return $this->applyScopes()->query;
     }
 
     /**
-     * Get a base query builder instance without applying scopes.
+     * Get the underlying query builder instance.
      */
     public function getQuery(): QueryBuilder
     {
@@ -458,6 +454,14 @@ class Builder
         $this->query = $query;
 
         return $this;
+    }
+
+    /**
+     * Dynamically access properties on the underlying query builder.
+     */
+    public function __get(string $name): mixed
+    {
+        return $this->query->{$name};
     }
 
     /**
@@ -604,8 +608,15 @@ class Builder
      */
     public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
-        // If we have a value that needs preparation (like DateTime), handle it
-        if (! is_array($field) && $value !== null && ! $raw) {
+        if (is_array($field)) {
+            return $this->addArrayOfWheres($field, $boolean);
+        }
+
+        [$value, $operator] = $this->query->prepareValueAndOperator(
+            $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
+        );
+
+        if (! $raw && $value !== null) {
             $value = $this->prepareWhereValue($field, $value);
         }
 
@@ -615,10 +626,42 @@ class Builder
     }
 
     /**
+     * Add an array of where clauses to the query.
+     */
+    protected function addArrayOfWheres(array $column, string $boolean): static
+    {
+        foreach ($column as $key => $value) {
+            if (is_numeric($key) && is_array($value)) {
+                $this->where(...array_values($value));
+            } else {
+                $this->where($key, '=', $value, $boolean);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Determine if the operator requires a value to be present.
+     */
+    protected function operatorRequiresValue(mixed $operator): bool
+    {
+        return in_array($operator, ['*', '!*']);
+    }
+
+    /**
      * Add a raw where clause to the query.
      */
     public function whereRaw(array|string $field, ?string $operator = null, mixed $value = null): static
     {
+        if (is_array($field)) {
+            return $this->addArrayOfWheres($field, 'and');
+        }
+
+        if ($value !== null) {
+            $value = $this->prepareWhereValue($field, $value);
+        }
+
         $this->query->whereRaw($field, $operator, $value);
 
         return $this;
@@ -639,6 +682,14 @@ class Builder
      */
     public function orWhereRaw(array|string $field, ?string $operator = null, ?string $value = null): static
     {
+        if (is_array($field)) {
+            return $this->addArrayOfWheres($field, 'or');
+        }
+
+        if ($value !== null) {
+            $value = $this->prepareWhereValue($field, $value);
+        }
+
         $this->query->orWhereRaw($field, $operator, $value);
 
         return $this;
@@ -707,6 +758,64 @@ class Builder
     }
 
     /**
+     * Adds a nested 'and' filter to the current query.
+     */
+    public function andFilter(Closure $closure): static
+    {
+        $query = $this->newNestedModelInstance($closure);
+
+        return $this->rawFilter(
+            $this->query->getGrammar()->compileAnd($query->getQuery()->getQuery())
+        );
+    }
+
+    /**
+     * Adds a nested 'or' filter to the current query.
+     */
+    public function orFilter(Closure $closure): static
+    {
+        $query = $this->newNestedModelInstance($closure);
+
+        return $this->rawFilter(
+            $this->query->getGrammar()->compileOr($query->getQuery()->getQuery())
+        );
+    }
+
+    /**
+     * Adds a nested 'not' filter to the current query.
+     */
+    public function notFilter(Closure $closure): static
+    {
+        $query = $this->newNestedModelInstance($closure);
+
+        return $this->rawFilter(
+            $this->query->getGrammar()->compileNot($query->getQuery()->getQuery())
+        );
+    }
+
+    /**
+     * Returns a new nested Model Builder instance.
+     */
+    protected function newNestedModelInstance(Closure $closure): static
+    {
+        $query = $this->model->newQueryWithoutScopes()->nested();
+
+        $closure($query);
+
+        return $query;
+    }
+
+    /**
+     * Adds a raw filter to the current query.
+     */
+    public function rawFilter(array|string $filters = []): static
+    {
+        $this->query->rawFilter($filters);
+
+        return $this;
+    }
+
+    /**
      * Get the hydrated models from the query.
      */
     public function getModels(array|string $columns = ['*']): array
@@ -736,7 +845,7 @@ class Builder
             );
         }
 
-        return $this->model->fromDateTime($value, $this->model->getDates()[$field]);
+        return (string) $this->model->fromDateTime($value, $this->model->getDates()[$field]);
     }
 
     /**

@@ -50,7 +50,7 @@ class ModelScopeTest extends TestCase
             'field' => 'foo',
             'operator' => '=',
             'value' => 'bar',
-        ], $query->filters['and'][0]);
+        ], $query->toBase()->filters['and'][0]);
     }
 
     public function test_scopes_are_applied_to_pagination_request()
@@ -62,7 +62,7 @@ class ModelScopeTest extends TestCase
             'field' => 'foo',
             'operator' => '=',
             'value' => 'bar',
-        ], $query->filters['and'][0]);
+        ], $query->toBase()->filters['and'][0]);
     }
 
     public function test_scopes_are_not_stacked_multiple_times()
@@ -71,8 +71,8 @@ class ModelScopeTest extends TestCase
         $query->getQuery();
         $query->getQuery();
 
-        $this->assertCount(1, $query->filters['and']);
-        $this->assertEquals('(foo=bar)', $query->getQuery());
+        $this->assertCount(1, $query->toBase()->filters['and']);
+        $this->assertEquals('(foo=bar)', $query->getQuery()->getQuery());
     }
 
     public function test_local_scopes_can_be_called()
@@ -80,10 +80,10 @@ class ModelScopeTest extends TestCase
         $query = ModelWithLocalScopeTestStub::fooBar();
 
         $this->assertInstanceOf(Builder::class, $query);
-        $this->assertCount(1, $query->filters['and']);
-        $this->assertEquals('foo', $query->filters['and'][0]['field']);
-        $this->assertEquals('=', $query->filters['and'][0]['operator']);
-        $this->assertEquals('\62\61\72', $query->filters['and'][0]['value']);
+        $this->assertCount(1, $query->toBase()->filters['and']);
+        $this->assertEquals('foo', $query->toBase()->filters['and'][0]['field']);
+        $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
+        $this->assertEquals('\62\61\72', $query->toBase()->filters['and'][0]['value']);
     }
 
     public function test_local_scopes_accept_arguments()
@@ -91,10 +91,10 @@ class ModelScopeTest extends TestCase
         $query = ModelWithLocalScopeTestStub::barBaz('zal');
 
         $this->assertInstanceOf(Builder::class, $query);
-        $this->assertCount(1, $query->filters['and']);
-        $this->assertEquals('bar', $query->filters['and'][0]['field']);
-        $this->assertEquals('=', $query->filters['and'][0]['operator']);
-        $this->assertEquals('\7a\61\6c', $query->filters['and'][0]['value']);
+        $this->assertCount(1, $query->toBase()->filters['and']);
+        $this->assertEquals('bar', $query->toBase()->filters['and'][0]['field']);
+        $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
+        $this->assertEquals('\7a\61\6c', $query->toBase()->filters['and'][0]['value']);
     }
 
     public function test_scopes_do_not_impact_model_refresh()

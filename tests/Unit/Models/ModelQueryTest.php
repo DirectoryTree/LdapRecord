@@ -442,14 +442,14 @@ class ModelQueryTest extends TestCase
 
         $datetime = new DateTime;
 
-        $query = ModelQueryDateConversionTest::query()->newInstance()
+        $query = ModelQueryDateConversionTest::query()
             ->whereRaw('standard', '=', $datetime)
             ->whereRaw('windows', '=', $datetime)
             ->whereRaw('windowsinteger', '=', $datetime);
 
-        $this->assertEquals((new Timestamp('ldap'))->fromDateTime($datetime), $query->filters['and'][0]['value']);
-        $this->assertEquals((new Timestamp('windows'))->fromDateTime($datetime), $query->filters['and'][1]['value']);
-        $this->assertEquals((new Timestamp('windows-int'))->fromDateTime($datetime), $query->filters['and'][2]['value']);
+        $this->assertEquals((new Timestamp('ldap'))->fromDateTime($datetime), $query->getQuery()->filters['and'][0]['value']);
+        $this->assertEquals((new Timestamp('windows'))->fromDateTime($datetime), $query->getQuery()->filters['and'][1]['value']);
+        $this->assertEquals((new Timestamp('windows-int'))->fromDateTime($datetime), $query->getQuery()->filters['and'][2]['value']);
     }
 
     public function test_exception_is_thrown_when_date_objects_cannot_be_converted()
@@ -491,7 +491,7 @@ class ModelAllTest extends Model
 
 class ModelDestroyStub extends Model
 {
-    public function find($dn, $columns = []): Model|Collection|null
+    public static function find($dn, $columns = []): Model|Collection|null
     {
         $stub = m::mock(Entry::class);
         $stub->shouldReceive('delete')->once()->andReturnTrue();

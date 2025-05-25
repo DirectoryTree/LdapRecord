@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit\Query\Model;
 
 use LdapRecord\Connection;
+use LdapRecord\Container;
 use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
@@ -13,8 +14,12 @@ class ActiveDirectoryTest extends TestCase
 {
     protected function newBuilder(): ActiveDirectoryBuilder
     {
+        $connection = new Connection([], new LdapFake);
+
+        Container::addConnection($connection);
+
         return new ActiveDirectoryBuilder(
-            new Entry, new Builder(new Connection([], new LdapFake))
+            new Entry, new Builder($connection)
         );
     }
 
@@ -143,7 +148,7 @@ class ActiveDirectoryTest extends TestCase
 
         $b->whereEnabled();
 
-        $this->assertEquals('(!(UserAccountControl:1.2.840.113556.1.4.803:=2))', $b->getQuery());
+        $this->assertEquals('(!(UserAccountControl:1.2.840.113556.1.4.803:=2))', $b->getQuery()->getQuery());
     }
 
     public function test_built_where_disabled()
@@ -152,6 +157,6 @@ class ActiveDirectoryTest extends TestCase
 
         $b->whereDisabled();
 
-        $this->assertEquals('(UserAccountControl:1.2.840.113556.1.4.803:=2)', $b->getQuery());
+        $this->assertEquals('(UserAccountControl:1.2.840.113556.1.4.803:=2)', $b->getQuery()->getQuery());
     }
 }

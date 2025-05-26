@@ -34,9 +34,6 @@ class Builder
 
     public const TYPE_PAGINATE = 'paginate';
 
-    /**
-     * The base distinguished name placeholder.
-     */
     public const BASE_DN_PLACEHOLDER = '{base}';
 
     /**
@@ -1316,8 +1313,6 @@ class Builder
         // we need to ensure we always select the object class, as
         // this is used for constructing models properly.
         $selects[] = 'objectclass';
-
-        ray($selects);
 
         return $selects;
     }

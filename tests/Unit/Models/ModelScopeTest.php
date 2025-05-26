@@ -54,7 +54,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_query()
     {
-        $query = (new ModelWithGlobalScopeTestStub)->newQuery()->applyScopes();
+        $query = ModelWithGlobalScopeTestStub::query();
 
         $this->assertEquals([
             'field' => 'foo',
@@ -65,7 +65,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_applied_to_pagination_request()
     {
-        $query = (new ModelWithGlobalScopeTestStub)->newQuery();
+        $query = ModelWithGlobalScopeTestStub::query();
 
         $query->getConnection()
             ->getLdapConnection()
@@ -83,7 +83,7 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_are_not_stacked_multiple_times()
     {
-        $query = (new ModelWithGlobalScopeTestStub)->newQuery();
+        $query = ModelWithGlobalScopeTestStub::query();
         $query->getQuery();
         $query->getQuery();
 

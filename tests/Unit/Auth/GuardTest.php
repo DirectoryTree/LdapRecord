@@ -243,7 +243,7 @@ class GuardTest extends TestCase
         $this->assertTrue($ldap->isBound());
     }
 
-    public function test_tls_is_only_upgraded_once_on_subsequent_binds()
+    public function test_starttls_is_only_upgraded_once_on_subsequent_binds()
     {
         $ldap = (new LdapFake)->expect([
             LdapFake::operation('bind')->once()->with('admin', 'password')->andReturnResponse(),

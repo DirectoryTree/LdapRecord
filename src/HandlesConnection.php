@@ -38,12 +38,12 @@ trait HandlesConnection
     protected bool $secure = false;
 
     /**
-     * Whether the connection must be bound over SSL.
+     * Whether the connection must be bound over TLS (ldaps:// protocol).
      */
     protected bool $useSSL = false;
 
     /**
-     * Whether the connection must be bound over TLS.
+     * Whether the connection must be bound over STARTTLS (ldap:// with upgrade).
      */
     protected bool $useTLS = false;
 
@@ -230,9 +230,9 @@ trait HandlesConnection
      */
     protected function makeConnectionUris(array|string $hosts, string|int $port): string
     {
-        // If an attempt to connect via SSL protocol is being performed,
+        // If an attempt to connect via TLS protocol (ldaps://) is being performed,
         // and we are still using the default port, we will swap it
-        // for the default SSL port, for developer convenience.
+        // for the default TLS port, for developer convenience.
         if ($this->isUsingSSL() && $port == LdapInterface::PORT) {
             $port = LdapInterface::PORT_SSL;
         }

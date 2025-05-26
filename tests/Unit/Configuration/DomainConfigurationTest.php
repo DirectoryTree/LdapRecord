@@ -42,8 +42,8 @@ class DomainConfigurationTest extends TestCase
         $this->assertEmpty($config->get('username'));
         $this->assertEmpty($config->get('password'));
         $this->assertEmpty($config->get('base_dn'));
-        $this->assertFalse($config->get('use_ssl'));
         $this->assertFalse($config->get('use_tls'));
+        $this->assertFalse($config->get('use_starttls'));
         $this->assertEmpty($config->get('options'));
     }
 
@@ -57,8 +57,8 @@ class DomainConfigurationTest extends TestCase
             'follow_referrals' => false,
             'username' => 'username',
             'password' => 'password',
-            'use_ssl' => true,
-            'use_tls' => false,
+            'use_tls' => true,
+            'use_starttls' => false,
             'use_sasl' => true,
             'sasl_options' => [
                 'mech' => 'GSSAPI',
@@ -74,8 +74,8 @@ class DomainConfigurationTest extends TestCase
         $this->assertEquals(['dc1', 'dc2'], $config->get('hosts'));
         $this->assertEquals('username', $config->get('username'));
         $this->assertEquals('password', $config->get('password'));
-        $this->assertTrue($config->get('use_ssl'));
-        $this->assertFalse($config->get('use_tls'));
+        $this->assertTrue($config->get('use_tls'));
+        $this->assertFalse($config->get('use_starttls'));
         $this->assertTrue($config->get('use_sasl'));
         $this->assertEquals(['mech' => 'GSSAPI'], $config->get('sasl_options'));
         $this->assertEquals(
@@ -99,8 +99,8 @@ class DomainConfigurationTest extends TestCase
             'base_dn' => '',
             'username' => '',
             'password' => '',
-            'use_ssl' => false,
             'use_tls' => false,
+            'use_starttls' => false,
             'use_sasl' => false,
             'allow_insecure_password_changes' => false,
             'sasl_options' => [
@@ -184,18 +184,18 @@ class DomainConfigurationTest extends TestCase
         new DomainConfiguration(['follow_referrals' => 'invalid']);
     }
 
-    public function test_invalid_use_ssl()
-    {
-        $this->expectException(ConfigurationException::class);
-
-        new DomainConfiguration(['use_ssl' => 'invalid']);
-    }
-
     public function test_invalid_use_tls()
     {
         $this->expectException(ConfigurationException::class);
 
         new DomainConfiguration(['use_tls' => 'invalid']);
+    }
+
+    public function test_invalid_use_starttls()
+    {
+        $this->expectException(ConfigurationException::class);
+
+        new DomainConfiguration(['use_starttls' => 'invalid']);
     }
 
     public function test_invalid_options()

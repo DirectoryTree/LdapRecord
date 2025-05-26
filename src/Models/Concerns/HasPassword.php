@@ -174,7 +174,7 @@ trait HasPassword
         if ($connection->isConnected()) {
             $secure = $connection->getLdapConnection()->canChangePasswords();
         } else {
-            $secure = $config->get('use_ssl') || $config->get('use_tls');
+            $secure = $config->get('use_tls') || $config->get('use_starttls');
         }
 
         if (! $secure) {

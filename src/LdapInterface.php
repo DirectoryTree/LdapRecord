@@ -283,22 +283,22 @@ interface LdapInterface
     public const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';
 
     /**
-     * Set the current connection to use SSL.
+     * Set the current connection to use TLS (ldaps:// protocol).
      */
     public function ssl(): static;
 
     /**
-     * Determine if the current connection instance is using SSL.
+     * Determine if the current connection instance is using TLS (ldaps:// protocol).
      */
     public function isUsingSSL(): bool;
 
     /**
-     * Set the current connection to use TLS.
+     * Set the current connection to use STARTTLS (ldap:// with upgrade).
      */
     public function tls(): static;
 
     /**
-     * Determine if the current connection instance is using TLS.
+     * Determine if the current connection instance is using STARTTLS (ldap:// with upgrade).
      */
     public function isUsingTLS(): bool;
 

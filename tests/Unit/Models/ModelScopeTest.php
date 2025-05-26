@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Tests\Unit\Models;
 
+use Closure;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\Models\Model;
@@ -19,14 +20,23 @@ class ModelScopeTest extends TestCase
 
         Container::addConnection(new Connection);
 
+        DirectoryFake::setup();
+
         ModelWithGlobalScopeTestStub::clearBootedModels();
+    }
+
+    protected function tearDown(): void
+    {
+        DirectoryFake::tearDown();
+
+        parent::tearDown();
     }
 
     public function test_scopes_can_be_added_to_models()
     {
         $model = new ModelWithGlobalScopeTestStub;
 
-        $this->assertInstanceOf(\Closure::class, $model->getGlobalScopes()['foo']);
+        $this->assertInstanceOf(Closure::class, $model->getGlobalScopes()['foo']);
         $this->assertInstanceOf(ScopeTestStub::class, $model->getGlobalScopes()[ScopeTestStub::class]);
     }
 
@@ -56,6 +66,12 @@ class ModelScopeTest extends TestCase
     public function test_scopes_are_applied_to_pagination_request()
     {
         $query = (new ModelWithGlobalScopeTestStub)->newQuery();
+
+        $query->getConnection()
+            ->getLdapConnection()
+            ->shouldAllowAnyBind()
+            ->expect(['search' => []]);
+
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([

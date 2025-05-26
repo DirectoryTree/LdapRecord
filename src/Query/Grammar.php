@@ -128,8 +128,11 @@ class Grammar
      */
     protected function shouldWrapEntireQueryInOr(Builder $query): bool
     {
+        // If we have exactly one AND condition and one or more OR conditions, wrap the
+        // entire query in OR to treat all conditions as alternatives. This handles
+        // the common case where a single where() is followed by orWhere() calls.
         return count($query->filters['and'] ?? []) === 1
-            && count($query->filters['or'] ?? []) === 1
+            && ! empty($query->filters['or'])
             && empty($query->filters['raw']);
     }
 

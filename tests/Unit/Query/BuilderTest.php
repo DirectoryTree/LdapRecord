@@ -589,6 +589,34 @@ class BuilderTest extends TestCase
         $this->assertEquals('(|(field=value)(or=value))', $b->getUnescapedQuery());
     }
 
+    public function test_single_where_with_multiple_or_wheres_creates_single_or_filter()
+    {
+        // This test verifies the fix for GitHub issue #606
+        // https://github.com/DirectoryTree/LdapRecord-Laravel/issues/606
+        $b = $this->newBuilder()
+            ->where('memberof', '=', 'cn=Group1')
+            ->orWhere('memberof', '=', 'cn=Group2')
+            ->orWhere('memberof', '=', 'cn=Group3');
+
+        $this->assertEquals(
+            '(|(memberof=cn=Group1)(memberof=cn=Group2)(memberof=cn=Group3))',
+            $b->getUnescapedQuery()
+        );
+    }
+
+    public function test_single_where_with_single_or_where_creates_single_or_filter()
+    {
+        // This test verifies that the existing behavior for 1 where + 1 orWhere is preserved
+        $b = $this->newBuilder()
+            ->where('field', '=', 'value1')
+            ->orWhere('field', '=', 'value2');
+
+        $this->assertEquals(
+            '(|(field=value1)(field=value2))',
+            $b->getUnescapedQuery()
+        );
+    }
+
     public function test_built_where_has()
     {
         $b = $this->newBuilder();

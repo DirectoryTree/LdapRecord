@@ -27,11 +27,6 @@ class Grammar
     ];
 
     /**
-     * The query wrapper.
-     */
-    protected ?string $wrapper = null;
-
-    /**
      * Get all the available operators.
      */
     public function getOperators(): array
@@ -54,49 +49,115 @@ class Grammar
      */
     public function compile(Builder $query): string
     {
-        if ($this->queryMustBeWrapped($query)) {
-            $this->wrapper = 'and';
-        }
+        $filter = $this->compileFilters($query);
 
-        $filter = $this->compileRaws($query)
-            .$this->compileWheres($query)
-            .$this->compileOrWheres($query);
-
-        return match ($this->wrapper) {
-            'and' => $this->compileAnd($filter),
-            'or' => $this->compileOr($filter),
-            default => $filter,
-        };
+        return $this->wrapFilterIfNeeded($query, $filter);
     }
 
     /**
-     * Determine if the query must be wrapped in an encapsulating statement.
+     * Compile all filters for the query.
      */
-    protected function queryMustBeWrapped(Builder $query): bool
+    protected function compileFilters(Builder $query): string
     {
-        return ! $query->isNested() && $this->hasMultipleFilters($query);
+        return $this->compileRaws($query)
+            .$this->compileWheres($query)
+            .$this->compileOrWheres($query);
+    }
+
+    /**
+     * Wrap the filter in logical operators if needed.
+     */
+    protected function wrapFilterIfNeeded(Builder $query, string $filter): string
+    {
+        if ($query->isNested()) {
+            return $filter;
+        }
+
+        // Special case: if we have exactly one AND and one OR, wrap in OR
+        if ($this->shouldWrapEntireQueryInOr($query)) {
+            return $this->compileOr($filter);
+        }
+
+        // If we have multiple filter types, multiple AND conditions, or multiple raw filters, wrap in AND
+        if ($this->hasMultipleFilterTypes($query) || $this->hasMultipleAndConditions($query) || $this->hasMultipleRawFilters($query)) {
+            return $this->compileAnd($filter);
+        }
+
+        // If we only have OR conditions and more than one, wrap in OR
+        if ($this->shouldWrapInOr($query)) {
+            return $this->compileOr($filter);
+        }
+
+        return $filter;
+    }
+
+    /**
+     * Determine if the query has multiple filter types.
+     */
+    protected function hasMultipleFilterTypes(Builder $query): bool
+    {
+        $filterCount = 0;
+
+        foreach (['and', 'or', 'raw'] as $type) {
+            if (! empty($query->filters[$type])) {
+                $filterCount++;
+            }
+        }
+
+        return $filterCount > 1;
+    }
+
+    /**
+     * Determine if the query has multiple AND conditions.
+     */
+    protected function hasMultipleAndConditions(Builder $query): bool
+    {
+        return count($query->filters['and'] ?? []) > 1;
+    }
+
+    /**
+     * Determine if the query has multiple raw filters.
+     */
+    protected function hasMultipleRawFilters(Builder $query): bool
+    {
+        return count($query->filters['raw'] ?? []) > 1;
+    }
+
+    /**
+     * Determine if the entire query should be wrapped in an OR statement.
+     */
+    protected function shouldWrapEntireQueryInOr(Builder $query): bool
+    {
+        return count($query->filters['and'] ?? []) === 1
+            && count($query->filters['or'] ?? []) === 1
+            && empty($query->filters['raw']);
+    }
+
+    /**
+     * Determine if the query should be wrapped in an OR statement.
+     */
+    protected function shouldWrapInOr(Builder $query): bool
+    {
+        return ! empty($query->filters['or'])
+            && count($query->filters['or']) > 1
+            && empty($query->filters['and'])
+            && empty($query->filters['raw']);
     }
 
     /**
      * Assembles all the "raw" filters on the query.
      */
-    protected function compileRaws(Builder $builder): string
+    protected function compileRaws(Builder $query): string
     {
-        return $this->concatenate($builder->filters['raw']);
+        return $this->concatenate($query->filters['raw'] ?? []);
     }
 
     /**
      * Assembles all where clauses in the current wheres property.
      */
-    protected function compileWheres(Builder $builder, string $type = 'and'): string
+    protected function compileWheres(Builder $query): string
     {
-        $filter = '';
-
-        foreach ($builder->filters[$type] ?? [] as $where) {
-            $filter .= $this->compileWhere($where);
-        }
-
-        return $filter;
+        return $this->compileFilterType($query, 'and');
     }
 
     /**
@@ -104,32 +165,34 @@ class Grammar
      */
     protected function compileOrWheres(Builder $query): string
     {
-        $filter = $this->compileWheres($query, 'or');
+        $filter = $this->compileFilterType($query, 'or');
 
-        if (! $this->hasMultipleFilters($query)) {
+        // If we're going to wrap the entire query in OR, don't wrap OR clauses separately
+        if ($this->shouldWrapEntireQueryInOr($query)) {
             return $filter;
         }
 
-        // Here we will detect whether the entire query can be
-        // wrapped inside of an "or" statement by checking
-        // how many filter statements exist for each type.
-        if ($this->queryCanBeWrappedInSingleOrStatement($query)) {
-            $this->wrapper = 'or';
-        } else {
-            $filter = $this->compileOr($filter);
+        // If we have OR clauses and other filter types (mixed query),
+        // wrap the OR clauses in their own OR statement
+        if (! empty($filter) && $this->hasMultipleFilterTypes($query)) {
+            return $this->compileOr($filter);
         }
 
         return $filter;
     }
 
     /**
-     * Determine if the query can be wrapped in a single or statement.
+     * Compile filters of a specific type.
      */
-    protected function queryCanBeWrappedInSingleOrStatement(Builder $query): bool
+    protected function compileFilterType(Builder $query, string $type): string
     {
-        return $this->has($query, 'or', '>=', 1)
-            && $this->has($query, 'and', '<=', 1)
-            && $this->has($query, 'raw', '=', 0);
+        $filter = '';
+
+        foreach ($query->filters[$type] ?? [] as $where) {
+            $filter .= $this->compileWhere($where);
+        }
+
+        return $filter;
     }
 
     /**
@@ -137,48 +200,48 @@ class Grammar
      */
     public function concatenate(array $bindings = []): string
     {
-        // Filter out empty query segments.
         return implode(
-            array_filter($bindings, [$this, 'bindingValueIsNotEmpty'])
+            array_filter($bindings, fn (mixed $value) => ! empty($value))
         );
     }
 
     /**
-     * Determine if the binding value is not empty.
+     * Assembles a single where query.
+     *
+     * @throws UnexpectedValueException
      */
-    protected function bindingValueIsNotEmpty(string $value): bool
+    protected function compileWhere(array $where): string
     {
-        return ! empty($value);
-    }
+        $method = $this->makeCompileMethod($where['operator']);
 
-    /**
-     * Determine if the query is using multiple filters.
-     */
-    protected function hasMultipleFilters(Builder $query): bool
-    {
-        return $this->has($query, ['and', 'or', 'raw'], '>', 1);
-    }
-
-    /**
-     * Determine if the query contains the given filter statement type.
-     */
-    protected function has(Builder $query, array|string $type, string $operator = '>=', int $count = 1): bool
-    {
-        $types = (array) $type;
-
-        $filters = 0;
-
-        foreach ($types as $type) {
-            $filters += count($query->filters[$type] ?? []);
+        // Some operators like 'has' and 'notHas' don't require a value
+        if (in_array($where['operator'], ['*', '!*'])) {
+            return $this->{$method}($where['field']);
         }
 
-        return match ($operator) {
-            '>' => $filters > $count,
-            '>=' => $filters >= $count,
-            '<' => $filters < $count,
-            '<=' => $filters <= $count,
-            default => $filters == $count,
-        };
+        return $this->{$method}($where['field'], $where['value']);
+    }
+
+    /**
+     * Make the compile method name for the operator.
+     *
+     * @throws UnexpectedValueException
+     */
+    protected function makeCompileMethod(string $operator): string
+    {
+        if (! $this->operatorExists($operator)) {
+            throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
+        }
+
+        return 'compile'.ucfirst($this->operators[$operator]);
+    }
+
+    /**
+     * Determine if the operator exists.
+     */
+    protected function operatorExists(string $operator): bool
+    {
+        return array_key_exists($operator, $this->operators);
     }
 
     /**
@@ -355,39 +418,5 @@ class Grammar
     public function compileNot(string $query): string
     {
         return $query ? $this->wrap($query, '(!') : '';
-    }
-
-    /**
-     * Assembles a single where query.
-     *
-     * @throws UnexpectedValueException
-     */
-    protected function compileWhere(array $where): string
-    {
-        $method = $this->makeCompileMethod($where['operator']);
-
-        return $this->{$method}($where['field'], $where['value']);
-    }
-
-    /**
-     * Make the compile method name for the operator.
-     *
-     * @throws UnexpectedValueException
-     */
-    protected function makeCompileMethod(string $operator): string
-    {
-        if (! $this->operatorExists($operator)) {
-            throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
-        }
-
-        return 'compile'.ucfirst($this->operators[$operator]);
-    }
-
-    /**
-     * Determine if the operator exists.
-     */
-    protected function operatorExists(string $operator): bool
-    {
-        return array_key_exists($operator, $this->operators);
     }
 }

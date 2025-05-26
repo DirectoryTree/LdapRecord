@@ -11,7 +11,9 @@ use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as QueryBuilder;
+use LdapRecord\Query\BuildsQueries;
 use LdapRecord\Query\MultipleObjectsFoundException;
+use LdapRecord\Query\Slice;
 use LdapRecord\Support\ForwardsCalls;
 use UnexpectedValueException;
 
@@ -20,6 +22,7 @@ use UnexpectedValueException;
  */
 class Builder
 {
+    use BuildsQueries;
     use ForwardsCalls;
 
     /**
@@ -43,33 +46,27 @@ class Builder
      * @var string[]
      */
     protected $passthru = [
-        'getdn',
-        'gettype',
-        'getcache',
-        'getbasedn',
-        'getselects',
-        'getconnection',
-        'getunescapedquery',
-        'getgrammar',
-        'getfilters',
-        'hasselects',
-        'hasorderby',
-        'hascontrol',
         'escape',
-        'exists',
-        'existsor',
-        'doesntexist',
-        'query',
-        'paginate',
-        'slice',
-        'forpage',
-        'chunk',
-        'each',
+        'getbasedn',
+        'getcache',
+        'getconnection',
+        'getdn',
+        'getfilters',
+        'getgrammar',
+        'getselects',
+        'gettype',
+        'getunescapedquery',
+        'hascontrol',
+        'hasorderby',
+        'hasselects',
+        'insert',
+        'insertandgetdn',
         'newinstance',
         'newnestedinstance',
-        'substitutebasedn',
+        'query',
+        'rename',
         'renameandgetdn',
-        'insertandgetdn',
+        'substitutebasedn',
     ];
 
     /**
@@ -101,6 +98,23 @@ class Builder
     }
 
     /**
+     * Dynamically access properties on the underlying query builder.
+     */
+    public function __get(string $name): mixed
+    {
+        // TODO: Fix all property passthru.
+        return $this->query->{$name};
+    }
+
+    /**
+     * Force a clone of the underlying query builder when cloning.
+     */
+    public function __clone(): void
+    {
+        $this->query = clone $this->query;
+    }
+
+    /**
      * Apply the given scope on the current builder instance.
      */
     protected function callScope(callable $scope, array $parameters = []): static
@@ -111,19 +125,58 @@ class Builder
     }
 
     /**
+     * Chunk the results of a paginated LDAP query.
+     */
+    public function chunk(int $pageSize, Closure $callback, bool $isCritical = false, bool $isolate = false): bool
+    {
+        return $this->query->chunk($pageSize, function (array $records) use ($callback) {
+            return $callback($this->model->hydrate($records));
+        }, $isCritical, $isolate);
+    }
+
+    /**
+     * Execute a callback over each result while chunking.
+     */
+    public function paginate(int $pageSize = 1000, bool $isCritical = false): Collection
+    {
+        return $this->model->hydrate(
+            $this->query->paginate(...func_get_args())
+        );
+    }
+
+    /**
+     * Get a slice of the results from the query.
+     */
+    public function slice(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Slice
+    {
+        $slice = $this->query->slice(...func_get_args());
+
+        $models = $this->model->hydrate($slice->items());
+
+        return new Slice(
+            $models,
+            $slice->total(),
+            $slice->perPage(),
+            $slice->currentPage()
+        );
+    }
+
+    /**
+     * Get the results of a query for a given page.
+     */
+    public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Collection
+    {
+        return $this->model->hydrate(
+            $this->query->forPage(...func_get_args())
+        );
+    }
+
+    /**
      * Get the first record from the query.
      */
     public function first(array|string $selects = ['*']): ?Model
     {
         return $this->limit(1)->get($selects)->first();
-    }
-
-    /**
-     * Get the first record from the query or return a default value.
-     */
-    public function firstOr(Closure $callback, array|string $selects = ['*']): mixed
-    {
-        return $this->first($selects) ?: $callback();
     }
 
     /**
@@ -302,16 +355,6 @@ class Builder
     }
 
     /**
-     * Throws a not found exception.
-     *
-     * @throws ModelNotFoundException
-     */
-    protected function throwNotFoundException(string $query, ?string $dn = null): void
-    {
-        throw ModelNotFoundException::forQuery($query, $dn);
-    }
-
-    /**
      * Find multiple records using ambiguous name resolution.
      */
     public function findManyByAnr(array $values = [], array|string $selects = ['*']): Collection
@@ -393,14 +436,6 @@ class Builder
         $this->query = $query;
 
         return $this;
-    }
-
-    /**
-     * Dynamically access properties on the underlying query builder.
-     */
-    public function __get(string $name): mixed
-    {
-        return $this->query->{$name};
     }
 
     /**
@@ -516,7 +551,7 @@ class Builder
     }
 
     /**
-     * Select the given columns to retrieve.
+     * Select the given attributes to retrieve.
      */
     public function select(array|string $selects): static
     {
@@ -533,7 +568,7 @@ class Builder
     }
 
     /**
-     * Add a new select column to the query.
+     * Add a new select to the query.
      */
     public function addSelect(array|string $select): static
     {
@@ -560,22 +595,6 @@ class Builder
         }
 
         $this->query->where($attribute, $operator, $value, $boolean, $raw);
-
-        return $this;
-    }
-
-    /**
-     * Add an array of where clauses to the query.
-     */
-    protected function addArrayOfWheres(array $wheres, string $boolean, bool $raw): static
-    {
-        foreach ($wheres as $key => $value) {
-            if (is_numeric($key) && is_array($value)) {
-                $this->where(...array_values($value), boolean: $boolean, raw: $raw);
-            } else {
-                $this->where($key, '=', $value, $boolean, $raw);
-            }
-        }
 
         return $this;
     }
@@ -669,36 +688,6 @@ class Builder
     }
 
     /**
-     * Set the distinguished name for the query (alias for setDn).
-     */
-    public function in(Model|string|null $dn = null): static
-    {
-        $this->query->in($dn);
-
-        return $this;
-    }
-
-    /**
-     * Set the distinguished name for the query.
-     */
-    public function setDn(Model|string|null $dn = null): static
-    {
-        $this->query->setDn($dn);
-
-        return $this;
-    }
-
-    /**
-     * Set the size limit of the current query.
-     */
-    public function limit(int $limit = 0): static
-    {
-        $this->query->limit($limit);
-
-        return $this;
-    }
-
-    /**
      * Adds a nested 'and' filter to the current query.
      */
     public function andFilter(Closure $closure): static
@@ -732,18 +721,6 @@ class Builder
         return $this->rawFilter(
             $this->query->getGrammar()->compileNot($query->getQuery()->getQuery())
         );
-    }
-
-    /**
-     * Returns a new nested Model Builder instance.
-     */
-    protected function newNestedModelInstance(Closure $closure): static
-    {
-        $query = $this->model->newQueryWithoutScopes()->nested();
-
-        $closure($query);
-
-        return $query;
     }
 
     /**
@@ -814,10 +791,24 @@ class Builder
     }
 
     /**
-     * Force a clone of the underlying query builder when cloning.
+     * Returns a new nested Model Builder instance.
      */
-    public function __clone(): void
+    protected function newNestedModelInstance(Closure $closure): static
     {
-        $this->query = clone $this->query;
+        $query = $this->model->newQueryWithoutScopes()->nested();
+
+        $closure($query);
+
+        return $query;
+    }
+
+    /**
+     * Throw a not found exception.
+     *
+     * @throws ModelNotFoundException
+     */
+    protected function throwNotFoundException(string $query, ?string $dn = null): void
+    {
+        throw ModelNotFoundException::forQuery($query, $dn);
     }
 }

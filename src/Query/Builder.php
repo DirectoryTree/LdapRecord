@@ -13,15 +13,15 @@ use LdapRecord\Container;
 use LdapRecord\EscapesValues;
 use LdapRecord\LdapInterface;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Models\Attributes\EscapedValue;
-use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
+use Stringable;
 
 class Builder
 {
+    use BuildsQueries;
     use EscapesValues;
 
     public const TYPE_SEARCH = 'search';
@@ -66,7 +66,7 @@ class Builder
     public int $limit = 0;
 
     /**
-     * Determine whether the current query is paginated.
+     * Determine whether the query is paginated.
      */
     public bool $paginated = false;
 
@@ -154,7 +154,7 @@ class Builder
     }
 
     /**
-     * Returns a new Query Builder instance.
+     * Get a new Query Builder instance.
      */
     public function newInstance(?string $baseDn = null): Builder
     {
@@ -164,7 +164,7 @@ class Builder
     }
 
     /**
-     * Returns a new nested Query Builder instance.
+     * Get a new nested Query Builder instance.
      */
     public function newNestedInstance(?Closure $closure = null): Builder
     {
@@ -178,7 +178,7 @@ class Builder
     }
 
     /**
-     * Executes the LDAP query.
+     * Execute the LDAP query and return the results.
      */
     public function get(array|string $selects = ['*']): array
     {
@@ -264,7 +264,7 @@ class Builder
     /**
      * Set the base distinguished name of the query.
      */
-    public function setBaseDn(Model|string|null $dn = null): static
+    public function setBaseDn(Stringable|string|null $dn = null): static
     {
         $this->baseDn = $this->substituteBaseDn($dn);
 
@@ -290,7 +290,7 @@ class Builder
     /**
      * Set the distinguished name for the query.
      */
-    public function setDn(Model|string|null $dn = null): static
+    public function setDn(Stringable|string|null $dn = null): static
     {
         $this->dn = $this->substituteBaseDn($dn);
 
@@ -300,7 +300,7 @@ class Builder
     /**
      * Substitute the base DN string template for the current base.
      */
-    public function substituteBaseDn(Model|string|null $dn = null): string
+    public function substituteBaseDn(Stringable|string|null $dn = null): string
     {
         return str_replace(static::BASE_DN_PLACEHOLDER, $this->baseDn ?? '', (string) $dn);
     }
@@ -308,15 +308,15 @@ class Builder
     /**
      * Alias for setting the distinguished name for the query.
      */
-    public function in(Model|string|null $dn = null): static
+    public function in(Stringable|string|null $dn = null): static
     {
         return $this->setDn($dn);
     }
 
     /**
-     * Set the size limit of the current query.
+     * Set the size limit of the query.
      */
-    public function limit(int $limit = 0): static
+    public function limit(int $limit): static
     {
         $this->limit = $limit;
 
@@ -324,7 +324,7 @@ class Builder
     }
 
     /**
-     * Performs the specified query on the current LDAP connection.
+     * Execute the given query on the LDAP connection.
      */
     public function query(string $query): array
     {
@@ -343,7 +343,7 @@ class Builder
     }
 
     /**
-     * Paginates the current LDAP query.
+     * Execute a pagination request on the LDAP connection.
      */
     public function paginate(int $pageSize = 1000, bool $isCritical = false): array
     {
@@ -381,20 +381,6 @@ class Builder
     protected function newPaginator(string $filter, int $perPage, bool $isCritical): Paginator
     {
         return new Paginator($this, $filter, $perPage, $isCritical);
-    }
-
-    /**
-     * Execute a callback over each item while chunking.
-     */
-    public function each(Closure $callback, int $pageSize = 1000, bool $isCritical = false, bool $isolate = false): bool
-    {
-        return $this->chunk($pageSize, function ($results) use ($callback) {
-            foreach ($results as $key => $value) {
-                if ($callback($value, $key) === false) {
-                    return false;
-                }
-            }
-        }, $isCritical, $isolate);
     }
 
     /**
@@ -451,7 +437,7 @@ class Builder
     }
 
     /**
-     * Create a slice of the LDAP query into a page.
+     * Get a slice of the results from the query.
      */
     public function slice(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Slice
     {
@@ -618,95 +604,6 @@ class Builder
     }
 
     /**
-     * Get the first entry in a search result.
-     */
-    public function first(array|string $selects = ['*']): ?array
-    {
-        return Arr::first(
-            $this->limit(1)->get($selects)
-        );
-    }
-
-    /**
-     * Get the first entry in a search result.
-     *
-     * If no entry is found, an exception is thrown.
-     *
-     * @throws ObjectNotFoundException
-     */
-    public function firstOrFail(array|string $selects = ['*']): array
-    {
-        if (! $record = $this->first($selects)) {
-            $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
-        }
-
-        return $record;
-    }
-
-    /**
-     * Get the first entry in a result, or execute the callback.
-     */
-    public function firstOr(Closure $callback, array|string $selects = ['*']): mixed
-    {
-        return $this->first($selects) ?: $callback();
-    }
-
-    /**
-     * Execute the query and get the first result if it's the sole matching record.
-     *
-     * @throws ObjectsNotFoundException
-     * @throws MultipleObjectsFoundException
-     */
-    public function sole(array|string $selects = ['*']): array
-    {
-        $result = $this->limit(2)->get($selects);
-
-        if (empty($result)) {
-            throw new ObjectsNotFoundException;
-        }
-
-        if (count($result) > 1) {
-            throw new MultipleObjectsFoundException;
-        }
-
-        return reset($result);
-    }
-
-    /**
-     * Determine if any results exist for the current query.
-     */
-    public function exists(): bool
-    {
-        return ! is_null($this->first());
-    }
-
-    /**
-     * Determine if no results exist for the current query.
-     */
-    public function doesntExist(): bool
-    {
-        return ! $this->exists();
-    }
-
-    /**
-     * Execute the given callback if no rows exist for the current query.
-     */
-    public function existsOr(Closure $callback): mixed
-    {
-        return $this->exists() ? true : $callback();
-    }
-
-    /**
-     * Throws a not found exception.
-     *
-     * @throws ObjectNotFoundException
-     */
-    protected function throwNotFoundException(string $query, ?string $dn = null): void
-    {
-        throw ObjectNotFoundException::forQuery($query, $dn);
-    }
-
-    /**
      * Find a record by the specified attribute and value.
      */
     public function findBy(string $attribute, string $value, array|string $selects = ['*']): ?array
@@ -852,7 +749,7 @@ class Builder
     }
 
     /**
-     * Adds a raw filter to the current query.
+     * Add a raw filter to the query.
      */
     public function rawFilter(array|string $filters = []): static
     {
@@ -866,7 +763,7 @@ class Builder
     }
 
     /**
-     * Adds a nested 'and' filter to the current query.
+     * Add a nested 'and' filter to the query.
      */
     public function andFilter(Closure $closure): static
     {
@@ -878,7 +775,7 @@ class Builder
     }
 
     /**
-     * Adds a nested 'or' filter to the current query.
+     * Add a nested 'or' filter to the query.
      */
     public function orFilter(Closure $closure): static
     {
@@ -890,7 +787,7 @@ class Builder
     }
 
     /**
-     * Adds a nested 'not' filter to the current query.
+     * Add a nested 'not' filter to the query.
      */
     public function notFilter(Closure $closure): static
     {
@@ -902,7 +799,7 @@ class Builder
     }
 
     /**
-     * Adds a where clause to the current query.
+     * Add a where clause to the query.
      *
      * @throws InvalidArgumentException
      */
@@ -958,7 +855,7 @@ class Builder
     }
 
     /**
-     * Adds a raw where clause to the current query.
+     * Add a raw where clause to the query.
      *
      * Values given to this method are not escaped.
      */
@@ -968,7 +865,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where equals' clause to the current query.
+     * Add a 'where equals' clause to the query.
      */
     public function whereEquals(string $attribute, string $value): static
     {
@@ -976,7 +873,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where not equals' clause to the current query.
+     * Add a 'where not equals' clause to the query.
      */
     public function whereNotEquals(string $attribute, string $value): static
     {
@@ -984,7 +881,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where approximately equals' clause to the current query.
+     * Add a 'where approximately equals' clause to the query.
      */
     public function whereApproximatelyEquals(string $attribute, string $value): static
     {
@@ -992,7 +889,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where has' clause to the current query.
+     * Add a 'where has' clause to the query.
      */
     public function whereHas(string $attribute): static
     {
@@ -1000,7 +897,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where not has' clause to the current query.
+     * Add a 'where not has' clause to the query.
      */
     public function whereNotHas(string $attribute): static
     {
@@ -1008,7 +905,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where contains' clause to the current query.
+     * Add a 'where contains' clause to the query.
      */
     public function whereContains(string $attribute, string $value): static
     {
@@ -1016,7 +913,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where contains' clause to the current query.
+     * Add a 'where contains' clause to the query.
      */
     public function whereNotContains(string $attribute, string $value): static
     {
@@ -1036,7 +933,7 @@ class Builder
     }
 
     /**
-     * Adds a 'between' clause to the current query.
+     * Add a 'between' clause to the query.
      */
     public function whereBetween(string $attribute, array $values): static
     {
@@ -1047,7 +944,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where starts with' clause to the current query.
+     * Add a 'where starts with' clause to the query.
      */
     public function whereStartsWith(string $attribute, string $value): static
     {
@@ -1055,7 +952,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where *not* starts with' clause to the current query.
+     * Add a 'where *not* starts with' clause to the query.
      */
     public function whereNotStartsWith(string $attribute, string $value): static
     {
@@ -1063,7 +960,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where ends with' clause to the current query.
+     * Add a 'where ends with' clause to the query.
      */
     public function whereEndsWith(string $attribute, string $value): static
     {
@@ -1071,7 +968,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where *not* ends with' clause to the current query.
+     * Add a 'where *not* ends with' clause to the query.
      */
     public function whereNotEndsWith(string $attribute, string $value): static
     {
@@ -1113,7 +1010,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where' clause to the current query.
+     * Add an 'or where' clause to the query.
      */
     public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
@@ -1125,7 +1022,7 @@ class Builder
     }
 
     /**
-     * Adds a raw or where clause to the current query.
+     * Add a raw or where clause to the query.
      *
      * Values given to this method are not escaped.
      */
@@ -1135,7 +1032,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where has' clause to the current query.
+     * Add an 'or where has' clause to the query.
      */
     public function orWhereHas(string $attribute): static
     {
@@ -1143,7 +1040,7 @@ class Builder
     }
 
     /**
-     * Adds a 'where not has' clause to the current query.
+     * Add a 'where not has' clause to the query.
      */
     public function orWhereNotHas(string $attribute): static
     {
@@ -1151,7 +1048,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where equals' clause to the current query.
+     * Add an 'or where equals' clause to the query.
      */
     public function orWhereEquals(string $attribute, string $value): static
     {
@@ -1159,7 +1056,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where not equals' clause to the current query.
+     * Add an 'or where not equals' clause to the query.
      */
     public function orWhereNotEquals(string $attribute, string $value): static
     {
@@ -1167,7 +1064,7 @@ class Builder
     }
 
     /**
-     * Adds a 'or where approximately equals' clause to the current query.
+     * Add a 'or where approximately equals' clause to the query.
      */
     public function orWhereApproximatelyEquals(string $attribute, string $value): static
     {
@@ -1175,7 +1072,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where contains' clause to the current query.
+     * Add an 'or where contains' clause to the query.
      */
     public function orWhereContains(string $attribute, string $value): static
     {
@@ -1183,7 +1080,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where *not* contains' clause to the current query.
+     * Add an 'or where *not* contains' clause to the query.
      */
     public function orWhereNotContains(string $attribute, string $value): static
     {
@@ -1191,7 +1088,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where starts with' clause to the current query.
+     * Add an 'or where starts with' clause to the query.
      */
     public function orWhereStartsWith(string $attribute, string $value): static
     {
@@ -1199,7 +1096,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where *not* starts with' clause to the current query.
+     * Add an 'or where *not* starts with' clause to the query.
      */
     public function orWhereNotStartsWith(string $attribute, string $value): static
     {
@@ -1207,7 +1104,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where ends with' clause to the current query.
+     * Add an 'or where ends with' clause to the query.
      */
     public function orWhereEndsWith(string $attribute, string $value): static
     {
@@ -1215,7 +1112,7 @@ class Builder
     }
 
     /**
-     * Adds an 'or where *not* ends with' clause to the current query.
+     * Add an 'or where *not* ends with' clause to the query.
      */
     public function orWhereNotEndsWith(string $attribute, string $value): static
     {
@@ -1223,7 +1120,7 @@ class Builder
     }
 
     /**
-     * Adds a filter binding onto the current query.
+     * Add a filter binding onto the query.
      *
      * @throws InvalidArgumentException
      */
@@ -1351,7 +1248,7 @@ class Builder
     }
 
     /**
-     * Whether to mark the current query as nested.
+     * Whether to mark the query as nested.
      */
     public function nested(bool $nested = true): static
     {
@@ -1361,7 +1258,7 @@ class Builder
     }
 
     /**
-     * Enables caching on the current query until the given date.
+     * Enables caching on the query until the given date.
      *
      * If flushing is enabled, the query cache will be flushed and then re-cached.
      */
@@ -1564,22 +1461,6 @@ class Builder
     }
 
     /**
-     * Adds an array of wheres to the current query.
-     */
-    protected function addArrayOfWheres(array $wheres, string $boolean, bool $raw): static
-    {
-        foreach ($wheres as $key => $value) {
-            if (is_numeric($key) && is_array($value)) {
-                $this->where(...array_values($value), boolean: $boolean, raw: $raw);
-            } else {
-                $this->where($key, '=', $value, $boolean, $raw);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Add a single dynamic where clause statement to the query.
      */
     protected function addDynamic(string $segment, string $connector, array $parameters, int $index): void
@@ -1609,6 +1490,16 @@ class Builder
                 default => new Events\Search(...$args),
             }
         );
+    }
+
+    /**
+     * Throw a not found exception.
+     *
+     * @throws ObjectNotFoundException
+     */
+    protected function throwNotFoundException(string $query, ?string $dn = null): void
+    {
+        throw ObjectNotFoundException::forQuery($query, $dn);
     }
 
     /**

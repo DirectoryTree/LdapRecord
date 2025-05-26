@@ -10,7 +10,7 @@ use LdapRecord\Query\Model\ActiveDirectoryBuilder;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 
-class ActiveDirectoryTest extends TestCase
+class ActiveDirectoryBuilderTest extends TestCase
 {
     protected function newBuilder(): ActiveDirectoryBuilder
     {
@@ -27,7 +27,7 @@ class ActiveDirectoryTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = false);
+        $b->whereMemberOf('cn=Accounting,dc=org,dc=acme');
 
         $where = $b->getQuery()->filters['and'][0];
 
@@ -59,7 +59,7 @@ class ActiveDirectoryTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = true);
+        $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
         $where = $b->getQuery()->filters['and'][0];
 
@@ -73,7 +73,7 @@ class ActiveDirectoryTest extends TestCase
     {
         $b = $this->newBuilder();
         $b->setBaseDn('dc=org,dc=acme');
-        $b->whereMemberOf('cn=Accounting,{base}', $nested = true);
+        $b->whereMemberOf('cn=Accounting,{base}', nested: true);
         $where = $b->filters['and'][0];
         $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['field']);
         $this->assertEquals('=', $where['operator']);
@@ -92,7 +92,7 @@ class ActiveDirectoryTest extends TestCase
         $b = $this->newBuilder();
 
         $b->orWhereEquals('cn', 'John Doe');
-        $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = false);
+        $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme');
 
         $where = $b->getQuery()->filters['or'][1];
 
@@ -129,7 +129,7 @@ class ActiveDirectoryTest extends TestCase
         $b = $this->newBuilder();
 
         $b->orWhereEquals('cn', 'John Doe');
-        $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', $nested = true);
+        $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
         $where = $b->getQuery()->filters['or'][1];
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace LdapRecord\Models\Attributes;
+namespace LdapRecord\Query;
 
 use Stringable;
 

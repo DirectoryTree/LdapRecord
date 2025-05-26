@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Query\Events;
 
-class Paginate extends QueryExecuted
-{
-    //
-}
+class Paginate extends QueryExecuted {}

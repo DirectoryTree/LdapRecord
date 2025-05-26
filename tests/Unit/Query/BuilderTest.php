@@ -51,7 +51,7 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->select(['testing']);
+        $b->select('testing');
 
         $this->assertEquals([
             'testing',
@@ -99,7 +99,7 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $b->addFilter('and', [
-            'field' => 'cn',
+            'attribute' => 'cn',
             'operator' => '=',
             'value' => 'John Doe',
         ]);
@@ -114,7 +114,7 @@ class BuilderTest extends TestCase
 
         // Missing 'value' key.
         $this->newBuilder()->addFilter('and', [
-            'field' => 'cn',
+            'attribute' => 'cn',
             'operator' => '=',
         ]);
     }
@@ -124,7 +124,7 @@ class BuilderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $this->newBuilder()->addFilter('non-existent', [
-            'field' => 'cn',
+            'attribute' => 'cn',
             'operator' => '=',
             'value' => 'John Doe',
         ]);
@@ -139,12 +139,12 @@ class BuilderTest extends TestCase
 
         $this->assertEquals([
             'and' => [[
-                'field' => 'foo',
+                'attribute' => 'foo',
                 'operator' => '=',
                 'value' => '\62\61\72',
             ]],
             'or' => [[
-                'field' => 'baz',
+                'attribute' => 'baz',
                 'operator' => '=',
                 'value' => '\66\6f\6f',
             ]],
@@ -157,7 +157,7 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $b->addFilter('and', [
-            'field' => 'cn',
+            'attribute' => 'cn',
             'operator' => '=',
             'value' => 'John Doe',
         ]);
@@ -174,7 +174,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('=', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
     }
@@ -187,12 +187,12 @@ class BuilderTest extends TestCase
         $b->orWhere('cn', 'bar');
 
         $where = $b->filters['and'][0];
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('=', $where['operator']);
         $this->assertEquals('\66\6f\6f', $where['value']);
 
         $orWhere = $b->filters['or'][0];
-        $this->assertEquals('cn', $orWhere['field']);
+        $this->assertEquals('cn', $orWhere['attribute']);
         $this->assertEquals('=', $orWhere['operator']);
         $this->assertEquals('\62\61\72', $orWhere['value']);
     }
@@ -208,13 +208,13 @@ class BuilderTest extends TestCase
 
         $whereOne = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $whereOne['field']);
+        $this->assertEquals('cn', $whereOne['attribute']);
         $this->assertEquals('=', $whereOne['operator']);
         $this->assertEquals('\74\65\73\74', $whereOne['value']);
 
         $whereTwo = $b->filters['and'][1];
 
-        $this->assertEquals('name', $whereTwo['field']);
+        $this->assertEquals('name', $whereTwo['attribute']);
         $this->assertEquals('=', $whereTwo['operator']);
         $this->assertEquals('\74\65\73\74', $whereTwo['value']);
     }
@@ -230,13 +230,13 @@ class BuilderTest extends TestCase
 
         $whereOne = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $whereOne['field']);
+        $this->assertEquals('cn', $whereOne['attribute']);
         $this->assertEquals('=', $whereOne['operator']);
         $this->assertEquals('\74\65\73\74', $whereOne['value']);
 
         $whereTwo = $b->filters['and'][1];
 
-        $this->assertEquals('whencreated', $whereTwo['field']);
+        $this->assertEquals('whencreated', $whereTwo['attribute']);
         $this->assertEquals('>=', $whereTwo['operator']);
         $this->assertEquals('\74\65\73\74', $whereTwo['value']);
 
@@ -251,7 +251,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('contains', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(cn=*test*)', $b->getUnescapedQuery());
@@ -265,7 +265,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('starts_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(cn=test*)', $b->getUnescapedQuery());
@@ -279,7 +279,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('not_starts_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(!(cn=test*))', $b->getUnescapedQuery());
@@ -293,7 +293,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(cn=*test)', $b->getUnescapedQuery());
@@ -307,7 +307,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('not_ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(!(cn=*test))', $b->getUnescapedQuery());
@@ -346,7 +346,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['or'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('=', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
     }
@@ -391,13 +391,13 @@ class BuilderTest extends TestCase
 
         $whereOne = $b->filters['or'][0];
 
-        $this->assertEquals('cn', $whereOne['field']);
+        $this->assertEquals('cn', $whereOne['attribute']);
         $this->assertEquals('=', $whereOne['operator']);
         $this->assertEquals('\74\65\73\74', $whereOne['value']);
 
         $whereTwo = $b->filters['or'][1];
 
-        $this->assertEquals('name', $whereTwo['field']);
+        $this->assertEquals('name', $whereTwo['attribute']);
         $this->assertEquals('=', $whereTwo['operator']);
         $this->assertEquals('\74\65\73\74', $whereTwo['value']);
 
@@ -427,7 +427,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['or'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('contains', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
 
@@ -444,7 +444,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['or'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('starts_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(|(name=test*)(cn=test*))', $b->getUnescapedQuery());
@@ -460,7 +460,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['or'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('ends_with', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(|(name=*test)(cn=*test))', $b->getUnescapedQuery());
@@ -472,7 +472,7 @@ class BuilderTest extends TestCase
 
         $b = $this->newBuilder();
 
-        $b->where('field', 'invalid', 'value');
+        $b->where('attribute', 'invalid', 'value');
     }
 
     public function test_or_where_invalid_operator()
@@ -481,139 +481,167 @@ class BuilderTest extends TestCase
 
         $b = $this->newBuilder();
 
-        $b->orWhere('field', 'invalid', 'value');
+        $b->orWhere('attribute', 'invalid', 'value');
     }
 
     public function test_built_where()
     {
         $b = $this->newBuilder();
 
-        $b->where('field', '=', 'value');
+        $b->where('attribute', '=', 'value');
 
-        $this->assertEquals('(field=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_wheres()
     {
         $b = $this->newBuilder();
 
-        $b->where('field', '=', 'value');
+        $b->where('attribute', '=', 'value');
 
         $b->where('other', '=', 'value');
 
-        $this->assertEquals('(&(field=value)(other=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(&(attribute=value)(other=value))', $b->getUnescapedQuery());
     }
 
     public function test_built_where_starts_with()
     {
         $b = $this->newBuilder();
 
-        $b->whereStartsWith('field', 'value');
+        $b->whereStartsWith('attribute', 'value');
 
-        $this->assertEquals('(field=value*)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value*)', $b->getUnescapedQuery());
     }
 
     public function test_built_where_ends_with()
     {
         $b = $this->newBuilder();
 
-        $b->whereEndsWith('field', 'value');
+        $b->whereEndsWith('attribute', 'value');
 
-        $this->assertEquals('(field=*value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=*value)', $b->getUnescapedQuery());
     }
 
     public function test_built_where_contains()
     {
         $b = $this->newBuilder();
 
-        $b->whereContains('field', 'value');
+        $b->whereContains('attribute', 'value');
 
-        $this->assertEquals('(field=*value*)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=*value*)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where()
     {
         $b = $this->newBuilder();
 
-        $b->orWhere('field', '=', 'value');
+        $b->orWhere('attribute', '=', 'value');
 
-        $this->assertEquals('(field=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_wheres()
     {
         $b = $this->newBuilder();
 
-        $b->orWhere('field', '=', 'value');
+        $b->orWhere('attribute', '=', 'value');
 
         $b->orWhere('other', '=', 'value');
 
-        $this->assertEquals('(|(field=value)(other=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(attribute=value)(other=value))', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_starts_with()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereStartsWith('field', 'value');
+        $b->orWhereStartsWith('attribute', 'value');
 
-        $this->assertEquals('(field=value*)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value*)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_ends_with()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereEndsWith('field', 'value');
+        $b->orWhereEndsWith('attribute', 'value');
 
-        $this->assertEquals('(field=*value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=*value)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_contains()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereContains('field', 'value');
+        $b->orWhereContains('attribute', 'value');
 
-        $this->assertEquals('(field=*value*)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=*value*)', $b->getUnescapedQuery());
     }
 
     public function test_built_where_and_or_wheres()
     {
         $b = $this->newBuilder();
 
-        $b->where('field', '=', 'value');
+        $b->where('attribute', '=', 'value');
 
         $b->orWhere('or', '=', 'value');
 
-        $this->assertEquals('(|(field=value)(or=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(attribute=value)(or=value))', $b->getUnescapedQuery());
+    }
+
+    public function test_single_where_with_multiple_or_wheres_creates_single_or_filter()
+    {
+        // This test verifies the fix for GitHub issue #606
+        // https://github.com/DirectoryTree/LdapRecord-Laravel/issues/606
+        $b = $this->newBuilder()
+            ->where('memberof', '=', 'cn=Group1')
+            ->orWhere('memberof', '=', 'cn=Group2')
+            ->orWhere('memberof', '=', 'cn=Group3');
+
+        $this->assertEquals(
+            '(|(memberof=cn=Group1)(memberof=cn=Group2)(memberof=cn=Group3))',
+            $b->getUnescapedQuery()
+        );
+    }
+
+    public function test_single_where_with_single_or_where_creates_single_or_filter()
+    {
+        // This test verifies that the existing behavior for 1 where + 1 orWhere is preserved
+        $b = $this->newBuilder()
+            ->where('attribute', '=', 'value1')
+            ->orWhere('attribute', '=', 'value2');
+
+        $this->assertEquals(
+            '(|(attribute=value1)(attribute=value2))',
+            $b->getUnescapedQuery()
+        );
     }
 
     public function test_built_where_has()
     {
         $b = $this->newBuilder();
 
-        $b->whereHas('field');
+        $b->whereHas('attribute');
 
-        $this->assertEquals('(field=*)', $b->getQuery());
+        $this->assertEquals('(attribute=*)', $b->getQuery());
     }
 
     public function test_built_where_not_has()
     {
         $b = $this->newBuilder();
 
-        $b->whereNotHas('field');
+        $b->whereNotHas('attribute');
 
-        $this->assertEquals('(!(field=*))', $b->getQuery());
+        $this->assertEquals('(!(attribute=*))', $b->getQuery());
     }
 
     public function test_built_where_not_contains()
     {
         $b = $this->newBuilder();
 
-        $b->whereNotContains('field', 'value');
+        $b->whereNotContains('attribute', 'value');
 
-        $this->assertEquals('(!(field=*value*))', $b->getUnescapedQuery());
+        $this->assertEquals('(!(attribute=*value*))', $b->getUnescapedQuery());
     }
 
     public function test_built_where_in()
@@ -629,18 +657,18 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->whereApproximatelyEquals('field', 'value');
+        $b->whereApproximatelyEquals('attribute', 'value');
 
-        $this->assertEquals('(field~=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute~=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_has()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereHas('field');
+        $b->orWhereHas('attribute');
 
-        $this->assertEquals('(field=*)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=*)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_has_multiple()
@@ -657,65 +685,65 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->orWhereNotHas('field');
+        $b->orWhereNotHas('attribute');
 
-        $this->assertEquals('(!(field=*))', $b->getQuery());
+        $this->assertEquals('(!(attribute=*))', $b->getQuery());
     }
 
     public function test_built_where_equals()
     {
         $b = $this->newBuilder();
 
-        $b->whereEquals('field', 'value');
+        $b->whereEquals('attribute', 'value');
 
-        $this->assertEquals('(field=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_where_not_equals()
     {
         $b = $this->newBuilder();
 
-        $b->whereNotEquals('field', 'value');
+        $b->whereNotEquals('attribute', 'value');
 
-        $this->assertEquals('(!(field=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(!(attribute=value))', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_equals()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereEquals('field', 'value');
+        $b->orWhereEquals('attribute', 'value');
 
         // Due to only one 'orWhere' in the current query,
         // a standard filter should be constructed.
-        $this->assertEquals('(field=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_not_equals()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereNotEquals('field', 'value');
+        $b->orWhereNotEquals('attribute', 'value');
 
-        $this->assertEquals('(!(field=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(!(attribute=value))', $b->getUnescapedQuery());
     }
 
     public function test_built_or_where_approximately_equals()
     {
         $b = $this->newBuilder();
 
-        $b->orWhereApproximatelyEquals('field', 'value');
+        $b->orWhereApproximatelyEquals('attribute', 'value');
 
-        $this->assertEquals('(field~=value)', $b->getUnescapedQuery());
+        $this->assertEquals('(attribute~=value)', $b->getUnescapedQuery());
     }
 
     public function test_built_raw_filter()
     {
         $b = $this->newBuilder();
 
-        $b->rawFilter('(field=value)');
+        $b->rawFilter('(attribute=value)');
 
-        $this->assertEquals('(field=value)', $b->getQuery());
+        $this->assertEquals('(attribute=value)', $b->getQuery());
     }
 
     public function test_built_raw_filter_with_wheres()
@@ -733,28 +761,28 @@ class BuilderTest extends TestCase
     public function test_built_raw_filter_multiple()
     {
         $b = $this->newBuilder()
-            ->rawFilter('(field=value)')
-            ->rawFilter('(|(field=value))')
-            ->rawFilter('(field=value)');
+            ->rawFilter('(attribute=value)')
+            ->rawFilter('(|(attribute=value))')
+            ->rawFilter('(attribute=value)');
 
-        $this->assertEquals('(&(field=value)(|(field=value))(field=value))', $b->getQuery());
+        $this->assertEquals('(&(attribute=value)(|(attribute=value))(attribute=value))', $b->getQuery());
     }
 
-    public function test_field_is_escaped()
+    public function test_attribute_is_escaped()
     {
         $b = $this->newBuilder();
 
-        $field = '*^&.:foo()-=';
+        $attribute = '*^&.:foo()-=';
 
         $value = 'testing';
 
-        $b->where($field, '=', $value);
+        $b->where($attribute, '=', $value);
 
-        $escapedField = ldap_escape($field, '', 3);
+        $escapedAttribute = ldap_escape($attribute, '', 3);
 
         $escapedValue = ldap_escape($value);
 
-        $this->assertEquals("($escapedField=$escapedValue)", $b->getQuery());
+        $this->assertEquals("($escapedAttribute=$escapedValue)", $b->getQuery());
     }
 
     public function test_builder_dn_is_applied_to_new_instance()
@@ -788,7 +816,7 @@ class BuilderTest extends TestCase
 
         $where = $b->filters['and'][0];
 
-        $this->assertEquals('cn', $where['field']);
+        $this->assertEquals('cn', $where['attribute']);
         $this->assertEquals('=', $where['operator']);
         $this->assertEquals('\74\65\73\74', $where['value']);
     }
@@ -806,11 +834,11 @@ class BuilderTest extends TestCase
 
         $this->assertCount(2, $wheres);
 
-        $this->assertEquals('cn', $whereCn['field']);
+        $this->assertEquals('cn', $whereCn['attribute']);
         $this->assertEquals('=', $whereCn['operator']);
         $this->assertEquals('\63\6e', $whereCn['value']);
 
-        $this->assertEquals('sn', $whereSn['field']);
+        $this->assertEquals('sn', $whereSn['attribute']);
         $this->assertEquals('=', $whereSn['operator']);
         $this->assertEquals('\73\6e', $whereSn['value']);
     }
@@ -830,11 +858,11 @@ class BuilderTest extends TestCase
         $this->assertCount(1, $wheres);
         $this->assertCount(1, $orWheres);
 
-        $this->assertEquals('cn', $whereCn['field']);
+        $this->assertEquals('cn', $whereCn['attribute']);
         $this->assertEquals('=', $whereCn['operator']);
         $this->assertEquals('\63\6e', $whereCn['value']);
 
-        $this->assertEquals('sn', $orWhereSn['field']);
+        $this->assertEquals('sn', $orWhereSn['attribute']);
         $this->assertEquals('=', $orWhereSn['operator']);
         $this->assertEquals('\73\6e', $orWhereSn['value']);
     }
@@ -956,18 +984,18 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->where('field', '!', 'value');
+        $b->where('attribute', '!', 'value');
 
-        $this->assertEquals('(!(field=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(!(attribute=value))', $b->getUnescapedQuery());
     }
 
     public function test_does_not_equal_alias()
     {
         $b = $this->newBuilder();
 
-        $b->where('field', '!=', 'value');
+        $b->where('attribute', '!=', 'value');
 
-        $this->assertEquals('(!(field=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(!(attribute=value))', $b->getUnescapedQuery());
     }
 
     public function test_using_both_equals_and_equals_alias_outputs_same_result()
@@ -975,10 +1003,10 @@ class BuilderTest extends TestCase
         $b = $this->newBuilder();
 
         $b
-            ->where('field', '!=', 'value')
+            ->where('attribute', '!=', 'value')
             ->where('other', '!', 'value');
 
-        $this->assertEquals('(&(!(field=value))(!(other=value)))', $b->getUnescapedQuery());
+        $this->assertEquals('(&(!(attribute=value))(!(other=value)))', $b->getUnescapedQuery());
     }
 
     public function test_controls_can_be_added()

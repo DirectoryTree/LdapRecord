@@ -101,25 +101,25 @@ class ConnectionTest extends TestCase
         $this->assertFalse($conn->getLdapConnection() === $replicate->getLdapConnection());
     }
 
-    public function test_plain_protocol_and_port_is_used_when_ssl_is_disabled()
+    public function test_plain_protocol_and_port_is_used_when_tls_is_disabled()
     {
-        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => false]);
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_tls' => false]);
 
         $conn->initialize();
 
         $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
     }
 
-    public function test_ssl_protocol_and_port_is_used_when_enabled()
+    public function test_tls_protocol_and_port_is_used_when_enabled()
     {
-        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_ssl' => true]);
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'use_tls' => true]);
 
         $conn->initialize();
 
         $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
     }
 
-    public function test_reinitialize_using_ssl_swaps_protocol_and_port()
+    public function test_reinitialize_using_tls_swaps_protocol_and_port()
     {
         $conn = new Connection(['hosts' => ['127.0.0.1']]);
 
@@ -127,16 +127,16 @@ class ConnectionTest extends TestCase
 
         $this->assertEquals('ldap://127.0.0.1:389', $conn->getLdapConnection()->getHost());
 
-        $conn->getConfiguration()->set('use_ssl', true);
+        $conn->getConfiguration()->set('use_tls', true);
 
         $conn->initialize();
 
         $this->assertEquals('ldaps://127.0.0.1:636', $conn->getLdapConnection()->getHost());
     }
 
-    public function test_configured_non_standard_port_is_used_when_ssl_is_enabled()
+    public function test_configured_non_standard_port_is_used_when_tls_is_enabled()
     {
-        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_tls' => true]);
 
         $conn->initialize();
 
@@ -145,7 +145,7 @@ class ConnectionTest extends TestCase
 
     public function test_ldap_connection_can_be_set_without_initialization()
     {
-        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_ssl' => true]);
+        $conn = new Connection(['hosts' => ['127.0.0.1'], 'port' => 123, 'use_tls' => true]);
 
         $ldap = new Ldap;
 
@@ -178,7 +178,7 @@ class ConnectionTest extends TestCase
 
         $conn = new Connection([
             'hosts' => ['127.0.0.1'],
-            'use_ssl' => true,
+            'use_tls' => true,
             'username' => 'foo',
             'password' => 'bar',
         ], $ldap);

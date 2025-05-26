@@ -4,13 +4,13 @@ namespace LdapRecord\Tests\Unit\Models;
 
 use LdapRecord\Connection;
 use LdapRecord\Container;
-use LdapRecord\Models\Attributes\EscapedValue;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Relations\HasMany;
 use LdapRecord\Models\Relations\Relation;
 use LdapRecord\Models\Scope;
+use LdapRecord\Query\EscapedValue;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 
@@ -64,7 +64,7 @@ class ModelRelationTest extends TestCase
     {
         $this->assertEquals(
             ['and' => [], 'or' => [], 'raw' => []],
-            (new ModelRelationTestStub)->relation()->getQuery()->filters
+            (new ModelRelationTestStub)->relation()->getQuery()->getQuery()->filters
         );
     }
 
@@ -209,7 +209,7 @@ class ModelRelationTest extends TestCase
 
         $query = $relation->getRelationQuery();
 
-        $executedQuery = $query->getQuery();
+        $executedQuery = $query->getQuery()->getQuery();
 
         $this->assertEmpty($query->appliedScopes());
         $this->assertEquals([ModelRelationScopeTestStub::class], $query->removedScopes());
@@ -231,7 +231,7 @@ class ModelRelationTest extends TestCase
 
         $this->assertEquals(
             "(foo=$expected)",
-            $model->relation()->getRelationQuery()->getQuery()
+            $model->relation()->getRelationQuery()->getQuery()->getQuery()
         );
     }
 

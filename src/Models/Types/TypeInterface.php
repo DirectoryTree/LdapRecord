@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Types;
 
-interface TypeInterface
-{
-    //
-}
+interface TypeInterface {}

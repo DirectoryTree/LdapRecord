@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Query\Events;
 
-class Search extends QueryExecuted
-{
-    //
-}
+class Search extends QueryExecuted {}

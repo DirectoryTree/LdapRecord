@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Attributes;
 
 use LdapRecord\EscapesValues;
+use LdapRecord\Query\EscapedValue;
 use LdapRecord\Support\Arr;
 use Stringable;
 

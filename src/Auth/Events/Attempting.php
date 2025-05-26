@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Auth\Events;
 
-class Attempting extends Event
-{
-    //
-}
+class Attempting extends Event {}

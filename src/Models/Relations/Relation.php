@@ -129,9 +129,9 @@ abstract class Relation
     /**
      * Execute the relationship query.
      */
-    public function get(array|string $columns = ['*']): Collection
+    public function get(array|string $selects = ['*']): Collection
     {
-        return $this->getResultsWithColumns($columns);
+        return $this->getResultsWithColumns($selects);
     }
 
     /**
@@ -139,11 +139,9 @@ abstract class Relation
      *
      * If the query columns are empty, the given columns are applied.
      */
-    protected function getResultsWithColumns(array|string $columns): Collection
+    protected function getResultsWithColumns(array|string $selects): Collection
     {
-        if (is_null($this->query->columns)) {
-            $this->query->select($columns);
-        }
+        $this->query->select($selects);
 
         return $this->getResults();
     }
@@ -151,9 +149,9 @@ abstract class Relation
     /**
      * Get the first result of the relationship.
      */
-    public function first(array|string $columns = ['*']): ?Model
+    public function first(array|string $selects = ['*']): ?Model
     {
-        return $this->get($columns)->first();
+        return $this->get($selects)->first();
     }
 
     /**

@@ -7,7 +7,7 @@ use ArrayAccess;
 class Arr
 {
     /**
-     * Determine whether the given value is array accessible.
+     * Determine whether the given value is array-accessible.
      */
     public static function accessible(mixed $value): bool
     {

@@ -283,24 +283,24 @@ interface LdapInterface
     public const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';
 
     /**
-     * Set the current connection to use SSL.
+     * Set the current connection to use TLS (ldaps:// protocol).
      */
-    public function ssl(): static;
+    public function setSSL(bool $enabled = true): static;
 
     /**
-     * Determine if the current connection instance is using SSL.
-     */
-    public function isUsingSSL(): bool;
-
-    /**
-     * Set the current connection to use TLS.
-     */
-    public function tls(): static;
-
-    /**
-     * Determine if the current connection instance is using TLS.
+     * Determine if the current connection instance is using TLS (ldaps:// protocol).
      */
     public function isUsingTLS(): bool;
+
+    /**
+     * Set the current connection to use STARTTLS (ldap:// with upgrade).
+     */
+    public function setStartTLS(bool $enabled = true): static;
+
+    /**
+     * Determine if the current connection instance is using STARTTLS (ldap:// with upgrade).
+     */
+    public function isUsingStartTLS(): bool;
 
     /**
      * Determine if the connection is bound.
@@ -465,7 +465,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function search(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Performs a single level search on the current connection.
@@ -474,7 +474,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function list(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Reads an entry on the current connection.
@@ -483,7 +483,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function read(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Extract information from an LDAP result.

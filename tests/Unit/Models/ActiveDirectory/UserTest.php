@@ -64,7 +64,7 @@ class UserTest extends TestCase
     {
         DirectoryFake::setup()
             ->getLdapConnection()
-            ->expect(LdapFake::operation('isUsingSSL')->andReturnTrue());
+            ->expect(LdapFake::operation('isUsingTLS')->andReturnTrue());
 
         $user = new User;
 
@@ -82,7 +82,7 @@ class UserTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect([
-                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('isUsingTLS')->once()->andReturnTrue(),
                 LdapFake::operation('add')->once()->with(fn ($dn) => true, fn ($attributes) => (
                     $attributes['unicodepwd'] === [Password::encode('foobar')]
                     && $attributes['useraccountcontrol'] = 512
@@ -102,7 +102,7 @@ class UserTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect([
-                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('isUsingTLS')->once()->andReturnTrue(),
                 LdapFake::operation('modifyBatch')->once()->with(
                     function ($dn) {
                         return $dn === 'cn=john,dc=local,dc=com';
@@ -144,7 +144,7 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasMailbox()->filters;
 
-        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['field']);
+        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['attribute']);
         $this->assertEquals('*', $filters['and'][4]['operator']);
     }
 
@@ -152,7 +152,7 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasLockout()->filters;
 
-        $this->assertEquals('lockoutTime', $filters['and'][4]['field']);
+        $this->assertEquals('lockoutTime', $filters['and'][4]['attribute']);
         $this->assertEquals('>=', $filters['and'][4]['operator']);
         $this->assertEquals('\31', $filters['and'][4]['value']);
     }

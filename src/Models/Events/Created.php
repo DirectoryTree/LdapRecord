@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Events;
 
-class Created extends Event
-{
-    //
-}
+class Created extends Event {}

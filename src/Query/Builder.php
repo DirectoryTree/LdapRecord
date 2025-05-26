@@ -37,9 +37,9 @@ class Builder
     public const BASE_DN_PLACEHOLDER = '{base}';
 
     /**
-     * The selected columns to retrieve on the query.
+     * The selected attributes to retrieve on the query.
      */
-    public ?array $columns = null;
+    public ?array $selects = null;
 
     /**
      * The query filters.
@@ -180,29 +180,29 @@ class Builder
     /**
      * Executes the LDAP query.
      */
-    public function get(array|string $columns = ['*']): array
+    public function get(array|string $selects = ['*']): array
     {
-        return $this->onceWithColumns(
-            Arr::wrap($columns), fn () => $this->query($this->getQuery())
+        return $this->onceWithSelects(
+            Arr::wrap($selects), fn () => $this->query($this->getQuery())
         );
     }
 
     /**
-     * Execute the given callback while selecting the given columns.
+     * Execute the given callback while selecting the given selects.
      *
-     * After running the callback, the columns are reset to the original value.
+     * After running the callback, the selects are reset to the original value.
      */
-    protected function onceWithColumns(array $columns, Closure $callback): mixed
+    protected function onceWithSelects(array $selects, Closure $callback): mixed
     {
-        $original = $this->columns;
+        $original = $this->selects;
 
         if (is_null($original)) {
-            $this->columns = $columns;
+            $this->selects = $selects;
         }
 
         $result = $callback();
 
-        $this->columns = $original;
+        $this->selects = $original;
 
         return $result;
     }
@@ -620,10 +620,10 @@ class Builder
     /**
      * Get the first entry in a search result.
      */
-    public function first(array|string $columns = ['*']): ?array
+    public function first(array|string $selects = ['*']): ?array
     {
         return Arr::first(
-            $this->limit(1)->get($columns)
+            $this->limit(1)->get($selects)
         );
     }
 
@@ -634,9 +634,9 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    public function firstOrFail(array|string $columns = ['*']): array
+    public function firstOrFail(array|string $selects = ['*']): array
     {
-        if (! $record = $this->first($columns)) {
+        if (! $record = $this->first($selects)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
         }
 
@@ -657,9 +657,9 @@ class Builder
      * @throws ObjectsNotFoundException
      * @throws MultipleObjectsFoundException
      */
-    public function sole(array|string $columns = ['*']): array
+    public function sole(array|string $selects = ['*']): array
     {
-        $result = $this->limit(2)->get($columns);
+        $result = $this->limit(2)->get($selects);
 
         if (empty($result)) {
             throw new ObjectsNotFoundException;
@@ -709,10 +709,10 @@ class Builder
     /**
      * Find a record by the specified attribute and value.
      */
-    public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?array
+    public function findBy(string $attribute, string $value, array|string $selects = ['*']): ?array
     {
         try {
-            return $this->findByOrFail($attribute, $value, $columns);
+            return $this->findByOrFail($attribute, $value, $selects);
         } catch (ObjectNotFoundException $e) {
             return null;
         }
@@ -725,15 +725,15 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): array
+    public function findByOrFail(string $attribute, string $value, array|string $selects = ['*']): array
     {
-        return $this->whereEquals($attribute, $value)->firstOrFail($columns);
+        return $this->whereEquals($attribute, $value)->firstOrFail($selects);
     }
 
     /**
      * Find many records by distinguished name.
      */
-    public function findMany(array|string $dns, array|string $columns = ['*']): array
+    public function findMany(array|string $dns, array|string $selects = ['*']): array
     {
         if (empty($dns)) {
             return $this->process([]);
@@ -742,7 +742,7 @@ class Builder
         $objects = [];
 
         foreach ((array) $dns as $dn) {
-            if (! is_null($object = $this->find($dn, $columns))) {
+            if (! is_null($object = $this->find($dn, $selects))) {
                 $objects[] = $object;
             }
         }
@@ -753,9 +753,9 @@ class Builder
     /**
      * Find many records by the specified attribute.
      */
-    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): array
+    public function findManyBy(string $attribute, array $values = [], array|string $selects = ['*']): array
     {
-        $query = $this->select($columns);
+        $query = $this->select($selects);
 
         foreach ($values as $value) {
             $query->orWhere([$attribute => $value]);
@@ -767,14 +767,14 @@ class Builder
     /**
      * Find a record by its distinguished name.
      */
-    public function find(array|string $dn, array|string $columns = ['*']): ?array
+    public function find(array|string $dn, array|string $selects = ['*']): ?array
     {
         if (is_array($dn)) {
-            return $this->findMany($dn, $columns);
+            return $this->findMany($dn, $selects);
         }
 
         try {
-            return $this->findOrFail($dn, $columns);
+            return $this->findOrFail($dn, $selects);
         } catch (ObjectNotFoundException) {
             return null;
         }
@@ -787,36 +787,36 @@ class Builder
      *
      * @throws ObjectNotFoundException
      */
-    public function findOrFail(string $dn, array|string $columns = ['*']): array
+    public function findOrFail(string $dn, array|string $selects = ['*']): array
     {
         return $this->setDn($dn)
             ->read()
             ->whereHas('objectclass')
-            ->firstOrFail($columns);
+            ->firstOrFail($selects);
     }
 
     /**
-     * Select the given columns to retrieve.
+     * Select the given attributes to retrieve.
      */
-    public function select(array|string $columns = ['*']): static
+    public function select(array|string $selects = ['*']): static
     {
-        $columns = is_array($columns) ? $columns : func_get_args();
+        $selects = is_array($selects) ? $selects : func_get_args();
 
-        if (! empty($columns)) {
-            $this->columns = $columns;
+        if (! empty($selects)) {
+            $this->selects = $selects;
         }
 
         return $this;
     }
 
     /**
-     * Add a new select column to the query.
+     * Add a selected attribute to the query.
      */
-    public function addSelect(array|string $column): static
+    public function addSelect(array|string $select): static
     {
-        $column = is_array($column) ? $column : func_get_args();
+        $select = is_array($select) ? $select : func_get_args();
 
-        $this->columns = array_merge((array) $this->columns, $column);
+        $this->selects = array_merge((array) $this->selects, $select);
 
         return $this;
     }
@@ -906,10 +906,10 @@ class Builder
      *
      * @throws InvalidArgumentException
      */
-    public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
-        if (is_array($field)) {
-            return $this->addArrayOfWheres($field, $boolean, $raw);
+        if (is_array($attribute)) {
+            return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
 
         [$value, $operator] = $this->prepareValueAndOperator(
@@ -920,11 +920,11 @@ class Builder
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
-        $value = $this->prepareWhereValue($field, $value, $raw);
+        $value = $this->prepareWhereValue($attribute, $value, $raw);
 
-        $field = $this->escape($field)->forDnAndFilter()->get();
+        $attribute = $this->escape($attribute)->forDnAndFilter()->get();
 
-        $this->addFilter($boolean, compact('field', 'operator', 'value'));
+        $this->addFilter($boolean, compact('attribute', 'operator', 'value'));
 
         return $this;
     }
@@ -952,7 +952,7 @@ class Builder
     /**
      * Prepare the value for being queried.
      */
-    protected function prepareWhereValue(string $field, mixed $value = null, bool $raw = false): string
+    protected function prepareWhereValue(string $attribute, mixed $value = null, bool $raw = false): string
     {
         return $raw ? $value : $this->escape($value)->get();
     }
@@ -962,75 +962,75 @@ class Builder
      *
      * Values given to this method are not escaped.
      */
-    public function whereRaw(array|string $field, ?string $operator = null, mixed $value = null): static
+    public function whereRaw(array|string $attribute, ?string $operator = null, mixed $value = null): static
     {
-        return $this->where($field, $operator, $value, 'and', true);
+        return $this->where($attribute, $operator, $value, 'and', true);
     }
 
     /**
      * Adds a 'where equals' clause to the current query.
      */
-    public function whereEquals(string $field, string $value): static
+    public function whereEquals(string $attribute, string $value): static
     {
-        return $this->where($field, '=', $value);
+        return $this->where($attribute, '=', $value);
     }
 
     /**
      * Adds a 'where not equals' clause to the current query.
      */
-    public function whereNotEquals(string $field, string $value): static
+    public function whereNotEquals(string $attribute, string $value): static
     {
-        return $this->where($field, '!', $value);
+        return $this->where($attribute, '!', $value);
     }
 
     /**
      * Adds a 'where approximately equals' clause to the current query.
      */
-    public function whereApproximatelyEquals(string $field, string $value): static
+    public function whereApproximatelyEquals(string $attribute, string $value): static
     {
-        return $this->where($field, '~=', $value);
+        return $this->where($attribute, '~=', $value);
     }
 
     /**
      * Adds a 'where has' clause to the current query.
      */
-    public function whereHas(string $field): static
+    public function whereHas(string $attribute): static
     {
-        return $this->where($field, '*');
+        return $this->where($attribute, '*');
     }
 
     /**
      * Adds a 'where not has' clause to the current query.
      */
-    public function whereNotHas(string $field): static
+    public function whereNotHas(string $attribute): static
     {
-        return $this->where($field, '!*');
+        return $this->where($attribute, '!*');
     }
 
     /**
      * Adds a 'where contains' clause to the current query.
      */
-    public function whereContains(string $field, string $value): static
+    public function whereContains(string $attribute, string $value): static
     {
-        return $this->where($field, 'contains', $value);
+        return $this->where($attribute, 'contains', $value);
     }
 
     /**
      * Adds a 'where contains' clause to the current query.
      */
-    public function whereNotContains(string $field, string $value): static
+    public function whereNotContains(string $attribute, string $value): static
     {
-        return $this->where($field, 'not_contains', $value);
+        return $this->where($attribute, 'not_contains', $value);
     }
 
     /**
      * Query for entries that match any of the values provided for the given field.
      */
-    public function whereIn(string $field, array $values): static
+    public function whereIn(string $attribute, array $values): static
     {
-        return $this->orFilter(function (Builder $query) use ($field, $values) {
+        return $this->orFilter(function (Builder $query) use ($attribute, $values) {
             foreach ($values as $value) {
-                $query->whereEquals($field, $value);
+                $query->whereEquals($attribute, $value);
             }
         });
     }
@@ -1038,44 +1038,44 @@ class Builder
     /**
      * Adds a 'between' clause to the current query.
      */
-    public function whereBetween(string $field, array $values): static
+    public function whereBetween(string $attribute, array $values): static
     {
         return $this->where([
-            [$field, '>=', $values[0]],
-            [$field, '<=', $values[1]],
+            [$attribute, '>=', $values[0]],
+            [$attribute, '<=', $values[1]],
         ]);
     }
 
     /**
      * Adds a 'where starts with' clause to the current query.
      */
-    public function whereStartsWith(string $field, string $value): static
+    public function whereStartsWith(string $attribute, string $value): static
     {
-        return $this->where($field, 'starts_with', $value);
+        return $this->where($attribute, 'starts_with', $value);
     }
 
     /**
      * Adds a 'where *not* starts with' clause to the current query.
      */
-    public function whereNotStartsWith(string $field, string $value): static
+    public function whereNotStartsWith(string $attribute, string $value): static
     {
-        return $this->where($field, 'not_starts_with', $value);
+        return $this->where($attribute, 'not_starts_with', $value);
     }
 
     /**
      * Adds a 'where ends with' clause to the current query.
      */
-    public function whereEndsWith(string $field, string $value): static
+    public function whereEndsWith(string $attribute, string $value): static
     {
-        return $this->where($field, 'ends_with', $value);
+        return $this->where($attribute, 'ends_with', $value);
     }
 
     /**
      * Adds a 'where *not* ends with' clause to the current query.
      */
-    public function whereNotEndsWith(string $field, string $value): static
+    public function whereNotEndsWith(string $attribute, string $value): static
     {
-        return $this->where($field, 'not_ends_with', $value);
+        return $this->where($attribute, 'not_ends_with', $value);
     }
 
     /**
@@ -1115,13 +1115,13 @@ class Builder
     /**
      * Adds an 'or where' clause to the current query.
      */
-    public function orWhere(array|string $field, ?string $operator = null, ?string $value = null): static
+    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
 
-        return $this->where($field, $operator, $value, 'or');
+        return $this->where($attribute, $operator, $value, 'or');
     }
 
     /**
@@ -1129,97 +1129,97 @@ class Builder
      *
      * Values given to this method are not escaped.
      */
-    public function orWhereRaw(array|string $field, ?string $operator = null, ?string $value = null): static
+    public function orWhereRaw(array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
-        return $this->where($field, $operator, $value, 'or', true);
+        return $this->where($attribute, $operator, $value, 'or', true);
     }
 
     /**
      * Adds an 'or where has' clause to the current query.
      */
-    public function orWhereHas(string $field): static
+    public function orWhereHas(string $attribute): static
     {
-        return $this->orWhere($field, '*');
+        return $this->orWhere($attribute, '*');
     }
 
     /**
      * Adds a 'where not has' clause to the current query.
      */
-    public function orWhereNotHas(string $field): static
+    public function orWhereNotHas(string $attribute): static
     {
-        return $this->orWhere($field, '!*');
+        return $this->orWhere($attribute, '!*');
     }
 
     /**
      * Adds an 'or where equals' clause to the current query.
      */
-    public function orWhereEquals(string $field, string $value): static
+    public function orWhereEquals(string $attribute, string $value): static
     {
-        return $this->orWhere($field, '=', $value);
+        return $this->orWhere($attribute, '=', $value);
     }
 
     /**
      * Adds an 'or where not equals' clause to the current query.
      */
-    public function orWhereNotEquals(string $field, string $value): static
+    public function orWhereNotEquals(string $attribute, string $value): static
     {
-        return $this->orWhere($field, '!', $value);
+        return $this->orWhere($attribute, '!', $value);
     }
 
     /**
      * Adds a 'or where approximately equals' clause to the current query.
      */
-    public function orWhereApproximatelyEquals(string $field, string $value): static
+    public function orWhereApproximatelyEquals(string $attribute, string $value): static
     {
-        return $this->orWhere($field, '~=', $value);
+        return $this->orWhere($attribute, '~=', $value);
     }
 
     /**
      * Adds an 'or where contains' clause to the current query.
      */
-    public function orWhereContains(string $field, string $value): static
+    public function orWhereContains(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'contains', $value);
+        return $this->orWhere($attribute, 'contains', $value);
     }
 
     /**
      * Adds an 'or where *not* contains' clause to the current query.
      */
-    public function orWhereNotContains(string $field, string $value): static
+    public function orWhereNotContains(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'not_contains', $value);
+        return $this->orWhere($attribute, 'not_contains', $value);
     }
 
     /**
      * Adds an 'or where starts with' clause to the current query.
      */
-    public function orWhereStartsWith(string $field, string $value): static
+    public function orWhereStartsWith(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'starts_with', $value);
+        return $this->orWhere($attribute, 'starts_with', $value);
     }
 
     /**
      * Adds an 'or where *not* starts with' clause to the current query.
      */
-    public function orWhereNotStartsWith(string $field, string $value): static
+    public function orWhereNotStartsWith(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'not_starts_with', $value);
+        return $this->orWhere($attribute, 'not_starts_with', $value);
     }
 
     /**
      * Adds an 'or where ends with' clause to the current query.
      */
-    public function orWhereEndsWith(string $field, string $value): static
+    public function orWhereEndsWith(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'ends_with', $value);
+        return $this->orWhere($attribute, 'ends_with', $value);
     }
 
     /**
      * Adds an 'or where *not* ends with' clause to the current query.
      */
-    public function orWhereNotEndsWith(string $field, string $value): static
+    public function orWhereNotEndsWith(string $attribute, string $value): static
     {
-        return $this->orWhere($field, 'not_ends_with', $value);
+        return $this->orWhere($attribute, 'not_ends_with', $value);
     }
 
     /**
@@ -1252,7 +1252,7 @@ class Builder
      */
     protected function missingBindingKeys(array $bindings): array
     {
-        $required = array_flip(['field', 'operator', 'value']);
+        $required = array_flip(['attribute', 'operator', 'value']);
 
         $existing = array_intersect_key($required, $bindings);
 
@@ -1284,7 +1284,7 @@ class Builder
      */
     public function hasSelects(): bool
     {
-        return count($this->columns ?? []) > 0;
+        return count($this->selects ?? []) > 0;
     }
 
     /**
@@ -1292,7 +1292,7 @@ class Builder
      */
     public function getSelects(): array
     {
-        $selects = $this->columns ?? ['*'];
+        $selects = $this->selects ?? ['*'];
 
         if (in_array('*', $selects)) {
             return $selects;
@@ -1302,7 +1302,7 @@ class Builder
             return $selects;
         }
 
-        // If the * character is not provided in the selected columns,
+        // If the * character is not provided in the selected attributes,
         // we need to ensure we always select the object class, as
         // this is used for constructing models properly.
         $selects[] = 'objectclass';

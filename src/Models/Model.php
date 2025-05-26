@@ -289,9 +289,9 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Find a model by its distinguished name.
      */
-    public static function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
+    public static function find(array|string $dn, array|string $attributes = ['*']): Model|Collection|null
     {
-        return (new static)->newQueryWithoutScopes()->find($dn, $columns);
+        return (new static)->newQueryWithoutScopes()->find($dn, $attributes);
     }
 
     /**

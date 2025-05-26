@@ -121,7 +121,7 @@ class HasMany extends OneToMany
      */
     public function getRelationQuery(): Builder
     {
-        $columns = $this->query->getSelects();
+        $selects = $this->query->getSelects();
 
         // We need to select the proper key to be able to retrieve its
         // value from LDAP results. If we don't, we won't be able
@@ -133,7 +133,7 @@ class HasMany extends OneToMany
         // we will add the key to the attributes to select and also
         // validate that the key isn't already being selected
         // to prevent stacking on multiple relation calls.
-        if (! in_array('*', $columns) && ! in_array($key, $columns)) {
+        if (! in_array('*', $selects) && ! in_array($key, $selects)) {
             $this->query->addSelect($key);
         }
 

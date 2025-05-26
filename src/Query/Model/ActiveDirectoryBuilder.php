@@ -13,10 +13,10 @@ class ActiveDirectoryBuilder extends Builder
     /**
      * Finds a record by its Object SID.
      */
-    public function findBySid(string $sid, array|string $columns = ['*']): ?Model
+    public function findBySid(string $sid, array|string $selects = ['*']): ?Model
     {
         try {
-            return $this->findBySidOrFail($sid, $columns);
+            return $this->findBySidOrFail($sid, $selects);
         } catch (ModelNotFoundException) {
             return null;
         }
@@ -29,9 +29,9 @@ class ActiveDirectoryBuilder extends Builder
      *
      * @throws ModelNotFoundException
      */
-    public function findBySidOrFail(string $sid, array $columns = ['*']): Model
+    public function findBySidOrFail(string $sid, array $selects = ['*']): Model
     {
-        return $this->findByOrFail('objectsid', $sid, $columns);
+        return $this->findByOrFail('objectsid', $sid, $selects);
     }
 
     /**

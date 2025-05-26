@@ -57,7 +57,7 @@ class ModelScopeTest extends TestCase
         $query = ModelWithGlobalScopeTestStub::query();
 
         $this->assertEquals([
-            'field' => 'foo',
+            'attribute' => 'foo',
             'operator' => '=',
             'value' => 'bar',
         ], $query->toBase()->filters['and'][0]);
@@ -75,7 +75,7 @@ class ModelScopeTest extends TestCase
         $this->assertEmpty($query->paginate());
 
         $this->assertEquals([
-            'field' => 'foo',
+            'attribute' => 'foo',
             'operator' => '=',
             'value' => 'bar',
         ], $query->toBase()->filters['and'][0]);
@@ -97,7 +97,7 @@ class ModelScopeTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertCount(1, $query->toBase()->filters['and']);
-        $this->assertEquals('foo', $query->toBase()->filters['and'][0]['field']);
+        $this->assertEquals('foo', $query->toBase()->filters['and'][0]['attribute']);
         $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
         $this->assertEquals('\62\61\72', $query->toBase()->filters['and'][0]['value']);
     }
@@ -108,7 +108,7 @@ class ModelScopeTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $query);
         $this->assertCount(1, $query->toBase()->filters['and']);
-        $this->assertEquals('bar', $query->toBase()->filters['and'][0]['field']);
+        $this->assertEquals('bar', $query->toBase()->filters['and'][0]['attribute']);
         $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
         $this->assertEquals('\7a\61\6c', $query->toBase()->filters['and'][0]['value']);
     }

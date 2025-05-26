@@ -144,7 +144,7 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasMailbox()->filters;
 
-        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['field']);
+        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['attribute']);
         $this->assertEquals('*', $filters['and'][4]['operator']);
     }
 
@@ -152,7 +152,7 @@ class UserTest extends TestCase
     {
         $filters = User::whereHasLockout()->filters;
 
-        $this->assertEquals('lockoutTime', $filters['and'][4]['field']);
+        $this->assertEquals('lockoutTime', $filters['and'][4]['attribute']);
         $this->assertEquals('>=', $filters['and'][4]['operator']);
         $this->assertEquals('\31', $filters['and'][4]['value']);
     }

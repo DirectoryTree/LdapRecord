@@ -457,7 +457,7 @@ class ModelQueryTest extends TestCase
         Container::addConnection(new Connection);
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Cannot convert field [non-existent-date]');
+        $this->expectExceptionMessage('Cannot convert attribute [non-existent-date]');
 
         Entry::query()->where('non-existent-date', new DateTime);
     }
@@ -491,7 +491,7 @@ class ModelAllTest extends Model
 
 class ModelDestroyStub extends Model
 {
-    public static function find($dn, $columns = []): Model|Collection|null
+    public static function find($dn, $attributes = []): Model|Collection|null
     {
         $stub = m::mock(Entry::class);
         $stub->shouldReceive('delete')->once()->andReturnTrue();

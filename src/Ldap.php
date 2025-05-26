@@ -193,57 +193,57 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function search(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->executeFailableOperation(function () use (
             $dn,
             $filter,
-            $fields,
+            $attributes,
             $onlyAttributes,
             $size,
             $time,
             $deref,
             $controls
         ) {
-            return ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+            return ldap_search($this->connection, $dn, $filter, $attributes, $onlyAttributes, $size, $time, $deref, $controls);
         });
     }
 
     /**
      * {@inheritdoc}
      */
-    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function list(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->executeFailableOperation(function () use (
             $dn,
             $filter,
-            $fields,
+            $attributes,
             $onlyAttributes,
             $size,
             $time,
             $deref,
             $controls
         ) {
-            return ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+            return ldap_list($this->connection, $dn, $filter, $attributes, $onlyAttributes, $size, $time, $deref, $controls);
         });
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function read(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->executeFailableOperation(function () use (
             $dn,
             $filter,
-            $fields,
+            $attributes,
             $onlyAttributes,
             $size,
             $time,
             $deref,
             $controls
         ) {
-            return ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $controls);
+            return ldap_read($this->connection, $dn, $filter, $attributes, $onlyAttributes, $size, $time, $deref, $controls);
         });
     }
 

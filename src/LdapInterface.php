@@ -465,7 +465,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function search(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Performs a single level search on the current connection.
@@ -474,7 +474,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function list(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Reads an entry on the current connection.
@@ -483,7 +483,7 @@ interface LdapInterface
      *
      * @return \LDAP\Result
      */
-    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
+    public function read(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
     /**
      * Extract information from an LDAP result.

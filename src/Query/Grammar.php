@@ -219,10 +219,10 @@ class Grammar
 
         // Some operators like 'has' and 'notHas' don't require a value
         if (in_array($where['operator'], ['*', '!*'])) {
-            return $this->{$method}($where['field']);
+            return $this->{$method}($where['attribute']);
         }
 
-        return $this->{$method}($where['field'], $where['value']);
+        return $this->{$method}($where['attribute'], $where['value']);
     }
 
     /**
@@ -250,148 +250,148 @@ class Grammar
     /**
      * Returns a query string for equals.
      *
-     * Produces: (field=value)
+     * Produces: (attribute=value)
      */
-    public function compileEquals(string $field, string $value): string
+    public function compileEquals(string $attribute, string $value): string
     {
-        return $this->wrap($field.'='.$value);
+        return $this->wrap($attribute.'='.$value);
     }
 
     /**
      * Returns a query string for does not equal.
      *
-     * Produces: (!(field=value))
+     * Produces: (!(attribute=value))
      */
-    public function compileDoesNotEqual(string $field, string $value): string
+    public function compileDoesNotEqual(string $attribute, string $value): string
     {
         return $this->compileNot(
-            $this->compileEquals($field, $value)
+            $this->compileEquals($attribute, $value)
         );
     }
 
     /**
      * Alias for does not equal operator (!=) operator.
      *
-     * Produces: (!(field=value))
+     * Produces: (!(attribute=value))
      */
-    public function compileDoesNotEqualAlias(string $field, string $value): string
+    public function compileDoesNotEqualAlias(string $attribute, string $value): string
     {
-        return $this->compileDoesNotEqual($field, $value);
+        return $this->compileDoesNotEqual($attribute, $value);
     }
 
     /**
      * Returns a query string for greater than or equals.
      *
-     * Produces: (field>=value)
+     * Produces: (attribute>=value)
      */
-    public function compileGreaterThanOrEquals(string $field, string $value): string
+    public function compileGreaterThanOrEquals(string $attribute, string $value): string
     {
-        return $this->wrap("$field>=$value");
+        return $this->wrap("$attribute>=$value");
     }
 
     /**
      * Returns a query string for less than or equals.
      *
-     * Produces: (field<=value)
+     * Produces: (attribute<=value)
      */
-    public function compileLessThanOrEquals(string $field, string $value): string
+    public function compileLessThanOrEquals(string $attribute, string $value): string
     {
-        return $this->wrap("$field<=$value");
+        return $this->wrap("$attribute<=$value");
     }
 
     /**
      * Returns a query string for approximately equals.
      *
-     * Produces: (field~=value)
+     * Produces: (attribute~=value)
      */
-    public function compileApproximatelyEquals(string $field, string $value): string
+    public function compileApproximatelyEquals(string $attribute, string $value): string
     {
-        return $this->wrap("$field~=$value");
+        return $this->wrap("$attribute~=$value");
     }
 
     /**
      * Returns a query string for starts with.
      *
-     * Produces: (field=value*)
+     * Produces: (attribute=value*)
      */
-    public function compileStartsWith(string $field, string $value): string
+    public function compileStartsWith(string $attribute, string $value): string
     {
-        return $this->wrap("$field=$value*");
+        return $this->wrap("$attribute=$value*");
     }
 
     /**
      * Returns a query string for does not start with.
      *
-     * Produces: (!(field=*value))
+     * Produces: (!(attribute=*value))
      */
-    public function compileNotStartsWith(string $field, string $value): string
+    public function compileNotStartsWith(string $attribute, string $value): string
     {
         return $this->compileNot(
-            $this->compileStartsWith($field, $value)
+            $this->compileStartsWith($attribute, $value)
         );
     }
 
     /**
      * Returns a query string for ends with.
      *
-     * Produces: (field=*value)
+     * Produces: (attribute=*value)
      */
-    public function compileEndsWith(string $field, string $value): string
+    public function compileEndsWith(string $attribute, string $value): string
     {
-        return $this->wrap("$field=*$value");
+        return $this->wrap("$attribute=*$value");
     }
 
     /**
      * Returns a query string for does not end with.
      *
-     * Produces: (!(field=value*))
+     * Produces: (!(attribute=value*))
      */
-    public function compileNotEndsWith(string $field, string $value): string
+    public function compileNotEndsWith(string $attribute, string $value): string
     {
-        return $this->compileNot($this->compileEndsWith($field, $value));
+        return $this->compileNot($this->compileEndsWith($attribute, $value));
     }
 
     /**
      * Returns a query string for contains.
      *
-     * Produces: (field=*value*)
+     * Produces: (attribute=*value*)
      */
-    public function compileContains(string $field, string $value): string
+    public function compileContains(string $attribute, string $value): string
     {
-        return $this->wrap("$field=*$value*");
+        return $this->wrap("$attribute=*$value*");
     }
 
     /**
      * Returns a query string for does not contain.
      *
-     * Produces: (!(field=*value*))
+     * Produces: (!(attribute=*value*))
      */
-    public function compileNotContains(string $field, string $value): string
+    public function compileNotContains(string $attribute, string $value): string
     {
         return $this->compileNot(
-            $this->compileContains($field, $value)
+            $this->compileContains($attribute, $value)
         );
     }
 
     /**
      * Returns a query string for a where has.
      *
-     * Produces: (field=*)
+     * Produces: (attribute=*)
      */
-    public function compileHas(string $field): string
+    public function compileHas(string $attribute): string
     {
-        return $this->wrap("$field=*");
+        return $this->wrap("$attribute=*");
     }
 
     /**
      * Returns a query string for a where does not have.
      *
-     * Produces: (!(field=*))
+     * Produces: (!(attribute=*))
      */
-    public function compileNotHas(string $field): string
+    public function compileNotHas(string $attribute): string
     {
         return $this->compileNot(
-            $this->compileHas($field)
+            $this->compileHas($attribute)
         );
     }
 

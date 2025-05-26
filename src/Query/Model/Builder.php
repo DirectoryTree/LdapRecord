@@ -113,9 +113,9 @@ class Builder
     /**
      * Get the first record from the query.
      */
-    public function first(array|string $columns = ['*']): ?Model
+    public function first(array|string $selects = ['*']): ?Model
     {
-        return $this->limit(1)->get($columns)->first();
+        return $this->limit(1)->get($selects)->first();
     }
 
     /**
@@ -123,9 +123,9 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function firstOrFail(array|string $columns = ['*']): Model
+    public function firstOrFail(array|string $selects = ['*']): Model
     {
-        if (! is_null($model = $this->first($columns))) {
+        if (! is_null($model = $this->first($selects))) {
             return $model;
         }
 
@@ -141,9 +141,9 @@ class Builder
      * @throws ModelNotFoundException
      * @throws MultipleObjectsFoundException
      */
-    public function sole(array|string $columns = ['*']): Model
+    public function sole(array|string $selects = ['*']): Model
     {
-        $result = $this->limit(2)->get($columns);
+        $result = $this->limit(2)->get($selects);
 
         if ($result->isEmpty()) {
             throw new ModelNotFoundException;
@@ -159,13 +159,13 @@ class Builder
     /**
      * Find a record by its DN or an array of DNs.
      */
-    public function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
+    public function find(array|string $dn, array|string $selects = ['*']): Model|Collection|null
     {
         if (is_array($dn)) {
-            return $this->findMany($dn, $columns);
+            return $this->findMany($dn, $selects);
         }
 
-        return $this->setDn($dn)->read()->first($columns);
+        return $this->setDn($dn)->read()->first($selects);
     }
 
     /**
@@ -173,9 +173,9 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function findOrFail(string $dn, array|string $columns = ['*']): Model
+    public function findOrFail(string $dn, array|string $selects = ['*']): Model
     {
-        $entry = $this->find($dn, $columns);
+        $entry = $this->find($dn, $selects);
 
         if (! $entry instanceof Model) {
             $this->throwNotFoundException(
@@ -192,9 +192,9 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): Model
+    public function findByOrFail(string $attribute, string $value, array|string $selects = ['*']): Model
     {
-        $entry = $this->findBy($attribute, $value, $columns);
+        $entry = $this->findBy($attribute, $value, $selects);
 
         if (! $entry) {
             $this->throwNotFoundException(
@@ -209,22 +209,22 @@ class Builder
     /**
      * Find a record by the given attribute and value.
      */
-    public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?Model
+    public function findBy(string $attribute, string $value, array|string $selects = ['*']): ?Model
     {
-        return $this->whereEquals($attribute, $value)->first($columns);
+        return $this->whereEquals($attribute, $value)->first($selects);
     }
 
     /**
      * Find multiple records by the given DN or array of DNs.
      */
-    public function findMany(array|string $dns, array|string $columns = ['*']): Collection
+    public function findMany(array|string $dns, array|string $selects = ['*']): Collection
     {
         $dns = (array) $dns;
 
         $collection = $this->model->newCollection();
 
         foreach ($dns as $dn) {
-            if ($entry = $this->find($dn, $columns)) {
+            if ($entry = $this->find($dn, $selects)) {
                 $collection->push($entry);
             }
         }
@@ -235,9 +235,9 @@ class Builder
     /**
      * Find multiple records by the given attribute and array of values.
      */
-    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection
+    public function findManyBy(string $attribute, array $values = [], array|string $selects = ['*']): Collection
     {
-        $this->select($columns);
+        $this->select($selects);
 
         if (empty($values)) {
             return $this->model->newCollection();
@@ -249,26 +249,26 @@ class Builder
             }
         });
 
-        return $this->get($columns);
+        return $this->get($selects);
     }
 
     /**
      * Finds a record using ambiguous name resolution.
      */
-    public function findByAnr(array|string $value, array|string $columns = ['*']): Model|Collection|null
+    public function findByAnr(array|string $value, array|string $selects = ['*']): Model|Collection|null
     {
         if (is_array($value)) {
-            return $this->findManyByAnr($value, $columns);
+            return $this->findManyByAnr($value, $selects);
         }
 
         // If the model is not compatible with ANR filters,
         // we must construct an equivalent filter that
         // the current LDAP server does support.
         if (! $this->modelIsCompatibleWithAnr()) {
-            return $this->prepareAnrEquivalentQuery($value)->first($columns);
+            return $this->prepareAnrEquivalentQuery($value)->first($selects);
         }
 
-        return $this->findBy('anr', $value, $columns);
+        return $this->findBy('anr', $value, $selects);
     }
 
     /**
@@ -284,9 +284,9 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function findByAnrOrFail(string $value, array|string $columns = ['*']): Model
+    public function findByAnrOrFail(string $value, array|string $selects = ['*']): Model
     {
-        if (! $entry = $this->findByAnr($value, $columns)) {
+        if (! $entry = $this->findByAnr($value, $selects)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->query->getDn());
         }
 
@@ -306,16 +306,16 @@ class Builder
     /**
      * Find multiple records using ambiguous name resolution.
      */
-    public function findManyByAnr(array $values = [], array|string $columns = ['*']): Collection
+    public function findManyByAnr(array $values = [], array|string $selects = ['*']): Collection
     {
-        $this->select($columns);
+        $this->select($selects);
 
         if (! $this->modelIsCompatibleWithAnr()) {
             foreach ($values as $value) {
                 $this->prepareAnrEquivalentQuery($value);
             }
 
-            return $this->get($columns);
+            return $this->get($selects);
         }
 
         return $this->findManyBy('anr', $values);
@@ -336,10 +336,10 @@ class Builder
     /**
      * Find a record by its string GUID.
      */
-    public function findByGuid(string $guid, array|string $columns = ['*']): ?Model
+    public function findByGuid(string $guid, array|string $selects = ['*']): ?Model
     {
         try {
-            return $this->findByGuidOrFail($guid, $columns);
+            return $this->findByGuidOrFail($guid, $selects);
         } catch (ModelNotFoundException $e) {
             return null;
         }
@@ -350,7 +350,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function findByGuidOrFail(string $guid, array|string $columns = ['*']): Model
+    public function findByGuidOrFail(string $guid, array|string $selects = ['*']): Model
     {
         if ($this->model instanceof ActiveDirectory) {
             $guid = (new Guid($guid))->getEncodedHex();
@@ -358,7 +358,7 @@ class Builder
 
         return $this->whereRaw([
             $this->model->getGuidKey() => $guid,
-        ])->firstOrFail($columns);
+        ])->firstOrFail($selects);
     }
 
     /**
@@ -498,11 +498,11 @@ class Builder
     /**
      * Execute the query and get the results.
      */
-    public function get(array|string $columns = ['*']): Collection
+    public function get(array|string $selects = ['*']): Collection
     {
         $builder = $this->applyScopes();
 
-        $models = $builder->getModels($columns);
+        $models = $builder->getModels($selects);
 
         return $builder->getModel()->newCollection($models);
     }
@@ -510,16 +510,16 @@ class Builder
     /**
      * Select the given columns to retrieve.
      */
-    public function select(array|string $columns): static
+    public function select(array|string $selects): static
     {
         // If selects are being overridden, then we need to ensure
         // the GUID key is always selected so that it may be
         // returned in the results for model hydration.
-        $columns = array_values(array_unique(
-            array_merge([$this->model->getGuidKey()], (array) $columns)
+        $selects = array_values(array_unique(
+            array_merge([$this->model->getGuidKey()], (array) $selects)
         ));
 
-        $this->query->select($columns);
+        $this->query->select($selects);
 
         return $this;
     }
@@ -527,9 +527,9 @@ class Builder
     /**
      * Add a new select column to the query.
      */
-    public function addSelect(array|string $column): static
+    public function addSelect(array|string $select): static
     {
-        $this->query->addSelect($column);
+        $this->query->addSelect($select);
 
         return $this;
     }
@@ -537,10 +537,10 @@ class Builder
     /**
      * Add a where clause to the query with proper value preparation.
      */
-    public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
-        if (is_array($field)) {
-            return $this->addArrayOfWheres($field, $boolean);
+        if (is_array($attribute)) {
+            return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
 
         [$value, $operator] = $this->query->prepareValueAndOperator(
@@ -548,10 +548,10 @@ class Builder
         );
 
         if (! $raw && $value !== null) {
-            $value = $this->prepareWhereValue($field, $value);
+            $value = $this->prepareWhereValue($attribute, $value);
         }
 
-        $this->query->where($field, $operator, $value, $boolean, $raw);
+        $this->query->where($attribute, $operator, $value, $boolean, $raw);
 
         return $this;
     }
@@ -559,13 +559,13 @@ class Builder
     /**
      * Add an array of where clauses to the query.
      */
-    protected function addArrayOfWheres(array $column, string $boolean): static
+    protected function addArrayOfWheres(array $wheres, string $boolean, bool $raw): static
     {
-        foreach ($column as $key => $value) {
+        foreach ($wheres as $key => $value) {
             if (is_numeric($key) && is_array($value)) {
-                $this->where(...array_values($value));
+                $this->where(...array_values($value), boolean: $boolean, raw: $raw);
             } else {
-                $this->where($key, '=', $value, $boolean);
+                $this->where($key, '=', $value, $boolean, $raw);
             }
         }
 
@@ -583,17 +583,17 @@ class Builder
     /**
      * Add a raw where clause to the query.
      */
-    public function whereRaw(array|string $field, ?string $operator = null, mixed $value = null): static
+    public function whereRaw(array|string $attribute, ?string $operator = null, mixed $value = null): static
     {
-        if (is_array($field)) {
-            return $this->addArrayOfWheres($field, 'and');
+        if (is_array($attribute)) {
+            return $this->addArrayOfWheres($attribute, 'and', true);
         }
 
         if ($value !== null) {
-            $value = $this->prepareWhereValue($field, $value);
+            $value = $this->prepareWhereValue($attribute, $value);
         }
 
-        $this->query->whereRaw($field, $operator, $value);
+        $this->query->whereRaw($attribute, $operator, $value);
 
         return $this;
     }
@@ -601,27 +601,29 @@ class Builder
     /**
      * Add an or where clause to the query.
      */
-    public function orWhere(array|string $field, ?string $operator = null, ?string $value = null): static
+    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
-        $this->query->orWhere($field, $operator, $value);
+        [$value, $operator] = $this->query->prepareValueAndOperator(
+            $value, $operator, func_num_args() === 2
+        );
 
-        return $this;
+        return $this->where($attribute, $operator, $value, 'or');
     }
 
     /**
      * Add a raw or where clause to the query.
      */
-    public function orWhereRaw(array|string $field, ?string $operator = null, ?string $value = null): static
+    public function orWhereRaw(array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
-        if (is_array($field)) {
-            return $this->addArrayOfWheres($field, 'or');
+        if (is_array($attribute)) {
+            return $this->addArrayOfWheres($attribute, 'or', true);
         }
 
         if ($value !== null) {
-            $value = $this->prepareWhereValue($field, $value);
+            $value = $this->prepareWhereValue($attribute, $value);
         }
 
-        $this->query->orWhereRaw($field, $operator, $value);
+        $this->query->orWhereRaw($attribute, $operator, $value);
 
         return $this;
     }
@@ -629,33 +631,33 @@ class Builder
     /**
      * Add a where equals clause to the query.
      */
-    public function whereEquals(string $field, string $value): static
+    public function whereEquals(string $attribute, string $value): static
     {
-        return $this->where($field, '=', $value);
+        return $this->where($attribute, '=', $value);
     }
 
     /**
      * Add a where not equals clause to the query.
      */
-    public function whereNotEquals(string $field, string $value): static
+    public function whereNotEquals(string $attribute, string $value): static
     {
-        return $this->where($field, '!', $value);
+        return $this->where($attribute, '!', $value);
     }
 
     /**
      * Add a where has clause to the query.
      */
-    public function whereHas(string $field): static
+    public function whereHas(string $attribute): static
     {
-        return $this->where($field, '*');
+        return $this->where($attribute, '*');
     }
 
     /**
      * Add a where not has clause to the query.
      */
-    public function whereNotHas(string $field): static
+    public function whereNotHas(string $attribute): static
     {
-        return $this->where($field, '!*');
+        return $this->where($attribute, '!*');
     }
 
     /**
@@ -749,10 +751,10 @@ class Builder
     /**
      * Get the hydrated models from the query.
      */
-    public function getModels(array|string $columns = ['*']): array
+    public function getModels(array|string $selects = ['*']): array
     {
         return $this->model->hydrate(
-            $this->query->get($columns)
+            $this->query->get($selects)
         )->all();
     }
 
@@ -761,22 +763,22 @@ class Builder
      *
      * @throws UnexpectedValueException
      */
-    protected function prepareWhereValue(string $field, mixed $value = null): mixed
+    protected function prepareWhereValue(string $attribute, mixed $value = null): mixed
     {
         if (! $value instanceof DateTime) {
             return $value;
         }
 
-        $field = $this->model->normalizeAttributeKey($field);
+        $attribute = $this->model->normalizeAttributeKey($attribute);
 
-        if (! $this->model->isDateAttribute($field)) {
+        if (! $this->model->isDateAttribute($attribute)) {
             throw new UnexpectedValueException(
-                "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
+                "Cannot convert attribute [$attribute] to an LDAP timestamp. You must add this field as a model date."
                 .' Refer to https://ldaprecord.com/docs/core/v3/model-mutators/#date-mutators'
             );
         }
 
-        return (string) $this->model->fromDateTime($value, $this->model->getDates()[$field]);
+        return (string) $this->model->fromDateTime($value, $this->model->getDates()[$attribute]);
     }
 
     /**

@@ -646,9 +646,9 @@ class Builder
     /**
      * Get the first entry in a result, or execute the callback.
      */
-    public function firstOr(Closure $callback): mixed
+    public function firstOr(Closure $callback, array|string $selects = ['*']): mixed
     {
-        return $this->first() ?: $callback();
+        return $this->first($selects) ?: $callback();
     }
 
     /**

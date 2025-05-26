@@ -119,6 +119,14 @@ class Builder
     }
 
     /**
+     * Get the first record from the query or return a default value.
+     */
+    public function firstOr(Closure $callback, array|string $selects = ['*']): mixed
+    {
+        return $this->first($selects) ?: $callback();
+    }
+
+    /**
      * Get the first record from the query or throw an exception if none is found.
      *
      * @throws ModelNotFoundException

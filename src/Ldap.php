@@ -435,13 +435,13 @@ class Ldap implements LdapInterface
      */
     public function getExtendedErrorCode(): string|false
     {
-        return $this->extractDiagnosticCode($this->getExtendedError());
+        return $this->getDiagnosticCode($this->getExtendedError());
     }
 
     /**
      * Extract the diagnostic code from the message.
      */
-    public function extractDiagnosticCode(string $message): string|false
+    public function getDiagnosticCode(string $message): string|false
     {
         preg_match('/^([\da-fA-F]+):/', $message, $matches);
 

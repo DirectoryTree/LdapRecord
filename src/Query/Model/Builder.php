@@ -26,6 +26,16 @@ class Builder
     use ForwardsCalls;
 
     /**
+     * The model instance being queried.
+     */
+    protected Model $model;
+
+    /**
+     * The query builder instance.
+     */
+    protected QueryBuilder $query;
+
+    /**
      * The global scopes to be applied.
      */
     protected array $scopes = [];
@@ -72,11 +82,13 @@ class Builder
     /**
      * Constructor.
      */
-    public function __construct(
-        protected Model $model,
-        protected QueryBuilder $query,
-    ) {
-        $this->query->select([$this->model->getGuidKey(), '*']);
+    public function __construct(Model $model, QueryBuilder $query)
+    {
+        $this->model = $model;
+
+        $this->query = $query->select([
+            $this->model->getGuidKey(), '*',
+        ]);
     }
 
     /**

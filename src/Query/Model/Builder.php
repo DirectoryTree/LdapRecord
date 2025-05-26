@@ -73,62 +73,6 @@ class Builder
     ];
 
     /**
-     * The methods that should be delegated to the query builder and return $this.
-     *
-     * @var string[]
-     */
-    protected $delegated = [
-        'orderby',
-        'orderbydesc',
-
-        'whereapproximatelyequals',
-        'wherecontains',
-        'wherenotcontains',
-        'wherein',
-        'wherebetween',
-        'wherestartswith',
-        'wherenotstartswith',
-        'whereendswith',
-        'wherenotendswith',
-        'wheredeleted',
-        'withdeleted',
-        'addcontrol',
-
-        'orwherehas',
-        'orwherenothas',
-        'orwhereequals',
-        'orwherenotequals',
-        'orwhereapproximatelyequals',
-        'orwherecontains',
-        'orwherenotcontains',
-        'orwherestartswith',
-        'orwherenotstartswith',
-        'orwhereendswith',
-        'orwherenotendswith',
-        'addfilter',
-        'clearfilters',
-        'setconnection',
-        'setgrammar',
-        'setcache',
-        'setbasedn',
-        'nested',
-        'cache',
-        'cachefor',
-        'cacheforever',
-        'cachekey',
-        'flushcache',
-        'read',
-        'list',
-        'insert',
-        'update',
-        'updateattribute',
-        'delete',
-        'deleteattribute',
-        'rename',
-        'move',
-    ];
-
-    /**
      * Constructor.
      */
     public function __construct(
@@ -143,27 +87,14 @@ class Builder
      */
     public function __call(string $method, array $parameters): mixed
     {
-        // First, check if this is a model scope
         if (method_exists($this->model, $scope = 'scope'.ucfirst($method))) {
             return $this->callScope([$this->model, $scope], $parameters);
         }
 
-        $lowerMethod = strtolower($method);
-
-        // Methods that should return values directly from the base query builder
-        if (in_array($lowerMethod, $this->passthru)) {
+        if (in_array(strtolower($method), $this->passthru)) {
             return $this->toBase()->{$method}(...$parameters);
         }
 
-        // Methods that should be delegated and return $this for chaining
-        if (in_array($lowerMethod, $this->delegated)) {
-            $this->forwardCallTo($this->query, $method, $parameters);
-
-            return $this;
-        }
-
-        // For any other method, forward to the query builder and return $this
-        // This maintains backward compatibility while following Laravel's pattern
         $this->forwardCallTo($this->query, $method, $parameters);
 
         return $this;

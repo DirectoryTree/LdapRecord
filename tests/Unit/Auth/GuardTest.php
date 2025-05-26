@@ -251,7 +251,7 @@ class GuardTest extends TestCase
             LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse(1),
         ]);
 
-        $ldap->tls();
+        $ldap->setStartTLS();
 
         $this->assertFalse($ldap->isSecure());
 

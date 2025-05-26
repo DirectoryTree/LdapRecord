@@ -285,22 +285,22 @@ interface LdapInterface
     /**
      * Set the current connection to use TLS (ldaps:// protocol).
      */
-    public function ssl(): static;
+    public function setSSL(): static;
 
     /**
      * Determine if the current connection instance is using TLS (ldaps:// protocol).
      */
-    public function isUsingSSL(): bool;
+    public function isUsingTLS(): bool;
 
     /**
      * Set the current connection to use STARTTLS (ldap:// with upgrade).
      */
-    public function tls(): static;
+    public function setStartTLS(): static;
 
     /**
      * Determine if the current connection instance is using STARTTLS (ldap:// with upgrade).
      */
-    public function isUsingTLS(): bool;
+    public function isUsingStartTLS(): bool;
 
     /**
      * Determine if the connection is bound.

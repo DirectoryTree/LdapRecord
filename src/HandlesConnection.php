@@ -40,20 +40,12 @@ trait HandlesConnection
     /**
      * Whether the connection must be bound over TLS (ldaps:// protocol).
      */
-    protected bool $useSSL = false;
+    protected bool $useTLS = false;
 
     /**
      * Whether the connection must be bound over STARTTLS (ldap:// with upgrade).
      */
-    protected bool $useTLS = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isUsingSSL(): bool
-    {
-        return $this->useSSL;
-    }
+    protected bool $useStartTLS = false;
 
     /**
      * {@inheritdoc}
@@ -61,6 +53,14 @@ trait HandlesConnection
     public function isUsingTLS(): bool
     {
         return $this->useTLS;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUsingStartTLS(): bool
+    {
+        return $this->useStartTLS;
     }
 
     /**
@@ -92,15 +92,15 @@ trait HandlesConnection
      */
     public function canChangePasswords(): bool
     {
-        return $this->isUsingSSL() || $this->isUsingTLS();
+        return $this->isUsingTLS() || $this->isUsingStartTLS();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function ssl(bool $enabled = true): static
+    public function setSSL(bool $enabled = true): static
     {
-        $this->useSSL = $enabled;
+        $this->useTLS = $enabled;
 
         return $this;
     }
@@ -108,9 +108,9 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function tls(bool $enabled = true): static
+    public function setStartTLS(bool $enabled = true): static
     {
-        $this->useTLS = $enabled;
+        $this->useStartTLS = $enabled;
 
         return $this;
     }
@@ -147,7 +147,7 @@ trait HandlesConnection
     public function getProtocol(): string
     {
         return $this->protocol ?: (
-            $this->isUsingSSL()
+            $this->isUsingTLS()
                 ? LdapInterface::PROTOCOL_SSL
                 : LdapInterface::PROTOCOL
         );
@@ -168,7 +168,7 @@ trait HandlesConnection
     {
         $this->bound = $response->successful();
 
-        $this->secure = $this->secure ?: $this->bound && $this->isUsingSSL();
+        $this->secure = $this->secure ?: $this->bound && $this->isUsingTLS();
     }
 
     /**
@@ -233,7 +233,7 @@ trait HandlesConnection
         // If an attempt to connect via TLS protocol (ldaps://) is being performed,
         // and we are still using the default port, we will swap it
         // for the default TLS port, for developer convenience.
-        if ($this->isUsingSSL() && $port == LdapInterface::PORT) {
+        if ($this->isUsingTLS() && $port == LdapInterface::PORT) {
             $port = LdapInterface::PORT_SSL;
         }
 

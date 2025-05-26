@@ -280,21 +280,21 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function isUsingSSL(): bool
-    {
-        return $this->hasExpectations(__FUNCTION__)
-            ? $this->resolveExpectation(__FUNCTION__)
-            : $this->useSSL;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isUsingTLS(): bool
     {
         return $this->hasExpectations(__FUNCTION__)
             ? $this->resolveExpectation(__FUNCTION__)
             : $this->useTLS;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUsingStartTLS(): bool
+    {
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
+            : $this->useStartTLS;
     }
 
     /**

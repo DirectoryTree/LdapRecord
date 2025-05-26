@@ -148,9 +148,9 @@ class Connection
     protected function configure(): void
     {
         if ($this->configuration->get('use_tls')) {
-            $this->ldap->ssl();
+            $this->ldap->setSSL();
         } elseif ($this->configuration->get('use_starttls')) {
-            $this->ldap->tls();
+            $this->ldap->setStartTLS();
         }
 
         $this->ldap->setOptions(array_replace(

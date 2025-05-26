@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Events;
 
-class Renamed extends Event
-{
-    //
-}
+class Renamed extends Event {}

@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Events;
 
-class ConnectionFailed extends ConnectionEvent
-{
-    //
-}
+class ConnectionFailed extends ConnectionEvent {}

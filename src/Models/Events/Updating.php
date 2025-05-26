@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Events;
 
-class Updating extends Event
-{
-    //
-}
+class Updating extends Event {}

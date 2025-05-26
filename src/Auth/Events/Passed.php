@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Auth\Events;
 
-class Passed extends Event
-{
-    //
-}
+class Passed extends Event {}

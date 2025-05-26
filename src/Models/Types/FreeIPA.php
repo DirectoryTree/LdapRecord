@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Types;
 
-interface FreeIPA extends TypeInterface
-{
-    //
-}
+interface FreeIPA extends TypeInterface {}

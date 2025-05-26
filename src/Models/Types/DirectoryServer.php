@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Types;
 
-interface DirectoryServer extends TypeInterface
-{
-    //
-}
+interface DirectoryServer extends TypeInterface {}

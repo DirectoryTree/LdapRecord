@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Events;
 
-class Connected extends ConnectionEvent
-{
-    //
-}
+class Connected extends ConnectionEvent {}

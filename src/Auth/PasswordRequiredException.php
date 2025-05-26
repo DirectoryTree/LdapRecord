@@ -4,7 +4,4 @@ namespace LdapRecord\Auth;
 
 use LdapRecord\LdapRecordException;
 
-class PasswordRequiredException extends LdapRecordException
-{
-    //
-}
+class PasswordRequiredException extends LdapRecordException {}

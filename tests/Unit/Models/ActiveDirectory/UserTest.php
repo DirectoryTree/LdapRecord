@@ -64,7 +64,7 @@ class UserTest extends TestCase
     {
         DirectoryFake::setup()
             ->getLdapConnection()
-            ->expect(LdapFake::operation('isUsingSSL')->andReturnTrue());
+            ->expect(LdapFake::operation('isUsingTLS')->andReturnTrue());
 
         $user = new User;
 
@@ -82,7 +82,7 @@ class UserTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect([
-                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('isUsingTLS')->once()->andReturnTrue(),
                 LdapFake::operation('add')->once()->with(fn ($dn) => true, fn ($attributes) => (
                     $attributes['unicodepwd'] === [Password::encode('foobar')]
                     && $attributes['useraccountcontrol'] = 512
@@ -102,7 +102,7 @@ class UserTest extends TestCase
         DirectoryFake::setup()
             ->getLdapConnection()
             ->expect([
-                LdapFake::operation('isUsingSSL')->once()->andReturnTrue(),
+                LdapFake::operation('isUsingTLS')->once()->andReturnTrue(),
                 LdapFake::operation('modifyBatch')->once()->with(
                     function ($dn) {
                         return $dn === 'cn=john,dc=local,dc=com';

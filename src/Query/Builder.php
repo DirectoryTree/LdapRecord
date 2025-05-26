@@ -909,15 +909,9 @@ class Builder
     public function where(array|string $field, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
         if (is_array($field)) {
-            // If the field is an array, we will assume we have been
-            // provided with an array of key-value pairs and can
-            // add them each as their own separate where clause.
             return $this->addArrayOfWheres($field, $boolean, $raw);
         }
 
-        // If we have been provided with two arguments not a "has" or
-        // "not has" operator, we'll assume the developer is creating
-        // an "equals" clause and set the proper operator in place.
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
@@ -926,7 +920,6 @@ class Builder
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
-        // We'll escape the value if raw isn't requested.
         $value = $this->prepareWhereValue($field, $value, $raw);
 
         $field = $this->escape($field)->forDnAndFilter()->get();
@@ -1577,18 +1570,8 @@ class Builder
     {
         foreach ($wheres as $key => $value) {
             if (is_numeric($key) && is_array($value)) {
-                // If the key is numeric and the value is an array, we'll
-                // assume we've been given an array with conditionals.
-                [$field, $condition] = $value;
-
-                // Since a value is optional for some conditionals, we will
-                // try and retrieve the third parameter from the array,
-                // but is entirely optional.
-                $value = Arr::get($value, 2);
-
-                $this->where($field, $condition, $value, $boolean);
+                $this->where(...array_values($value), boolean: $boolean, raw: $raw);
             } else {
-                // If the value is not an array, we will assume an equals clause.
                 $this->where($key, '=', $value, $boolean, $raw);
             }
         }

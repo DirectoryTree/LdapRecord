@@ -2,7 +2,4 @@
 
 namespace LdapRecord;
 
-class ContainerException extends LdapRecordException
-{
-    //
-}
+class ContainerException extends LdapRecordException {}

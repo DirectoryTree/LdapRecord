@@ -270,10 +270,10 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
         $instance = new static;
 
         return match (true) {
-            $instance instanceof Types\ActiveDirectory => ActiveDirectory\Entry::class,
-            $instance instanceof Types\DirectoryServer => DirectoryServer\Entry::class,
-            $instance instanceof Types\OpenLDAP => OpenLDAP\Entry::class,
             $instance instanceof Types\FreeIPA => FreeIPA\Entry::class,
+            $instance instanceof Types\OpenLDAP => OpenLDAP\Entry::class,
+            $instance instanceof Types\DirectoryServer => DirectoryServer\Entry::class,
+            $instance instanceof Types\ActiveDirectory => ActiveDirectory\Entry::class,
             default => Entry::class,
         };
     }
@@ -284,6 +284,14 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     public static function query(): Builder
     {
         return (new static)->newQuery();
+    }
+
+    /**
+     * Find a model by its distinguished name.
+     */
+    public static function find(array|string $dn, array|string $attributes = ['*']): Model|Collection|null
+    {
+        return (new static)->newQueryWithoutScopes()->find($dn, $attributes);
     }
 
     /**
@@ -301,9 +309,9 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     public function newQueryWithoutScopes(): Builder
     {
-        return static::resolveConnection(
-            $this->getConnectionName()
-        )->query()->model($this);
+        return $this->newQueryBuilder(
+            static::resolveConnection($this->getConnectionName())
+        );
     }
 
     /**
@@ -311,7 +319,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     public function newQueryBuilder(Connection $connection): Builder
     {
-        return new Builder($connection);
+        return new Builder($this, $connection->query());
     }
 
     /**
@@ -548,7 +556,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
             return false;
         }
 
-        return $this->newQuery()->find($this->dn);
+        return $this->newQueryWithoutScopes()->find($this->dn);
     }
 
     /**

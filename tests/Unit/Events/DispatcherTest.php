@@ -218,10 +218,7 @@ class DispatcherTest extends TestCase
     }
 }
 
-class ExampleEvent
-{
-    //
-}
+class ExampleEvent {}
 
 class ExampleListener
 {
@@ -231,12 +228,6 @@ class ExampleListener
     }
 }
 
-interface SomeEventInterface
-{
-    //
-}
+interface SomeEventInterface {}
 
-class AnotherEvent implements SomeEventInterface
-{
-    //
-}
+class AnotherEvent implements SomeEventInterface {}

@@ -73,7 +73,9 @@ class ModelEventTest extends TestCase
 
         $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
 
-        $query = new Builder(new Connection([], $ldap));
+        $connection = new Connection([], $ldap);
+        $model = new Entry;
+        $query = new Builder($model, $connection->query());
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('getConnectionContainer')->andReturn(Container::getInstance());
@@ -111,7 +113,9 @@ class ModelEventTest extends TestCase
 
         $ldap = (new LdapFake)->expect(['isBound' => true, $modifyBatchExpectation]);
 
-        $query = new Builder(new Connection([], $ldap));
+        $connection = new Connection([], $ldap);
+        $model = new Entry;
+        $query = new Builder($model, $connection->query());
 
         $model = m::mock(Entry::class)->makePartial();
         $model->shouldReceive('getConnectionContainer')->andReturn(Container::getInstance());
@@ -135,7 +139,9 @@ class ModelEventTest extends TestCase
 
         $ldap = (new LdapFake)->expect(['isBound' => true, $expectation]);
 
-        $query = new Builder(new Connection([], $ldap));
+        $connection = new Connection([], $ldap);
+        $model = new Entry;
+        $query = new Builder($model, $connection->query());
 
         $model = m::mock(Entry::class)->makePartial();
 
@@ -166,7 +172,9 @@ class ModelEventSaveStub extends Model
 {
     public function newQueryWithoutScopes(): ModelQueryBuilderSaveStub
     {
-        return (new ModelQueryBuilderSaveStub(new Connection))->setModel($this);
+        $connection = new Connection;
+
+        return new ModelQueryBuilderSaveStub($this, $connection->query());
     }
 
     public function refresh(): bool

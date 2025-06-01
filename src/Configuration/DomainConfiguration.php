@@ -41,11 +41,11 @@ class DomainConfiguration
         // The password to use for binding.
         'password' => '',
 
-        // Whether to use SSL when connecting.
-        'use_ssl' => false,
-
-        // Whether to use TLS when connecting.
+        // Whether to use TLS when connecting (ldaps:// protocol).
         'use_tls' => false,
+
+        // Whether to use STARTTLS when connecting (ldap:// with upgrade).
+        'use_starttls' => false,
 
         // Whether to use SASL when connecting.
         'use_sasl' => false,

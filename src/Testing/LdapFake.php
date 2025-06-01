@@ -280,21 +280,21 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function isUsingSSL(): bool
-    {
-        return $this->hasExpectations(__FUNCTION__)
-            ? $this->resolveExpectation(__FUNCTION__)
-            : $this->useSSL;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isUsingTLS(): bool
     {
         return $this->hasExpectations(__FUNCTION__)
             ? $this->resolveExpectation(__FUNCTION__)
             : $this->useTLS;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUsingStartTLS(): bool
+    {
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
+            : $this->useStartTLS;
     }
 
     /**
@@ -385,7 +385,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function search(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -393,7 +393,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function list(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -401,7 +401,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
+    public function read(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }

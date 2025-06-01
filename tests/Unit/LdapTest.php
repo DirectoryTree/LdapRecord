@@ -14,8 +14,8 @@ class LdapTest extends TestCase
     {
         $ldap = new Ldap;
 
+        $this->assertFalse($ldap->isUsingStartTLS());
         $this->assertFalse($ldap->isUsingTLS());
-        $this->assertFalse($ldap->isUsingSSL());
         $this->assertFalse($ldap->isBound());
         $this->assertNull($ldap->getConnection());
         $this->assertEquals($ldap->getProtocol(), LdapInterface::PROTOCOL);
@@ -46,11 +46,11 @@ class LdapTest extends TestCase
         $this->assertEquals('ldap://', $ldap->getProtocol());
     }
 
-    public function test_get_protocol_ssl()
+    public function test_get_protocol_tls()
     {
         $ldap = new Ldap;
 
-        $ldap->ssl();
+        $ldap->setTLS();
 
         $this->assertEquals('ldaps://', $ldap->getProtocol());
     }
@@ -75,15 +75,15 @@ class LdapTest extends TestCase
     {
         $ldap = new Ldap;
 
-        $ldap->ssl();
+        $ldap->setTLS();
 
         $this->assertTrue($ldap->canChangePasswords());
 
-        $ldap->ssl(false);
+        $ldap->setTLS(false);
 
         $this->assertFalse($ldap->canChangePasswords());
 
-        $ldap->tls();
+        $ldap->setStartTLS();
 
         $this->assertTrue($ldap->canChangePasswords());
     }
@@ -107,13 +107,13 @@ class LdapTest extends TestCase
         $this->assertNull($ldap->getDetailedError());
     }
 
-    public function test_is_secure_after_binding_with_an_ssl_connection()
+    public function test_is_secure_after_binding_with_a_tls_connection()
     {
         $ldap = (new LdapFake)->expect([
             LdapFake::operation('bind')->once()->andReturnResponse(),
         ]);
 
-        $ldap->ssl();
+        $ldap->setTLS();
 
         $this->assertFalse($ldap->isSecure());
 
@@ -122,7 +122,7 @@ class LdapTest extends TestCase
         $this->assertTrue($ldap->isSecure());
     }
 
-    public function test_is_secure_after_starting_tls()
+    public function test_is_secure_after_starting_starttls()
     {
         $ldap = (new LdapFake)->expect([
             LdapFake::operation('startTLS')->once()->andReturnTrue(),
@@ -135,7 +135,7 @@ class LdapTest extends TestCase
         $this->assertTrue($ldap->isSecure());
     }
 
-    public function test_is_secure_after_starting_tls_but_failing_bind()
+    public function test_is_secure_after_starting_starttls_but_failing_bind()
     {
         $ldap = (new LdapFake)->expect([
             LdapFake::operation('startTLS')->once()->andReturnTrue(),

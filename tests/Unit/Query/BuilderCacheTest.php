@@ -69,10 +69,10 @@ class BuilderCacheTest extends TestCase
             $host,
             $query->getType(),
             $query->getDn(),
-            $query->getQuery(),
+            $query->getUnescapedQuery(),
             implode($query->getSelects()),
-            $query->limit,
-            $query->paginated,
+            $query->getQuery()->limit,
+            $query->getQuery()->paginated,
         ]));
 
         $cache->shouldReceive('get')->with($expectedKey)->andReturn([]);

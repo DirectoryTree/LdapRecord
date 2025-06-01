@@ -86,18 +86,24 @@ class HasMany extends OneToMany
                 return false;
             }
 
-            $models->when($this->recursive, function (Collection $models) use ($pageSize, $callback, $loaded) {
-                $models->each(function (Model $model) use ($pageSize, $callback, $loaded) {
-                    if ($relation = $model->getRelation($this->relationName)) {
-                        $loaded[] = $model->getDn();
+            if (! $this->recursive) {
+                return true;
+            }
 
-                        return $relation->recursive()->chunkRelation($pageSize, $callback, $loaded);
-                    }
-                });
-            });
+            foreach ($models as $model) {
+                if (! $relation = $model->getRelation($this->relationName)) {
+                    continue;
+                }
+
+                $loaded[] = $model->getDn();
+
+                if ($relation->recursive()->chunkRelation($pageSize, $callback, $loaded) === false) {
+                    return false;
+                }
+            }
 
             return true;
-        });
+        }) ?? false;
     }
 
     /**
@@ -115,7 +121,7 @@ class HasMany extends OneToMany
      */
     public function getRelationQuery(): Builder
     {
-        $columns = $this->query->getSelects();
+        $selects = $this->query->getSelects();
 
         // We need to select the proper key to be able to retrieve its
         // value from LDAP results. If we don't, we won't be able
@@ -127,7 +133,7 @@ class HasMany extends OneToMany
         // we will add the key to the attributes to select and also
         // validate that the key isn't already being selected
         // to prevent stacking on multiple relation calls.
-        if (! in_array('*', $columns) && ! in_array($key, $columns)) {
+        if (! in_array('*', $selects) && ! in_array($key, $selects)) {
             $this->query->addSelect($key);
         }
 

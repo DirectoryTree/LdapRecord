@@ -75,7 +75,4 @@ class ModelHasOneTest extends TestCase
     }
 }
 
-class ModelHasOneStub extends Model
-{
-    //
-}
+class ModelHasOneStub extends Model {}

@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Query\Events;
 
-class Chunk extends QueryExecuted
-{
-    //
-}
+class Chunk extends QueryExecuted {}

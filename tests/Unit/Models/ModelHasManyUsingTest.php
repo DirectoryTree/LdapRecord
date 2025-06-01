@@ -59,7 +59,4 @@ class ModelHasManyUsingTest extends TestCase
     }
 }
 
-class ModelHasManyUsingStub extends Model
-{
-    //
-}
+class ModelHasManyUsingStub extends Model {}

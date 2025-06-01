@@ -4,6 +4,7 @@ namespace LdapRecord\Query\Model;
 
 use Closure;
 use DateTime;
+use Exception;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
@@ -107,15 +108,6 @@ class Builder
         $this->forwardCallTo($this->query, $method, $parameters);
 
         return $this;
-    }
-
-    /**
-     * Dynamically access properties on the underlying query builder.
-     */
-    public function __get(string $name): mixed
-    {
-        // TODO: Fix all property passthru.
-        return $this->query->{$name};
     }
 
     /**

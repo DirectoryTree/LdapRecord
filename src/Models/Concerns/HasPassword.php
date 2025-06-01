@@ -179,7 +179,7 @@ trait HasPassword
 
         if (! $secure) {
             throw new ConnectionException(
-                'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
+                'You must be connected to your LDAP server with TLS or StartTLS to perform this operation.'
             );
         }
     }

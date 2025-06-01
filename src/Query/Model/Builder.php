@@ -32,7 +32,7 @@ class Builder
     protected Model $model;
 
     /**
-     * The query builder instance.
+     * The base query builder instance.
      */
     protected QueryBuilder $query;
 
@@ -87,6 +87,9 @@ class Builder
     {
         $this->model = $model;
 
+        // In some LDAP distros, the GUID key is virtual. This means they must be
+        // present in the selected attributes to be returned in search results.
+        // We will preselect it to ensure it is returned in all searches.
         $this->query = $query->select([
             $this->model->getGuidKey(), '*',
         ]);

@@ -98,7 +98,7 @@ trait HandlesConnection
     /**
      * {@inheritdoc}
      */
-    public function setSSL(bool $enabled = true): static
+    public function setTLS(bool $enabled = true): static
     {
         $this->useTLS = $enabled;
 

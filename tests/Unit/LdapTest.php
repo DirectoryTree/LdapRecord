@@ -50,7 +50,7 @@ class LdapTest extends TestCase
     {
         $ldap = new Ldap;
 
-        $ldap->setSSL();
+        $ldap->setTLS();
 
         $this->assertEquals('ldaps://', $ldap->getProtocol());
     }
@@ -75,11 +75,11 @@ class LdapTest extends TestCase
     {
         $ldap = new Ldap;
 
-        $ldap->setSSL();
+        $ldap->setTLS();
 
         $this->assertTrue($ldap->canChangePasswords());
 
-        $ldap->setSSL(false);
+        $ldap->setTLS(false);
 
         $this->assertFalse($ldap->canChangePasswords());
 
@@ -113,7 +113,7 @@ class LdapTest extends TestCase
             LdapFake::operation('bind')->once()->andReturnResponse(),
         ]);
 
-        $ldap->setSSL();
+        $ldap->setTLS();
 
         $this->assertFalse($ldap->isSecure());
 

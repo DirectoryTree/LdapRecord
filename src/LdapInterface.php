@@ -285,7 +285,7 @@ interface LdapInterface
     /**
      * Set the current connection to use TLS (ldaps:// protocol).
      */
-    public function setSSL(bool $enabled = true): static;
+    public function setTLS(bool $enabled = true): static;
 
     /**
      * Determine if the current connection instance is using TLS (ldaps:// protocol).

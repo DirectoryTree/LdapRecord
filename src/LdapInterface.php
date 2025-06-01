@@ -19,11 +19,11 @@ interface LdapInterface
     public const PROTOCOL = 'ldap://';
 
     /**
-     * The SSL LDAP protocol string.
+     * The TLS LDAP protocol string.
      *
      * @var string
      */
-    public const PROTOCOL_SSL = 'ldaps://';
+    public const PROTOCOL_TLS = 'ldaps://';
 
     /**
      * The standard LDAP port number.
@@ -37,7 +37,7 @@ interface LdapInterface
      *
      * @var int
      */
-    public const PORT_SSL = 636;
+    public const PORT_TLS = 636;
 
     /**
      * Print entry and exit from routines.

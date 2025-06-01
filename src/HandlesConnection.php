@@ -148,7 +148,7 @@ trait HandlesConnection
     {
         return $this->protocol ?: (
             $this->isUsingTLS()
-                ? LdapInterface::PROTOCOL_SSL
+                ? LdapInterface::PROTOCOL_TLS
                 : LdapInterface::PROTOCOL
         );
     }
@@ -234,7 +234,7 @@ trait HandlesConnection
         // and we are still using the default port, we will swap it
         // for the default TLS port, for developer convenience.
         if ($this->isUsingTLS() && $port == LdapInterface::PORT) {
-            $port = LdapInterface::PORT_SSL;
+            $port = LdapInterface::PORT_TLS;
         }
 
         // The blank space here is intentional. PHP's LDAP extension

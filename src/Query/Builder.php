@@ -474,7 +474,7 @@ class Builder
     }
 
     /**
-     * Processes and converts the given LDAP results into models.
+     * Processes the results of the query.
      */
     protected function process(array $results): array
     {
@@ -610,7 +610,7 @@ class Builder
     {
         try {
             return $this->findByOrFail($attribute, $value, $selects);
-        } catch (ObjectNotFoundException $e) {
+        } catch (ObjectNotFoundException) {
             return null;
         }
     }
@@ -976,7 +976,7 @@ class Builder
     }
 
     /**
-     * Only include deleted models in the results.
+     * Only include deleted entries in the results.
      */
     public function whereDeleted(): static
     {
@@ -984,7 +984,7 @@ class Builder
     }
 
     /**
-     * Set the LDAP control option to include deleted LDAP models.
+     * Set the LDAP control option to include deleted LDAP entries.
      */
     public function withDeleted(): static
     {
@@ -1201,7 +1201,7 @@ class Builder
 
         // If the * character is not provided in the selected attributes,
         // we need to ensure we always select the object class, as
-        // this is used for constructing models properly.
+        // this is used for constructing entries properly.
         $selects[] = 'objectclass';
 
         return $selects;

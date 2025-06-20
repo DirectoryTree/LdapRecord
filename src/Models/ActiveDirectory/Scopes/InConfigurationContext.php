@@ -24,7 +24,7 @@ class InConfigurationContext implements Scope
      *
      * @throws \LdapRecord\Models\ModelNotFoundException
      */
-    protected function getConfigurationNamingContext(Model $model)
+    protected function getConfigurationNamingContext(Model $model): mixed
     {
         return Entry::getRootDse($model->getConnectionName())
             ->getFirstAttribute('configurationNamingContext');

@@ -94,11 +94,11 @@ class Str
     {
         foreach ((array) $needles as $needle) {
             if (static::contains($haystack, $needle)) {
-                return Helpers::value($callback, $needle, $haystack);
+                return Value::get($callback, $needle, $haystack);
             }
         }
 
-        return Helpers::value($default, $haystack);
+        return Value::get($default, $haystack);
     }
 
     /**

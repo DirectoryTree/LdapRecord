@@ -4,7 +4,4 @@ namespace LdapRecord\Exceptions;
 
 use LdapRecord\LdapRecordException;
 
-class InsufficientAccessException extends LdapRecordException
-{
-    //
-}
+class InsufficientAccessException extends LdapRecordException {}

@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models;
 
-class Entry extends Model
-{
-    //
-}
+class Entry extends Model {}

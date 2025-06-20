@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Auth\Events;
 
-class Bound extends Event
-{
-    //
-}
+class Bound extends Event {}

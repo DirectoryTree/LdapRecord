@@ -2,7 +2,4 @@
 
 namespace LdapRecord;
 
-class ConnectionException extends LdapRecordException
-{
-    //
-}
+class ConnectionException extends LdapRecordException {}

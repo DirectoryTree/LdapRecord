@@ -7,7 +7,7 @@ use ArrayAccess;
 class Arr
 {
     /**
-     * Determine whether the given value is array accessible.
+     * Determine whether the given value is array-accessible.
      */
     public static function accessible(mixed $value): bool
     {
@@ -45,7 +45,7 @@ class Arr
     {
         if (is_null($callback)) {
             if (empty($array)) {
-                return Helpers::value($default);
+                return Value::get($default);
             }
 
             foreach ($array as $item) {
@@ -59,7 +59,7 @@ class Arr
             }
         }
 
-        return Helpers::value($default);
+        return Value::get($default);
     }
 
     /**
@@ -70,7 +70,7 @@ class Arr
     public static function last(iterable $array, ?callable $callback = null, mixed $default = null): mixed
     {
         if (is_null($callback)) {
-            return empty($array) ? Helpers::value($default) : end($array);
+            return empty($array) ? Value::get($default) : end($array);
         }
 
         return static::first(array_reverse($array, true), $callback, $default);
@@ -82,7 +82,7 @@ class Arr
     public static function get(ArrayAccess|array $array, string|int|null $key, mixed $default = null): mixed
     {
         if (! static::accessible($array)) {
-            return Helpers::value($default);
+            return Value::get($default);
         }
 
         if (is_null($key)) {
@@ -94,14 +94,14 @@ class Arr
         }
 
         if (str_contains($key, '.')) {
-            return $array[$key] ?? Helpers::value($default);
+            return $array[$key] ?? Value::get($default);
         }
 
         foreach (explode('.', $key) as $segment) {
             if (static::accessible($array) && static::exists($array, $segment)) {
                 $array = $array[$segment];
             } else {
-                return Helpers::value($default);
+                return Value::get($default);
             }
         }
 

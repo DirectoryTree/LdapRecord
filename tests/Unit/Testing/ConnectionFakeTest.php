@@ -16,13 +16,13 @@ class ConnectionFakeTest extends TestCase
     {
         $fake = $fake = ConnectionFake::make([
             'hosts' => ['foo', 'bar'],
-            'use_tls' => true,
+            'use_starttls' => true,
         ]);
 
         $config = $fake->getConfiguration();
 
         $this->assertEquals(['foo', 'bar'], $config->get('hosts'));
-        $this->assertTrue($config->get('use_tls'));
+        $this->assertTrue($config->get('use_starttls'));
     }
 
     public function test_make_with_custom_ldap_fake()

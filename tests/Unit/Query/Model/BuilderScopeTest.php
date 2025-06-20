@@ -6,6 +6,7 @@ use LdapRecord\Connection;
 use LdapRecord\Models\Entry;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
+use LdapRecord\Query\Builder as QueryBuilder;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -15,7 +16,7 @@ class BuilderScopeTest extends TestCase
 {
     public function test_closure_scopes_can_be_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
 
         $b->withGlobalScope('foo', function ($query) use ($b) {
             $this->assertSame($b, $query);
@@ -26,7 +27,7 @@ class BuilderScopeTest extends TestCase
 
     public function test_class_scopes_can_be_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
 
         $b->setModel(new Entry);
 
@@ -40,7 +41,7 @@ class BuilderScopeTest extends TestCase
 
     public function test_scopes_can_be_removed_after_being_added()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
 
         $b->withGlobalScope('foo', function () {});
 
@@ -51,7 +52,7 @@ class BuilderScopeTest extends TestCase
 
     public function test_many_scopes_can_be_removed_after_being_applied()
     {
-        $b = new Builder(new Connection);
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
 
         $b->withGlobalScope('foo', function () {});
         $b->withGlobalScope('bar', function () {});
@@ -68,13 +69,13 @@ class BuilderScopeTest extends TestCase
             $func = new ReflectionFunction($closure);
 
             return $func->getClosureThis()->filters['and'][0] == [
-                'field' => 'foo',
+                'attribute' => 'foo',
                 'operator' => '=',
                 'value' => 'bar',
             ];
         }))->andReturn([]);
 
-        $b = new Builder($connection);
+        $b = new Builder(new Entry, new QueryBuilder($connection));
         $b->setModel(new Entry);
 
         $b->withGlobalScope('foo', function ($query) {

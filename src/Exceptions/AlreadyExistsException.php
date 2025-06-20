@@ -4,7 +4,4 @@ namespace LdapRecord\Exceptions;
 
 use LdapRecord\LdapRecordException;
 
-class AlreadyExistsException extends LdapRecordException
-{
-    //
-}
+class AlreadyExistsException extends LdapRecordException {}

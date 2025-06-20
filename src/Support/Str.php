@@ -7,13 +7,13 @@ class Str
     /**
      * Determine if a given string matches a given pattern.
      */
-    public static function is(string|iterable $pattern, string $value): bool
+    public static function is(string|iterable $patterns, string $value): bool
     {
-        if (! is_iterable($pattern)) {
-            $pattern = [$pattern];
+        if (! is_iterable($patterns)) {
+            $patterns = [$patterns];
         }
 
-        foreach ($pattern as $pattern) {
+        foreach ($patterns as $pattern) {
             $pattern = (string) $pattern;
 
             // If the given value is an exact match we can of course return true right
@@ -94,11 +94,11 @@ class Str
     {
         foreach ((array) $needles as $needle) {
             if (static::contains($haystack, $needle)) {
-                return Helpers::value($callback, $needle, $haystack);
+                return Value::get($callback, $needle, $haystack);
             }
         }
 
-        return Helpers::value($default, $haystack);
+        return Value::get($default, $haystack);
     }
 
     /**

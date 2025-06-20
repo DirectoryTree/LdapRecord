@@ -2,7 +2,7 @@
 
 namespace LdapRecord;
 
-use LdapRecord\Models\Attributes\EscapedValue;
+use LdapRecord\Query\EscapedValue;
 
 trait EscapesValues
 {

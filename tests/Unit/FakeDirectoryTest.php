@@ -51,8 +51,8 @@ class FakeDirectoryTest extends TestCase
             'password' => 'pass',
             'port' => 389,
             'protocol' => null,
-            'use_tls' => true,
-            'use_ssl' => false,
+            'use_tls' => false,
+            'use_starttls' => true,
             'use_sasl' => false,
             'allow_insecure_password_changes' => false,
             'timeout' => 5,
@@ -124,8 +124,8 @@ class FakeDirectoryTest extends TestCase
             $conn->auth()->bind('user', 'secret');
 
             $this->fail('Bind exception was not thrown.');
-        } catch (BindException $ex) {
-            $detailedError = $ex->getDetailedError();
+        } catch (BindException $e) {
+            $detailedError = $e->getDetailedError();
 
             $this->assertInstanceOf(DetailedError::class, $detailedError);
             $this->assertEquals(200, $detailedError->getErrorCode());

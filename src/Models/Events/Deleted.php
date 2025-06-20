@@ -2,7 +2,4 @@
 
 namespace LdapRecord\Models\Events;
 
-class Deleted extends Event
-{
-    //
-}
+class Deleted extends Event {}

@@ -174,12 +174,12 @@ trait HasPassword
         if ($connection->isConnected()) {
             $secure = $connection->getLdapConnection()->canChangePasswords();
         } else {
-            $secure = $config->get('use_ssl') || $config->get('use_tls');
+            $secure = $config->get('use_tls') || $config->get('use_starttls');
         }
 
         if (! $secure) {
             throw new ConnectionException(
-                'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
+                'You must be connected to your LDAP server with TLS or StartTLS to perform this operation.'
             );
         }
     }
@@ -198,24 +198,22 @@ trait HasPassword
 
     /**
      * Determine the password hash method to use from the users current password.
-     *
-     * @return string|void
      */
-    public function determinePasswordHashMethod()
+    public function determinePasswordHashMethod(): ?string
     {
         if (! $password = $this->password) {
-            return;
+            return null;
         }
 
         if (! $method = Password::getHashMethod($password)) {
-            return;
+            return null;
         }
 
-        [,$algo] = array_pad(
-            Password::getHashMethodAndAlgo($password) ?? [],
-            $length = 2,
-            $value = null
-        );
+        if (! $hashAndAlgo = Password::getHashMethodAndAlgo($password)) {
+            return $method;
+        }
+
+        [,$algo] = array_pad(array: $hashAndAlgo, length: 2, value: null);
 
         return match ((int) $algo) {
             Password::CRYPT_SALT_TYPE_MD5 => 'md5'.$method,

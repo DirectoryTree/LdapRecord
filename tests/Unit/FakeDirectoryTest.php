@@ -124,8 +124,8 @@ class FakeDirectoryTest extends TestCase
             $conn->auth()->bind('user', 'secret');
 
             $this->fail('Bind exception was not thrown.');
-        } catch (BindException $ex) {
-            $detailedError = $ex->getDetailedError();
+        } catch (BindException $e) {
+            $detailedError = $e->getDetailedError();
 
             $this->assertInstanceOf(DetailedError::class, $detailedError);
             $this->assertEquals(200, $detailedError->getErrorCode());

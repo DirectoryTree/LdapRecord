@@ -398,7 +398,7 @@ class Builder
     {
         try {
             return $this->findByGuidOrFail($guid, $selects);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException) {
             return null;
         }
     }

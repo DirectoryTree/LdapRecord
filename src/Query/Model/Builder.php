@@ -72,8 +72,6 @@ class Builder
         'hasselects',
         'insert',
         'insertandgetdn',
-        'newinstance',
-        'newnestedinstance',
         'query',
         'rename',
         'renameandgetdn',
@@ -424,7 +422,7 @@ class Builder
      */
     public function toBase(): QueryBuilder
     {
-        return $this->applyScopes()->query;
+        return $this->applyScopes()->getQuery();
     }
 
     /**
@@ -477,9 +475,11 @@ class Builder
                 continue;
             }
 
-            $scope instanceof Scope
-                ? $scope->apply($this, $this->getModel())
-                : $scope($this);
+            if ($scope instanceof Scope) {
+                $scope->apply($this, $this->getModel());
+            } else {
+                $scope($this);
+            }
 
             $this->appliedScopes[$identifier] = $scope;
         }
@@ -587,8 +587,12 @@ class Builder
     /**
      * Add a where clause to the query with proper value preparation.
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->nestedFilter($attribute, $boolean);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -635,8 +639,12 @@ class Builder
     /**
      * Add an or where clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->nestedFilter($attribute, 'or');
+        }
+
         [$value, $operator] = $this->query->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
         );
@@ -692,6 +700,16 @@ class Builder
     public function whereNotHas(string $attribute): static
     {
         return $this->where($attribute, '!*');
+    }
+
+    /**
+     * Add a nested where clause to the query.
+     */
+    public function nestedFilter(Closure $closure, string $boolean = 'and'): static
+    {
+        return $boolean === 'or'
+            ? $this->orFilter($closure)
+            : $this->andFilter($closure);
     }
 
     /**

@@ -73,7 +73,7 @@ class Grammar
             return $filter;
         }
 
-        // Special case: if we have exactly one AND and one OR, wrap in OR
+        // If we have exactly one AND and one OR, wrap in OR
         if ($this->shouldWrapEntireQueryInOr($query)) {
             return $this->compileOr($filter);
         }

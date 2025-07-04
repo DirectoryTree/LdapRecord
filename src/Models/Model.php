@@ -373,25 +373,25 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Register the query scopes for this builder instance.
      */
-    public function registerModelScopes(Builder $builder): Builder
+    public function registerModelScopes(Builder $query): Builder
     {
-        $this->applyObjectClassScopes($builder);
+        $this->applyObjectClassScopes($query);
 
-        $this->registerGlobalScopes($builder);
+        $this->registerGlobalScopes($query);
 
-        return $builder;
+        return $query;
     }
 
     /**
      * Register the global model scopes.
      */
-    public function registerGlobalScopes(Builder $builder): Builder
+    public function registerGlobalScopes(Builder $query): Builder
     {
         foreach ($this->getGlobalScopes() as $identifier => $scope) {
-            $builder->withGlobalScope($identifier, $scope);
+            $query->withGlobalScope($identifier, $scope);
         }
 
-        return $builder;
+        return $query;
     }
 
     /**

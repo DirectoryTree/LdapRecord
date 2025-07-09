@@ -399,9 +399,13 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     public function applyObjectClassScopes(Builder $query): void
     {
-        foreach (static::$objectClasses as $objectClass) {
-            $query->where('objectclass', '=', $objectClass);
-        }
+        $query->withGlobalScope('objectClasses', function (Builder $query) {
+            $query->where(function (Builder $query) {
+                foreach (static::$objectClasses as $objectClass) {
+                    $query->where('objectclass', $objectClass);
+                }
+            });
+        });
     }
 
     /**

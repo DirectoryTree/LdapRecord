@@ -590,7 +590,7 @@ class Builder
     public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
         if ($attribute instanceof Closure) {
-            return $this->nestedFilter($attribute, $boolean);
+            return $this->whereNested($attribute, $boolean);
         }
 
         if (is_array($attribute)) {
@@ -637,12 +637,32 @@ class Builder
     }
 
     /**
+     * Add a nested where clause to the query.
+     */
+    public function whereNested(Closure $callback, string $boolean = 'and'): static
+    {
+        $query = $this->newNestedModelInstance($callback);
+
+        return $this->addNestedWhereQuery($query, $boolean);
+    }
+
+    /**
+     * Add another query builder as a nested where to the query builder.
+     */
+    public function addNestedWhereQuery(self $query, string $boolean = 'and'): static
+    {
+        $this->query->addNestedWhereQuery($query->getQuery(), $boolean);
+
+        return $this;
+    }
+
+    /**
      * Add an or where clause to the query.
      */
     public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
         if ($attribute instanceof Closure) {
-            return $this->nestedFilter($attribute, 'or');
+            return $this->whereNested($attribute, 'or');
         }
 
         [$value, $operator] = $this->query->prepareValueAndOperator(
@@ -704,36 +724,32 @@ class Builder
 
     /**
      * Add a nested where clause to the query.
+     *
+     * @deprecated Use whereNested() instead for better Laravel Eloquent compatibility
      */
     public function nestedFilter(Closure $closure, string $boolean = 'and'): static
     {
-        return $boolean === 'or'
-            ? $this->orFilter($closure)
-            : $this->andFilter($closure);
+        return $this->whereNested($closure, $boolean);
     }
 
     /**
      * Adds a nested 'and' filter to the current query.
+     *
+     * @deprecated Use where() with a closure instead for better Laravel Eloquent compatibility
      */
     public function andFilter(Closure $closure): static
     {
-        $query = $this->newNestedModelInstance($closure);
-
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileAnd($query->getQuery()->getQuery())
-        );
+        return $this->whereNested($closure, 'and');
     }
 
     /**
      * Adds a nested 'or' filter to the current query.
+     *
+     * @deprecated Use orWhere() with a closure instead for better Laravel Eloquent compatibility
      */
     public function orFilter(Closure $closure): static
     {
-        $query = $this->newNestedModelInstance($closure);
-
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileOr($query->getQuery()->getQuery())
-        );
+        return $this->whereNested($closure, 'or');
     }
 
     /**

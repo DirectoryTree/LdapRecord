@@ -61,7 +61,8 @@ class Grammar
     {
         return $this->compileRaws($query)
             .$this->compileWheres($query)
-            .$this->compileOrWheres($query);
+            .$this->compileOrWheres($query)
+            .$this->compileNestedWheres($query);
     }
 
     /**
@@ -98,7 +99,7 @@ class Grammar
     {
         $filterCount = 0;
 
-        foreach (['and', 'or', 'raw'] as $type) {
+        foreach (['and', 'or', 'raw', 'nested'] as $type) {
             if (! empty($query->filters[$type])) {
                 $filterCount++;
             }
@@ -116,6 +117,14 @@ class Grammar
     }
 
     /**
+     * Determine if the query has multiple OR conditions.
+     */
+    protected function hasMultipleOrConditions(Builder $query): bool
+    {
+        return count($query->filters['or'] ?? []) > 1;
+    }
+
+    /**
      * Determine if the query has multiple raw filters.
      */
     protected function hasMultipleRawFilters(Builder $query): bool
@@ -128,11 +137,22 @@ class Grammar
      */
     protected function shouldWrapEntireQueryInOr(Builder $query): bool
     {
-        // If we have exactly one AND condition and one or more OR conditions, wrap the
+        // If we have AND conditions and OR conditions (regardless of count), wrap the
         // entire query in OR to treat all conditions as alternatives. This handles
-        // the common case where a single where() is followed by orWhere() calls.
-        return count($query->filters['and'] ?? []) === 1
-            && ! empty($query->filters['or'])
+        // both single conditions and array-based conditions.
+        $hasOrConditions = ! empty($query->filters['or']);
+
+        // Check if we have nested OR conditions
+        $hasNestedOrConditions = false;
+        foreach ($query->filters['nested'] ?? [] as $nested) {
+            if ($nested['boolean'] === 'or') {
+                $hasNestedOrConditions = true;
+                break;
+            }
+        }
+
+        return ! empty($query->filters['and'])
+            && ($hasOrConditions || $hasNestedOrConditions)
             && empty($query->filters['raw']);
     }
 
@@ -160,7 +180,15 @@ class Grammar
      */
     protected function compileWheres(Builder $query): string
     {
-        return $this->compileFilterType($query, 'and');
+        $filter = $this->compileFilterType($query, 'and');
+
+        // If we have multiple AND conditions and OR conditions exist,
+        // wrap the AND conditions in their own AND statement
+        if (! empty($filter) && $this->hasMultipleAndConditions($query) && ! empty($query->filters['or'])) {
+            return $this->compileAnd($filter);
+        }
+
+        return $filter;
     }
 
     /**
@@ -169,6 +197,10 @@ class Grammar
     protected function compileOrWheres(Builder $query): string
     {
         $filter = $this->compileFilterType($query, 'or');
+
+        if (! empty($filter) && $this->hasMultipleOrConditions($query) && ! empty($query->filters['and'])) {
+            return $this->compileAnd($filter);
+        }
 
         // If we're going to wrap the entire query in OR, don't wrap OR clauses separately
         if ($this->shouldWrapEntireQueryInOr($query)) {
@@ -182,6 +214,45 @@ class Grammar
         }
 
         return $filter;
+    }
+
+    /**
+     * Assembles all nested where clauses.
+     */
+    protected function compileNestedWheres(Builder $query): string
+    {
+        $filter = '';
+
+        foreach ($query->filters['nested'] ?? [] as $nested) {
+            $nestedQuery = $this->compileFilters($nested['query']);
+
+            if ($nestedQuery) {
+                // Always wrap nested queries in AND if they have multiple conditions,
+                // regardless of the boolean type. The boolean type determines how
+                // this nested group relates to other conditions at the parent level.
+                if ($this->shouldWrapNestedAnd($nested['query'])) {
+                    $filter .= $this->compileAnd($nestedQuery);
+                } else {
+                    $filter .= $nestedQuery;
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * Determine if a nested AND query should be wrapped.
+     */
+    protected function shouldWrapNestedAnd(Builder $query): bool
+    {
+        $conditionCount = 0;
+
+        foreach (['and', 'or', 'raw', 'nested'] as $type) {
+            $conditionCount += count($query->filters[$type] ?? []);
+        }
+
+        return $conditionCount > 1;
     }
 
     /**

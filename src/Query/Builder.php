@@ -48,6 +48,7 @@ class Builder
         'and' => [],
         'or' => [],
         'raw' => [],
+        'nested' => [],
     ];
 
     /**
@@ -764,6 +765,8 @@ class Builder
 
     /**
      * Add a nested 'and' filter to the query.
+     *
+     * @deprecated Use where() with a closure instead for better Laravel Eloquent compatibility
      */
     public function andFilter(Closure $closure): static
     {
@@ -776,6 +779,8 @@ class Builder
 
     /**
      * Add a nested 'or' filter to the query.
+     *
+     * @deprecated Use orWhere() with a closure instead for better Laravel Eloquent compatibility
      */
     public function orFilter(Closure $closure): static
     {
@@ -803,8 +808,12 @@ class Builder
      *
      * @throws InvalidArgumentException
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->whereNested($attribute, $boolean);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -1010,10 +1019,38 @@ class Builder
     }
 
     /**
+     * Add a nested where clause to the query.
+     */
+    public function whereNested(Closure $callback, string $boolean = 'and'): static
+    {
+        $query = $this->newNestedInstance();
+
+        $callback($query);
+
+        return $this->addNestedWhereQuery($query, $boolean);
+    }
+
+    /**
+     * Add another query builder as a nested where to the query builder.
+     */
+    public function addNestedWhereQuery(Builder $query, string $boolean = 'and'): static
+    {
+        if (count($query->filters['and']) || count($query->filters['or']) || count($query->filters['raw']) || count($query->filters['nested'])) {
+            $this->addFilter('nested', compact('query', 'boolean'));
+        }
+
+        return $this;
+    }
+
+    /**
      * Add an 'or where' clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->whereNested($attribute, 'or');
+        }
+
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
@@ -1128,6 +1165,13 @@ class Builder
     {
         if (! array_key_exists($type, $this->filters)) {
             throw new InvalidArgumentException("Filter type: [$type] is invalid.");
+        }
+
+        // Nested filters have different validation requirements
+        if ($type === 'nested') {
+            $this->filters[$type][] = $bindings;
+
+            return $this;
         }
 
         // Each filter clause require key bindings to be set. We

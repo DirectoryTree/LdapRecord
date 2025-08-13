@@ -6,6 +6,7 @@ use Exception;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapInterface;
+use SensitiveParameter;
 
 class Guard
 {
@@ -39,7 +40,7 @@ class Guard
      * @throws UsernameRequiredException
      * @throws PasswordRequiredException
      */
-    public function attempt(string $username, string $password, bool $stayBound = false): bool
+    public function attempt(string $username, #[SensitiveParameter] string $password, bool $stayBound = false): bool
     {
         switch (true) {
             case empty($username):
@@ -73,7 +74,7 @@ class Guard
      * @throws BindException
      * @throws \LdapRecord\ConnectionException
      */
-    public function bind(?string $username = null, ?string $password = null): void
+    public function bind(?string $username = null, #[SensitiveParameter] ?string $password = null): void
     {
         $this->fireAuthEvent('binding', $username, $password);
 
@@ -104,7 +105,7 @@ class Guard
      *
      * @throws \LdapRecord\ConnectionException
      */
-    protected function authenticate(?string $username = null, ?string $password = null): bool
+    protected function authenticate(?string $username = null, #[SensitiveParameter] ?string $password = null): bool
     {
         if ($this->configuration->get('use_sasl') ?? false) {
             return $this->connection->saslBind(

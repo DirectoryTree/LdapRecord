@@ -3,6 +3,7 @@
 namespace LdapRecord;
 
 use LDAP\Connection as RawLdapConnection;
+use SensitiveParameter;
 
 class Ldap implements LdapInterface
 {
@@ -270,7 +271,7 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function bind(?string $dn = null, ?string $password = null, ?array $controls = null): LdapResultResponse
+    public function bind(?string $dn = null, #[SensitiveParameter] ?string $password = null, ?array $controls = null): LdapResultResponse
     {
         /** @var \LDAP\Result $result */
         $result = $this->executeFailableOperation(function () use ($dn, $password, $controls) {
@@ -287,7 +288,7 @@ class Ldap implements LdapInterface
     /**
      * {@inheritDoc}
      */
-    public function saslBind(?string $dn = null, ?string $password = null, array $options = []): bool
+    public function saslBind(?string $dn = null, #[SensitiveParameter] ?string $password = null, array $options = []): bool
     {
         return $this->executeFailableOperation(function () use ($dn, $password, $options) {
             $options = array_merge([

@@ -11,6 +11,7 @@ use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\Query\Builder;
 use LdapRecord\Query\Cache;
 use Psr\SimpleCache\CacheInterface;
+use SensitiveParameter;
 
 class Connection
 {
@@ -211,7 +212,7 @@ class Connection
      * @throws Auth\BindException
      * @throws LdapRecordException
      */
-    public function connect(?string $username = null, ?string $password = null): void
+    public function connect(?string $username = null, #[SensitiveParameter] ?string $password = null): void
     {
         $attempt = function () use ($username, $password) {
             $this->dispatch(new Events\Connecting($this));

@@ -5,6 +5,7 @@ namespace LdapRecord\Models\Concerns;
 use LdapRecord\ConnectionException;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Password;
+use SensitiveParameter;
 
 /** @mixin \LdapRecord\Models\Model */
 trait HasPassword
@@ -14,7 +15,7 @@ trait HasPassword
      *
      * @throws ConnectionException
      */
-    public function setPasswordAttribute(array|string $password): void
+    public function setPasswordAttribute(#[SensitiveParameter] array|string $password): void
     {
         $this->assertSecureConnection();
 
@@ -49,7 +50,7 @@ trait HasPassword
      *
      * @throws ConnectionException
      */
-    public function setUnicodepwdAttribute(array|string $password): void
+    public function setUnicodepwdAttribute(#[SensitiveParameter] array|string $password): void
     {
         $this->setPasswordAttribute($password);
     }
@@ -97,7 +98,7 @@ trait HasPassword
     /**
      * Set the changed password.
      */
-    protected function setChangedPassword(string $oldPassword, string $newPassword, string $attribute): void
+    protected function setChangedPassword(#[SensitiveParameter] string $oldPassword, #[SensitiveParameter] string $newPassword, string $attribute): void
     {
         // Create batch modification for removing the old password.
         $this->addModification(
@@ -121,7 +122,7 @@ trait HasPassword
     /**
      * Set the password on the model.
      */
-    protected function setPassword(string $password, string $attribute): void
+    protected function setPassword(#[SensitiveParameter] string $password, string $attribute): void
     {
         if (! $this->exists) {
             $this->setRawAttribute($attribute, $password);
@@ -143,7 +144,7 @@ trait HasPassword
      *
      * @throws LdapRecordException
      */
-    protected function getHashedPassword(string $method, string $password, ?string $salt = null): string
+    protected function getHashedPassword(string $method, #[SensitiveParameter] string $password, ?string $salt = null): string
     {
         if (! method_exists(Password::class, $method)) {
             throw new LdapRecordException("Password hashing method [{$method}] does not exist.");

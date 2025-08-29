@@ -929,7 +929,7 @@ class Builder
      */
     public function whereIn(string $attribute, array $values): static
     {
-        return $this->orFilter(function (Builder $query) use ($attribute, $values) {
+        return $this->orWhere(function (Builder $query) use ($attribute, $values) {
             foreach ($values as $value) {
                 $query->whereEquals($attribute, $value);
             }

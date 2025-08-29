@@ -803,8 +803,12 @@ class Builder
      *
      * @throws InvalidArgumentException
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->andFilter($attribute);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -813,7 +817,7 @@ class Builder
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
 
-        if (! in_array($operator, $this->grammar->getOperators())) {
+        if (! in_array($operator, $this->grammar->operators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -1012,8 +1016,12 @@ class Builder
     /**
      * Add an 'or where' clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->orFilter($attribute);
+        }
+
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );

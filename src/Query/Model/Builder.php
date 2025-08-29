@@ -468,21 +468,31 @@ class Builder
      */
     public function applyScopes(): static
     {
-        if (! $this->scopes) {
+        if (empty($this->scopes) && empty($this->model::$objectClasses)) {
             return $this;
         }
 
-        foreach ($this->scopes as $identifier => $scope) {
-            if (isset($this->appliedScopes[$identifier])) {
-                continue;
+        // Scopes should not be escapable, so we will wrap the
+        // application of the scopes within a nested query.
+        $this->where(function (self $query) {
+            foreach ($this->model::$objectClasses as $objectClass) {
+                $query->where('objectclass', '=', $objectClass);
             }
 
-            $scope instanceof Scope
-                ? $scope->apply($this, $this->getModel())
-                : $scope($this);
+            foreach ($this->scopes as $identifier => $scope) {
+                if (isset($this->appliedScopes[$identifier])) {
+                    continue;
+                }
 
-            $this->appliedScopes[$identifier] = $scope;
-        }
+                if ($scope instanceof Scope) {
+                    $scope->apply($query, $this->getModel());
+                } else {
+                    $scope($this);
+                }
+
+                $this->appliedScopes[$identifier] = $scope;
+            }
+        });
 
         return $this;
     }
@@ -587,8 +597,12 @@ class Builder
     /**
      * Add a where clause to the query with proper value preparation.
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->andFilter($attribute);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -635,8 +649,12 @@ class Builder
     /**
      * Add an or where clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->orFilter($attribute);
+        }
+
         [$value, $operator] = $this->query->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
         );
@@ -702,7 +720,9 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         return $this->rawFilter(
-            $this->query->getGrammar()->compileAnd($query->getQuery()->getQuery())
+            $this->query->getGrammar()->compileAnd(
+                $query->getQuery()->getQuery()
+            )
         );
     }
 
@@ -714,7 +734,9 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         return $this->rawFilter(
-            $this->query->getGrammar()->compileOr($query->getQuery()->getQuery())
+            $this->query->getGrammar()->compileOr(
+                $query->getQuery()->getQuery()
+            )
         );
     }
 

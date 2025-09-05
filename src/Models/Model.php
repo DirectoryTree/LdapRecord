@@ -1146,9 +1146,9 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     protected function deleteLeafNodes(): void
     {
-        $this->newQueryWithoutScopes()
-            ->in($this->dn)
+        Entry::query()
             ->list()
+            ->in($this->dn)
             ->each(function (Model $model) {
                 $model->delete(recursive: true);
             });

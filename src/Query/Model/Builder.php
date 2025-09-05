@@ -136,7 +136,7 @@ class Builder
      */
     public function chunk(int $pageSize, Closure $callback, bool $isCritical = false, bool $isolate = false): bool
     {
-        return $this->query->chunk($pageSize, function (array $records) use ($callback) {
+        return $this->toBase()->chunk($pageSize, function (array $records) use ($callback) {
             return $callback($this->model->hydrate($records));
         }, $isCritical, $isolate);
     }
@@ -147,7 +147,7 @@ class Builder
     public function paginate(int $pageSize = 1000, bool $isCritical = false): Collection
     {
         return $this->model->hydrate(
-            $this->query->paginate(...func_get_args())
+            $this->toBase()->paginate(...func_get_args())
         );
     }
 
@@ -156,7 +156,7 @@ class Builder
      */
     public function slice(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Slice
     {
-        $slice = $this->query->slice(...func_get_args());
+        $slice = $this->toBase()->slice(...func_get_args());
 
         $models = $this->model->hydrate($slice->items());
 
@@ -174,7 +174,7 @@ class Builder
     public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Collection
     {
         return $this->model->hydrate(
-            $this->query->forPage(...func_get_args())
+            $this->toBase()->forPage(...func_get_args())
         );
     }
 
@@ -424,7 +424,7 @@ class Builder
      */
     public function toBase(): QueryBuilder
     {
-        return $this->applyScopes()->query;
+        return $this->applyScopes()->getQuery();
     }
 
     /**
@@ -748,7 +748,9 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         return $this->rawFilter(
-            $this->query->getGrammar()->compileNot($query->getQuery()->getQuery())
+            $this->query->getGrammar()->compileNot(
+                $query->getQuery()->getQuery()
+            )
         );
     }
 

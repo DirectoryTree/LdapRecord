@@ -625,6 +625,15 @@ class BuilderTest extends TestCase
         $this->assertEquals('(|(name=john)(name=mary)(name=sue))', $b->getUnescapedQuery());
     }
 
+    public function test_built_where_in_with_empty_array()
+    {
+        $b = $this->newBuilder();
+
+        $b->whereIn('name', []);
+
+        $this->assertEquals('(|)', $b->getUnescapedQuery());
+    }
+
     public function test_built_where_approximately_equals()
     {
         $b = $this->newBuilder();

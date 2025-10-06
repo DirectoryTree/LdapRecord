@@ -64,4 +64,15 @@ class QueryTest extends TestCase
 
         $this->assertEquals(2, $pages);
     }
+
+    public function test_it_returns_no_results_with_empty_where_in_array()
+    {
+        $user = $this->makeUser($this->ou);
+
+        $user->save();
+
+        $this->assertCount(1, User::get());
+        $this->assertCount(1, User::whereIn('cn', [$user->getFirstAttribute('cn')])->get());
+        $this->assertEmpty(User::whereIn('cn', [])->get());
+    }
 }

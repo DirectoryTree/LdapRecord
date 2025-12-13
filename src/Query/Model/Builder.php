@@ -67,7 +67,6 @@ class Builder
         'getconnection',
         'getdn',
         'getfilters',
-        'getgrammar',
         'getselects',
         'gettype',
         'getunescapedquery',

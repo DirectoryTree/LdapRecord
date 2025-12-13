@@ -16,6 +16,7 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\Factory;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Raw;
@@ -120,8 +121,7 @@ class Builder
      * Constructor.
      */
     public function __construct(
-        protected Connection $connection,
-        protected Grammar $grammar = new Grammar,
+        protected Connection $connection
     ) {}
 
     /**
@@ -130,16 +130,6 @@ class Builder
     public function setConnection(Connection $connection): static
     {
         $this->connection = $connection;
-
-        return $this;
-    }
-
-    /**
-     * Set the current filter grammar.
-     */
-    public function setGrammar(Grammar $grammar): static
-    {
-        $this->grammar = $grammar;
 
         return $this;
     }
@@ -219,7 +209,7 @@ class Builder
             $this->whereHas('objectclass');
         }
 
-        return $this->grammar->compile($this);
+        return (string) $this->filter;
     }
 
     /**
@@ -236,14 +226,6 @@ class Builder
     public function getUnescapedQuery(): string
     {
         return EscapedValue::unescape($this->getQuery());
-    }
-
-    /**
-     * Get the current grammar instance.
-     */
-    public function getGrammar(): Grammar
-    {
-        return $this->grammar;
     }
 
     /**
@@ -834,7 +816,7 @@ class Builder
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
 
-        if (! in_array($operator, $this->grammar->operators())) {
+        if (! in_array($operator, Factory::operators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -842,7 +824,7 @@ class Builder
 
         $attribute = $this->escape($attribute)->forDnAndFilter()->get();
 
-        $filter = $this->grammar->makeFilter($operator, $attribute, $value);
+        $filter = Factory::make($operator, $attribute, $value);
 
         $this->addFilter($filter, $boolean);
 

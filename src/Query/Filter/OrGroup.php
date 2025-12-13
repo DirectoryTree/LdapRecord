@@ -42,7 +42,7 @@ class OrGroup implements GroupFilter
      */
     public function getRaw(): string
     {
-        return '|'.implode('', array_map(fn (Filter $filter) => (string) $filter, $this->filters));
+        return '|'.implode(array_map(fn (Filter $filter) => (string) $filter, $this->filters));
     }
 
     /**

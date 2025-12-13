@@ -222,7 +222,7 @@ class ModelRelationTest extends TestCase
 
         $model = new ModelWithHasManyRelationTestStub;
 
-        $characters = implode('', array_merge($escapedDnCharacters, $escapedFilterCharacters));
+        $characters = implode(array_merge($escapedDnCharacters, $escapedFilterCharacters));
 
         $model->setDn($characters);
 

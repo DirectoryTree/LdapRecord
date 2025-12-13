@@ -56,11 +56,7 @@ class ModelScopeTest extends TestCase
     {
         $query = ModelWithGlobalScopeTestStub::query();
 
-        $this->assertEquals([
-            'attribute' => 'foo',
-            'operator' => '=',
-            'value' => 'bar',
-        ], $query->toBase()->filters['and'][0]);
+        $this->assertStringContainsString('(foo=bar)', $query->toBase()->getQuery());
     }
 
     public function test_scopes_are_applied_to_pagination_request()
@@ -73,22 +69,20 @@ class ModelScopeTest extends TestCase
             ->expect(['search' => []]);
 
         $this->assertEmpty($query->paginate());
+        $this->assertEmpty($query->paginate());
+        $this->assertEmpty($query->paginate());
 
-        $this->assertEquals([
-            'attribute' => 'foo',
-            'operator' => '=',
-            'value' => 'bar',
-        ], $query->toBase()->filters['and'][0]);
+        $this->assertStringContainsString('(foo=bar)', $query->toBase()->getQuery());
     }
 
     public function test_scopes_are_not_stacked_multiple_times()
     {
         $query = ModelWithGlobalScopeTestStub::query();
-        $query->getQuery();
-        $query->getQuery();
+        // Call toBase() multiple times to verify scopes aren't stacked
+        $query->toBase();
+        $query->toBase();
 
-        $this->assertCount(1, $query->toBase()->filters['and']);
-        $this->assertEquals('(foo=bar)', $query->getQuery()->getQuery());
+        $this->assertEquals('(&(foo=bar))', $query->toBase()->getQuery());
     }
 
     public function test_local_scopes_can_be_called()
@@ -96,10 +90,7 @@ class ModelScopeTest extends TestCase
         $query = ModelWithLocalScopeTestStub::fooBar();
 
         $this->assertInstanceOf(Builder::class, $query);
-        $this->assertCount(1, $query->toBase()->filters['and']);
-        $this->assertEquals('foo', $query->toBase()->filters['and'][0]['attribute']);
-        $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
-        $this->assertEquals('\62\61\72', $query->toBase()->filters['and'][0]['value']);
+        $this->assertEquals('(foo=\62\61\72)', $query->toBase()->getQuery());
     }
 
     public function test_local_scopes_accept_arguments()
@@ -107,10 +98,7 @@ class ModelScopeTest extends TestCase
         $query = ModelWithLocalScopeTestStub::barBaz('zal');
 
         $this->assertInstanceOf(Builder::class, $query);
-        $this->assertCount(1, $query->toBase()->filters['and']);
-        $this->assertEquals('bar', $query->toBase()->filters['and'][0]['attribute']);
-        $this->assertEquals('=', $query->toBase()->filters['and'][0]['operator']);
-        $this->assertEquals('\7a\61\6c', $query->toBase()->filters['and'][0]['value']);
+        $this->assertEquals('(bar=\7a\61\6c)', $query->toBase()->getQuery());
     }
 
     public function test_scopes_do_not_impact_model_refresh()

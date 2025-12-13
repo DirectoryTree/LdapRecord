@@ -68,11 +68,10 @@ class BuilderScopeTest extends TestCase
         $connection->shouldReceive('run')->once()->with(m::on(function ($closure) {
             $func = new ReflectionFunction($closure);
 
-            return $func->getClosureThis()->filters['and'][0] == [
-                'attribute' => 'foo',
-                'operator' => '=',
-                'value' => 'bar',
-            ];
+            // Check that the filter contains the expected filter
+            $filter = $func->getClosureThis()->getFilter();
+
+            return $filter && str_contains((string) $filter, '(foo=bar)');
         }))->andReturn([]);
 
         $b = new Builder(new Entry, new QueryBuilder($connection));

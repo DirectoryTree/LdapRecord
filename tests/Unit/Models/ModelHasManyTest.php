@@ -225,8 +225,9 @@ class ModelHasManyTest extends TestCase
 
     public function test_only_related_with_many_relation_object_classes()
     {
+        // Scopes are wrapped in their own AndGroup for isolation
         $this->assertEquals(
-            '(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group)))',
+            '(&(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group))))',
             (new ModelHasManyStubWithManyRelated)->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
         );
     }

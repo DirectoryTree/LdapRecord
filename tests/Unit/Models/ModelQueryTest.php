@@ -57,7 +57,7 @@ class ModelQueryTest extends TestCase
         $query = $model->newQueryWithoutScopes();
 
         $this->assertEquals($model, $query->getModel());
-        $this->assertEquals(['and' => [], 'or' => [], 'raw' => []], $query->getQuery()->filters);
+        $this->assertNull($query->getQuery()->getFilter());
     }
 
     public function test_new_query_has_connection_base_dn()
@@ -80,8 +80,9 @@ class ModelQueryTest extends TestCase
     {
         Container::addConnection(new Connection);
 
+        // Scopes are wrapped in their own AndGroup for isolation
         $this->assertEquals(
-            '(&(objectclass=foo)(objectclass=bar)(objectclass=baz))',
+            '(&(&(objectclass=foo)(objectclass=bar)(objectclass=baz)))',
             ModelWithObjectClassStub::query()->getUnescapedQuery()
         );
     }
@@ -447,9 +448,15 @@ class ModelQueryTest extends TestCase
             ->whereRaw('windows', '=', $datetime)
             ->whereRaw('windowsinteger', '=', $datetime);
 
-        $this->assertEquals((new Timestamp('ldap'))->fromDateTime($datetime), $query->getQuery()->filters['and'][0]['value']);
-        $this->assertEquals((new Timestamp('windows'))->fromDateTime($datetime), $query->getQuery()->filters['and'][1]['value']);
-        $this->assertEquals((new Timestamp('windows-int'))->fromDateTime($datetime), $query->getQuery()->filters['and'][2]['value']);
+        $ldapTimestamp = (new Timestamp('ldap'))->fromDateTime($datetime);
+        $windowsTimestamp = (new Timestamp('windows'))->fromDateTime($datetime);
+        $windowsIntTimestamp = (new Timestamp('windows-int'))->fromDateTime($datetime);
+
+        // Check that the filter string contains the converted timestamps
+        $filterString = (string) $query->getQuery()->getFilter();
+        $this->assertStringContainsString("(standard={$ldapTimestamp})", $filterString);
+        $this->assertStringContainsString("(windows={$windowsTimestamp})", $filterString);
+        $this->assertStringContainsString("(windowsinteger={$windowsIntTimestamp})", $filterString);
     }
 
     public function test_exception_is_thrown_when_date_objects_cannot_be_converted()

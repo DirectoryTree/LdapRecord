@@ -142,19 +142,16 @@ class UserTest extends TestCase
 
     public function test_scope_where_has_mailbox_is_applied()
     {
-        $filters = User::whereHasMailbox()->getQuery()->filters;
+        $query = User::whereHasMailbox()->getQuery()->getQuery();
 
-        $this->assertEquals('msExchMailboxGuid', $filters['and'][4]['attribute']);
-        $this->assertEquals('*', $filters['and'][4]['operator']);
+        $this->assertStringContainsString('(msExchMailboxGuid=*)', $query);
     }
 
     public function test_scope_where_has_lockout_is_applied()
     {
-        $filters = User::whereHasLockout()->getQuery()->filters;
+        $query = User::whereHasLockout()->getQuery()->getQuery();
 
-        $this->assertEquals('lockoutTime', $filters['and'][4]['attribute']);
-        $this->assertEquals('>=', $filters['and'][4]['operator']);
-        $this->assertEquals('\31', $filters['and'][4]['value']);
+        $this->assertStringContainsString('(lockoutTime>=\31)', $query);
     }
 
     public function test_is_locked_out()

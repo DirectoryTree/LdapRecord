@@ -2,7 +2,9 @@
 
 namespace LdapRecord\Query\Filter;
 
-interface Filter extends \Stringable
+use Stringable;
+
+interface Filter extends Stringable
 {
     /**
      * Compile the filter to its LDAP string representation.

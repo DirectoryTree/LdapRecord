@@ -45,10 +45,7 @@ class Factory
             throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
         }
 
-        $classes = static::$operators[$operator];
-
-        // Handle negated operators (Ex: [Not::class, Equals::class])
-        if (is_array($classes)) {
+        if (is_array($classes = static::$operators[$operator])) {
             [$wrapper, $filter] = $classes;
 
             return new $wrapper(static::create($filter, $attribute, $value));

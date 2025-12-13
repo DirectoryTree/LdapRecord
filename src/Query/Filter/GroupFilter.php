@@ -14,4 +14,3 @@ interface GroupFilter extends Filter
      */
     public function getRaw(): string;
 }
-

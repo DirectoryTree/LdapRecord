@@ -5,7 +5,6 @@ namespace LdapRecord\Tests\Unit\Query\Filter;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\ApproximatelyEquals;
 use LdapRecord\Query\Filter\Equals;
-use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Parser;
 use LdapRecord\Query\Filter\ParserException;

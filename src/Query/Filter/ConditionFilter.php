@@ -24,4 +24,3 @@ interface ConditionFilter extends Filter
      */
     public function getRaw(): string;
 }
-

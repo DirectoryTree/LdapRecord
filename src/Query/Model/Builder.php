@@ -10,7 +10,6 @@ use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
-use LdapRecord\Models\Scopes\HasObjectClasses;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as QueryBuilder;
 use LdapRecord\Query\BuildsQueries;
@@ -473,18 +472,14 @@ class Builder
      */
     public function applyScopes(): static
     {
-        $scopes = $this->model::$objectClasses ? array_merge([
-            HasObjectClasses::class => new HasObjectClasses,
-        ], $this->scopes) : $this->scopes;
-
-        if (empty($scopes)) {
+        if (empty($this->scopes)) {
             return $this;
         }
 
         // Scopes should not be escapable, so we will wrap the
         // application of the scopes within a nested query.
-        $this->where(function (self $query) use ($scopes) {
-            foreach ($scopes as $identifier => $scope) {
+        $this->where(function (self $query) {
+            foreach ($this->scopes as $identifier => $scope) {
                 if (isset($this->appliedScopes[$identifier])) {
                     continue;
                 }

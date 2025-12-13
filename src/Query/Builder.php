@@ -948,6 +948,15 @@ class Builder
      */
     public function whereIn(string $attribute, array $values): static
     {
+        if (empty($values)) {
+            // If the array of values is empty, we will
+            // add an empty OR filter to the query to
+            // ensure that no results are returned.
+            $this->addFilter(new OrGroup());
+
+            return $this;
+        }
+
         $query = $this->newNestedInstance(function (Builder $query) use ($attribute, $values) {
             foreach ($values as $value) {
                 $query->orWhereEquals($attribute, $value);

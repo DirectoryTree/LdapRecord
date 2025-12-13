@@ -146,4 +146,17 @@ class TimestampTest extends TestCase
         $this->assertSame($min, $timestamp->toDateTime($min));
         $this->assertSame($min, $timestamp->toDateTime((string) $min));
     }
+
+    public function test_windows_int_type_rounds_correctly()
+    {
+        $timestamp = new Timestamp('windows-int');
+
+        foreach (['133692539995000000', '133692539999500000'] as $windowsIntegerTime) {
+            $dateTime = $timestamp->toDateTime($windowsIntegerTime);
+
+            $expectedUnixTimestamp = (int) ($windowsIntegerTime / 10000000) - 11644473600;
+
+            $this->assertEquals($expectedUnixTimestamp, $dateTime->getTimestamp());
+        }
+    }
 }

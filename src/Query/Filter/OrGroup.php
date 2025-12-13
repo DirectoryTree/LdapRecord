@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Query\Filter;
 
-class OrGroup implements Filter
+class OrGroup implements GroupFilter
 {
     /**
      * The filters in the group.
@@ -30,6 +30,22 @@ class OrGroup implements Filter
     }
 
     /**
+     * Get the group's operator.
+     */
+    public function getOperator(): string
+    {
+        return '|';
+    }
+
+    /**
+     * Get the raw filter string (without outer parentheses).
+     */
+    public function getRaw(): string
+    {
+        return '|'.implode('', array_map(fn (Filter $filter) => (string) $filter, $this->filters));
+    }
+
+    /**
      * Compile the filter to its LDAP string representation.
      */
     public function __toString(): string
@@ -38,6 +54,6 @@ class OrGroup implements Filter
             return '';
         }
 
-        return '(|'.implode('', array_map(fn (Filter $filter) => (string) $filter, $this->filters)).')';
+        return '('.$this->getRaw().')';
     }
 }

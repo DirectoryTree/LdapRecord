@@ -62,7 +62,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function countEntries(mixed $result): int
     {
@@ -72,7 +72,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
     {
@@ -108,7 +108,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
@@ -285,7 +285,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function saslBind(?string $dn = null, ?string $password = null, array $options = []): bool
     {

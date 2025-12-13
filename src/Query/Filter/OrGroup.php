@@ -30,7 +30,7 @@ class OrGroup implements GroupFilter
     }
 
     /**
-     * Get the group's operator.
+     * {@inheritdoc}
      */
     public function getOperator(): string
     {
@@ -38,7 +38,7 @@ class OrGroup implements GroupFilter
     }
 
     /**
-     * Get the raw filter string (without outer parentheses).
+     * {@inheritdoc}
      */
     public function getRaw(): string
     {
@@ -46,7 +46,7 @@ class OrGroup implements GroupFilter
     }
 
     /**
-     * Compile the filter to its LDAP string representation.
+     * {@inheritdoc}
      */
     public function __toString(): string
     {

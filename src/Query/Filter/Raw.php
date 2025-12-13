@@ -12,7 +12,7 @@ class Raw implements Filter
     ) {}
 
     /**
-     * Compile the filter to its LDAP string representation.
+     * {@inheritdoc}
      */
     public function __toString(): string
     {

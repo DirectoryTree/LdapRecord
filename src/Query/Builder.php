@@ -1173,7 +1173,7 @@ class Builder
         }
 
         // Flatten same-type groups to avoid deeply nested structures.
-        // e.g., AndGroup(AndGroup(a, b), c) becomes AndGroup(a, b, c)
+        // Ex: AndGroup(AndGroup(a, b), c) becomes AndGroup(a, b, c)
         if ($boolean === 'or') {
             $this->filter = $this->filter instanceof OrGroup
                 ? new OrGroup(...[...$this->filter->getFilters(), $filter])

@@ -13,7 +13,7 @@ class GreaterThanOrEquals implements ConditionFilter
     ) {}
 
     /**
-     * Get the filter's attribute.
+     * {@inheritdoc}
      */
     public function getAttribute(): string
     {
@@ -21,7 +21,7 @@ class GreaterThanOrEquals implements ConditionFilter
     }
 
     /**
-     * Get the filter's operator.
+     * {@inheritdoc}
      */
     public function getOperator(): string
     {
@@ -29,7 +29,7 @@ class GreaterThanOrEquals implements ConditionFilter
     }
 
     /**
-     * Get the filter's value.
+     * {@inheritdoc}
      */
     public function getValue(): string
     {
@@ -37,7 +37,7 @@ class GreaterThanOrEquals implements ConditionFilter
     }
 
     /**
-     * Get the raw filter string (without parentheses).
+     * {@inheritdoc}
      */
     public function getRaw(): string
     {
@@ -45,7 +45,7 @@ class GreaterThanOrEquals implements ConditionFilter
     }
 
     /**
-     * Compile the filter to its LDAP string representation.
+     * {@inheritdoc}
      */
     public function __toString(): string
     {

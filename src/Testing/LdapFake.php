@@ -214,7 +214,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
@@ -222,7 +222,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
     {
@@ -230,7 +230,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setRebindCallback(callable $callback): bool
     {
@@ -238,7 +238,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -248,7 +248,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -258,7 +258,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -268,7 +268,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function countEntries(mixed $result): int
     {
@@ -377,7 +377,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function saslBind(?string $dn = null, ?string $password = null, ?array $options = null): bool
     {

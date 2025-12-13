@@ -20,7 +20,7 @@ class Not implements GroupFilter
     }
 
     /**
-     * Get the filter's operator.
+     * {@inheritdoc}
      */
     public function getOperator(): string
     {
@@ -28,7 +28,7 @@ class Not implements GroupFilter
     }
 
     /**
-     * Get the raw filter string (without outer parentheses).
+     * {@inheritdoc}
      */
     public function getRaw(): string
     {
@@ -36,7 +36,7 @@ class Not implements GroupFilter
     }
 
     /**
-     * Compile the filter to its LDAP string representation.
+     * {@inheritdoc}
      */
     public function __toString(): string
     {

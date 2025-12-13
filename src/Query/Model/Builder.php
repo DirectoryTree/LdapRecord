@@ -14,6 +14,10 @@ use LdapRecord\Models\Scopes\HasObjectClasses;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as QueryBuilder;
 use LdapRecord\Query\BuildsQueries;
+use LdapRecord\Query\Filter\AndGroup;
+use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\Not;
+use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\MultipleObjectsFoundException;
 use LdapRecord\Query\Slice;
 use LdapRecord\Support\ForwardsCalls;
@@ -720,11 +724,11 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileAnd(
-                $query->getQuery()->getQuery()
-            )
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new AndGroup($filter));
+        }
+
+        return $this;
     }
 
     /**
@@ -734,11 +738,11 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileOr(
-                $query->getQuery()->getQuery()
-            )
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new OrGroup($filter), 'or');
+        }
+
+        return $this;
     }
 
     /**
@@ -748,17 +752,17 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileNot(
-                $query->getQuery()->getQuery()
-            )
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new Not($filter));
+        }
+
+        return $this;
     }
 
     /**
      * Adds a raw filter to the current query.
      */
-    public function rawFilter(array|string $filters = []): static
+    public function rawFilter(Filter|array|string $filters = []): static
     {
         $this->query->rawFilter($filters);
 

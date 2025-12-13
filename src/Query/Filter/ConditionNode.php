@@ -65,13 +65,11 @@ class ConditionNode extends Node
      */
     protected function extractComponents(string $filter): array
     {
-        $components = Str::whenContains(
+        return Str::whenContains(
             $filter,
             $this->operators,
             fn ($operator, $filter) => explode($this->operator = $operator, $filter, 2),
             fn ($filter) => throw new ParserException("Invalid query condition. No operator found in [$filter]"),
         );
-
-        return $components;
     }
 }

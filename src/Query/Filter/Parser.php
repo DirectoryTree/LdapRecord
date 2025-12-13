@@ -48,10 +48,7 @@ class Parser
      */
     public static function assemble(Filter|array $filters = []): string
     {
-        return implode(array_map(
-            fn (Filter $filter) => (string) $filter,
-            Arr::wrap($filters)
-        ));
+        return implode(Arr::wrap($filters));
     }
 
     /**

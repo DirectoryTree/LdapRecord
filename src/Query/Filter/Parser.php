@@ -102,7 +102,7 @@ class Parser
      */
     protected static function buildCondition(string $filter): Filter
     {
-        // Order matters: check multi-char operators first
+        // Order matters here. Check multi-char operators first.
         $operators = ['>=', '<=', '~=', '='];
 
         foreach ($operators as $operator) {

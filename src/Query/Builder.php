@@ -952,7 +952,7 @@ class Builder
             // If the array of values is empty, we will
             // add an empty OR filter to the query to
             // ensure that no results are returned.
-            $this->addFilter(new OrGroup());
+            $this->addFilter(new OrGroup);
 
             return $this;
         }

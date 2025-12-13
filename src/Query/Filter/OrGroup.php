@@ -50,10 +50,6 @@ class OrGroup implements GroupFilter
      */
     public function __toString(): string
     {
-        if (empty($this->filters)) {
-            return '';
-        }
-
         return '('.$this->getRaw().')';
     }
 }

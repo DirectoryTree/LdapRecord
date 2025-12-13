@@ -831,7 +831,7 @@ class Builder
      */
     protected function newNestedModelInstance(Closure $closure): static
     {
-        $query = $this->model->newQueryWithoutScopes()->nested();
+        $query = (new static($this->model, $this->query->newInstance()))->nested();
 
         $closure($query);
 

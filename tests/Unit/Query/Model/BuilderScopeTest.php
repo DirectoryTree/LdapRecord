@@ -33,7 +33,8 @@ class BuilderScopeTest extends TestCase
 
         $b->withGlobalScope('foo', new TestModelScope);
 
-        $this->assertEquals('(foo=LdapRecord\Models\Entry)', $b->getUnescapedQuery());
+        // Scopes are wrapped in an AndGroup to prevent negation
+        $this->assertEquals('(&(foo=LdapRecord\Models\Entry))', $b->getUnescapedQuery());
 
         $this->assertCount(1, $b->appliedScopes());
         $this->assertArrayHasKey('foo', $b->appliedScopes());

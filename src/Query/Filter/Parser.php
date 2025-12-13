@@ -8,9 +8,9 @@ use LdapRecord\Support\Str;
 class Parser
 {
     /**
-     * Parse an LDAP filter into nodes.
+     * Parse an LDAP filter into filter objects.
      *
-     * @return (ConditionNode|GroupNode)[]
+     * @return Filter[]
      *
      * @throws ParserException
      */
@@ -26,7 +26,7 @@ class Parser
             );
         }
 
-        return static::buildNodes(
+        return static::buildFilters(
             array_map('trim', static::match($string))
         );
     }
@@ -42,41 +42,27 @@ class Parser
     }
 
     /**
-     * Assemble the parsed nodes into a single filter.
+     * Assemble the parsed filters into a single string.
      *
-     * @param  Node|Node[]  $nodes
+     * @param  Filter|Filter[]  $filters
      */
-    public static function assemble(Node|array $nodes = []): string
+    public static function assemble(Filter|array $filters = []): string
     {
-        return array_reduce(Arr::wrap($nodes), fn ($carry, Node $node) => (
-            $carry .= static::compileNode($node)
+        return implode(array_map(
+            fn (Filter $filter) => (string) $filter,
+            Arr::wrap($filters)
         ));
     }
 
     /**
-     * Assemble the node into its string based format.
-     */
-    protected static function compileNode(Node $node): string
-    {
-        switch (true) {
-            case $node instanceof GroupNode:
-                return static::wrap($node->getOperator().static::assemble($node->getNodes()));
-            case $node instanceof ConditionNode:
-                return static::wrap($node->getAttribute().$node->getOperator().$node->getValue());
-            default:
-                return $node->getRaw();
-        }
-    }
-
-    /**
-     * Build an array of nodes from the given filters.
+     * Build an array of filter objects from the given filter strings.
      *
      * @param  string[]  $filters
-     * @return (ConditionNode|GroupNode)[]
+     * @return Filter[]
      *
      * @throws ParserException
      */
-    protected static function buildNodes(array $filters = []): array
+    protected static function buildFilters(array $filters = []): array
     {
         return array_map(function ($filter) {
             if (static::isWrapped($filter)) {
@@ -88,9 +74,88 @@ class Parser
             }
 
             return static::isGroup($filter)
-                ? new GroupNode($filter)
-                : new ConditionNode($filter);
+                ? static::buildGroup($filter)
+                : static::buildCondition($filter);
         }, $filters);
+    }
+
+    /**
+     * Build a group filter from the given filter string.
+     */
+    protected static function buildGroup(string $filter): Filter
+    {
+        $operator = substr($filter, 0, 1);
+
+        $children = static::parse($filter);
+
+        return match ($operator) {
+            '&' => new AndGroup(...$children),
+            '|' => new OrGroup(...$children),
+            '!' => new Not(Arr::first($children)),
+        };
+    }
+
+    /**
+     * Build a condition filter from the given filter string.
+     *
+     * @throws ParserException
+     */
+    protected static function buildCondition(string $filter): Filter
+    {
+        // Order matters here. Check multi-char operators first.
+        $operators = ['>=', '<=', '~=', '='];
+
+        foreach ($operators as $operator) {
+            if (Str::contains($filter, $operator)) {
+                [$attribute, $value] = explode($operator, $filter, 2);
+
+                return static::createConditionFilter($operator, $attribute, $value);
+            }
+        }
+
+        throw new ParserException("Invalid query condition. No operator found in [$filter]");
+    }
+
+    /**
+     * Create the appropriate filter instance based on operator and value pattern.
+     */
+    protected static function createConditionFilter(string $operator, string $attribute, string $value): Filter
+    {
+        return match ($operator) {
+            '>=' => new GreaterThanOrEquals($attribute, $value),
+            '<=' => new LessThanOrEquals($attribute, $value),
+            '~=' => new ApproximatelyEquals($attribute, $value),
+            '=' => static::createEqualsFilter($attribute, $value),
+        };
+    }
+
+    /**
+     * Create the appropriate equals-based filter based on value pattern.
+     */
+    protected static function createEqualsFilter(string $attribute, string $value): Filter
+    {
+        // Has: (attr=*)
+        if ($value === '*') {
+            return new Has($attribute);
+        }
+
+        // Contains: (attr=*value*)
+        if (Str::startsWith($value, '*') && Str::endsWith($value, '*')) {
+            return new Contains($attribute, substr($value, 1, -1));
+        }
+
+        // EndsWith: (attr=*value)
+        if (Str::startsWith($value, '*')) {
+            return new EndsWith($attribute, substr($value, 1));
+        }
+
+        // StartsWith: (attr=value*)
+        if (Str::endsWith($value, '*')) {
+            return new StartsWith($attribute, substr($value, 0, -1));
+        }
+
+        // Equals: (attr=value)
+        return new Equals($attribute, $value);
     }
 
     /**
@@ -102,23 +167,13 @@ class Parser
     }
 
     /**
-     * Wrap the value in parentheses.
-     */
-    protected static function wrap(string $value): string
-    {
-        return "($value)";
-    }
-
-    /**
-     * Recursively unwrwap the value from its parentheses.
+     * Recursively unwrap the value from its parentheses.
      */
     protected static function unwrap(string $value): string
     {
-        $nodes = static::parse($value);
+        $filter = Arr::first(static::parse($value));
 
-        $unwrapped = Arr::first($nodes);
-
-        return $unwrapped instanceof Node ? $unwrapped->getRaw() : $value;
+        return $filter?->getRaw() ?? $value;
     }
 
     /**

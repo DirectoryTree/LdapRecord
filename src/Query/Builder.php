@@ -14,6 +14,12 @@ use LdapRecord\EscapesValues;
 use LdapRecord\LdapInterface;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Query\Events\QueryExecuted;
+use LdapRecord\Query\Filter\AndGroup;
+use LdapRecord\Query\Filter\Factory;
+use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\Not;
+use LdapRecord\Query\Filter\OrGroup;
+use LdapRecord\Query\Filter\Raw;
 use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
@@ -42,13 +48,9 @@ class Builder
     public ?array $selects = null;
 
     /**
-     * The query filters.
+     * The query filter.
      */
-    public array $filters = [
-        'and' => [],
-        'or' => [],
-        'raw' => [],
-    ];
+    public ?Filter $filter = null;
 
     /**
      * The LDAP server controls to be sent.
@@ -119,8 +121,7 @@ class Builder
      * Constructor.
      */
     public function __construct(
-        protected Connection $connection,
-        protected Grammar $grammar = new Grammar,
+        protected Connection $connection
     ) {}
 
     /**
@@ -129,16 +130,6 @@ class Builder
     public function setConnection(Connection $connection): static
     {
         $this->connection = $connection;
-
-        return $this;
-    }
-
-    /**
-     * Set the current filter grammar.
-     */
-    public function setGrammar(Grammar $grammar): static
-    {
-        $this->grammar = $grammar;
 
         return $this;
     }
@@ -214,11 +205,19 @@ class Builder
     {
         // We need to ensure we have at least one filter, as
         // no query results will be returned otherwise.
-        if (count(array_filter($this->filters)) === 0) {
+        if (is_null($this->filter)) {
             $this->whereHas('objectclass');
         }
 
-        return $this->grammar->compile($this);
+        return (string) $this->filter;
+    }
+
+    /**
+     * Get the query filter.
+     */
+    public function getFilter(): ?Filter
+    {
+        return $this->filter;
     }
 
     /**
@@ -227,14 +226,6 @@ class Builder
     public function getUnescapedQuery(): string
     {
         return EscapedValue::unescape($this->getQuery());
-    }
-
-    /**
-     * Get the current grammar instance.
-     */
-    public function getGrammar(): Grammar
-    {
-        return $this->grammar;
     }
 
     /**
@@ -751,12 +742,14 @@ class Builder
     /**
      * Add a raw filter to the query.
      */
-    public function rawFilter(array|string $filters = []): static
+    public function rawFilter(Filter|array|string $filters = []): static
     {
         $filters = is_array($filters) ? $filters : func_get_args();
 
         foreach ($filters as $filter) {
-            $this->filters['raw'][] = $filter;
+            $this->addFilter(
+                $filter instanceof Filter ? $filter : new Raw($filter)
+            );
         }
 
         return $this;
@@ -769,9 +762,11 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        return $this->rawFilter(
-            $this->grammar->compileAnd($query->getQuery())
-        );
+        if ($filter = $query->getFilter()) {
+            $this->addFilter(new AndGroup($filter));
+        }
+
+        return $this;
     }
 
     /**
@@ -781,9 +776,11 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        return $this->rawFilter(
-            $this->grammar->compileOr($query->getQuery())
-        );
+        if ($filter = $query->getFilter()) {
+            $this->addFilter(new OrGroup($filter), 'or');
+        }
+
+        return $this;
     }
 
     /**
@@ -793,9 +790,11 @@ class Builder
     {
         $query = $this->newNestedInstance($closure);
 
-        return $this->rawFilter(
-            $this->grammar->compileNot($query->getQuery())
-        );
+        if ($filter = $query->getFilter()) {
+            $this->addFilter(new Not($filter));
+        }
+
+        return $this;
     }
 
     /**
@@ -803,8 +802,12 @@ class Builder
      *
      * @throws InvalidArgumentException
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->andFilter($attribute);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -813,7 +816,7 @@ class Builder
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
 
-        if (! in_array($operator, $this->grammar->getOperators())) {
+        if (! in_array($operator, Factory::operators())) {
             throw new InvalidArgumentException("Invalid LDAP filter operator [$operator]");
         }
 
@@ -821,7 +824,9 @@ class Builder
 
         $attribute = $this->escape($attribute)->forDnAndFilter()->get();
 
-        $this->addFilter($boolean, compact('attribute', 'operator', 'value'));
+        $filter = Factory::make($operator, $attribute, $value);
+
+        $this->addFilter($filter, $boolean);
 
         return $this;
     }
@@ -929,16 +934,22 @@ class Builder
             // If the array of values is empty, we will
             // add an empty OR filter to the query to
             // ensure that no results are returned.
-            $this->rawFilter('(|)');
+            $this->addFilter(new OrGroup);
 
             return $this;
         }
 
-        return $this->orFilter(function (Builder $query) use ($attribute, $values) {
+        $query = $this->newNestedInstance(function (Builder $query) use ($attribute, $values) {
             foreach ($values as $value) {
-                $query->whereEquals($attribute, $value);
+                $query->orWhereEquals($attribute, $value);
             }
         });
+
+        if ($filter = $query->getFilter()) {
+            $this->addFilter($filter);
+        }
+
+        return $this;
     }
 
     /**
@@ -1021,8 +1032,12 @@ class Builder
     /**
      * Add an 'or where' clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->orFilter($attribute);
+        }
+
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2 && ! $this->operatorRequiresValue($operator)
         );
@@ -1129,48 +1144,29 @@ class Builder
     }
 
     /**
-     * Add a filter binding onto the query.
-     *
-     * @throws InvalidArgumentException
+     * Add a filter to the query.
      */
-    public function addFilter(string $type, array $bindings): static
+    public function addFilter(Filter $filter, string $boolean = 'and'): static
     {
-        if (! array_key_exists($type, $this->filters)) {
-            throw new InvalidArgumentException("Filter type: [$type] is invalid.");
+        if (is_null($this->filter)) {
+            $this->filter = $filter;
+
+            return $this;
         }
 
-        // Each filter clause require key bindings to be set. We
-        // will validate this here to ensure all of them have
-        // been provided, or throw an exception otherwise.
-        if ($missing = $this->missingBindingKeys($bindings)) {
-            $keys = implode(', ', $missing);
-
-            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$keys] keys.");
+        // Flatten same-type groups to avoid deeply nested structures.
+        // Ex: AndGroup(AndGroup(a, b), c) becomes AndGroup(a, b, c)
+        if ($boolean === 'or') {
+            $this->filter = $this->filter instanceof OrGroup
+                ? new OrGroup(...[...$this->filter->getFilters(), $filter])
+                : new OrGroup($this->filter, $filter);
+        } else {
+            $this->filter = $this->filter instanceof AndGroup
+                ? new AndGroup(...[...$this->filter->getFilters(), $filter])
+                : new AndGroup($this->filter, $filter);
         }
-
-        $this->filters[$type][] = $bindings;
 
         return $this;
-    }
-
-    /**
-     * Extract any missing required binding keys.
-     */
-    protected function missingBindingKeys(array $bindings): array
-    {
-        $required = array_flip(['attribute', 'operator', 'value']);
-
-        $existing = array_intersect_key($required, $bindings);
-
-        return array_keys(array_diff_key($required, $existing));
-    }
-
-    /**
-     * Get all the filters on the query.
-     */
-    public function getFilters(): array
-    {
-        return $this->filters;
     }
 
     /**
@@ -1178,9 +1174,7 @@ class Builder
      */
     public function clearFilters(): static
     {
-        foreach (array_keys($this->filters) as $type) {
-            $this->filters[$type] = [];
-        }
+        $this->filter = null;
 
         return $this;
     }

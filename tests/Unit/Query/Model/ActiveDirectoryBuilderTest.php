@@ -29,11 +29,6 @@ class ActiveDirectoryBuilderTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme');
 
-        $where = $b->getQuery()->filters['and'][0];
-
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals('(memberof=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
@@ -42,13 +37,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b = $this->newBuilder();
         $b->setBaseDn('dc=org,dc=acme');
         $b->whereMemberOf('cn=Accounting,{base}');
-        $where = $b->getQuery()->filters['and'][0];
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(memberof=cn=Accounting,dc=org,dc=acme)',
             $b->getUnescapedQuery()
@@ -61,11 +50,6 @@ class ActiveDirectoryBuilderTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
-        $where = $b->getQuery()->filters['and'][0];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals('(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
@@ -74,13 +58,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b = $this->newBuilder();
         $b->setBaseDn('dc=org,dc=acme');
         $b->whereMemberOf('cn=Accounting,{base}', nested: true);
-        $where = $b->getQuery()->filters['and'][0];
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)',
             $b->getUnescapedQuery()
@@ -94,11 +72,6 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme');
 
-        $where = $b->getQuery()->filters['or'][1];
-
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals(
             '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()
@@ -111,13 +84,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->setBaseDn('dc=org,dc=acme');
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,{base}');
-        $where = $b->getQuery()->filters['or'][1];
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()
@@ -131,11 +98,6 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
-        $where = $b->getQuery()->filters['or'][1];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals(
             '(|(cn=John Doe)(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()

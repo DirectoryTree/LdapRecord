@@ -110,7 +110,8 @@ class ModelTest extends TestCase
 
         $this->assertInstanceOf(HasMany::class, $relation);
         $this->assertInstanceOf(ActiveDirectoryBuilder::class, $query = $relation->getQuery());
-        $this->assertEquals('(|(foo=\66\6f\6f))', $query->getQuery()->getQuery());
+        // With a single value, whereIn produces a single Equals filter (no OR wrapper needed)
+        $this->assertEquals('(foo=\66\6f\6f)', $query->getQuery()->getQuery());
     }
 }
 

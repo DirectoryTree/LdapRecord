@@ -13,6 +13,10 @@ use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as QueryBuilder;
 use LdapRecord\Query\BuildsQueries;
+use LdapRecord\Query\Filter\AndGroup;
+use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\Not;
+use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\MultipleObjectsFoundException;
 use LdapRecord\Query\Slice;
 use LdapRecord\Support\ForwardsCalls;
@@ -63,7 +67,6 @@ class Builder
         'getconnection',
         'getdn',
         'getfilters',
-        'getgrammar',
         'getselects',
         'gettype',
         'getunescapedquery',
@@ -136,7 +139,7 @@ class Builder
      */
     public function chunk(int $pageSize, Closure $callback, bool $isCritical = false, bool $isolate = false): bool
     {
-        return $this->query->chunk($pageSize, function (array $records) use ($callback) {
+        return $this->toBase()->chunk($pageSize, function (array $records) use ($callback) {
             return $callback($this->model->hydrate($records));
         }, $isCritical, $isolate);
     }
@@ -147,7 +150,7 @@ class Builder
     public function paginate(int $pageSize = 1000, bool $isCritical = false): Collection
     {
         return $this->model->hydrate(
-            $this->query->paginate(...func_get_args())
+            $this->toBase()->paginate(...func_get_args())
         );
     }
 
@@ -156,7 +159,7 @@ class Builder
      */
     public function slice(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Slice
     {
-        $slice = $this->query->slice(...func_get_args());
+        $slice = $this->toBase()->slice(...func_get_args());
 
         $models = $this->model->hydrate($slice->items());
 
@@ -174,7 +177,7 @@ class Builder
     public function forPage(int $page = 1, int $perPage = 100, string $orderBy = 'cn', string $orderByDir = 'asc'): Collection
     {
         return $this->model->hydrate(
-            $this->query->forPage(...func_get_args())
+            $this->toBase()->forPage(...func_get_args())
         );
     }
 
@@ -424,7 +427,7 @@ class Builder
      */
     public function toBase(): QueryBuilder
     {
-        return $this->applyScopes()->query;
+        return $this->applyScopes()->getQuery();
     }
 
     /**
@@ -468,21 +471,27 @@ class Builder
      */
     public function applyScopes(): static
     {
-        if (! $this->scopes) {
+        if (empty($this->scopes)) {
             return $this;
         }
 
-        foreach ($this->scopes as $identifier => $scope) {
-            if (isset($this->appliedScopes[$identifier])) {
-                continue;
+        // Scopes should not be escapable, so we will wrap the
+        // application of the scopes within a nested query.
+        $this->where(function (self $query) {
+            foreach ($this->scopes as $identifier => $scope) {
+                if (isset($this->appliedScopes[$identifier])) {
+                    continue;
+                }
+
+                if ($scope instanceof Scope) {
+                    $scope->apply($query, $this->getModel());
+                } else {
+                    $scope($this);
+                }
+
+                $this->appliedScopes[$identifier] = $scope;
             }
-
-            $scope instanceof Scope
-                ? $scope->apply($this, $this->getModel())
-                : $scope($this);
-
-            $this->appliedScopes[$identifier] = $scope;
-        }
+        });
 
         return $this;
     }
@@ -587,8 +596,12 @@ class Builder
     /**
      * Add a where clause to the query with proper value preparation.
      */
-    public function where(array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
+    public function where(Closure|array|string $attribute, mixed $operator = null, mixed $value = null, string $boolean = 'and', bool $raw = false): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->andFilter($attribute);
+        }
+
         if (is_array($attribute)) {
             return $this->addArrayOfWheres($attribute, $boolean, $raw);
         }
@@ -635,8 +648,12 @@ class Builder
     /**
      * Add an or where clause to the query.
      */
-    public function orWhere(array|string $attribute, ?string $operator = null, ?string $value = null): static
+    public function orWhere(Closure|array|string $attribute, ?string $operator = null, ?string $value = null): static
     {
+        if ($attribute instanceof Closure) {
+            return $this->orFilter($attribute);
+        }
+
         [$value, $operator] = $this->query->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
         );
@@ -701,9 +718,11 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileAnd($query->getQuery()->getQuery())
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new AndGroup($filter));
+        }
+
+        return $this;
     }
 
     /**
@@ -713,9 +732,11 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileOr($query->getQuery()->getQuery())
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new OrGroup($filter), 'or');
+        }
+
+        return $this;
     }
 
     /**
@@ -725,15 +746,17 @@ class Builder
     {
         $query = $this->newNestedModelInstance($closure);
 
-        return $this->rawFilter(
-            $this->query->getGrammar()->compileNot($query->getQuery()->getQuery())
-        );
+        if ($filter = $query->getQuery()->getFilter()) {
+            $this->query->addFilter(new Not($filter));
+        }
+
+        return $this;
     }
 
     /**
      * Adds a raw filter to the current query.
      */
-    public function rawFilter(array|string $filters = []): static
+    public function rawFilter(Filter|array|string $filters = []): static
     {
         $this->query->rawFilter($filters);
 
@@ -802,7 +825,7 @@ class Builder
      */
     protected function newNestedModelInstance(Closure $closure): static
     {
-        $query = $this->model->newQueryWithoutScopes()->nested();
+        $query = (new static($this->model, $this->query->newInstance()))->nested();
 
         $closure($query);
 

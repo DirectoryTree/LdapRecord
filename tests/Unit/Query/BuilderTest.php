@@ -297,6 +297,16 @@ class BuilderTest extends TestCase
         $this->assertEquals('(|(&(baz=zax)(lao=zen))(foo=bar)(zue=lea))', $b->getUnescapedQuery());
     }
 
+    public function test_where_with_multiple_or_wheres()
+    {
+        $b = $this->newBuilder()
+            ->where('foo', '=', 'bar')
+            ->orWhere('baz', '=', 'zax')
+            ->orWhere('lao', '=', 'zen');
+
+        $this->assertEquals('(|(foo=bar)(baz=zax)(lao=zen))', $b->getUnescapedQuery());
+    }
+
     public function test_or_where_with_array()
     {
         $b = $this->newBuilder();

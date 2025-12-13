@@ -78,6 +78,7 @@ class ModelScopeTest extends TestCase
     public function test_scopes_are_not_stacked_multiple_times()
     {
         $query = ModelWithGlobalScopeTestStub::query();
+
         // Call toBase() multiple times to verify scopes aren't stacked
         $query->toBase();
         $query->toBase();
@@ -133,6 +134,47 @@ class ModelScopeTest extends TestCase
         $model = ModelWithDnScopeTestStub::find('cn=John Doe,dc=local,dc=com');
 
         $this->assertEquals('cn=John Doe,dc=local,dc=com', $model->getDn());
+    }
+
+    public function test_scopes_cannot_be_negated_by_or_clauses()
+    {
+        // The scope should be wrapped in its own AND group, so the OR clause
+        // cannot negate it. The filter should be: (&(bypass=...)(&(foo=bar)))
+        // NOT: (|(foo=bar)(bypass=...)) which would allow bypassing the scope
+        $this->assertEquals(
+            '(&(bypass=\61\74\74\65\6d\70\74)(&(foo=bar)))',
+            ModelWithGlobalScopeTestStub::query()
+                ->orWhere('bypass', '=', 'attempt')
+                ->toBase()
+                ->getQuery()
+        );
+    }
+
+    public function test_scopes_cannot_be_negated_by_multiple_or_clauses()
+    {
+        // Scope must remain enforced regardless of OR clauses
+        $this->assertEquals(
+            '(&(|(bypass1=\61\74\74\65\6d\70\74\31)(bypass2=\61\74\74\65\6d\70\74\32))(&(foo=bar)))',
+            ModelWithGlobalScopeTestStub::query()
+                ->orWhere('bypass1', '=', 'attempt1')
+                ->orWhere('bypass2', '=', 'attempt2')
+                ->toBase()
+                ->getQuery()
+        );
+    }
+
+    public function test_scopes_remain_enforced_with_complex_queries()
+    {
+        // The scope (foo=bar) must always be present and enforced at the root AND level
+        $this->assertEquals(
+            '(&(|(name=\4a\6f\68\6e)(name=\4a\61\6e\65))(active=\74\72\75\65)(&(foo=bar)))',
+            ModelWithGlobalScopeTestStub::query()
+                ->where('name', '=', 'John')
+                ->orWhere('name', '=', 'Jane')
+                ->where('active', '=', 'true')
+                ->toBase()
+                ->getQuery()
+        );
     }
 }
 

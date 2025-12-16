@@ -17,6 +17,7 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Factory;
 use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\GroupFilter;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Raw;
@@ -763,7 +764,11 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new AndGroup($filter));
+            $filters = $filter instanceof GroupFilter
+                ? $filter->getFilters()
+                : [$filter];
+
+            $this->addFilter(new AndGroup(...$filters), wrap: false);
         }
 
         return $this;
@@ -777,7 +782,11 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new OrGroup($filter), 'or');
+            $filters = $filter instanceof GroupFilter
+                ? $filter->getFilters()
+                : [$filter];
+
+            $this->addFilter(new OrGroup(...$filters), wrap: false);
         }
 
         return $this;
@@ -1146,10 +1155,18 @@ class Builder
     /**
      * Add a filter to the query.
      */
-    public function addFilter(Filter $filter, string $boolean = 'and'): static
+    public function addFilter(Filter $filter, string $boolean = 'and', bool $wrap = true): static
     {
         if (is_null($this->filter)) {
             $this->filter = $filter;
+
+            return $this;
+        }
+
+        if (! $wrap) {
+            $this->filter = $boolean === 'or'
+                ? new OrGroup($this->filter, $filter)
+                : new AndGroup($this->filter, $filter);
 
             return $this;
         }

@@ -762,8 +762,7 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        // orFilter wraps the nested query in an OrGroup
-        // Since where() creates an AndGroup, the result is OrGroup(AndGroup(...))
+        // orFilter combines the filters inside with OR
         $query = $b->orFilter(function ($query) {
             $query->where([
                 'one' => 'one',
@@ -771,14 +770,27 @@ class BuilderTest extends TestCase
             ]);
         })->getUnescapedQuery();
 
-        $this->assertEquals('(|(&(one=one)(two=two)))', $query);
+        $this->assertEquals('(|(one=one)(two=two))', $query);
+    }
+
+    public function test_nested_or_filter_with_where_equals()
+    {
+        $b = $this->newBuilder();
+
+        // orFilter with whereEquals should combine with OR, not AND
+        $query = $b->orFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(foo=1)(foo=2))', $query);
     }
 
     public function test_nested_and_filter()
     {
         $b = $this->newBuilder();
 
-        // andFilter wraps the nested query in an AndGroup
+        // andFilter combines the filters inside with AND
         $query = $b->andFilter(function ($query) {
             $query->where([
                 'one' => 'one',
@@ -786,7 +798,7 @@ class BuilderTest extends TestCase
             ]);
         })->getUnescapedQuery();
 
-        $this->assertEquals('(&(&(one=one)(two=two)))', $query);
+        $this->assertEquals('(&(one=one)(two=two))', $query);
     }
 
     public function test_nested_not_filter()
@@ -820,7 +832,7 @@ class BuilderTest extends TestCase
             ]);
         })->getUnescapedQuery();
 
-        $this->assertEquals('(&(|(&(one=one)(two=two)))(&(&(one=one)(two=two))))', $query);
+        $this->assertEquals('(&(|(one=one)(two=two))(&(one=one)(two=two)))', $query);
     }
 
     public function test_nested_filters_with_non_nested()
@@ -842,7 +854,32 @@ class BuilderTest extends TestCase
             'six' => 'six',
         ])->getUnescapedQuery();
 
-        $this->assertEquals('(&(|(&(one=one)(two=two)))(&(&(three=three)(four=four)))(five=five)(six=six))', $query);
+        $this->assertEquals('(&(|(one=one)(two=two))(&(three=three)(four=four))(five=five)(six=six))', $query);
+    }
+
+    public function test_deeply_nested_filters()
+    {
+        $b = $this->newBuilder();
+
+        // Complex query: enabled AND (user with verified OR service with trusted)
+        $query = $b->andFilter(function ($query) {
+            $query->whereEquals('enabled', 'true');
+            $query->orFilter(function ($q) {
+                $q->andFilter(function ($inner) {
+                    $inner->whereEquals('type', 'user');
+                    $inner->whereEquals('verified', 'true');
+                });
+                $q->andFilter(function ($inner) {
+                    $inner->whereEquals('type', 'service');
+                    $inner->whereEquals('trusted', 'true');
+                });
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals(
+            '(&(enabled=true)(|(&(type=user)(verified=true))(&(type=service)(trusted=true))))',
+            $query
+        );
     }
 
     public function test_nested_builder_is_nested()

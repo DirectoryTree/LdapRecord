@@ -569,13 +569,20 @@ class Builder
     /**
      * Select the given attributes to retrieve.
      */
-    public function select(array|string $selects): static
+    public function select(array|string $selects = ['*']): static
     {
+        $selects = is_array($selects) ? $selects : func_get_args();
+
+        // Default to all attributes if empty.
+        if (empty($selects)) {
+            $selects = ['*'];
+        }
+
         // If selects are being overridden, then we need to ensure
         // the GUID key is always selected so that it may be
         // returned in the results for model hydration.
         $selects = array_values(array_unique(
-            array_merge([$this->model->getGuidKey()], (array) $selects)
+            array_merge([$this->model->getGuidKey()], $selects)
         ));
 
         $this->query->select($selects);
@@ -588,6 +595,8 @@ class Builder
      */
     public function addSelect(array|string $select): static
     {
+        $select = is_array($select) ? $select : func_get_args();
+
         $this->query->addSelect($select);
 
         return $this;

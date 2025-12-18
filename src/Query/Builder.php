@@ -17,6 +17,7 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Factory;
 use LdapRecord\Query\Filter\Filter;
+use LdapRecord\Query\Filter\GroupFilter;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Raw;
@@ -763,7 +764,9 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new AndGroup($filter));
+            $this->addFilter(new AndGroup(
+                ...$this->extractNestedFilters($filter)
+            ), wrap: false);
         }
 
         return $this;
@@ -777,10 +780,36 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new OrGroup($filter), 'or');
+            $this->addFilter(new OrGroup(
+                ...$this->extractNestedFilters($filter)
+            ), wrap: false);
         }
 
         return $this;
+    }
+
+    /**
+     * Extract filters from a nested group filter for re-wrapping, preserving nested groups.
+     *
+     * @return array<Filter>
+     */
+    protected function extractNestedFilters(Filter $filter): array
+    {
+        if (! $filter instanceof GroupFilter) {
+            return [$filter];
+        }
+
+        $children = $filter->getFilters();
+
+        // If any child is a group, preserve the structure
+        foreach ($children as $child) {
+            if ($child instanceof GroupFilter) {
+                return $children;
+            }
+        }
+
+        // All children are non-groups, it's safe to unwrap.
+        return $children;
     }
 
     /**
@@ -1146,7 +1175,7 @@ class Builder
     /**
      * Add a filter to the query.
      */
-    public function addFilter(Filter $filter, string $boolean = 'and'): static
+    public function addFilter(Filter $filter, string $boolean = 'and', bool $wrap = true): static
     {
         if (is_null($this->filter)) {
             $this->filter = $filter;
@@ -1157,11 +1186,11 @@ class Builder
         // Flatten same-type groups to avoid deeply nested structures.
         // Ex: AndGroup(AndGroup(a, b), c) becomes AndGroup(a, b, c)
         if ($boolean === 'or') {
-            $this->filter = $this->filter instanceof OrGroup
+            $this->filter = $this->filter instanceof OrGroup && $wrap
                 ? new OrGroup(...[...$this->filter->getFilters(), $filter])
                 : new OrGroup($this->filter, $filter);
         } else {
-            $this->filter = $this->filter instanceof AndGroup
+            $this->filter = $this->filter instanceof AndGroup && $wrap
                 ? new AndGroup(...[...$this->filter->getFilters(), $filter])
                 : new AndGroup($this->filter, $filter);
         }

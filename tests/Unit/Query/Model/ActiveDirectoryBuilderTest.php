@@ -121,4 +121,48 @@ class ActiveDirectoryBuilderTest extends TestCase
 
         $this->assertEquals('(UserAccountControl:1.2.840.113556.1.4.803:=2)', $b->getQuery()->getQuery());
     }
+
+    public function test_select_with_variadic_arguments()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select('cn', 'description')->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('objectguid', $selects); // GUID key always included
+    }
+
+    public function test_select_with_array_argument()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select(['cn', 'description'])->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
+
+    public function test_select_with_empty_array_defaults_to_all()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select([])->getSelects();
+
+        $this->assertContains('*', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
+
+    public function test_add_select_with_variadic_arguments()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select('cn')->addSelect('description', 'mail')->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('mail', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
 }

@@ -165,4 +165,28 @@ class ActiveDirectoryBuilderTest extends TestCase
         $this->assertContains('mail', $selects);
         $this->assertContains('objectguid', $selects);
     }
+
+    public function test_or_filter_extracts_filters_from_nested_query()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(foo=1)(foo=2))', $query);
+    }
+
+    public function test_and_filter_extracts_filters_from_nested_query()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->andFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(&(foo=1)(foo=2))', $query);
+    }
 }

@@ -227,7 +227,7 @@ class ModelHasManyTest extends TestCase
     {
         // Scopes are wrapped in their own AndGroup for isolation
         $this->assertEquals(
-            '(&(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group))))',
+            '(&(|(objectclass=top)(objectclass=person)(objectclass=organizationalperson)(objectclass=user))(|(objectclass=top)(objectclass=group)))',
             (new ModelHasManyStubWithManyRelated)->relation()->onlyRelated()->getQuery()->getUnescapedQuery()
         );
     }

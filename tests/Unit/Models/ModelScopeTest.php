@@ -167,7 +167,7 @@ class ModelScopeTest extends TestCase
     {
         // The scope (foo=bar) must always be present and enforced at the root AND level
         $this->assertEquals(
-            '(&(|(name=\4a\6f\68\6e)(name=\4a\61\6e\65))(active=\74\72\75\65)(&(foo=bar)))',
+            '(&(&(|(name=\4a\6f\68\6e)(name=\4a\61\6e\65))(active=\74\72\75\65))(&(foo=bar)))',
             ModelWithGlobalScopeTestStub::query()
                 ->where('name', '=', 'John')
                 ->orWhere('name', '=', 'Jane')

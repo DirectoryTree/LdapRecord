@@ -16,7 +16,6 @@ use LdapRecord\Query\BuildsQueries;
 use LdapRecord\Query\ExtractsNestedFilters;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Filter;
-use LdapRecord\Query\Filter\GroupFilter;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\MultipleObjectsFoundException;

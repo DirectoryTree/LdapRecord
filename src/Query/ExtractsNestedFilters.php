@@ -31,4 +31,3 @@ trait ExtractsNestedFilters
         return $children;
     }
 }
-

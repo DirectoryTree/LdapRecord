@@ -17,7 +17,6 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Factory;
 use LdapRecord\Query\Filter\Filter;
-use LdapRecord\Query\Filter\GroupFilter;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Raw;

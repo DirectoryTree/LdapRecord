@@ -17,7 +17,6 @@ use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Factory;
 use LdapRecord\Query\Filter\Filter;
-use LdapRecord\Query\Filter\GroupFilter;
 use LdapRecord\Query\Filter\Not;
 use LdapRecord\Query\Filter\OrGroup;
 use LdapRecord\Query\Filter\Raw;
@@ -30,6 +29,7 @@ class Builder
 {
     use BuildsQueries;
     use EscapesValues;
+    use ExtractsNestedFilters;
 
     public const TYPE_SEARCH = 'search';
 
@@ -786,30 +786,6 @@ class Builder
         }
 
         return $this;
-    }
-
-    /**
-     * Extract filters from a nested group filter for re-wrapping, preserving nested groups.
-     *
-     * @return array<Filter>
-     */
-    protected function extractNestedFilters(Filter $filter): array
-    {
-        if (! $filter instanceof GroupFilter) {
-            return [$filter];
-        }
-
-        $children = $filter->getFilters();
-
-        // If any child is a group, preserve the structure
-        foreach ($children as $child) {
-            if ($child instanceof GroupFilter) {
-                return $children;
-            }
-        }
-
-        // All children are non-groups, it's safe to unwrap.
-        return $children;
     }
 
     /**

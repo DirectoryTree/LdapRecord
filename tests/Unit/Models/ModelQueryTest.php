@@ -82,7 +82,7 @@ class ModelQueryTest extends TestCase
 
         // Scopes are wrapped in their own AndGroup for isolation
         $this->assertEquals(
-            '(&(&(objectclass=foo)(objectclass=bar)(objectclass=baz)))',
+            '(&(objectclass=foo)(objectclass=bar)(objectclass=baz))',
             ModelWithObjectClassStub::query()->getUnescapedQuery()
         );
     }

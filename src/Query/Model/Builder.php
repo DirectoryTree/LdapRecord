@@ -13,6 +13,7 @@ use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as QueryBuilder;
 use LdapRecord\Query\BuildsQueries;
+use LdapRecord\Query\ExtractsNestedFilters;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Filter;
 use LdapRecord\Query\Filter\Not;
@@ -28,6 +29,7 @@ use UnexpectedValueException;
 class Builder
 {
     use BuildsQueries;
+    use ExtractsNestedFilters;
     use ForwardsCalls;
 
     /**
@@ -728,7 +730,9 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         if ($filter = $query->getQuery()->getFilter()) {
-            $this->query->addFilter(new AndGroup($filter));
+            $this->query->addFilter(new AndGroup(
+                ...$this->extractNestedFilters($filter)
+            ), wrap: false);
         }
 
         return $this;
@@ -742,7 +746,9 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         if ($filter = $query->getQuery()->getFilter()) {
-            $this->query->addFilter(new OrGroup($filter), 'or');
+            $this->query->addFilter(new OrGroup(
+                ...$this->extractNestedFilters($filter)
+            ), wrap: false);
         }
 
         return $this;

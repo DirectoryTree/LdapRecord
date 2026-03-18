@@ -24,7 +24,7 @@ use LdapRecord\Support\ForwardsCalls;
 use UnexpectedValueException;
 
 /**
- * @mixin \LdapRecord\Query\Builder
+ * @mixin QueryBuilder
  */
 class Builder
 {

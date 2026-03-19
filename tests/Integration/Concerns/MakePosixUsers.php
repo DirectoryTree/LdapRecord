@@ -4,8 +4,9 @@ namespace LdapRecord\Tests\Integration\Concerns;
 
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\Integration\Fixtures\PosixAccount;
+use LdapRecord\Tests\Integration\TestCase;
 
-/** @mixin \LdapRecord\Tests\Integration\TestCase */
+/** @mixin TestCase */
 trait MakePosixUsers
 {
     protected function makePosixUser(Model $ou, array $attributes = []): PosixAccount

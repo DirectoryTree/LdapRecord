@@ -154,7 +154,7 @@ class TimestampTest extends TestCase
         foreach (['133692539995000000', '133692539999500000'] as $windowsIntegerTime) {
             $dateTime = $timestamp->toDateTime($windowsIntegerTime);
 
-            $expectedUnixTimestamp = (int) ($windowsIntegerTime / 10000000) - 11644473600;
+            $expectedUnixTimestamp = (int) (round($windowsIntegerTime / 10000000) - 11644473600);
 
             $this->assertEquals($expectedUnixTimestamp, $dateTime->getTimestamp());
         }

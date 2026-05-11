@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Query;
 
+use LdapRecord\Query\Filter\BooleanGroup;
 use LdapRecord\Query\Filter\Filter;
 use LdapRecord\Query\Filter\GroupFilter;
 
@@ -14,7 +15,11 @@ trait ExtractsNestedFilters
      */
     protected function extractNestedFilters(Filter $filter): array
     {
-        if (! $filter instanceof GroupFilter) {
+        if (! $filter instanceof BooleanGroup) {
+            return [$filter];
+        }
+
+        if ($filter->isNested()) {
             return [$filter];
         }
 

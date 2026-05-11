@@ -764,7 +764,7 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new AndGroup(
+            $this->addFilter(AndGroup::nested(
                 ...$this->extractNestedFilters($filter)
             ), wrap: false);
         }
@@ -780,7 +780,7 @@ class Builder
         $query = $this->newNestedInstance($closure);
 
         if ($filter = $query->getFilter()) {
-            $this->addFilter(new OrGroup(
+            $this->addFilter(OrGroup::nested(
                 ...$this->extractNestedFilters($filter)
             ), wrap: false);
         }
@@ -1162,11 +1162,11 @@ class Builder
         // Flatten same-type groups to avoid deeply nested structures.
         // Ex: AndGroup(AndGroup(a, b), c) becomes AndGroup(a, b, c)
         if ($boolean === 'or') {
-            $this->filter = $this->filter instanceof OrGroup && $wrap
+            $this->filter = $this->filter instanceof OrGroup && ! $this->filter->isNested() && $wrap
                 ? new OrGroup(...[...$this->filter->getFilters(), $filter])
                 : new OrGroup($this->filter, $filter);
         } else {
-            $this->filter = $this->filter instanceof AndGroup && $wrap
+            $this->filter = $this->filter instanceof AndGroup && ! $this->filter->isNested() && $wrap
                 ? new AndGroup(...[...$this->filter->getFilters(), $filter])
                 : new AndGroup($this->filter, $filter);
         }

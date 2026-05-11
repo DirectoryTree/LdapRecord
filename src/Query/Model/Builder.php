@@ -730,7 +730,7 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         if ($filter = $query->getQuery()->getFilter()) {
-            $this->query->addFilter(new AndGroup(
+            $this->query->addFilter(AndGroup::nested(
                 ...$this->extractNestedFilters($filter)
             ), wrap: false);
         }
@@ -746,7 +746,7 @@ class Builder
         $query = $this->newNestedModelInstance($closure);
 
         if ($filter = $query->getQuery()->getFilter()) {
-            $this->query->addFilter(new OrGroup(
+            $this->query->addFilter(OrGroup::nested(
                 ...$this->extractNestedFilters($filter)
             ), wrap: false);
         }

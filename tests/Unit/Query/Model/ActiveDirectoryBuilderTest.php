@@ -178,6 +178,36 @@ class ActiveDirectoryBuilderTest extends TestCase
         $this->assertEquals('(|(foo=1)(foo=2))', $query);
     }
 
+    public function test_or_filter_preserves_nested_and_filter_when_followed_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+            $query->where('mail', '=', 'John Smith');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(&(givenName=John*)(sn=Smith*))(mail=John Smith))', $query);
+    }
+
+    public function test_or_filter_preserves_nested_and_filter_when_preceded_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->where('mail', '=', 'John Smith');
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(mail=John Smith)(&(givenName=John*)(sn=Smith*)))', $query);
+    }
+
     public function test_and_filter_extracts_filters_from_nested_query()
     {
         $b = $this->newBuilder();

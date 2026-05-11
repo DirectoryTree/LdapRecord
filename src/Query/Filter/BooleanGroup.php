@@ -5,16 +5,16 @@ namespace LdapRecord\Query\Filter;
 abstract class BooleanGroup implements GroupFilter
 {
     /**
-     * Determine if this group should be preserved when nesting filters.
-     */
-    protected bool $nested = false;
-
-    /**
      * The filters in the group.
      *
      * @var Filter[]
      */
     protected array $filters;
+
+    /**
+     * Determine if this group should be preserved when nesting filters.
+     */
+    protected bool $nested = false;
 
     /**
      * Create a new boolean group filter.

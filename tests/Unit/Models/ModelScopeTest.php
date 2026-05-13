@@ -83,7 +83,7 @@ class ModelScopeTest extends TestCase
         $query->toBase();
         $query->toBase();
 
-        $this->assertEquals('(&(foo=bar))', $query->toBase()->getQuery());
+        $this->assertEquals('(foo=bar)', $query->toBase()->getQuery());
     }
 
     public function test_local_scopes_can_be_called()
@@ -138,11 +138,11 @@ class ModelScopeTest extends TestCase
 
     public function test_scopes_cannot_be_negated_by_or_clauses()
     {
-        // The scope should be wrapped in its own AND group, so the OR clause
-        // cannot negate it. The filter should be: (&(bypass=...)(&(foo=bar)))
-        // NOT: (|(foo=bar)(bypass=...)) which would allow bypassing the scope
+        // The scope should be composed onto the query using AND, so the OR clause
+        // cannot negate it. The filter should be: (&(bypass=...)(foo=bar))
+        // NOT: (|(foo=bar)(bypass=...)) which would allow bypassing the scope.
         $this->assertEquals(
-            '(&(bypass=\61\74\74\65\6d\70\74)(&(foo=bar)))',
+            '(&(bypass=\61\74\74\65\6d\70\74)(foo=bar))',
             ModelWithGlobalScopeTestStub::query()
                 ->orWhere('bypass', '=', 'attempt')
                 ->toBase()
@@ -154,7 +154,7 @@ class ModelScopeTest extends TestCase
     {
         // Scope must remain enforced regardless of OR clauses
         $this->assertEquals(
-            '(&(|(bypass1=\61\74\74\65\6d\70\74\31)(bypass2=\61\74\74\65\6d\70\74\32))(&(foo=bar)))',
+            '(&(|(bypass1=\61\74\74\65\6d\70\74\31)(bypass2=\61\74\74\65\6d\70\74\32))(foo=bar))',
             ModelWithGlobalScopeTestStub::query()
                 ->orWhere('bypass1', '=', 'attempt1')
                 ->orWhere('bypass2', '=', 'attempt2')
@@ -167,7 +167,7 @@ class ModelScopeTest extends TestCase
     {
         // The scope (foo=bar) must always be present and enforced at the root AND level
         $this->assertEquals(
-            '(&(&(|(name=\4a\6f\68\6e)(name=\4a\61\6e\65))(active=\74\72\75\65))(&(foo=bar)))',
+            '(&(|(name=\4a\6f\68\6e)(name=\4a\61\6e\65))(active=\74\72\75\65)(foo=bar))',
             ModelWithGlobalScopeTestStub::query()
                 ->where('name', '=', 'John')
                 ->orWhere('name', '=', 'Jane')

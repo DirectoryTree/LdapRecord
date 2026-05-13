@@ -133,7 +133,17 @@ class Builder
     {
         array_unshift($parameters, $this);
 
-        return $scope(...array_values($parameters)) ?? $this;
+        $result = null;
+
+        $scopeFilter = $this->captureScopeFilters(function () use ($scope, $parameters, &$result) {
+            $result = $scope(...$parameters) ?? $this;
+        });
+
+        if ($scopeFilter) {
+            $this->query->addFilter($scopeFilter);
+        }
+
+        return $result;
     }
 
     /**
@@ -477,25 +487,47 @@ class Builder
             return $this;
         }
 
-        // Scopes should not be escapable, so we will wrap the
-        // application of the scopes within a nested query.
-        $this->where(function (self $query) {
-            foreach ($this->scopes as $identifier => $scope) {
-                if (isset($this->appliedScopes[$identifier])) {
-                    continue;
-                }
+        $builder = clone $this;
 
-                if ($scope instanceof Scope) {
-                    $scope->apply($query, $this->getModel());
-                } else {
-                    $scope($this);
-                }
-
-                $this->appliedScopes[$identifier] = $scope;
+        foreach ($this->scopes as $identifier => $scope) {
+            if (! isset($builder->scopes[$identifier])) {
+                continue;
             }
-        });
 
-        return $this;
+            if (isset($builder->appliedScopes[$identifier])) {
+                continue;
+            }
+
+            $builder->callScope(function (self $builder) use ($scope) {
+                if ($scope instanceof Scope) {
+                    $scope->apply($builder, $this->getModel());
+                } else {
+                    $scope($builder);
+                }
+            });
+
+            $builder->appliedScopes[$identifier] = $scope;
+        }
+
+        return $builder;
+    }
+
+    /**
+     * Capture the filters applied while executing the callback.
+     */
+    protected function captureScopeFilters(Closure $callback): ?Filter
+    {
+        $originalFilter = $this->query->filter;
+
+        $this->query->filter = null;
+
+        try {
+            $callback();
+
+            return $this->query->filter;
+        } finally {
+            $this->query->filter = $originalFilter;
+        }
     }
 
     /**

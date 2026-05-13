@@ -18,11 +18,16 @@ class BuilderScopeTest extends TestCase
     {
         $b = new Builder(new Entry, new QueryBuilder(new Connection));
 
-        $b->withGlobalScope('foo', function ($query) use ($b) {
-            $this->assertSame($b, $query);
+        $scoped = null;
+
+        $b->withGlobalScope('foo', function ($query) use (&$scoped) {
+            $scoped = $query;
         });
 
-        $b->applyScopes();
+        $applied = $b->applyScopes();
+
+        $this->assertNotSame($b, $applied);
+        $this->assertSame($applied, $scoped);
     }
 
     public function test_class_scopes_can_be_applied()
@@ -33,11 +38,54 @@ class BuilderScopeTest extends TestCase
 
         $b->withGlobalScope('foo', new TestModelScope);
 
-        // Scopes are wrapped in an AndGroup to prevent negation
-        $this->assertEquals('(&(foo=LdapRecord\Models\Entry))', $b->getUnescapedQuery());
+        // Scope filters are composed onto the scoped query builder.
+        $scoped = $b->applyScopes();
 
-        $this->assertCount(1, $b->appliedScopes());
-        $this->assertArrayHasKey('foo', $b->appliedScopes());
+        $this->assertEquals('(foo=LdapRecord\Models\Entry)', $scoped->getUnescapedQuery());
+
+        $this->assertEmpty($b->appliedScopes());
+        $this->assertCount(1, $scoped->appliedScopes());
+        $this->assertArrayHasKey('foo', $scoped->appliedScopes());
+    }
+
+    public function test_scope_or_filters_are_preserved_when_grouped()
+    {
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
+
+        $b->where('cn', '=', 'John Doe');
+
+        $b->withGlobalScope('foo', function ($query) {
+            $query->orWhere('foo', '=', 'bar');
+            $query->orWhere('bar', '=', 'baz');
+        });
+
+        $this->assertEquals(
+            '(&(cn=John Doe)(|(foo=bar)(bar=baz)))',
+            $b->toBase()->getUnescapedQuery()
+        );
+    }
+
+    public function test_complex_scope_filters_cannot_be_negated_by_complex_queries()
+    {
+        $b = new Builder(new Entry, new QueryBuilder(new Connection));
+
+        $b->where('department', '=', 'Sales')
+            ->orWhere('department', '=', 'Support')
+            ->where('enabled', '=', 'true');
+
+        $b->withGlobalScope('foo', function ($query) {
+            $query->orFilter(function ($query) {
+                $query->where('type', '=', 'person');
+                $query->where('type', '=', 'contact');
+            });
+
+            $query->where('tenant', '=', 'acme');
+        });
+
+        $this->assertEquals(
+            '(&(|(department=Sales)(department=Support))(enabled=true)(&(|(type=person)(type=contact))(tenant=acme)))',
+            $b->toBase()->getUnescapedQuery()
+        );
     }
 
     public function test_scopes_can_be_removed_after_being_added()

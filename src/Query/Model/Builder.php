@@ -499,12 +499,10 @@ class Builder
             }
 
             $builder->callScope(function (self $builder) use ($scope) {
-                if ($scope instanceof Closure) {
-                    $scope($builder);
-                }
-
                 if ($scope instanceof Scope) {
                     $scope->apply($builder, $this->getModel());
+                } else {
+                    $scope($builder);
                 }
             });
 

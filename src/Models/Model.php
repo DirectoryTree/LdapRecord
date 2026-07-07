@@ -955,16 +955,19 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
 
         $this->exists ? $this->performUpdate() : $this->performInsert();
 
-        // Some changes (such as argon2 password changes) cannot be expressed as
-        // batch modifications and are deferred until the model is saved. These
-        // run unconditionally here, even when no batch modifications exist.
-        $this->performDeferredOperations();
-
         $this->dispatch('saved');
 
         $this->modifications = [];
 
         $this->in = null;
+    }
+
+    /**
+     * Determine if the model has operations deferred until save.
+     */
+    protected function hasDeferredOperations(): bool
+    {
+        return false;
     }
 
     /**
@@ -1028,13 +1031,24 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      */
     protected function performUpdate(): void
     {
-        if (! count($modifications = $this->getModifications())) {
+        $modifications = $this->getModifications();
+
+        // Deferred operations (such as argon2 password changes) cannot be
+        // expressed as batch modifications, but still constitute an update.
+        if (! count($modifications) && ! $this->hasDeferredOperations()) {
             return;
         }
 
         $this->dispatch('updating');
 
-        $this->newQuery()->update($this->dn, $modifications);
+        // Deferred operations run first — they verify the user's current
+        // credentials, so they are more likely to be rejected than the
+        // batch modifications, and failing early avoids partial updates.
+        $this->performDeferredOperations();
+
+        if (count($modifications)) {
+            $this->newQuery()->update($this->dn, $modifications);
+        }
 
         $this->dispatch('updated');
 

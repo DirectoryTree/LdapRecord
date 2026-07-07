@@ -61,6 +61,25 @@ class ConnectionFakeTest extends TestCase
 
         $this->assertTrue($fake->auth()->attempt('cn=John Doe,dc=local,dc=com', 'secret', $stayBound = true));
     }
+
+    public function test_replicated_connection_shares_the_fake_without_resetting_it_on_disconnect()
+    {
+        $fake = ConnectionFake::make();
+
+        $ldap = $fake->getLdapConnection();
+
+        $ldap->connect('localhost', 389);
+
+        $replica = $fake->replicate();
+
+        $this->assertSame($ldap, $replica->getLdapConnection());
+
+        // Disconnecting the replica (as Connection::isolate() does) must
+        // not reset the state of the fake shared with the parent.
+        $replica->disconnect();
+
+        $this->assertTrue($ldap->isConnected());
+    }
 }
 
 class ExtendedLdapFake extends LdapFake {}

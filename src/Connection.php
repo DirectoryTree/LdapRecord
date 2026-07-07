@@ -338,18 +338,11 @@ class Connection
     public function changePassword(string $dn, string $oldPassword, string $newPassword): bool|string
     {
         return $this->isolate(function (Connection $connection) use ($dn, $oldPassword, $newPassword) {
-            $connection->initialize();
-
-            // Binding as the user with their current password proves knowledge
-            // of it. A failed bind (e.g. an incorrect current password) leaves
-            // the change unapplied and surfaces as an exception below.
-            $response = $connection->getLdapConnection()->bind($dn, $oldPassword);
-
-            if (! $response->successful()) {
-                throw new LdapRecordException(
-                    'Unable to change password. The current password is incorrect or the directory rejected the bind.'
-                );
-            }
+            // Connecting as the user proves knowledge of their current
+            // password, and upgrades the connection with StartTLS when
+            // configured, before any credentials are transmitted. A
+            // failed bind throws, leaving the change unapplied.
+            $connection->connect($dn, $oldPassword);
 
             return $connection->getLdapConnection()->exopPasswd($dn, $oldPassword, $newPassword);
         });

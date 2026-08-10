@@ -327,6 +327,18 @@ class Connection
     }
 
     /**
+     * Change a user's password using the RFC 3062 Password Modify extended operation.
+     *
+     * @throws LdapRecordException
+     */
+    public function changePassword(string $dn, string $oldPassword, string $newPassword): bool|string
+    {
+        return $this->run(
+            fn (LdapInterface $ldap) => $ldap->exopPasswd($dn, $oldPassword, $newPassword)
+        );
+    }
+
+    /**
      * Attempt to get an exception for the cause of failure.
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e): ?LdapRecordException

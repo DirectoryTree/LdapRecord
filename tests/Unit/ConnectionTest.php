@@ -308,6 +308,22 @@ class ConnectionTest extends TestCase
         $this->assertTrue($returned);
     }
 
+    public function test_connections_can_change_passwords()
+    {
+        $ldap = (new LdapFake)->expect([
+            LdapFake::operation('bind')->once()->andReturnResponse(),
+            LdapFake::operation('exopPasswd')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret')
+                ->andReturnTrue(),
+        ]);
+
+        $connection = new Connection([], $ldap);
+
+        $this->assertTrue(
+            $connection->changePassword('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret')
+        );
+    }
+
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
         $ldap = (new LdapFake)

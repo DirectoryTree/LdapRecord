@@ -39,6 +39,34 @@ class GuardTest extends TestCase
         $guard->attempt('username', '');
     }
 
+    public function test_attempt_allows_zero_string_password()
+    {
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('user', '0')->andReturnResponse())
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
+
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'username' => 'foo',
+            'password' => 'bar',
+        ]));
+
+        $this->assertTrue($guard->attempt('user', '0'));
+    }
+
+    public function test_attempt_allows_zero_string_username()
+    {
+        $ldap = (new LdapFake)
+            ->expect(LdapFake::operation('bind')->once()->with('0', 'password')->andReturnResponse())
+            ->expect(LdapFake::operation('bind')->once()->with('foo', 'bar')->andReturnResponse());
+
+        $guard = new Guard($ldap, new DomainConfiguration([
+            'username' => 'foo',
+            'password' => 'bar',
+        ]));
+
+        $this->assertTrue($guard->attempt('0', 'password'));
+    }
+
     public function test_attempt_binds_the_given_credentials_and_rebinds_with_configured_user()
     {
         $ldap = (new LdapFake)

@@ -44,9 +44,9 @@ class Guard
     public function attempt(string $username, string $password, bool $stayBound = false): bool
     {
         switch (true) {
-            case empty($username):
+            case $username === '':
                 throw new UsernameRequiredException('A username must be specified.');
-            case empty($password):
+            case $password === '':
                 throw new PasswordRequiredException('A password must be specified.');
         }
 

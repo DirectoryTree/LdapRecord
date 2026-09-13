@@ -103,6 +103,40 @@ class Password
     }
 
     /**
+     * Make an argon2i password.
+     *
+     * OpenLDAP's argon2 module registers the single scheme {ARGON2} —
+     * the variant is carried by the PHC string that follows it.
+     *
+     * @throws LdapRecordException
+     */
+    public static function argon2i(string $password): string
+    {
+        if (! defined('PASSWORD_ARGON2I')) {
+            throw new LdapRecordException('Argon2i hashing is not supported by this PHP build.');
+        }
+
+        return '{ARGON2}'.password_hash($password, PASSWORD_ARGON2I);
+    }
+
+    /**
+     * Make an argon2id password.
+     *
+     * OpenLDAP's argon2 module registers the single scheme {ARGON2} —
+     * the variant is carried by the PHC string that follows it.
+     *
+     * @throws LdapRecordException
+     */
+    public static function argon2id(string $password): string
+    {
+        if (! defined('PASSWORD_ARGON2ID')) {
+            throw new LdapRecordException('Argon2id hashing is not supported by this PHP build.');
+        }
+
+        return '{ARGON2}'.password_hash($password, PASSWORD_ARGON2ID);
+    }
+
+    /**
      * Make a non-salted NThash password.
      */
     public static function nthash(string $password): string
@@ -226,6 +260,18 @@ class Password
         }
 
         throw new LdapRecordException('Could not extract salt from encrypted password.');
+    }
+
+    /**
+     * Determine if passwords hashed with the given method can only be
+     * changed using the password modify extended operation (RFC 3062).
+     *
+     * These hashes embed a random salt that cannot be extracted, so the
+     * stored hash cannot be reproduced for a REMOVE/ADD batch modification.
+     */
+    public static function hashMethodRequiresExop(string $method): bool
+    {
+        return in_array(strtolower($method), ['argon2', 'argon2i', 'argon2id'], true);
     }
 
     /**

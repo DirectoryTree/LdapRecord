@@ -327,6 +327,28 @@ class Connection
     }
 
     /**
+     * Change a user's password using the RFC 3062 Password Modify extended operation.
+     *
+     * The change is performed on an isolated connection bound as the user itself,
+     * so the directory verifies the current password (a self-service change)
+     * without altering the bind state of the primary connection.
+     *
+     * @throws LdapRecordException
+     */
+    public function changePassword(string $dn, string $oldPassword, string $newPassword): bool|string
+    {
+        return $this->isolate(function (Connection $connection) use ($dn, $oldPassword, $newPassword) {
+            // Connecting as the user proves knowledge of their current
+            // password, and upgrades the connection with StartTLS when
+            // configured, before any credentials are transmitted. A
+            // failed bind throws, leaving the change unapplied.
+            $connection->connect($dn, $oldPassword);
+
+            return $connection->getLdapConnection()->exopPasswd($dn, $oldPassword, $newPassword);
+        });
+    }
+
+    /**
      * Attempt to get an exception for the cause of failure.
      */
     protected function getExceptionForCauseOfFailure(LdapRecordException $e): ?LdapRecordException

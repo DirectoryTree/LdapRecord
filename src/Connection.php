@@ -329,13 +329,18 @@ class Connection
     /**
      * Change a user's password using the RFC 3062 Password Modify extended operation.
      *
+     * Bind as the user on an isolated connection so their permissions and
+     * password policies apply without changing the primary connection.
+     *
      * @throws LdapRecordException
      */
     public function changePassword(string $dn, string $oldPassword, string $newPassword): bool|string
     {
-        return $this->run(
-            fn (LdapInterface $ldap) => $ldap->exopPasswd($dn, $oldPassword, $newPassword)
-        );
+        return $this->isolate(function (Connection $connection) use ($dn, $oldPassword, $newPassword) {
+            $connection->connect($dn, $oldPassword);
+
+            return $connection->getLdapConnection()->exopPasswd($dn, $oldPassword, $newPassword);
+        });
     }
 
     /**

@@ -48,6 +48,10 @@ class User extends Entry implements Authenticatable
             );
         }
 
+        if ($oldPassword === '' || $newPassword === '') {
+            throw new LdapRecordException('The current and new passwords must not be empty.');
+        }
+
         $this->getConnection()->changePassword(
             $this->getDn(), $oldPassword, $newPassword
         );

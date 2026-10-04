@@ -119,11 +119,13 @@ class UserTest extends TestCase
     {
         $ldap = DirectoryFake::setup()->getLdapConnection();
 
-        $ldap->expect(
+        $ldap->expect([
+            LdapFake::operation('bind')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret')->andReturnResponse(),
             LdapFake::operation('exopPasswd')->once()
                 ->with('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret')
-                ->andReturnTrue()
-        );
+                ->andReturnTrue(),
+        ]);
 
         $user = (new OpenLDAPUserTestStub)->setRawAttributes([
             'dn' => ['cn=jdoe,dc=local,dc=com'],
@@ -132,6 +134,56 @@ class UserTest extends TestCase
         $user->changePassword('secret', 'new-secret');
 
         $this->assertEmpty($user->getModifications());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_changing_password_rejects_an_empty_current_password()
+    {
+        DirectoryFake::setup();
+
+        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
+            'dn' => ['cn=jdoe,dc=local,dc=com'],
+        ]);
+
+        $this->expectException(LdapRecordException::class);
+        $this->expectExceptionMessage('The current and new passwords must not be empty.');
+
+        $user->changePassword('', 'new-secret');
+    }
+
+    public function test_changing_password_rejects_an_empty_new_password()
+    {
+        DirectoryFake::setup();
+
+        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
+            'dn' => ['cn=jdoe,dc=local,dc=com'],
+        ]);
+
+        $this->expectException(LdapRecordException::class);
+        $this->expectExceptionMessage('The current and new passwords must not be empty.');
+
+        $user->changePassword('secret', '');
+    }
+
+    public function test_changing_password_accepts_zero_as_a_password()
+    {
+        $ldap = DirectoryFake::setup()->getLdapConnection();
+
+        $ldap->expect([
+            LdapFake::operation('bind')->once()
+                ->with('cn=jdoe,dc=local,dc=com', '0')->andReturnResponse(),
+            LdapFake::operation('exopPasswd')->once()
+                ->with('cn=jdoe,dc=local,dc=com', '0', '0')->andReturnTrue(),
+        ]);
+
+        $user = (new OpenLDAPUserTestStub)->setRawAttributes([
+            'dn' => ['cn=jdoe,dc=local,dc=com'],
+        ]);
+
+        $user->changePassword('0', '0');
+
+        $this->assertEmpty($user->getModifications());
+        $ldap->assertMinimumExpectationCounts();
     }
 
     public function test_changing_password_requires_a_secure_connection()

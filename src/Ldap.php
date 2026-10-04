@@ -371,6 +371,22 @@ class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
+    public function exopPasswd(string $user = '', string $oldPassword = '', string $newPassword = '', ?array &$controls = null): bool|string
+    {
+        if (! function_exists('ldap_exop_passwd')) {
+            throw new LdapRecordException(
+                'The function [ldap_exop_passwd] is unavailable. Ensure your PHP LDAP extension supports extended operations.'
+            );
+        }
+
+        return $this->executeFailableOperation(function () use ($user, $oldPassword, $newPassword, &$controls) {
+            return ldap_exop_passwd($this->connection, $user, $oldPassword, $newPassword, $controls);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function modAdd(string $dn, array $entry): bool
     {
         return $this->executeFailableOperation(function () use ($dn, $entry) {

@@ -565,6 +565,19 @@ interface LdapInterface
     public function modifyBatch(string $dn, array $values): bool;
 
     /**
+     * Modify a password using the RFC 3062 Password Modify extended operation.
+     *
+     * Returns the server-generated password when no new password is supplied,
+     * true on success when a new password is given, or false on failure.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-exop-passwd.php
+     * @see https://www.rfc-editor.org/rfc/rfc3062
+     *
+     * @throws LdapRecordException
+     */
+    public function exopPasswd(string $user = '', string $oldPassword = '', string $newPassword = '', ?array &$controls = null): bool|string;
+
+    /**
      * Add attribute values to current attributes.
      *
      * @see http://php.net/manual/en/function.ldap-mod-add.php

@@ -22,6 +22,11 @@ class ConnectionFake extends Connection
     protected bool $connected = false;
 
     /**
+     * Whether this is a replica sharing the original fake LDAP connection.
+     */
+    protected bool $replicated = false;
+
+    /**
      * Make a new fake LDAP connection instance.
      */
     public static function make(array $config = [], string $ldap = LdapFake::class): static
@@ -31,6 +36,28 @@ class ConnectionFake extends Connection
         $connection->configure();
 
         return $connection;
+    }
+
+    /**
+     * Replicate the connection while sharing its LDAP expectations.
+     */
+    public function replicate(): static
+    {
+        $replica = new static($this->configuration, $this->ldap);
+
+        $replica->replicated = true;
+
+        return $replica;
+    }
+
+    /**
+     * Disconnect without closing a replica's shared fake LDAP connection.
+     */
+    public function disconnect(): void
+    {
+        if (! $this->replicated) {
+            parent::disconnect();
+        }
     }
 
     /**

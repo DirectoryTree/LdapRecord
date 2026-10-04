@@ -461,6 +461,14 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
+    public function exopPasswd(string $user = '', string $oldPassword = '', string $newPassword = '', ?array &$controls = null): bool|string
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function modAdd(string $dn, array $entry): bool
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());

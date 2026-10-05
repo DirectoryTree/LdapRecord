@@ -4,8 +4,9 @@ namespace LdapRecord\Tests\Integration\Concerns;
 
 use LdapRecord\Models\Model;
 use LdapRecord\Tests\Integration\Fixtures\PosixGroup;
+use LdapRecord\Tests\Integration\TestCase;
 
-/** @mixin \LdapRecord\Tests\Integration\TestCase */
+/** @mixin TestCase */
 trait MakesPosixGroups
 {
     protected function makePosixGroup(Model $ou, array $attributes = []): PosixGroup

@@ -11,6 +11,7 @@ use LdapRecord\LdapResultResponse;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
+use SensitiveParameter;
 
 class LdapFake implements LdapInterface
 {
@@ -214,7 +215,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
@@ -222,7 +223,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
     {
@@ -230,7 +231,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setRebindCallback(callable $callback): bool
     {
@@ -238,7 +239,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -248,7 +249,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -258,7 +259,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -268,7 +269,7 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function countEntries(mixed $result): int
     {
@@ -367,7 +368,7 @@ class LdapFake implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function bind(?string $dn = null, ?string $password = null, ?array $controls = null): LdapResultResponse
+    public function bind(?string $dn = null, #[SensitiveParameter] ?string $password = null, ?array $controls = null): LdapResultResponse
     {
         $result = $this->resolveExpectation(__FUNCTION__, func_get_args());
 
@@ -377,9 +378,9 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function saslBind(?string $dn = null, ?string $password = null, ?array $options = null): bool
+    public function saslBind(?string $dn = null, #[SensitiveParameter] ?string $password = null, ?array $options = null): bool
     {
         return $this->bound = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
@@ -454,6 +455,14 @@ class LdapFake implements LdapInterface
      * {@inheritdoc}
      */
     public function modifyBatch(string $dn, array $values): bool
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exopPasswd(string $user = '', #[SensitiveParameter] string $oldPassword = '', #[SensitiveParameter] string $newPassword = '', ?array &$controls = null): bool|string
     {
         return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }

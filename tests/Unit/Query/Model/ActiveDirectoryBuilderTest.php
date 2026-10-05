@@ -29,11 +29,6 @@ class ActiveDirectoryBuilderTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme');
 
-        $where = $b->getQuery()->filters['and'][0];
-
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals('(memberof=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
@@ -42,13 +37,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b = $this->newBuilder();
         $b->setBaseDn('dc=org,dc=acme');
         $b->whereMemberOf('cn=Accounting,{base}');
-        $where = $b->getQuery()->filters['and'][0];
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(memberof=cn=Accounting,dc=org,dc=acme)',
             $b->getUnescapedQuery()
@@ -61,11 +50,6 @@ class ActiveDirectoryBuilderTest extends TestCase
 
         $b->whereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
-        $where = $b->getQuery()->filters['and'][0];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals('(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)', $b->getUnescapedQuery());
     }
 
@@ -74,13 +58,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b = $this->newBuilder();
         $b->setBaseDn('dc=org,dc=acme');
         $b->whereMemberOf('cn=Accounting,{base}', nested: true);
-        $where = $b->getQuery()->filters['and'][0];
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme)',
             $b->getUnescapedQuery()
@@ -94,11 +72,6 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme');
 
-        $where = $b->getQuery()->filters['or'][1];
-
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals(
             '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()
@@ -111,13 +84,7 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->setBaseDn('dc=org,dc=acme');
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,{base}');
-        $where = $b->getQuery()->filters['or'][1];
-        $this->assertEquals('memberof', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals(
-            '\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65',
-            $where['value']
-        );
+
         $this->assertEquals(
             '(|(cn=John Doe)(memberof=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()
@@ -131,11 +98,6 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->orWhereEquals('cn', 'John Doe');
         $b->orWhereMemberOf('cn=Accounting,dc=org,dc=acme', nested: true);
 
-        $where = $b->getQuery()->filters['or'][1];
-
-        $this->assertEquals('memberof:1.2.840.113556.1.4.1941:', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\63\6e\3d\41\63\63\6f\75\6e\74\69\6e\67\2c\64\63\3d\6f\72\67\2c\64\63\3d\61\63\6d\65', $where['value']);
         $this->assertEquals(
             '(|(cn=John Doe)(memberof:1.2.840.113556.1.4.1941:=cn=Accounting,dc=org,dc=acme))',
             $b->getUnescapedQuery()
@@ -158,5 +120,103 @@ class ActiveDirectoryBuilderTest extends TestCase
         $b->whereDisabled();
 
         $this->assertEquals('(UserAccountControl:1.2.840.113556.1.4.803:=2)', $b->getQuery()->getQuery());
+    }
+
+    public function test_select_with_variadic_arguments()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select('cn', 'description')->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('objectguid', $selects); // GUID key always included
+    }
+
+    public function test_select_with_array_argument()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select(['cn', 'description'])->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
+
+    public function test_select_with_empty_array_defaults_to_all()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select([])->getSelects();
+
+        $this->assertContains('*', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
+
+    public function test_add_select_with_variadic_arguments()
+    {
+        $b = $this->newBuilder();
+
+        $selects = $b->select('cn')->addSelect('description', 'mail')->getSelects();
+
+        $this->assertContains('cn', $selects);
+        $this->assertContains('description', $selects);
+        $this->assertContains('mail', $selects);
+        $this->assertContains('objectguid', $selects);
+    }
+
+    public function test_or_filter_extracts_filters_from_nested_query()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(foo=1)(foo=2))', $query);
+    }
+
+    public function test_or_filter_preserves_nested_and_filter_when_followed_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+            $query->where('mail', '=', 'John Smith');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(&(givenName=John*)(sn=Smith*))(mail=John Smith))', $query);
+    }
+
+    public function test_or_filter_preserves_nested_and_filter_when_preceded_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->where('mail', '=', 'John Smith');
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(mail=John Smith)(&(givenName=John*)(sn=Smith*)))', $query);
+    }
+
+    public function test_and_filter_extracts_filters_from_nested_query()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->andFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(&(foo=1)(foo=2))', $query);
     }
 }

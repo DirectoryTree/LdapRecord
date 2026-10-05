@@ -3,7 +3,9 @@
 namespace LdapRecord\Auth;
 
 use Exception;
+use LdapRecord\Configuration\ConfigurationException;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\ConnectionException;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapInterface;
 use SensitiveParameter;
@@ -43,9 +45,9 @@ class Guard
     public function attempt(string $username, #[SensitiveParameter] string $password, bool $stayBound = false): bool
     {
         switch (true) {
-            case empty($username):
+            case $username === '':
                 throw new UsernameRequiredException('A username must be specified.');
-            case empty($password):
+            case $password === '':
                 throw new PasswordRequiredException('A password must be specified.');
         }
 
@@ -72,7 +74,7 @@ class Guard
      * Attempt binding a user to the LDAP server. Supports sasl and anonymous binding.
      *
      * @throws BindException
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     public function bind(?string $username = null, #[SensitiveParameter] ?string $password = null): void
     {
@@ -103,7 +105,7 @@ class Guard
     /**
      * Authenticate by binding to the LDAP server.
      *
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     protected function authenticate(?string $username = null, #[SensitiveParameter] ?string $password = null): bool
     {
@@ -120,8 +122,8 @@ class Guard
      * Bind to the LDAP server using the configured username and password.
      *
      * @throws BindException
-     * @throws \LdapRecord\ConnectionException
-     * @throws \LdapRecord\Configuration\ConfigurationException
+     * @throws ConnectionException
+     * @throws ConfigurationException
      */
     public function bindAsConfiguredUser(): void
     {
@@ -150,7 +152,7 @@ class Guard
     /**
      * Fire an authentication event.
      */
-    protected function fireAuthEvent(string $name, ?string $username = null, ?string $password = null, ...$args): void
+    protected function fireAuthEvent(string $name, ?string $username = null, #[SensitiveParameter] ?string $password = null, ...$args): void
     {
         if (isset($this->events)) {
             $event = implode('\\', [Events::class, ucfirst($name)]);

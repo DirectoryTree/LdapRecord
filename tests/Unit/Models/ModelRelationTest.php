@@ -62,9 +62,8 @@ class ModelRelationTest extends TestCase
 
     public function test_query_has_no_filters()
     {
-        $this->assertEquals(
-            ['and' => [], 'or' => [], 'raw' => []],
-            (new ModelRelationTestStub)->relation()->getQuery()->getQuery()->filters
+        $this->assertNull(
+            (new ModelRelationTestStub)->relation()->getQuery()->getQuery()->getFilter()
         );
     }
 
@@ -223,7 +222,7 @@ class ModelRelationTest extends TestCase
 
         $model = new ModelWithHasManyRelationTestStub;
 
-        $characters = implode('', array_merge($escapedDnCharacters, $escapedFilterCharacters));
+        $characters = implode(array_merge($escapedDnCharacters, $escapedFilterCharacters));
 
         $model->setDn($characters);
 

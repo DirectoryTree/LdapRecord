@@ -3,6 +3,7 @@
 namespace LdapRecord\Auth\Events;
 
 use LdapRecord\LdapInterface;
+use SensitiveParameter;
 
 abstract class Event
 {
@@ -24,7 +25,7 @@ abstract class Event
     /**
      * Constructor.
      */
-    public function __construct(LdapInterface $connection, ?string $username = null, ?string $password = null)
+    public function __construct(LdapInterface $connection, ?string $username = null, #[SensitiveParameter] ?string $password = null)
     {
         $this->connection = $connection;
         $this->username = $username;

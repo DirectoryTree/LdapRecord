@@ -282,7 +282,7 @@ class TSProperty
             $nibbles[$i] = base_convert($nibble, 2, 16);
         }
 
-        return pack('H*', implode('', $nibbles));
+        return pack('H*', implode($nibbles));
     }
 
     /**

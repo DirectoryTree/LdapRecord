@@ -3,6 +3,7 @@
 namespace LdapRecord;
 
 use LDAP\Connection;
+use LDAP\Result;
 use SensitiveParameter;
 
 /**
@@ -340,7 +341,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param  \LDAP\Result  $result
+     * @param  Result  $result
      */
     public function getEntries(mixed $result): array;
 
@@ -349,7 +350,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param  \LDAP\Result  $result
+     * @param  Result  $result
      */
     public function getFirstEntry(mixed $result): mixed;
 
@@ -358,7 +359,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param  \LDAP\Result  $entry
+     * @param  Result  $entry
      */
     public function getNextEntry(mixed $entry): mixed;
 
@@ -367,14 +368,14 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param  \LDAP\Result  $entry
+     * @param  Result  $entry
      */
     public function getAttributes(mixed $entry): array|false;
 
     /**
      * Reads all the values of the attribute in the entry in the result.
      *
-     * @param  \LDAP\Result  $entry
+     * @param  Result  $entry
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false;
 
@@ -399,7 +400,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param  \LDAP\Result  $result
+     * @param  Result  $result
      */
     public function countEntries(mixed $result): int;
 
@@ -464,7 +465,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-search.php
      *
-     * @return \LDAP\Result
+     * @return Result
      */
     public function search(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
@@ -473,7 +474,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-list.php
      *
-     * @return \LDAP\Result
+     * @return Result
      */
     public function list(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
@@ -482,7 +483,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-read.php
      *
-     * @return \LDAP\Result
+     * @return Result
      */
     public function read(string $dn, string $filter, array $attributes, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed;
 
@@ -491,7 +492,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
-     * @param  \LDAP\Result  $result
+     * @param  Result  $result
      */
     public function parseResult(mixed $result, int &$errorCode = 0, ?string &$dn = null, ?string &$errorMessage = null, ?array &$referrals = null, ?array &$controls = null): LdapResultResponse|false;
 
@@ -565,6 +566,19 @@ interface LdapInterface
     public function modifyBatch(string $dn, array $values): bool;
 
     /**
+     * Modify a password using the RFC 3062 Password Modify extended operation.
+     *
+     * Returns the server-generated password when no new password is supplied,
+     * true on success when a new password is given, or false on failure.
+     *
+     * @see https://www.php.net/manual/en/function.ldap-exop-passwd.php
+     * @see https://www.rfc-editor.org/rfc/rfc3062
+     *
+     * @throws LdapRecordException
+     */
+    public function exopPasswd(string $user = '', #[SensitiveParameter] string $oldPassword = '', #[SensitiveParameter] string $newPassword = '', ?array &$controls = null): bool|string;
+
+    /**
      * Add attribute values to current attributes.
      *
      * @see http://php.net/manual/en/function.ldap-mod-add.php
@@ -596,7 +610,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
-     * @param  \LDAP\Result  $result
+     * @param  Result  $result
      */
     public function freeResult(mixed $result): bool;
 

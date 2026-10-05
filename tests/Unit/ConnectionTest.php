@@ -308,6 +308,110 @@ class ConnectionTest extends TestCase
         $this->assertTrue($returned);
     }
 
+    public function test_connections_can_change_passwords()
+    {
+        $ldap = (new LdapFake)->expect([
+            LdapFake::operation('startTLS')->once()->andReturnTrue(),
+            LdapFake::operation('bind')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret')->andReturnResponse(),
+            LdapFake::operation('exopPasswd')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret')
+                ->andReturnTrue(),
+            LdapFake::operation('close')->once()->andReturnTrue(),
+        ]);
+
+        $primaryLdap = (new LdapFake)->expect([
+            LdapFake::operation('startTLS')->once()->andReturnTrue(),
+            LdapFake::operation('bind')->once()
+                ->with('cn=admin,dc=local,dc=com', 'admin-secret')->andReturnResponse(),
+        ]);
+
+        $config = [
+            'username' => 'cn=admin,dc=local,dc=com',
+            'password' => 'admin-secret',
+            'use_starttls' => true,
+        ];
+
+        $replica = m::mock(Connection::class.'[replicate]', [$config, $ldap]);
+        $connection = m::mock(Connection::class.'[replicate]', [$config, $primaryLdap]);
+        $connection->shouldReceive('replicate')->once()->andReturn($replica);
+        $connection->connect();
+
+        $this->assertTrue(
+            $connection->changePassword('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret')
+        );
+
+        $this->assertTrue($primaryLdap->isBound());
+        $this->assertTrue($primaryLdap->isSecure());
+        $this->assertFalse($ldap->isConnected());
+        $ldap->assertMinimumExpectationCounts();
+        $primaryLdap->assertMinimumExpectationCounts();
+    }
+
+    public function test_password_changes_disconnect_when_the_user_bind_fails()
+    {
+        $ldap = (new LdapFake)->expect([
+            LdapFake::operation('bind')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'wrong-secret')->andReturnResponse(49),
+            LdapFake::operation('close')->once()->andReturnTrue(),
+        ]);
+
+        $replica = m::mock(Connection::class.'[replicate]', [[], $ldap]);
+        $connection = m::mock(Connection::class.'[replicate]', [[]]);
+        $connection->shouldReceive('replicate')->once()->andReturn($replica);
+
+        $this->expectException(BindException::class);
+
+        try {
+            $connection->changePassword('cn=jdoe,dc=local,dc=com', 'wrong-secret', 'new-secret');
+        } finally {
+            $this->assertFalse($ldap->isConnected());
+            $ldap->assertMinimumExpectationCounts();
+        }
+    }
+
+    public function test_connections_can_return_a_generated_password()
+    {
+        $ldap = (new LdapFake)->expect([
+            LdapFake::operation('bind')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret')->andReturnResponse(),
+            LdapFake::operation('exopPasswd')->once()
+                ->with('cn=jdoe,dc=local,dc=com', 'secret', '')->andReturn('generated-secret'),
+            LdapFake::operation('close')->once()->andReturnTrue(),
+        ]);
+
+        $replica = m::mock(Connection::class.'[replicate]', [[], $ldap]);
+        $connection = m::mock(Connection::class.'[replicate]', [[]]);
+        $connection->shouldReceive('replicate')->once()->andReturn($replica);
+
+        $this->assertEquals('generated-secret', $connection->changePassword('cn=jdoe,dc=local,dc=com', 'secret', ''));
+        $this->assertFalse($ldap->isConnected());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_password_changes_disconnect_when_the_extended_operation_fails()
+    {
+        $ldap = (new LdapFake)->expect([
+            LdapFake::operation('bind')->once()->andReturnResponse(),
+            LdapFake::operation('exopPasswd')->once()->andThrow('Password policy rejected the change.'),
+            LdapFake::operation('close')->once()->andReturnTrue(),
+        ]);
+
+        $replica = m::mock(Connection::class.'[replicate]', [[], $ldap]);
+        $connection = m::mock(Connection::class.'[replicate]', [[]]);
+        $connection->shouldReceive('replicate')->once()->andReturn($replica);
+
+        $this->expectException(LdapRecordException::class);
+        $this->expectExceptionMessage('Password policy rejected the change.');
+
+        try {
+            $connection->changePassword('cn=jdoe,dc=local,dc=com', 'secret', 'new-secret');
+        } finally {
+            $this->assertFalse($ldap->isConnected());
+            $ldap->assertMinimumExpectationCounts();
+        }
+    }
+
     public function test_ran_ldap_operations_are_retried_when_connection_is_lost()
     {
         $ldap = (new LdapFake)

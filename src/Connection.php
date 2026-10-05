@@ -90,7 +90,7 @@ class Connection
     /**
      * Set the connection configuration.
      *
-     * @throws Configuration\ConfigurationException
+     * @throws ConfigurationException
      */
     public function setConfiguration(DomainConfiguration|array $config = []): void
     {
@@ -154,14 +154,11 @@ class Connection
             $this->ldap->setStartTLS();
         }
 
-        $this->ldap->setOptions(array_replace(
-            $this->configuration->get('options'),
-            [
-                LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
-                LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
-                LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals'),
-            ]
-        ));
+        $this->ldap->setOptions(array_replace($this->configuration->get('options'), [
+            LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
+            LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
+            LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals'),
+        ]));
     }
 
     /**
@@ -328,6 +325,23 @@ class Connection
         } finally {
             $connection->disconnect();
         }
+    }
+
+    /**
+     * Change a user's password using the RFC 3062 Password Modify extended operation.
+     *
+     * Bind as the user on an isolated connection so their permissions and
+     * password policies apply without changing the primary connection.
+     *
+     * @throws LdapRecordException
+     */
+    public function changePassword(string $dn, #[SensitiveParameter] string $oldPassword, #[SensitiveParameter] string $newPassword): bool|string
+    {
+        return $this->isolate(function (Connection $connection) use ($dn, $oldPassword, $newPassword) {
+            $connection->connect($dn, $oldPassword);
+
+            return $connection->getLdapConnection()->exopPasswd($dn, $oldPassword, $newPassword);
+        });
     }
 
     /**

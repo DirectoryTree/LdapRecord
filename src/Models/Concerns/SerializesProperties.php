@@ -61,8 +61,6 @@ trait SerializesProperties
                 continue;
             }
 
-            $property->setAccessible(true);
-
             if (! $property->isInitialized($this)) {
                 continue;
             }
@@ -110,8 +108,6 @@ trait SerializesProperties
                 continue;
             }
 
-            $property->setAccessible(true);
-
             $property->setValue(
                 $this,
                 $this->getUnserializedPropertyValue($property->getName(), $values[$name])
@@ -124,8 +120,6 @@ trait SerializesProperties
      */
     protected function getPropertyValue(ReflectionProperty $property): mixed
     {
-        $property->setAccessible(true);
-
         return $property->getValue($this);
     }
 }

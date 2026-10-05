@@ -3,6 +3,8 @@
 namespace LdapRecord;
 
 use LDAP\Connection as RawLdapConnection;
+use Ldap\Result;
+use Ldap\ResultEntry;
 use SensitiveParameter;
 
 class Ldap implements LdapInterface
@@ -25,7 +27,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param  \Ldap\Result  $result
+     * @param  Result  $result
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -39,7 +41,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param  ResultEntry  $entry
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -53,7 +55,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param  ResultEntry  $entry
      */
     public function getAttributes(mixed $entry): array|false
     {
@@ -63,7 +65,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function countEntries(mixed $result): int
     {
@@ -73,7 +75,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
     {
@@ -109,7 +111,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getValuesLen(mixed $entry, string $attribute): array|false
     {
@@ -286,7 +288,7 @@ class Ldap implements LdapInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function saslBind(?string $dn = null, #[SensitiveParameter] ?string $password = null, array $options = []): bool
     {
@@ -364,6 +366,22 @@ class Ldap implements LdapInterface
     {
         return $this->executeFailableOperation(function () use ($dn, $values) {
             return ldap_modify_batch($this->connection, $dn, $values);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exopPasswd(string $user = '', #[SensitiveParameter] string $oldPassword = '', #[SensitiveParameter] string $newPassword = '', ?array &$controls = null): bool|string
+    {
+        if (! function_exists('ldap_exop_passwd')) {
+            throw new LdapRecordException(
+                'The function [ldap_exop_passwd] is unavailable. Ensure your PHP LDAP extension supports extended operations.'
+            );
+        }
+
+        return $this->executeFailableOperation(function () use ($user, $oldPassword, $newPassword, &$controls) {
+            return ldap_exop_passwd($this->connection, $user, $oldPassword, $newPassword, $controls);
         });
     }
 

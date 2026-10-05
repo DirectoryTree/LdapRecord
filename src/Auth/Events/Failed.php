@@ -5,6 +5,7 @@ namespace LdapRecord\Auth\Events;
 use Exception;
 use LdapRecord\Auth\BindException;
 use LdapRecord\LdapInterface;
+use SensitiveParameter;
 
 class Failed extends Event
 {
@@ -16,7 +17,7 @@ class Failed extends Event
     /**
      * Constructor.
      */
-    public function __construct(LdapInterface $connection, ?string $username, ?string $password, BindException $exception)
+    public function __construct(LdapInterface $connection, ?string $username, #[SensitiveParameter] ?string $password, BindException $exception)
     {
         parent::__construct($connection, $username, $password);
 

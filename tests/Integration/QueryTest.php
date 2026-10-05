@@ -28,7 +28,7 @@ class QueryTest extends TestCase
             $this->makeUser($this->ou)->save();
         }
 
-        $this->assertCount(10, User::paginate(5));
+        $this->assertCount(10, User::in($this->ou)->paginate(5));
     }
 
     public function test_it_can_chunk()
@@ -39,7 +39,7 @@ class QueryTest extends TestCase
 
         $pages = 0;
 
-        User::chunk(5, function (Collection $results) use (&$pages) {
+        User::in($this->ou)->chunk(5, function (Collection $results) use (&$pages) {
             $pages++;
 
             $this->assertCount(5, $results);
@@ -56,12 +56,23 @@ class QueryTest extends TestCase
 
         $pages = 0;
 
-        User::limit(1)->chunk(5, function (Collection $results) use (&$pages) {
+        User::in($this->ou)->limit(1)->chunk(5, function (Collection $results) use (&$pages) {
             $pages++;
 
             $this->assertCount(5, $results);
         });
 
         $this->assertEquals(2, $pages);
+    }
+
+    public function test_it_returns_no_results_with_empty_where_in_array()
+    {
+        $user = $this->makeUser($this->ou);
+
+        $user->save();
+
+        $this->assertCount(1, User::in($this->ou)->get());
+        $this->assertCount(1, User::in($this->ou)->whereIn('cn', [$user->getFirstAttribute('cn')])->get());
+        $this->assertEmpty(User::in($this->ou)->whereIn('cn', [])->get());
     }
 }

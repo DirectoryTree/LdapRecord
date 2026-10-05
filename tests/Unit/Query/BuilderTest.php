@@ -9,6 +9,13 @@ use LdapRecord\Container;
 use LdapRecord\LdapRecordException;
 use LdapRecord\LdapResultResponse;
 use LdapRecord\Query\Builder;
+use LdapRecord\Query\Filter\AndGroup;
+use LdapRecord\Query\Filter\Contains;
+use LdapRecord\Query\Filter\EndsWith;
+use LdapRecord\Query\Filter\Equals;
+use LdapRecord\Query\Filter\Not;
+use LdapRecord\Query\Filter\OrGroup;
+use LdapRecord\Query\Filter\StartsWith;
 use LdapRecord\Query\MultipleObjectsFoundException;
 use LdapRecord\Query\ObjectsNotFoundException;
 use LdapRecord\Query\Slice;
@@ -98,69 +105,28 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->addFilter('and', [
-            'attribute' => 'cn',
-            'operator' => '=',
-            'value' => 'John Doe',
-        ]);
+        $b->addFilter(new Equals('cn', 'John Doe'));
 
         $this->assertEquals('(cn=John Doe)', $b->getQuery());
         $this->assertEquals('(cn=John Doe)', $b->getUnescapedQuery());
     }
 
-    public function test_adding_filter_with_invalid_bindings_throws_exception()
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        // Missing 'value' key.
-        $this->newBuilder()->addFilter('and', [
-            'attribute' => 'cn',
-            'operator' => '=',
-        ]);
-    }
-
-    public function test_adding_invalid_filter_type_throws_exception()
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $this->newBuilder()->addFilter('non-existent', [
-            'attribute' => 'cn',
-            'operator' => '=',
-            'value' => 'John Doe',
-        ]);
-    }
-
-    public function test_get_filters()
+    public function test_get_filter()
     {
         $b = $this->newBuilder();
 
         $b->where('foo', '=', 'bar');
         $b->orWhere('baz', '=', 'foo');
 
-        $this->assertEquals([
-            'and' => [[
-                'attribute' => 'foo',
-                'operator' => '=',
-                'value' => '\62\61\72',
-            ]],
-            'or' => [[
-                'attribute' => 'baz',
-                'operator' => '=',
-                'value' => '\66\6f\6f',
-            ]],
-            'raw' => [],
-        ], $b->getFilters());
+        $this->assertInstanceOf(OrGroup::class, $b->getFilter());
+        $this->assertEquals('(|(foo=\62\61\72)(baz=\66\6f\6f))', (string) $b->getFilter());
     }
 
     public function test_clear_filters()
     {
         $b = $this->newBuilder();
 
-        $b->addFilter('and', [
-            'attribute' => 'cn',
-            'operator' => '=',
-            'value' => 'John Doe',
-        ]);
+        $b->addFilter(new Equals('cn', 'John Doe'));
 
         $this->assertEquals('(cn=John Doe)', $b->getQuery());
         $this->assertEquals('(objectclass=*)', $b->clearFilters()->getQuery());
@@ -172,11 +138,8 @@ class BuilderTest extends TestCase
 
         $b->where('cn', '=', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Equals::class, $b->getFilter());
+        $this->assertEquals('(cn=\74\65\73\74)', (string) $b->getFilter());
     }
 
     public function test_where_clauses_with_no_operator_uses_equals_by_default()
@@ -186,15 +149,8 @@ class BuilderTest extends TestCase
         $b->where('cn', 'foo');
         $b->orWhere('cn', 'bar');
 
-        $where = $b->filters['and'][0];
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\66\6f\6f', $where['value']);
-
-        $orWhere = $b->filters['or'][0];
-        $this->assertEquals('cn', $orWhere['attribute']);
-        $this->assertEquals('=', $orWhere['operator']);
-        $this->assertEquals('\62\61\72', $orWhere['value']);
+        $this->assertInstanceOf(OrGroup::class, $b->getFilter());
+        $this->assertEquals('(|(cn=\66\6f\6f)(cn=\62\61\72))', (string) $b->getFilter());
     }
 
     public function test_where_with_array()
@@ -206,17 +162,8 @@ class BuilderTest extends TestCase
             'name' => 'test',
         ]);
 
-        $whereOne = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $whereOne['attribute']);
-        $this->assertEquals('=', $whereOne['operator']);
-        $this->assertEquals('\74\65\73\74', $whereOne['value']);
-
-        $whereTwo = $b->filters['and'][1];
-
-        $this->assertEquals('name', $whereTwo['attribute']);
-        $this->assertEquals('=', $whereTwo['operator']);
-        $this->assertEquals('\74\65\73\74', $whereTwo['value']);
+        $this->assertInstanceOf(AndGroup::class, $b->getFilter());
+        $this->assertEquals('(&(cn=\74\65\73\74)(name=\74\65\73\74))', (string) $b->getFilter());
     }
 
     public function test_where_with_nested_arrays()
@@ -228,17 +175,8 @@ class BuilderTest extends TestCase
             ['whencreated', '>=', 'test'],
         ]);
 
-        $whereOne = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $whereOne['attribute']);
-        $this->assertEquals('=', $whereOne['operator']);
-        $this->assertEquals('\74\65\73\74', $whereOne['value']);
-
-        $whereTwo = $b->filters['and'][1];
-
-        $this->assertEquals('whencreated', $whereTwo['attribute']);
-        $this->assertEquals('>=', $whereTwo['operator']);
-        $this->assertEquals('\74\65\73\74', $whereTwo['value']);
+        $this->assertInstanceOf(AndGroup::class, $b->getFilter());
+        $this->assertEquals('(&(cn=\74\65\73\74)(whencreated>=\74\65\73\74))', (string) $b->getFilter());
 
         $this->assertEquals('(&(cn=test)(whencreated>=test))', $b->getUnescapedQuery());
     }
@@ -249,11 +187,7 @@ class BuilderTest extends TestCase
 
         $b->whereContains('cn', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('contains', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Contains::class, $b->getFilter());
         $this->assertEquals('(cn=*test*)', $b->getUnescapedQuery());
     }
 
@@ -263,11 +197,7 @@ class BuilderTest extends TestCase
 
         $b->whereStartsWith('cn', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('starts_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(StartsWith::class, $b->getFilter());
         $this->assertEquals('(cn=test*)', $b->getUnescapedQuery());
     }
 
@@ -277,11 +207,7 @@ class BuilderTest extends TestCase
 
         $b->whereNotStartsWith('cn', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('not_starts_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Not::class, $b->getFilter());
         $this->assertEquals('(!(cn=test*))', $b->getUnescapedQuery());
     }
 
@@ -291,11 +217,7 @@ class BuilderTest extends TestCase
 
         $b->whereEndsWith('cn', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('ends_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(EndsWith::class, $b->getFilter());
         $this->assertEquals('(cn=*test)', $b->getUnescapedQuery());
     }
 
@@ -305,11 +227,7 @@ class BuilderTest extends TestCase
 
         $b->whereNotEndsWith('cn', 'test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('not_ends_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Not::class, $b->getFilter());
         $this->assertEquals('(!(cn=*test))', $b->getUnescapedQuery());
     }
 
@@ -344,11 +262,8 @@ class BuilderTest extends TestCase
 
         $b->orWhere('cn', '=', 'test');
 
-        $where = $b->filters['or'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Equals::class, $b->getFilter());
+        $this->assertEquals('(cn=\74\65\73\74)', (string) $b->getFilter());
     }
 
     public function test_or_where_with_one_where_should_be_converted_to_single_or_filter()
@@ -371,13 +286,25 @@ class BuilderTest extends TestCase
 
     public function test_multiple_wheres_with_or_wheres()
     {
+        // With the new filter object approach, mixing where() and orWhere()
+        // creates an OrGroup containing the AndGroup of wheres and the orWheres
         $b = $this->newBuilder()
             ->where('baz', '=', 'zax')
             ->where('lao', '=', 'zen')
             ->orWhere('foo', '=', 'bar')
             ->orWhere('zue', '=', 'lea');
 
-        $this->assertEquals('(&(baz=zax)(lao=zen)(|(foo=bar)(zue=lea)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(&(baz=zax)(lao=zen))(foo=bar)(zue=lea))', $b->getUnescapedQuery());
+    }
+
+    public function test_where_with_multiple_or_wheres()
+    {
+        $b = $this->newBuilder()
+            ->where('foo', '=', 'bar')
+            ->orWhere('baz', '=', 'zax')
+            ->orWhere('lao', '=', 'zen');
+
+        $this->assertEquals('(|(foo=bar)(baz=zax)(lao=zen))', $b->getUnescapedQuery());
     }
 
     public function test_or_where_with_array()
@@ -389,18 +316,7 @@ class BuilderTest extends TestCase
             'name' => 'test',
         ]);
 
-        $whereOne = $b->filters['or'][0];
-
-        $this->assertEquals('cn', $whereOne['attribute']);
-        $this->assertEquals('=', $whereOne['operator']);
-        $this->assertEquals('\74\65\73\74', $whereOne['value']);
-
-        $whereTwo = $b->filters['or'][1];
-
-        $this->assertEquals('name', $whereTwo['attribute']);
-        $this->assertEquals('=', $whereTwo['operator']);
-        $this->assertEquals('\74\65\73\74', $whereTwo['value']);
-
+        $this->assertInstanceOf(OrGroup::class, $b->getFilter());
         $this->assertEquals('(|(cn=test)(name=test))', $b->getUnescapedQuery());
     }
 
@@ -425,12 +341,6 @@ class BuilderTest extends TestCase
             ->whereContains('name', 'test')
             ->orWhereContains('cn', 'test');
 
-        $where = $b->filters['or'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('contains', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
-
         $this->assertEquals('(|(name=*test*)(cn=*test*))', $b->getUnescapedQuery());
     }
 
@@ -442,11 +352,6 @@ class BuilderTest extends TestCase
             ->whereStartsWith('name', 'test')
             ->orWhereStartsWith('cn', 'test');
 
-        $where = $b->filters['or'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('starts_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(|(name=test*)(cn=test*))', $b->getUnescapedQuery());
     }
 
@@ -458,11 +363,6 @@ class BuilderTest extends TestCase
             ->whereEndsWith('name', 'test')
             ->orWhereEndsWith('cn', 'test');
 
-        $where = $b->filters['or'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('ends_with', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
         $this->assertEquals('(|(name=*test)(cn=*test))', $b->getUnescapedQuery());
     }
 
@@ -582,11 +482,10 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
-        $b->where('attribute', '=', 'value');
+        $b->where('foo', '=', 'bar');
+        $b->orWhere('baz', '=', 'zal');
 
-        $b->orWhere('or', '=', 'value');
-
-        $this->assertEquals('(|(attribute=value)(or=value))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(foo=bar)(baz=zal))', $b->getUnescapedQuery());
     }
 
     public function test_single_where_with_multiple_or_wheres_creates_single_or_filter()
@@ -651,6 +550,15 @@ class BuilderTest extends TestCase
         $b->whereIn('name', ['john', 'mary', 'sue']);
 
         $this->assertEquals('(|(name=john)(name=mary)(name=sue))', $b->getUnescapedQuery());
+    }
+
+    public function test_built_where_in_with_empty_array()
+    {
+        $b = $this->newBuilder();
+
+        $b->whereIn('name', []);
+
+        $this->assertEquals('(|)', $b->getUnescapedQuery());
     }
 
     public function test_built_where_approximately_equals()
@@ -748,6 +656,7 @@ class BuilderTest extends TestCase
 
     public function test_built_raw_filter_with_wheres()
     {
+        // With filter objects, operations are applied in order
         $b = $this->newBuilder()
             ->rawFilter('(raw=value)')
             ->where('foo', '=', 'bar')
@@ -755,7 +664,7 @@ class BuilderTest extends TestCase
             ->orWhere('baz', '=', 'zax')
             ->orWhere('far', '=', 'zue');
 
-        $this->assertEquals('(&(raw=value)(foo=bar)(fee=lar)(|(baz=zax)(far=zue)))', $b->getUnescapedQuery());
+        $this->assertEquals('(|(&(raw=value)(foo=bar)(fee=lar))(baz=zax)(far=zue))', $b->getUnescapedQuery());
     }
 
     public function test_built_raw_filter_multiple()
@@ -814,11 +723,8 @@ class BuilderTest extends TestCase
 
         $b->whereCn('test');
 
-        $where = $b->filters['and'][0];
-
-        $this->assertEquals('cn', $where['attribute']);
-        $this->assertEquals('=', $where['operator']);
-        $this->assertEquals('\74\65\73\74', $where['value']);
+        $this->assertInstanceOf(Equals::class, $b->getFilter());
+        $this->assertEquals('(cn=\74\65\73\74)', (string) $b->getFilter());
     }
 
     public function test_dynamic_and_where()
@@ -827,20 +733,8 @@ class BuilderTest extends TestCase
 
         $b->whereCnAndSn('cn', 'sn');
 
-        $wheres = $b->filters['and'];
-
-        $whereCn = $wheres[0];
-        $whereSn = $wheres[1];
-
-        $this->assertCount(2, $wheres);
-
-        $this->assertEquals('cn', $whereCn['attribute']);
-        $this->assertEquals('=', $whereCn['operator']);
-        $this->assertEquals('\63\6e', $whereCn['value']);
-
-        $this->assertEquals('sn', $whereSn['attribute']);
-        $this->assertEquals('=', $whereSn['operator']);
-        $this->assertEquals('\73\6e', $whereSn['value']);
+        $this->assertInstanceOf(AndGroup::class, $b->getFilter());
+        $this->assertEquals('(&(cn=\63\6e)(sn=\73\6e))', (string) $b->getFilter());
     }
 
     public function test_dynamic_or_where()
@@ -849,22 +743,8 @@ class BuilderTest extends TestCase
 
         $b->whereCnOrSn('cn', 'sn');
 
-        $wheres = $b->filters['and'];
-        $orWheres = $b->filters['or'];
-
-        $whereCn = end($wheres);
-        $orWhereSn = end($orWheres);
-
-        $this->assertCount(1, $wheres);
-        $this->assertCount(1, $orWheres);
-
-        $this->assertEquals('cn', $whereCn['attribute']);
-        $this->assertEquals('=', $whereCn['operator']);
-        $this->assertEquals('\63\6e', $whereCn['value']);
-
-        $this->assertEquals('sn', $orWhereSn['attribute']);
-        $this->assertEquals('=', $orWhereSn['operator']);
-        $this->assertEquals('\73\6e', $orWhereSn['value']);
+        $this->assertInstanceOf(OrGroup::class, $b->getFilter());
+        $this->assertEquals('(|(cn=\63\6e)(sn=\73\6e))', (string) $b->getFilter());
     }
 
     public function test_selects_are_not_overwritten_with_empty_array()
@@ -882,6 +762,7 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
+        // orFilter combines the filters inside with OR
         $query = $b->orFilter(function ($query) {
             $query->where([
                 'one' => 'one',
@@ -892,10 +773,54 @@ class BuilderTest extends TestCase
         $this->assertEquals('(|(one=one)(two=two))', $query);
     }
 
+    public function test_nested_or_filter_with_where_equals()
+    {
+        $b = $this->newBuilder();
+
+        // orFilter with whereEquals should combine with OR, not AND
+        $query = $b->orFilter(function ($query) {
+            $query->whereEquals('foo', '1');
+            $query->whereEquals('foo', '2');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(foo=1)(foo=2))', $query);
+    }
+
+    public function test_nested_or_filter_preserves_nested_and_filter_when_followed_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+            $query->where('mail', '=', 'John Smith');
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(&(givenName=John*)(sn=Smith*))(mail=John Smith))', $query);
+    }
+
+    public function test_nested_or_filter_preserves_nested_and_filter_when_preceded_by_where()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->orFilter(function ($query) {
+            $query->where('mail', '=', 'John Smith');
+            $query->andFilter(function ($query) {
+                $query->whereStartsWith('givenName', 'John');
+                $query->whereStartsWith('sn', 'Smith');
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(|(mail=John Smith)(&(givenName=John*)(sn=Smith*)))', $query);
+    }
+
     public function test_nested_and_filter()
     {
         $b = $this->newBuilder();
 
+        // andFilter combines the filters inside with AND
         $query = $b->andFilter(function ($query) {
             $query->where([
                 'one' => 'one',
@@ -910,6 +835,7 @@ class BuilderTest extends TestCase
     {
         $b = $this->newBuilder();
 
+        // notFilter wraps the nested query in a Not
         $query = $b->notFilter(function ($query) {
             $query->where([
                 'one' => 'one',
@@ -917,7 +843,20 @@ class BuilderTest extends TestCase
             ]);
         })->getUnescapedQuery();
 
-        $this->assertEquals('(!(one=one)(two=two))', $query);
+        $this->assertEquals('(!(&(one=one)(two=two)))', $query);
+    }
+
+    public function test_nested_and_filter_preserves_not_filter()
+    {
+        $b = $this->newBuilder();
+
+        $query = $b->andFilter(function ($query) {
+            $query->notFilter(function ($query) {
+                $query->whereEquals('foo', 'bar');
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals('(&(!(foo=bar)))', $query);
     }
 
     public function test_nested_filters()
@@ -959,6 +898,31 @@ class BuilderTest extends TestCase
         ])->getUnescapedQuery();
 
         $this->assertEquals('(&(|(one=one)(two=two))(&(three=three)(four=four))(five=five)(six=six))', $query);
+    }
+
+    public function test_deeply_nested_filters()
+    {
+        $b = $this->newBuilder();
+
+        // Complex query: enabled AND (user with verified OR service with trusted)
+        $query = $b->andFilter(function ($query) {
+            $query->whereEquals('enabled', 'true');
+            $query->orFilter(function ($q) {
+                $q->andFilter(function ($inner) {
+                    $inner->whereEquals('type', 'user');
+                    $inner->whereEquals('verified', 'true');
+                });
+                $q->andFilter(function ($inner) {
+                    $inner->whereEquals('type', 'service');
+                    $inner->whereEquals('trusted', 'true');
+                });
+            });
+        })->getUnescapedQuery();
+
+        $this->assertEquals(
+            '(&(enabled=true)(|(&(type=user)(verified=true))(&(type=service)(trusted=true))))',
+            $query
+        );
     }
 
     public function test_nested_builder_is_nested()

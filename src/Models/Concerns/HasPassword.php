@@ -5,15 +5,17 @@ namespace LdapRecord\Models\Concerns;
 use LdapRecord\ConnectionException;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Password;
+use LdapRecord\Models\Model;
 use SensitiveParameter;
 
-/** @mixin \LdapRecord\Models\Model */
+/** @mixin Model */
 trait HasPassword
 {
     /**
      * Set the password on the user.
      *
      * @throws ConnectionException
+     * @throws LdapRecordException
      */
     public function setPasswordAttribute(#[SensitiveParameter] array|string $password): void
     {
@@ -29,9 +31,17 @@ trait HasPassword
         // If the password given is an array, we can assume we
         // are changing the password for the current user.
         if (is_array($password)) {
+            [$oldPassword, $newPassword] = $password;
+
+            if (Password::hashMethodRequiresExop($method)) {
+                throw new LdapRecordException(
+                    'Argon2 passwords cannot be changed through attribute assignment. Use the changePassword method instead.'
+                );
+            }
+
             $this->setChangedPassword(
-                $this->getHashedPassword($method, $password[0], $this->getPasswordSalt($method)),
-                $this->getHashedPassword($method, $password[1]),
+                $this->getHashedPassword($method, $oldPassword, $this->getPasswordSalt($method)),
+                $this->getHashedPassword($method, $newPassword),
                 $this->getPasswordAttributeName()
             );
         }
@@ -208,6 +218,12 @@ trait HasPassword
 
         if (! $method = Password::getHashMethod($password)) {
             return null;
+        }
+
+        // The {ARGON2} scheme carries its variant inside the PHC
+        // string following the prefix, not in the scheme name.
+        if (strcasecmp($method, 'argon2') === 0) {
+            return str_contains($password, '$argon2i$') ? 'argon2i' : 'argon2id';
         }
 
         if (! $hashAndAlgo = Password::getHashMethodAndAlgo($password)) {

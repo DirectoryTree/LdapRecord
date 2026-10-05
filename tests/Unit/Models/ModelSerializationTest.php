@@ -3,6 +3,7 @@
 namespace LdapRecord\Tests\Unit\Models;
 
 use DateTime;
+use ErrorException;
 use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Models\ActiveDirectory\User;
 use LdapRecord\Models\Attributes\Guid;
@@ -12,6 +13,22 @@ use LdapRecord\Tests\TestCase;
 
 class ModelSerializationTest extends TestCase
 {
+    public function test_model_can_be_serialized_without_deprecations()
+    {
+        set_error_handler(
+            fn (int $severity, string $message, string $file, int $line) => throw new ErrorException($message, 0, $severity, $file, $line),
+            E_DEPRECATED
+        );
+
+        try {
+            $model = unserialize(serialize(new User));
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertInstanceOf(User::class, $model);
+    }
+
     public function test_model_with_timestamps_can_be_serialized_and_encoded()
     {
         $whenchanged = (new Timestamp('windows'))->fromDateTime(new DateTime);

@@ -3,9 +3,11 @@
 namespace LdapRecord\Models\OpenLDAP;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Models\Relations\HasMany;
+use SensitiveParameter;
 
 class User extends Entry implements Authenticatable
 {
@@ -31,6 +33,30 @@ class User extends Entry implements Authenticatable
         'organizationalperson',
         'inetorgperson',
     ];
+
+    /**
+     * Change the user's password.
+     *
+     * @throws LdapRecordException
+     */
+    public function changePassword(#[SensitiveParameter] string $oldPassword, #[SensitiveParameter] string $newPassword): void
+    {
+        $this->assertSecureConnection();
+
+        if (! $this->exists || ! $this->getDn()) {
+            throw new LdapRecordException(
+                'A password change requires an existing model with a distinguished name.'
+            );
+        }
+
+        if ($oldPassword === '' || $newPassword === '') {
+            throw new LdapRecordException('The current and new passwords must not be empty.');
+        }
+
+        $this->getConnection()->changePassword(
+            $this->getDn(), $oldPassword, $newPassword
+        );
+    }
 
     /**
      * Get the unique identifier for the user.

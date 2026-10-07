@@ -31,6 +31,11 @@ abstract class Relation
     protected array $related;
 
     /**
+     * Whether to only return declared related model types.
+     */
+    protected bool $onlyRelated = false;
+
+    /**
      * The relation key.
      */
     protected string $relationKey;
@@ -100,6 +105,8 @@ abstract class Relation
      */
     public function onlyRelated(): static
     {
+        $this->onlyRelated = true;
+
         $relations = [];
 
         foreach ($this->related as $related) {
@@ -112,9 +119,13 @@ abstract class Relation
             return $this;
         }
 
-        $this->query->andFilter(function (Builder $query) use ($relations) {
-            foreach ($relations as $relation => $objectClasses) {
-                $query->whereIn('objectclass', $objectClasses);
+        $this->query->orFilter(function (Builder $query) use ($relations) {
+            foreach ($relations as $objectClasses) {
+                $query->andFilter(function (Builder $query) use ($objectClasses) {
+                    foreach ($objectClasses as $objectClass) {
+                        $query->whereEquals('objectclass', $objectClass);
+                    }
+                });
             }
         });
 
@@ -290,9 +301,19 @@ abstract class Relation
      */
     protected function transformResults(Collection $results): Collection
     {
-        return $results->transform(
+        return $this->filterRelatedResults($results->transform(
             fn (Model $entry) => $entry->morphInto($this->related, static::$modelResolver)
-        );
+        ));
+    }
+
+    /**
+     * Exclude results that did not resolve to a declared related model type.
+     */
+    protected function filterRelatedResults(Collection $results): Collection
+    {
+        return $this->onlyRelated
+            ? $results->filter(fn (Model $entry) => in_array($entry::class, $this->related))->values()
+            : $results;
     }
 
     /**

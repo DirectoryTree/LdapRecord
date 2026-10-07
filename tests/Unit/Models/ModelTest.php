@@ -837,12 +837,40 @@ class ModelTest extends TestCase
             'objectclass' => User::$objectClasses,
         ]);
 
-        $this->assertInstanceOf(User::class, $entry->morphInto([Group::class, User::class]));
+        $this->assertInstanceOf(User::class, $entry->morphIntoOrFail([Group::class, User::class]));
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The model could not be morphed into any of the given models.');
 
         $entry->morphIntoOrFail([Group::class]);
+    }
+
+    public function test_morph_into_or_fail_can_convert_into_the_same_model_class()
+    {
+        $user = new User([
+            'objectclass' => User::$objectClasses,
+        ]);
+
+        $model = $user->morphIntoOrFail([User::class]);
+
+        $this->assertInstanceOf(User::class, $model);
+        $this->assertNotSame($user, $model);
+    }
+
+    public function test_morph_into_or_fail_uses_the_custom_resolver()
+    {
+        $entry = new Entry([
+            'objectclass' => User::$objectClasses,
+        ]);
+
+        $model = $entry->morphIntoOrFail([Group::class, User::class], function (array $objectClasses, array $models) use ($entry) {
+            $this->assertEqualsCanonicalizing($entry->getObjectClasses(), $objectClasses);
+            $this->assertEquals([Group::class, User::class], array_keys($models));
+
+            return Group::class;
+        });
+
+        $this->assertInstanceOf(Group::class, $model);
     }
 
     public function test_morph_into_with_custom_resolver_callback()

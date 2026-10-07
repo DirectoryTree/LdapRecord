@@ -265,6 +265,120 @@ class ModelQueryTest extends TestCase
         $model = (new Entry)->setRawAttributes(['dn' => 'foo']);
 
         $model->replaceAttribute('bar', 'baz');
+
+        $this->assertSame(['bar' => ['baz']], $model->getAttributes());
+        $this->assertSame(['bar' => ['baz']], $model->getOriginal());
+        $this->assertEmpty($model->getDirty());
+        $this->assertEmpty($model->getModifications());
+    }
+
+    public function test_replace_attribute_replaces_existing_values_and_preserves_pending_changes()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('modReplace')
+                ->once()
+                ->with('foo', ['member' => ['cn=new', 'cn=other']])
+                ->andReturnTrue(),
+            LdapFake::operation('modifyBatch')
+                ->once()
+                ->with('foo', [[
+                    'attrib' => 'description',
+                    'modtype' => LDAP_MODIFY_BATCH_REPLACE,
+                    'values' => ['updated'],
+                ]])
+                ->andReturnTrue(),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'foo',
+            'member' => ['cn=old'],
+            'description' => ['original'],
+        ]);
+
+        $model->member = ['cn=pending'];
+        $model->description = 'updated';
+
+        $model->replaceAttribute('member', ['cn=new', 'cn=other']);
+
+        $this->assertSame(['cn=new', 'cn=other'], $model->getRawAttribute('member'));
+        $this->assertSame(['cn=new', 'cn=other'], $model->getRawOriginal('member'));
+        $this->assertSame(['original'], $model->getRawOriginal('description'));
+        $this->assertSame(['description' => ['updated']], $model->getDirty());
+
+        $model->save();
+
+        $this->assertEmpty($model->getModifications());
+    }
+
+    public function test_replace_attribute_normalizes_the_attribute_name()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('modReplace')
+                ->once()
+                ->with('foo', ['member' => ['cn=new']])
+                ->andReturnTrue()
+        );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'foo',
+            'member' => ['cn=old'],
+        ]);
+
+        $model->replaceAttribute('MEMBER', 'cn=new');
+
+        $this->assertSame(['member' => ['cn=new']], $model->getAttributes());
+        $this->assertSame(['member' => ['cn=new']], $model->getOriginal());
+        $this->assertEmpty($model->getModifications());
+    }
+
+    public function test_replace_attribute_with_empty_values_removes_the_attribute()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('modReplace')
+                ->once()
+                ->with('foo', ['member' => []])
+                ->andReturnTrue()
+        );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'foo',
+            'member' => ['cn=old'],
+        ]);
+
+        $model->replaceAttribute('member', []);
+
+        $this->assertSame([], $model->getAttributes());
+        $this->assertSame([], $model->getOriginal());
+        $this->assertEmpty($model->getModifications());
+    }
+
+    public function test_replace_attribute_with_null_removes_the_attribute()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('modReplace')
+                ->once()
+                ->with('foo', ['member' => []])
+                ->andReturnTrue()
+        );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'foo',
+            'member' => ['cn=old'],
+        ]);
+
+        $model->replaceAttribute('member', null);
+
+        $this->assertSame([], $model->getAttributes());
+        $this->assertSame([], $model->getOriginal());
+        $this->assertEmpty($model->getModifications());
     }
 
     public function test_replace_attribute_without_existing_model()

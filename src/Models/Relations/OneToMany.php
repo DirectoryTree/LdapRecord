@@ -370,13 +370,23 @@ abstract class OneToMany extends Relation
     {
         return $this->onceWithoutMerging(
             fn () => $this->get()->each(function (Model $model) {
-                $relation = $model->getRelation($this->relationName);
+                $target = $this->using ?? $model;
+                $attribute = $this->usingKey ?? $this->relationKey;
 
-                if ($relation && $relation->count() >= 1) {
-                    $model->delete();
-                } else {
-                    $this->detach($model);
+                $values = $target->newQueryWithoutScopes()
+                    ->select($attribute)
+                    ->findOrFail($target->getDn())
+                    ->getRawAttribute($attribute, []);
+
+                $foreign = $this->getAttachableForeignValue($model);
+
+                if (count($values) === 1 && strcasecmp(reset($values), $foreign) === 0) {
+                    $target->delete();
+
+                    return $this->using ? false : null;
                 }
+
+                $this->detach($model);
             })
         );
     }

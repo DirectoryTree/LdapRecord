@@ -341,20 +341,24 @@ class Builder
     {
         $this->paginated = true;
 
-        $start = microtime(true);
+        try {
+            $start = microtime(true);
 
-        $query = $this->getQuery();
+            $query = $this->getQuery();
 
-        // Here we will create the pagination callback. This allows us
-        // to only execute an LDAP request if caching is disabled
-        // or if no cache of the given query exists yet.
-        $callback = fn () => $this->runPaginate($query, $pageSize, $isCritical);
+            // Here we will create the pagination callback. This allows us
+            // to only execute an LDAP request if caching is disabled
+            // or if no cache of the given query exists yet.
+            $callback = fn () => $this->runPaginate($query, $pageSize, $isCritical);
 
-        $pages = $this->getCachedResponse($query, $callback);
+            $pages = $this->getCachedResponse($query, $callback);
 
-        $this->logQuery($this, self::TYPE_PAGINATE, $this->getElapsedTime($start));
+            $this->logQuery($this, self::TYPE_PAGINATE, $this->getElapsedTime($start));
 
-        return $this->process($pages);
+            return $this->process($pages);
+        } finally {
+            $this->paginated = false;
+        }
     }
 
     /**

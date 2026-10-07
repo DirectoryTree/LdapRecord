@@ -8,7 +8,9 @@ use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\LdapRecordException;
 use LdapRecord\LdapResultResponse;
+use LdapRecord\Query\ArrayCacheStore;
 use LdapRecord\Query\Builder;
+use LdapRecord\Query\Cache;
 use LdapRecord\Query\Filter\AndGroup;
 use LdapRecord\Query\Filter\Contains;
 use LdapRecord\Query\Filter\EndsWith;
@@ -23,6 +25,7 @@ use LdapRecord\Testing\DirectoryFake;
 use LdapRecord\Testing\LdapExpectation;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
+use RuntimeException;
 
 class BuilderTest extends TestCase
 {
@@ -1387,6 +1390,89 @@ class BuilderTest extends TestCase
         $this->assertCount(2, $objects);
         $this->assertEquals($objects[0]['dn'][0], 'cn=John,dc=local,dc=com');
         $this->assertEquals($objects[1]['dn'][0], 'cn=Jane,dc=local,dc=com');
+    }
+
+    public function test_query_can_be_reused_after_pagination()
+    {
+        $results = [['dn' => 'cn=John,dc=local,dc=com', 'objectclass' => ['person']]];
+
+        $query = $this->newBuilder();
+
+        $query->getConnection()->getLdapConnection()->shouldAllowAnyBind()->expect([
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [
+                LDAP_CONTROL_PAGEDRESULTS => [
+                    'oid' => LDAP_CONTROL_PAGEDRESULTS,
+                    'isCritical' => false,
+                    'value' => ['size' => 1000, 'cookie' => ''],
+                ],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+            LdapFake::operation('search')->twice()->andReturn($results),
+            LdapFake::operation('parseResult')->andReturnResponse(),
+        ]);
+
+        $this->assertSame($results, $query->paginate());
+        $this->assertSame($results, $query->get());
+    }
+
+    public function test_cached_pagination_can_be_repeated_before_an_ordinary_query()
+    {
+        $results = [['dn' => 'cn=John,dc=local,dc=com', 'objectclass' => ['person']]];
+
+        $query = $this->newBuilder();
+        $query->setCache(new Cache(new ArrayCacheStore));
+
+        $query->getConnection()->getLdapConnection()->shouldAllowAnyBind()->expect([
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [
+                LDAP_CONTROL_PAGEDRESULTS => [
+                    'oid' => LDAP_CONTROL_PAGEDRESULTS,
+                    'isCritical' => false,
+                    'value' => ['size' => 1000, 'cookie' => ''],
+                ],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+            LdapFake::operation('search')->twice()->andReturn($results),
+            LdapFake::operation('parseResult')->andReturnResponse(),
+        ]);
+
+        $this->assertSame($results, $query->cache()->paginate());
+        $this->assertFalse($query->isPaginated());
+        $this->assertSame($results, $query->cache()->paginate());
+        $this->assertFalse($query->isPaginated());
+        $this->assertSame($results, $query->get());
+    }
+
+    public function test_pagination_state_is_restored_when_a_request_throws()
+    {
+        $results = [['dn' => 'cn=John,dc=local,dc=com', 'objectclass' => ['person']]];
+        $exception = new RuntimeException('Unable to parse the pagination response.');
+
+        $query = $this->newBuilder();
+
+        $query->getConnection()->getLdapConnection()->shouldAllowAnyBind()->expect([
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [
+                LDAP_CONTROL_PAGEDRESULTS => [
+                    'oid' => LDAP_CONTROL_PAGEDRESULTS,
+                    'isCritical' => false,
+                    'value' => ['size' => 1000, 'cookie' => ''],
+                ],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+            LdapFake::operation('search')->twice()->andReturn($results),
+            LdapFake::operation('parseResult')->once()->andThrow($exception),
+            LdapFake::operation('parseResult')->andReturnResponse(),
+        ]);
+
+        try {
+            $query->paginate();
+            $this->fail('The pagination exception was not thrown.');
+        } catch (RuntimeException $e) {
+            $this->assertSame($exception, $e);
+        }
+
+        $this->assertFalse($query->isPaginated());
+        $this->assertSame([], $query->controls);
+        $this->assertSame($results, $query->get());
     }
 
     public function test_chunk()

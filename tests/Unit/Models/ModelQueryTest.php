@@ -344,6 +344,89 @@ class ModelQueryTest extends TestCase
         $model->removeAttributes(['foo', 'bar' => 'zar']);
     }
 
+    public function test_remove_attribute_preserves_unrelated_pending_changes()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('modDelete')->once()->with('dn', ['telephonenumber' => []])->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('dn', [[
+                'attrib' => 'description',
+                'modtype' => LDAP_MODIFY_BATCH_REPLACE,
+                'values' => ['Updated description'],
+            ]])->andReturnTrue(),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'dn',
+            'description' => ['Original description'],
+            'telephonenumber' => ['555-1234'],
+        ]);
+
+        $model->description = 'Updated description';
+        $model->removeAttribute('telephonenumber');
+
+        $this->assertEquals(['description' => ['Original description']], $model->getOriginal());
+        $this->assertEquals(['description' => ['Updated description']], $model->getDirty());
+
+        $model->save();
+
+        $this->assertEmpty($model->getDirty());
+    }
+
+    public function test_remove_attribute_values_preserves_pending_additions()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('modDelete')->once()->with('dn', ['member' => ['first']])->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('dn', [[
+                'attrib' => 'member',
+                'modtype' => LDAP_MODIFY_BATCH_ADD,
+                'values' => ['third'],
+            ]])->andReturnTrue(),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'dn',
+            'member' => ['first', 'second'],
+        ]);
+
+        $model->addAttributeValue('member', 'third');
+        $model->removeAttribute('member', 'first');
+
+        $this->assertEquals(['member' => ['second']], $model->getOriginal());
+        $this->assertEquals(['member' => ['second', 'third']], $model->getAttributes());
+
+        $model->save();
+
+        $this->assertEmpty($model->getDirty());
+    }
+
+    public function test_remove_attributes_normalizes_attribute_keys()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect(
+            LdapFake::operation('modDelete')->once()->with('dn', [
+                'telephonenumber' => [],
+                'member-uid' => ['first'],
+            ])->andReturnTrue()
+        );
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'dn',
+            'telephonenumber' => ['555-1234'],
+            'member-uid' => ['first', 'second'],
+        ]);
+
+        $model->removeAttributes(['telephoneNumber', 'MEMBER_UID' => 'first']);
+
+        $this->assertEquals(['member-uid' => ['second']], $model->getAttributes());
+        $this->assertEquals(['member-uid' => ['second']], $model->getOriginal());
+        $this->assertEmpty($model->getDirty());
+    }
+
     public function test_delete_attribute_without_existing_model()
     {
         $this->expectException(ModelDoesNotExistException::class);

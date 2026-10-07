@@ -1212,7 +1212,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
             // attribute was completely deleted from the model.
             // We will pull the attribute out and continue on.
             if (empty($value)) {
-                unset($this->attributes[$attribute]);
+                unset($this->attributes[$attribute], $this->original[$attribute]);
             }
             // Otherwise, only specific attribute values have been
             // removed. We will determine which ones have been
@@ -1222,11 +1222,15 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
                     array_diff($this->attributes[$attribute], (array) $value)
                 );
             }
+
+            if (! empty($value) && Arr::exists($this->original, $attribute)) {
+                $this->original[$attribute] = array_values(
+                    array_diff($this->original[$attribute], (array) $value)
+                );
+            }
         }
 
         $this->dispatch(['updated', 'saved']);
-
-        $this->syncOriginal();
     }
 
     /**
@@ -1237,9 +1241,9 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
         $delete = [];
 
         foreach (Arr::wrap($attributes) as $key => $value) {
-            is_int($key)
-                ? $delete[$value] = []
-                : $delete[$key] = Arr::wrap($value);
+            $attribute = $this->normalizeAttributeKey(is_int($key) ? $value : $key);
+
+            $delete[$attribute] = is_int($key) ? [] : Arr::wrap($value);
         }
 
         return $delete;

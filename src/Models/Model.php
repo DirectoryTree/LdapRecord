@@ -1089,9 +1089,18 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
 
         $this->dispatch(['saving', 'updating']);
 
-        $this->newQuery()->replace($this->dn, [$attribute => (array) $value]);
+        $attribute = $this->normalizeAttributeKey($attribute);
+        $value = (array) $value;
 
-        $this->addAttributeValue($attribute, $value);
+        $this->newQuery()->replace($this->dn, [$attribute => $value]);
+
+        if ($value) {
+            $this->setRawAttribute($attribute, $value);
+
+            $this->original[$attribute] = $value;
+        } else {
+            unset($this->attributes[$attribute], $this->original[$attribute]);
+        }
 
         $this->dispatch(['updated', 'saved']);
     }

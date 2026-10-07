@@ -69,6 +69,95 @@ class ModelQueryTest extends TestCase
         $this->assertEquals('foo', Entry::query()->getBaseDn());
     }
 
+    public function test_fresh_returns_false_when_the_entry_no_longer_exists()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([]),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+            'description' => ['Original description'],
+        ]);
+
+        $this->assertFalse($model->fresh());
+    }
+
+    public function test_refresh_preserves_attributes_when_the_entry_no_longer_exists()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([]),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+            'description' => ['Original description'],
+        ]);
+
+        $model->description = 'Pending description';
+
+        $this->assertFalse($model->refresh());
+        $this->assertEquals(['Pending description'], $model->description);
+        $this->assertEquals(['Original description'], $model->getOriginal()['description']);
+        $this->assertTrue($model->exists);
+    }
+
+    public function test_fresh_returns_a_new_instance_with_current_attributes()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                ['dn' => 'cn=John Doe,dc=local,dc=com', 'description' => ['Current description']],
+            ]),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+            'description' => ['Original description'],
+        ]);
+
+        $fresh = $model->fresh();
+
+        $this->assertInstanceOf(Entry::class, $fresh);
+        $this->assertNotSame($model, $fresh);
+        $this->assertEquals(['Current description'], $fresh->description);
+        $this->assertEquals(['Original description'], $model->description);
+    }
+
+    public function test_refresh_updates_attributes_when_the_entry_exists()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('read')->once()->with('cn=John Doe,dc=local,dc=com')->andReturn([
+                ['dn' => 'cn=John Doe,dc=local,dc=com', 'description' => ['Current description']],
+            ]),
+        ]);
+
+        $model = (new Entry)->setRawAttributes([
+            'dn' => 'cn=John Doe,dc=local,dc=com',
+            'description' => ['Original description'],
+        ]);
+
+        $this->assertTrue($model->refresh());
+        $this->assertEquals(['Current description'], $model->description);
+        $this->assertEquals(['Current description'], $model->getOriginal()['description']);
+    }
+
+    public function test_fresh_and_refresh_return_false_for_unsaved_models()
+    {
+        $model = new Entry(['description' => 'Pending description']);
+
+        $this->assertFalse($model->fresh());
+        $this->assertFalse($model->refresh());
+        $this->assertEquals(['Pending description'], $model->description);
+    }
+
     public function test_creating_new_query_without_connection_fails()
     {
         $this->expectException(ContainerException::class);

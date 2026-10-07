@@ -584,15 +584,16 @@ class Builder
             fn (LdapInterface $ldap) => $ldap->getHost()
         );
 
-        $key = $host
-            .$this->type
-            .$this->getDn()
-            .$query
-            .implode($this->getSelects())
-            .$this->limit
-            .$this->paginated;
-
-        return md5($key);
+        return md5(serialize([
+            $host,
+            $this->type,
+            (string) ($this->dn ?? $this->baseDn),
+            $query,
+            $this->getSelects(),
+            $this->limit,
+            $this->paginated,
+            $this->controls,
+        ]));
     }
 
     /**

@@ -562,7 +562,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
             return false;
         }
 
-        return $this->newQueryWithoutScopes()->find($this->dn);
+        return $this->newQueryWithoutScopes()->find($this->dn) ?? false;
     }
 
     /**

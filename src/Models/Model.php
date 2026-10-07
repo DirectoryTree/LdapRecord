@@ -618,7 +618,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     {
         $model = $this->morphInto($models, $resolver);
 
-        if ($model instanceof $this) {
+        if ($model === $this) {
             throw new RuntimeException(
                 'The model could not be morphed into any of the given models.'
             );

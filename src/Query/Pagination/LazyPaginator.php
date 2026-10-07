@@ -14,18 +14,20 @@ class LazyPaginator extends Paginator
     {
         $this->prepareServerControls();
 
-        do {
-            $this->applyServerControls($ldap);
+        try {
+            do {
+                $this->applyServerControls($ldap);
 
-            if (! $resource = $this->query->run($this->filter)) {
-                break;
-            }
+                if (! $resource = $this->query->run($this->filter)) {
+                    break;
+                }
 
-            $this->updateServerControls($ldap, $resource);
+                $this->updateServerControls($ldap, $resource);
 
-            yield $this->query->parse($resource);
-        } while ($this->shouldContinue());
-
-        $this->resetServerControls($ldap);
+                yield $this->query->parse($resource);
+            } while ($this->shouldContinue());
+        } finally {
+            $this->resetServerControls($ldap);
+        }
     }
 }

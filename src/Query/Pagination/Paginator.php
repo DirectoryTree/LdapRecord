@@ -60,5 +60,7 @@ class Paginator extends AbstractPaginator
     protected function resetServerControls(LdapInterface $ldap): void
     {
         unset($this->query->controls[LDAP_CONTROL_PAGEDRESULTS]);
+
+        $this->applyServerControls($ldap);
     }
 }

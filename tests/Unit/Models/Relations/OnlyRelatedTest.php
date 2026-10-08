@@ -145,4 +145,74 @@ class OnlyRelatedTest extends TestCase
         $this->assertCount(1, $results);
         $this->assertInstanceOf(User::class, $results[0]);
     }
+
+    public function test_only_related_excludes_undeclared_models_from_recursive_chunks()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=User,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Group,dc=local', 'objectclass' => Group::$objectClasses],
+                ['dn' => 'cn=Report,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([]),
+        ]);
+
+        $parent = (new Entry)->setDn('cn=Parent,dc=local');
+        $relation = new HasMany($parent->newQuery(), $parent, OnlyRelatedUserStub::class, 'manager', 'dn', 'reports');
+        $results = $parent->newCollection();
+
+        $completed = $relation->onlyRelated()->recursive()->chunk(1000, function ($chunk) use ($results) {
+            foreach ($chunk as $model) {
+                $results->push($model);
+            }
+        });
+
+        $this->assertTrue($completed);
+        $this->assertSame(['cn=User,dc=local', 'cn=Report,dc=local'], $results->map->getDn()->all());
+        $this->assertSame([OnlyRelatedUserStub::class, OnlyRelatedUserStub::class], $results->map(fn ($model) => $model::class)->all());
+    }
+
+    public function test_only_related_recursive_chunking_can_be_stopped()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=User,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Group,dc=local', 'objectclass' => Group::$objectClasses],
+                ['dn' => 'cn=Report,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+        ]);
+
+        $parent = (new Entry)->setDn('cn=Parent,dc=local');
+        $relation = new HasMany($parent->newQuery(), $parent, OnlyRelatedUserStub::class, 'manager', 'dn', 'reports');
+        $results = $parent->newCollection();
+
+        $completed = $relation->onlyRelated()->recursive()->chunk(1000, function ($chunk) use ($results) {
+            foreach ($chunk as $model) {
+                $results->push($model);
+
+                if ($model->getDn() === 'cn=Report,dc=local') {
+                    return false;
+                }
+            }
+        });
+
+        $this->assertFalse($completed);
+        $this->assertSame(['cn=User,dc=local', 'cn=Report,dc=local'], $results->map->getDn()->all());
+    }
+}
+
+class OnlyRelatedUserStub extends User
+{
+    public function reports(): HasMany
+    {
+        return $this->hasMany([static::class, Group::class], 'manager');
+    }
 }

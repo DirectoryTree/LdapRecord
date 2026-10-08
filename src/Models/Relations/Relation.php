@@ -107,22 +107,10 @@ abstract class Relation
     {
         $this->onlyRelated = true;
 
-        $relations = [];
-
-        foreach ($this->related as $related) {
-            $relations[$related] = $related::$objectClasses;
-        }
-
-        $relations = array_filter($relations);
-
-        if (empty($relations)) {
-            return $this;
-        }
-
-        $this->query->orFilter(function (Builder $query) use ($relations) {
-            foreach ($relations as $objectClasses) {
-                $query->andFilter(function (Builder $query) use ($objectClasses) {
-                    foreach ($objectClasses as $objectClass) {
+        $this->query->orFilter(function (Builder $query) {
+            foreach ($this->related as $related) {
+                $query->andFilter(function (Builder $query) use ($related) {
+                    foreach ($related::$objectClasses as $objectClass) {
                         $query->whereEquals('objectclass', $objectClass);
                     }
                 });

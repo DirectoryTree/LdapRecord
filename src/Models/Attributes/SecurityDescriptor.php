@@ -9,8 +9,6 @@ use LdapRecord\Models\Attributes\SecurityDescriptor\Acl;
  * The self-relative Windows security descriptor stored in ntSecurityDescriptor.
  *
  * @author Chad Sikorra <Chad.Sikorra@gmail.com>
- *
- * @see https://github.com/ldaptools/ldaptools
  */
 class SecurityDescriptor
 {

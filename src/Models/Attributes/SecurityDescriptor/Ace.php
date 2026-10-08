@@ -11,8 +11,6 @@ use LogicException;
  * An access control entry in a Windows security descriptor.
  *
  * @author Chad Sikorra <Chad.Sikorra@gmail.com>
- *
- * @see https://github.com/ldaptools/ldaptools
  */
 class Ace
 {

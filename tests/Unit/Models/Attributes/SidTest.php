@@ -8,6 +8,30 @@ use LdapRecord\Tests\TestCase;
 
 class SidTest extends TestCase
 {
+    public function test_identifier_authority_uses_all_six_bytes()
+    {
+        $binary = hex2bin('0101ffffffffffffffffffff');
+        $sid = 'S-1-281474976710655-4294967295';
+
+        $this->assertTrue(Sid::isValid($sid));
+        $this->assertSame($sid, (string) new Sid($binary));
+        $this->assertSame($binary, (new Sid($sid))->getBinary());
+    }
+
+    public function test_binary_subauthorities_must_fit_within_the_available_data()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Sid(hex2bin('0101000000000005'));
+    }
+
+    public function test_authority_values_cannot_overflow_the_binary_sid()
+    {
+        $this->assertFalse(Sid::isValid('S-1-281474976710656-0'));
+        $this->assertFalse(Sid::isValid('S-1-5-4294967296'));
+        $this->assertSame(hex2bin('01010000000000050a000000'), (new Sid('s-1-5-10'))->getBinary());
+    }
+
     public function test_throws_exception_with_empty_sid()
     {
         $this->expectException(InvalidArgumentException::class);

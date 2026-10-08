@@ -5,6 +5,7 @@ namespace LdapRecord\Models\ActiveDirectory;
 use InvalidArgumentException;
 use LdapRecord\Connection;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\ActiveDirectory\Concerns\HasSecurityDescriptor;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Events\Updated;
@@ -15,6 +16,8 @@ use LdapRecord\Support\Arr;
 /** @mixin ActiveDirectoryBuilder */
 class Entry extends BaseEntry implements ActiveDirectory
 {
+    use HasSecurityDescriptor;
+
     /**
      * The default attributes that should be mutated to dates.
      */
@@ -143,6 +146,10 @@ class Entry extends BaseEntry implements ActiveDirectory
     {
         $attributes = parent::convertAttributesForJson($attributes);
 
+        if (isset($attributes['ntsecuritydescriptor'])) {
+            $attributes['ntsecuritydescriptor'] = array_map(base64_encode(...), $attributes['ntsecuritydescriptor']);
+        }
+
         // If the model has a SID set, we need to convert it to its
         // string format, due to it being in binary. Otherwise,
         // we will receive a JSON serialization exception.
@@ -161,6 +168,10 @@ class Entry extends BaseEntry implements ActiveDirectory
     protected function convertAttributesFromJson(array $attributes = []): array
     {
         $attributes = parent::convertAttributesFromJson($attributes);
+
+        if (isset($attributes['ntsecuritydescriptor'])) {
+            $attributes['ntsecuritydescriptor'] = array_map(base64_decode(...), $attributes['ntsecuritydescriptor']);
+        }
 
         if (isset($attributes[$this->sidKey])) {
             $attributes[$this->sidKey] = [$this->getBinarySid(

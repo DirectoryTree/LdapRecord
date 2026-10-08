@@ -3,13 +3,34 @@
 namespace LdapRecord\Query\Model;
 
 use Closure;
+use InvalidArgumentException;
 use LdapRecord\LdapInterface;
 use LdapRecord\Models\Attributes\AccountControl;
+use LdapRecord\Models\Attributes\SecurityDescriptor;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 
 class ActiveDirectoryBuilder extends Builder
 {
+    /**
+     * Include the selected security descriptor sections in query results.
+     */
+    public function withSecurityDescriptor(
+        int $parts = SecurityDescriptor::OWNER_SECURITY_INFORMATION
+            | SecurityDescriptor::GROUP_SECURITY_INFORMATION
+            | SecurityDescriptor::DACL_SECURITY_INFORMATION,
+    ): static {
+        if ($parts < 1 || $parts > 15) {
+            throw new InvalidArgumentException('Select at least one security descriptor section using flags 1 through 15.');
+        }
+
+        return $this->addSelect('ntsecuritydescriptor')->addControl(
+            LdapInterface::OID_SERVER_SD_FLAGS,
+            true,
+            pack('C5', 0x30, 0x03, 0x02, 0x01, $parts)
+        );
+    }
+
     /**
      * Finds a record by its Object SID.
      */

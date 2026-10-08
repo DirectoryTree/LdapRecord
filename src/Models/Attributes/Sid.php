@@ -7,6 +7,10 @@ use Stringable;
 
 class Sid implements Stringable
 {
+    public const EVERYONE = 'S-1-1-0';
+
+    public const SELF = 'S-1-5-10';
+
     /**
      * The string SID value.
      */
@@ -17,7 +21,23 @@ class Sid implements Stringable
      */
     public static function isValid(string $sid): bool
     {
-        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", $sid);
+        if (! preg_match('/^S-\d-\d{1,15}(-\d{1,10}){0,15}$/i', $sid)) {
+            return false;
+        }
+
+        $parts = explode('-', $sid);
+
+        if ((int) $parts[2] > 0xFFFFFFFFFFFF) {
+            return false;
+        }
+
+        foreach (array_slice($parts, 3) as $subAuthority) {
+            if ((int) $subAuthority > 0xFFFFFFFF) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -57,7 +77,7 @@ class Sid implements Stringable
      */
     public function getBinary(): string
     {
-        $sid = explode('-', ltrim($this->value, 'S-'));
+        $sid = explode('-', substr($this->value, 2));
 
         $level = (int) array_shift($sid);
 
@@ -66,7 +86,7 @@ class Sid implements Stringable
         $subAuthorities = array_map('intval', $sid);
 
         $params = array_merge(
-            ['C2xxNV*', $level, count($subAuthorities), $authority],
+            ['C2nNV*', $level, count($subAuthorities), $authority >> 32, $authority & 0xFFFFFFFF],
             $subAuthorities
         );
 
@@ -84,9 +104,8 @@ class Sid implements Stringable
 
         // Revision - 8bit unsigned int (C1)
         // Count - 8bit unsigned int (C1)
-        // 2 null bytes
-        // ID - 32bit unsigned long, big-endian order
-        $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
+        // Identifier authority - 48bit unsigned int, big-endian order
+        $sid = @unpack('C1rev/C1count/n1high/N1id', $binary);
 
         if (! isset($sid['id']) || ! isset($sid['rev'])) {
             return null;
@@ -94,9 +113,13 @@ class Sid implements Stringable
 
         $revisionLevel = $sid['rev'];
 
-        $identifierAuthority = $sid['id'];
+        $identifierAuthority = ($sid['high'] << 32) | $sid['id'];
 
         $subs = $sid['count'] ?? 0;
+
+        if ($subs > 15 || strlen($binary) < 8 + $subs * 4) {
+            return null;
+        }
 
         $sidHex = $subs ? bin2hex($binary) : '';
 

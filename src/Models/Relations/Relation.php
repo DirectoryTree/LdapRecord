@@ -289,9 +289,9 @@ abstract class Relation
      */
     protected function transformResults(Collection $results): Collection
     {
-        return $this->filterRelatedResults($results->transform(
+        return $results->transform(
             fn (Model $entry) => $entry->morphInto($this->related, static::$modelResolver)
-        ));
+        );
     }
 
     /**
@@ -299,9 +299,10 @@ abstract class Relation
      */
     protected function filterRelatedResults(Collection $results): Collection
     {
-        return $this->onlyRelated
-            ? $results->filter(fn (Model $entry) => in_array($entry::class, $this->related))->values()
-            : $results;
+        return $results->when($this->onlyRelated, fn (Collection $results) => $results
+            ->filter(fn (Model $entry) => in_array($entry::class, $this->related))
+            ->values()
+        );
     }
 
     /**

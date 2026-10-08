@@ -207,6 +207,76 @@ class OnlyRelatedTest extends TestCase
         $this->assertFalse($completed);
         $this->assertSame(['cn=User,dc=local', 'cn=Report,dc=local'], $results->map->getDn()->all());
     }
+
+    public function test_only_related_can_traverse_undeclared_models_without_returning_them()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Computer,dc=local', 'objectclass' => Computer::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Report,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([]),
+        ]);
+
+        $parent = (new Entry)->setDn('cn=Parent,dc=local');
+        $relation = new HasMany($parent->newQuery(), $parent, OnlyRelatedUserStub::class, 'manager', 'dn', 'reports');
+
+        Relation::resolveModelsUsing(fn (array $objectClasses) => in_array('computer', $objectClasses)
+            ? OnlyRelatedComputerStub::class
+            : OnlyRelatedUserStub::class
+        );
+
+        try {
+            $results = $relation->onlyRelated()->recursive()->get();
+
+            $this->assertSame(['cn=Report,dc=local'], $results->map->getDn()->all());
+            $this->assertInstanceOf(OnlyRelatedUserStub::class, $results[0]);
+        } finally {
+            Relation::resolveModelsUsing(null);
+        }
+    }
+
+    public function test_only_related_recursive_chunks_can_traverse_undeclared_models_without_returning_them()
+    {
+        Container::addConnection(new Connection);
+
+        DirectoryFake::setup()->getLdapConnection()->expect([
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Computer,dc=local', 'objectclass' => Computer::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([
+                ['dn' => 'cn=Report,dc=local', 'objectclass' => User::$objectClasses],
+            ]),
+            LdapFake::operation('search')->once()->andReturn([]),
+        ]);
+
+        $parent = (new Entry)->setDn('cn=Parent,dc=local');
+        $relation = new HasMany($parent->newQuery(), $parent, OnlyRelatedUserStub::class, 'manager', 'dn', 'reports');
+        $results = $parent->newCollection();
+
+        Relation::resolveModelsUsing(fn (array $objectClasses) => in_array('computer', $objectClasses)
+            ? OnlyRelatedComputerStub::class
+            : OnlyRelatedUserStub::class
+        );
+
+        try {
+            $completed = $relation->onlyRelated()->recursive()->chunk(1000, function ($chunk) use ($results) {
+                foreach ($chunk as $model) {
+                    $results->push($model);
+                }
+            });
+
+            $this->assertTrue($completed);
+            $this->assertSame(['cn=Report,dc=local'], $results->map->getDn()->all());
+            $this->assertInstanceOf(OnlyRelatedUserStub::class, $results[0]);
+        } finally {
+            Relation::resolveModelsUsing(null);
+        }
+    }
 }
 
 class OnlyRelatedUserStub extends User
@@ -214,5 +284,13 @@ class OnlyRelatedUserStub extends User
     public function reports(): HasMany
     {
         return $this->hasMany([static::class, Group::class], 'manager');
+    }
+}
+
+class OnlyRelatedComputerStub extends Computer
+{
+    public function reports(): HasMany
+    {
+        return $this->hasMany(OnlyRelatedUserStub::class, 'manager');
     }
 }

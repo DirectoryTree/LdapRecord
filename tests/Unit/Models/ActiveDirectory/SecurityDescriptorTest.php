@@ -5,6 +5,7 @@ namespace LdapRecord\Tests\Unit\Models\ActiveDirectory;
 use InvalidArgumentException;
 use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapInterface;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\ActiveDirectory\Entry;
@@ -96,7 +97,7 @@ class SecurityDescriptorTest extends TestCase
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $previous)->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
-        $dispatcher = m::mock(\LdapRecord\Events\DispatcherInterface::class);
+        $dispatcher = m::mock(DispatcherInterface::class);
         $dispatcher->shouldReceive('fire')->once()->with(Saving::class)->ordered();
         $dispatcher->shouldReceive('fire')->once()->with(Updating::class)->ordered();
         $dispatcher->shouldReceive('fire')->once()->with(Updated::class)->ordered();
@@ -163,7 +164,7 @@ class SecurityDescriptorTest extends TestCase
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $previous)->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
-        $dispatcher = m::mock(\LdapRecord\Events\DispatcherInterface::class);
+        $dispatcher = m::mock(DispatcherInterface::class);
         $dispatcher->shouldReceive('fire')->once()->with(Saving::class)->ordered();
         $dispatcher->shouldReceive('fire')->once()->with(Updating::class)->ordered();
         Container::getInstance()->setDispatcher($dispatcher);

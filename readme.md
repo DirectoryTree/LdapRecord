@@ -1,91 +1,86 @@
 <p align="center">
-<img src="https://ldaprecord.com/logo.svg" width="400">
+    <img src="https://ldaprecord.com/logo.svg" width="300" alt="LdapRecord">
+</p>
+
+<p align="center">An Active Record ORM for working with LDAP directories.</p>
+
+<p align="center">
+    <a href="https://github.com/DirectoryTree/LdapRecord/actions/workflows/run-tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/DirectoryTree/LdapRecord/run-tests.yml?branch=master&amp;style=flat-square" alt="Tests"></a>
+    <a href="https://packagist.org/packages/directorytree/ldaprecord"><img src="https://img.shields.io/packagist/dt/directorytree/ldaprecord.svg?style=flat-square" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/directorytree/ldaprecord"><img src="https://img.shields.io/packagist/v/directorytree/ldaprecord.svg?style=flat-square" alt="Latest Version"></a>
+    <a href="https://github.com/DirectoryTree/LdapRecord/blob/master/license.md"><img src="https://img.shields.io/github/license/DirectoryTree/LdapRecord?style=flat-square" alt="License"></a>
 </p>
 
 <p align="center">
-<a href="https://github.com/DirectoryTree/LdapRecord/actions"><img src="https://img.shields.io/github/actions/workflow/status/directorytree/ldaprecord/run-tests.yml?branch=master&style=flat-square"></a>
-<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/dt/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
-<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/packagist/v/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
-<a href="https://packagist.org/packages/DirectoryTree/LdapRecord"><img src="https://img.shields.io/github/license/DirectoryTree/LdapRecord.svg?style=flat-square"/></a>
-</p>
-
-<p align="center">
-    Working with LDAP doesn't need to be hard.
-</p>
-
-<p align="center">
-    LdapRecord is a fully-featured <a href="https://en.wikipedia.org/wiki/Active_record_pattern">Active Record</a>
-    ORM that makes working with LDAP directories a breeze 🍃
-</p>
-
-<h4 align="center">
-    <a href="https://ldaprecord.com/docs/core/v4/quickstart/">Quickstart</a>
+    <a href="#installation">Installation</a>
     <span> · </span>
     <a href="https://ldaprecord.com/docs/core/v4/">Documentation</a>
     <span> · </span>
     <a href="https://github.com/DirectoryTree/LdapRecord-Laravel">Laravel Integration</a>
     <span> · </span>
     <a href="https://github.com/DirectoryTree/LdapRecord/discussions/new">Post a Question</a>
-</h4>
+</p>
 
 ---
 
-⏲ **Up and Running Fast**
+## Installation
+
+Install the package via Composer:
+
+```bash
+composer require directorytree/ldaprecord
+```
+
+See the [installation guide](https://ldaprecord.com/docs/core/v4/installation/) for requirements and setup, then follow the [quickstart](https://ldaprecord.com/docs/core/v4/quickstart/) to connect to your directory.
+
+## Features
+
+### Up and Running Fast
 
 Connect to your LDAP servers and start running queries in a matter of minutes.
 
-💡 **Fluent Filter Builder**
+### Fluent Filter Builder
 
 Find the LDAP objects you're looking for with a fluent LDAP filter builder.
 
-💼 **Multi-Domain Ready**
+### Multi-Domain Ready
 
 Built-in connection management allows you to access multiple domains without breaking a sweat.
 
-🔥 **Supercharged Active Record**
+### Supercharged Active Record
 
 Create and modify LDAP objects with minimal code.
 
----
+## Active Directory Features
 
-<h3 align="center">
-Active Directory Features
-</h3>
-
-🚪 **Enable / Disable Accounts**
+### Enable / Disable Accounts
 
 Detect and assign User Account Control values on accounts with the fluent [Account Control builder](https://ldaprecord.com/docs/core/v4/active-directory/users/#uac).
 
-🔑 **Reset / Change Passwords**
+### Reset / Change Passwords
 
 Built-in support for [changing](https://ldaprecord.com/docs/core/v4/active-directory/users/#changing-passwords) and [resetting](https://ldaprecord.com/docs/core/v4/active-directory/users/#resetting-passwords) passwords on Active Directory accounts.
 
-🗑 **Restore Deleted Objects**
+### Restore Deleted Objects
 
 Seamlessly access your Active Directory recycle bin and [restore deleted objects](https://ldaprecord.com/docs/core/v4/models/#restoring-deleted-models).
 
----
+## LdapRecord is Supportware™
 
-<h3 align="center">LdapRecord is Supportware™</h3>
+If you require support using LdapRecord, a [sponsorship](https://github.com/sponsors/stevebauman) is required :pray:
 
-<p align="center">If you require support using LdapRecord, a <a href="https://github.com/sponsors/stevebauman">sponsorship</a> is required :pray:</p>
+Thank you for your understanding :heart:
 
-<p align="center">Thank you for your understanding :heart:</p>
+## Security Vulnerabilities
 
---- 
+If you discover a security vulnerability within LdapRecord, please send an e-mail to Steve Bauman via [steven_bauman@outlook.com](mailto:steven_bauman@outlook.com).
 
-<h3 align="center">Security Vulnerabilities</h3>
+All security vulnerabilities will be promptly addressed.
 
-<p align="center">If you discover a security vulnerability within LdapRecord, please send an e-mail to Steve Bauman via <a href="mailto:steven_bauman@outlook.com">steven_bauman@outlook.com</a>.</p>
+## Credits
 
-<p align="center">All security vulnerabilities will be promptly addressed.</p>
+This package is directly inspired from [Laravel's Eloquent](https://laravel.com/docs/eloquent), and most features are direct ports to an LDAP equivalent.
 
----
+I am forever grateful for the work [Taylor Otwell](https://github.com/taylorotwell) has produced.
 
-<h3 align="center">Credits</h3>
-
-<p align="center">This package is directly inspired from <a href="https://laravel.com/docs/eloquent">Laravel's Eloquent</a>, and most features are direct ports to an LDAP equivalent.</p>
-
-<p align="center">I am forever grateful for the work <a href="https://github.com/taylorotwell">Taylor Otwell</a> has produced.</p>
-
-<p align="center">If you can, support his work by purchasing a <a href="https://github.com/sponsors/taylorotwell">sponsorship</a>, or one of his many Laravel based services.</p>
+If you can, support his work by purchasing a [sponsorship](https://github.com/sponsors/taylorotwell), or one of his many Laravel based services.

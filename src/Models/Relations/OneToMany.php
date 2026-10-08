@@ -106,9 +106,9 @@ abstract class OneToMany extends Relation
             ? $this->getRecursiveResults()
             : $this->getRelationResults();
 
-        return $results->merge(
+        return $this->filterRelatedResults($results->merge(
             $this->getMergingRelationResults()
-        );
+        ));
     }
 
     /**

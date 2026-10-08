@@ -67,7 +67,9 @@ class HasMany extends OneToMany
      */
     public function chunk(int $pageSize, Closure $callback): bool
     {
-        return $this->chunkRelation($pageSize, $callback);
+        return $this->chunkRelation($pageSize, fn (Collection $results) => $callback(
+            $this->filterRelatedResults($results)
+        ));
     }
 
     /**

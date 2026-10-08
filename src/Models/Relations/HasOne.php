@@ -16,9 +16,11 @@ class HasOne extends Relation
 
         $model = $relationValue ? $this->getForeignModelByValue($relationValue) : null;
 
-        return $this->transformResults(
+        $results = $this->transformResults(
             $this->parent->newCollection($model ? [$model] : null)
         );
+
+        return $this->filterRelatedResults($results);
     }
 
     /**

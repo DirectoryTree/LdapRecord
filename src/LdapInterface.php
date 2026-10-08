@@ -4,6 +4,7 @@ namespace LdapRecord;
 
 use LDAP\Connection;
 use LDAP\Result;
+use SensitiveParameter;
 
 /**
  * @see https://ldap.com/ldap-oid-reference-guide
@@ -502,7 +503,7 @@ interface LdapInterface
      *
      * @throws LdapRecordException
      */
-    public function bind(?string $dn = null, ?string $password = null, ?array $controls = null): LdapResultResponse;
+    public function bind(?string $dn = null, #[SensitiveParameter] ?string $password = null, ?array $controls = null): LdapResultResponse;
 
     /**
      * Bind to the LDAP directory using SASL.
@@ -517,7 +518,7 @@ interface LdapInterface
      * @see https://php.net/manual/en/function.ldap-sasl-bind.php
      * @see https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
      */
-    public function saslBind(?string $dn = null, ?string $password = null, array $options = []): bool;
+    public function saslBind(?string $dn = null, #[SensitiveParameter] ?string $password = null, array $options = []): bool;
 
     /**
      * Adds an entry to the current connection.
@@ -575,7 +576,7 @@ interface LdapInterface
      *
      * @throws LdapRecordException
      */
-    public function exopPasswd(string $user = '', string $oldPassword = '', string $newPassword = '', ?array &$controls = null): bool|string;
+    public function exopPasswd(string $user = '', #[SensitiveParameter] string $oldPassword = '', #[SensitiveParameter] string $newPassword = '', ?array &$controls = null): bool|string;
 
     /**
      * Add attribute values to current attributes.

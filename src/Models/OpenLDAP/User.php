@@ -7,6 +7,7 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Models\Relations\HasMany;
+use SensitiveParameter;
 
 class User extends Entry implements Authenticatable
 {
@@ -38,7 +39,7 @@ class User extends Entry implements Authenticatable
      *
      * @throws LdapRecordException
      */
-    public function changePassword(string $oldPassword, string $newPassword): void
+    public function changePassword(#[SensitiveParameter] string $oldPassword, #[SensitiveParameter] string $newPassword): void
     {
         $this->assertSecureConnection();
 

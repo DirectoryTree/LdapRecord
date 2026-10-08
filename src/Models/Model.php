@@ -16,6 +16,7 @@ use LdapRecord\Query\Builder as BaseBuilder;
 use LdapRecord\Query\Model\Builder;
 use LdapRecord\Support\Arr;
 use RuntimeException;
+use SensitiveParameter;
 use Stringable;
 use UnexpectedValueException;
 
@@ -99,7 +100,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Constructor.
      */
-    public function __construct(array $attributes = [])
+    public function __construct(#[SensitiveParameter] array $attributes = [])
     {
         $this->bootIfNotBooted();
 
@@ -219,7 +220,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Make a new model instance.
      */
-    public static function make(array $attributes = []): static
+    public static function make(#[SensitiveParameter] array $attributes = []): static
     {
         return new static($attributes);
     }
@@ -326,7 +327,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Create a new model instance.
      */
-    public function newInstance(array $attributes = []): static
+    public function newInstance(#[SensitiveParameter] array $attributes = []): static
     {
         return (new static($attributes))->setConnection($this->getConnectionName());
     }
@@ -445,7 +446,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Dynamically set attributes on the object.
      */
-    public function __set(string $key, mixed $value): void
+    public function __set(string $key, #[SensitiveParameter] mixed $value): void
     {
         $this->setAttribute($key, $value);
     }
@@ -472,7 +473,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Set the value at the given offset.
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet(mixed $offset, #[SensitiveParameter] mixed $value): void
     {
         $this->setAttribute($offset, $value);
     }
@@ -935,7 +936,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      *
      * @throws LdapRecordException
      */
-    public function saveQuietly(array $attributes = []): void
+    public function saveQuietly(#[SensitiveParameter] array $attributes = []): void
     {
         static::withoutEvents(function () use ($attributes) {
             $this->save($attributes);
@@ -947,7 +948,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      *
      * @throws LdapRecordException
      */
-    public function save(array $attributes = []): void
+    public function save(#[SensitiveParameter] array $attributes = []): void
     {
         $this->fill($attributes);
 
@@ -1036,7 +1037,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      *
      * @throws LdapRecordException
      */
-    public static function create(array $attributes = []): static
+    public static function create(#[SensitiveParameter] array $attributes = []): static
     {
         $instance = new static($attributes);
 
@@ -1070,7 +1071,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * @throws ModelDoesNotExistException
      * @throws LdapRecordException
      */
-    public function update(array $attributes = []): void
+    public function update(#[SensitiveParameter] array $attributes = []): void
     {
         $this->assertExists();
 

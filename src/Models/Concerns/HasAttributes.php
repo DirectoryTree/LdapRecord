@@ -11,6 +11,7 @@ use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\DetectsResetIntegers;
 use LdapRecord\Support\Arr;
 use RuntimeException;
+use SensitiveParameter;
 
 trait HasAttributes
 {
@@ -276,7 +277,7 @@ trait HasAttributes
     /**
      * Fills the entry with the supplied attributes.
      */
-    public function fill(array $attributes = []): static
+    public function fill(#[SensitiveParameter] array $attributes = []): static
     {
         foreach ($attributes as $key => $value) {
             $this->setAttribute($key, $value);
@@ -691,7 +692,7 @@ trait HasAttributes
     /**
      * Set an attribute value by the specified key.
      */
-    public function setAttribute(string $key, mixed $value): static
+    public function setAttribute(string $key, #[SensitiveParameter] mixed $value): static
     {
         $key = $this->normalizeAttributeKey($key);
 
@@ -733,7 +734,7 @@ trait HasAttributes
     /**
      * Set the models first attribute value.
      */
-    public function setFirstAttribute(string $key, mixed $value): static
+    public function setFirstAttribute(string $key, #[SensitiveParameter] mixed $value): static
     {
         return $this->setAttribute($key, Arr::wrap($value));
     }
@@ -786,7 +787,7 @@ trait HasAttributes
     /**
      * Set the value of an attribute using its mutator.
      */
-    protected function setMutatedAttributeValue(string $key, mixed $value): static
+    protected function setMutatedAttributeValue(string $key, #[SensitiveParameter] mixed $value): static
     {
         $this->{'set'.$this->getMutatorMethodName($key).'Attribute'}($value);
 

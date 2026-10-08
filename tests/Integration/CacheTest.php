@@ -74,15 +74,19 @@ class CacheTest extends TestCase
 
     public function test_that_results_expire_from_cache()
     {
-        $this->resetConnection(cache: new ArrayCacheStore);
+        Carbon::withTestNow(Carbon::now(), function () {
+            $this->resetConnection(cache: new ArrayCacheStore);
 
-        $this->makeUser($this->ou, ['cn' => 'foo'])->save();
-        $this->assertEquals(['foo'], $this->getUserCnsFromCache(1));
-        $this->makeUser($this->ou, ['cn' => 'bar'])->save();
+            $this->makeUser($this->ou, ['cn' => 'foo'])->save();
+            $this->assertEquals(['foo'], $this->getUserCnsFromCache(1));
+            $this->makeUser($this->ou, ['cn' => 'bar'])->save();
 
-        sleep(2);
+            $this->assertEquals(['foo'], $this->getUserCnsFromCache());
 
-        $this->assertEquals(['bar', 'foo'], $this->getUserCnsFromCache());
+            Carbon::setTestNow(Carbon::now()->addSeconds(2));
+
+            $this->assertEquals(['bar', 'foo'], $this->getUserCnsFromCache());
+        });
     }
 
     public function test_that_results_stay_in_cache_even_if_connection_is_reset()

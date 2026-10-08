@@ -5,6 +5,7 @@ namespace LdapRecord\Query\Model;
 use Closure;
 use InvalidArgumentException;
 use LdapRecord\LdapInterface;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Attributes\SecurityDescriptor;
 use LdapRecord\Models\Model;
@@ -29,6 +30,67 @@ class ActiveDirectoryBuilder extends Builder
             true,
             pack('C5', 0x30, 0x03, 0x02, 0x01, $parts)
         );
+    }
+
+    /**
+     * Update the entry, scoping security descriptor writes to changed sections.
+     */
+    public function update(string $dn, array $modifications): bool
+    {
+        $parts = 0;
+
+        foreach ($modifications as $index => $modification) {
+            if (strtolower($modification['attrib']) !== 'ntsecuritydescriptor'
+                || ! in_array($modification['modtype'], [LDAP_MODIFY_BATCH_ADD, LDAP_MODIFY_BATCH_REPLACE])
+                || ! isset($modification['values'][0])) {
+                continue;
+            }
+
+            $descriptor = new SecurityDescriptor($modification['values'][0]);
+            $original = new SecurityDescriptor($this->model->getRawOriginal('ntsecuritydescriptor')[0] ?? null);
+            $changed = $descriptor->getChangedParts($original);
+
+            if ((clone $original)->merge($descriptor, $changed)->toBinary() !== $descriptor->toBinary()) {
+                throw new InvalidArgumentException('Only owner, group, DACL, and SACL changes can be saved.');
+            }
+
+            if (! $changed) {
+                unset($modifications[$index]);
+
+                continue;
+            }
+
+            $parts |= $changed;
+            $modifications[$index]['modtype'] = LDAP_MODIFY_BATCH_REPLACE;
+        }
+
+        if (! $modifications) {
+            return true;
+        }
+
+        if (! $parts) {
+            return $this->query->update($dn, array_values($modifications));
+        }
+
+        $controls = $this->withSecurityDescriptor($parts)->toBase()->controls;
+
+        return $this->query->getConnection()->run(function (LdapInterface $ldap) use ($dn, $modifications, $controls) {
+            $previous = $ldap->getOption(LDAP_OPT_SERVER_CONTROLS) ?: [];
+            $controls = array_merge(array_values(array_filter(
+                $previous,
+                fn (array $control) => $control['oid'] !== LdapInterface::OID_SERVER_SD_FLAGS
+            )), array_values($controls));
+
+            try {
+                if (! $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $controls)) {
+                    throw new LdapRecordException('Unable to apply the security descriptor control.');
+                }
+
+                return $ldap->modifyBatch($dn, array_values($modifications));
+            } finally {
+                $ldap->setOption(LDAP_OPT_SERVER_CONTROLS, $previous);
+            }
+        });
     }
 
     /**

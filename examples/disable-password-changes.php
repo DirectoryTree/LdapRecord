@@ -42,4 +42,5 @@ foreach ([Sid::EVERYONE, Sid::SELF] as $trustee) {
 
 $dacl->canonicalize();
 
-$user->saveSecurityDescriptor($descriptor);
+$user->ntSecurityDescriptor = $descriptor;
+$user->save();

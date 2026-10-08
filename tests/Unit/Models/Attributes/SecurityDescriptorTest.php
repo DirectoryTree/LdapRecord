@@ -123,6 +123,43 @@ class SecurityDescriptorTest extends TestCase
         $this->assertSame(0xD004, $original->getControlFlags());
     }
 
+    public function test_changed_parts_include_section_flags_without_mutating_either_descriptor()
+    {
+        $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::SELF)
+            ->setDacl(new Acl)->setSacl(new Acl)->setControlFlags(0xC014);
+        $replacement = (new SecurityDescriptor($original->toBinary()))
+            ->setControlFlags($original->getControlFlags() | SecurityDescriptor::OWNER_DEFAULTED | SecurityDescriptor::SACL_PROTECTED);
+        $originalBinary = $original->toBinary();
+        $replacementBinary = $replacement->toBinary();
+
+        $this->assertSame(0, $original->getChangedParts(new SecurityDescriptor($originalBinary)));
+        $this->assertSame(
+            SecurityDescriptor::OWNER_SECURITY_INFORMATION | SecurityDescriptor::SACL_SECURITY_INFORMATION,
+            $replacement->getChangedParts($original)
+        );
+        $this->assertSame($originalBinary, $original->toBinary());
+        $this->assertSame($replacementBinary, $replacement->toBinary());
+    }
+
+    public function test_changed_parts_distinguish_absent_null_and_empty_acls()
+    {
+        $absent = new SecurityDescriptor;
+        $null = (new SecurityDescriptor)->setDacl(null)->setSacl(null);
+        $empty = (new SecurityDescriptor)->setDacl(new Acl)->setSacl(new Acl);
+
+        $this->assertSame(12, $null->getChangedParts($absent));
+        $this->assertSame(12, $empty->getChangedParts($null));
+        $this->assertSame(12, $absent->getChangedParts($empty));
+    }
+
+    public function test_changed_parts_detect_primary_group_changes()
+    {
+        $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::SELF)->setDacl(new Acl);
+        $replacement = (new SecurityDescriptor($original->toBinary()))->setGroup(Sid::EVERYONE);
+
+        $this->assertSame(SecurityDescriptor::GROUP_SECURITY_INFORMATION, $replacement->getChangedParts($original));
+    }
+
     public function test_setting_all_sections_uses_expected_byte_offsets()
     {
         $descriptor = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::EVERYONE)

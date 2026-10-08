@@ -17,7 +17,6 @@ use LdapRecord\Models\Events\Saved;
 use LdapRecord\Models\Events\Saving;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Events\Updating;
-use LdapRecord\Models\ModelDoesNotExistException;
 use LdapRecord\Testing\LdapFake;
 use LdapRecord\Tests\TestCase;
 use Mockery as m;
@@ -73,14 +72,14 @@ class SecurityDescriptorTest extends TestCase
         $this->assertTrue($restored->isDirty('ntsecuritydescriptor'));
     }
 
-    public function test_saving_permissions_preserves_other_sections_pending_attributes_controls_and_events()
+    public function test_save_writes_permissions_and_other_attributes_together_with_the_usual_events()
     {
         $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::SELF)
             ->setDacl(new Acl)->setSacl((new Acl)->addAce(Ace::audit(Sid::SELF)))
-            ->setControlFlags(0xA014);
-        $replacement = (new SecurityDescriptor)->setOwner(Sid::EVERYONE)->setGroup(Sid::EVERYONE)
+            ->setResourceManagerControl(0xAB)->setControlFlags(0xE014);
+        $replacement = (new SecurityDescriptor($original->toBinary()))
             ->setDacl((new Acl)->addAce(Ace::deny(Sid::EVERYONE, Ace::CONTROL_ACCESS)))
-            ->setControlFlags(0x9004);
+            ->setControlFlags(0xF014);
         $previous = [
             ['oid' => '1.2.3', 'isCritical' => false, 'value' => null],
             ['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020107')],
@@ -89,11 +88,15 @@ class SecurityDescriptorTest extends TestCase
             $previous[0],
             ['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')],
         ];
+        $modifications = [
+            ['attrib' => 'cn', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => ['Janet']],
+            ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$replacement->toBinary()]],
+        ];
         $ldap = (new LdapFake)->expect([
             'isBound' => true,
             LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn($previous),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
-            LdapFake::operation('modReplace')->once()->with('cn=Jane', ['ntsecuritydescriptor' => [$replacement->toBinary()]])->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', $modifications)->andReturnTrue(),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $previous)->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
@@ -103,55 +106,83 @@ class SecurityDescriptorTest extends TestCase
         $dispatcher->shouldReceive('fire')->once()->with(Updated::class)->ordered();
         $dispatcher->shouldReceive('fire')->once()->with(Saved::class)->ordered();
         Container::getInstance()->setDispatcher($dispatcher);
-
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'cn' => ['Jane'], 'ntsecuritydescriptor' => [$original->toBinary()]]);
         $entry->cn = 'Janet';
-        $entry->saveSecurityDescriptor($replacement);
+        $entry->ntSecurityDescriptor = $replacement;
+
+        $entry->save();
 
         $saved = $entry->securityDescriptor();
         $this->assertSame(Sid::SELF, (string) $saved->getOwner());
         $this->assertSame(Sid::SELF, (string) $saved->getGroup());
-        $this->assertSame(Ace::SYSTEM_AUDIT, $saved->getSacl()->getAces()->first()->getType());
+        $this->assertSame($original->getSacl()->toBinary(), $saved->getSacl()->toBinary());
         $this->assertSame(Ace::ACCESS_DENIED, $saved->getDacl()->getAces()->first()->getType());
-        $this->assertSame(0xB014, $saved->getControlFlags());
-        $this->assertSame(['Janet'], $entry->getAttribute('cn'));
-        $this->assertSame(['Jane'], $entry->getOriginal()['cn']);
-        $this->assertTrue($entry->isDirty('cn'));
-        $this->assertFalse($entry->isDirty('ntsecuritydescriptor'));
+        $this->assertSame(0xAB, $saved->getResourceManagerControl());
+        $this->assertSame(0xF014, $saved->getControlFlags());
+        $this->assertSame(['Janet'], $entry->getRawOriginal('cn'));
+        $this->assertSame([$replacement->toBinary()], $entry->getRawOriginal('ntsecuritydescriptor'));
+        $this->assertSame([], $entry->getDirty());
+        $this->assertTrue($entry->wasChanged(['cn', 'ntsecuritydescriptor']));
         $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_owner_and_audit_writes_do_not_replace_the_loaded_dacl_or_group()
+    public function test_save_detects_owner_and_audit_changes_without_selecting_the_dacl_or_group()
     {
         $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::SELF)
-            ->setDacl((new Acl)->addAce(Ace::allow(Sid::SELF)))
-            ->setSacl(new Acl)->setControlFlags(0x9014);
-        $replacement = (new SecurityDescriptor)->setOwner(Sid::EVERYONE)->setGroup(Sid::EVERYONE)
-            ->setSacl((new Acl)->addAce(Ace::audit(Sid::EVERYONE, Ace::GENERIC_READ)->setFlags(Ace::SUCCESSFUL_ACCESS)))
-            ->setControlFlags(0xA011);
+            ->setDacl((new Acl)->addAce(Ace::allow(Sid::SELF)))->setSacl(new Acl);
+        $replacement = (new SecurityDescriptor($original->toBinary()))->setOwner(Sid::EVERYONE)
+            ->setSacl((new Acl)->addAce(Ace::audit(Sid::EVERYONE, Ace::GENERIC_READ)->setFlags(Ace::SUCCESSFUL_ACCESS)));
         $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020109')]];
         $ldap = (new LdapFake)->expect([
             'isBound' => true,
             LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
-            LdapFake::operation('modReplace')->once()->with('cn=Jane', ['ntsecuritydescriptor' => [$replacement->toBinary()]])->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$replacement->toBinary()]],
+            ])->andReturnTrue(),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$original->toBinary()]]);
 
-        $entry->saveSecurityDescriptor($replacement, SecurityDescriptor::OWNER_SECURITY_INFORMATION | SecurityDescriptor::SACL_SECURITY_INFORMATION);
+        $entry->save(['ntSecurityDescriptor' => $replacement]);
 
-        $saved = $entry->securityDescriptor();
-        $this->assertSame(Sid::EVERYONE, (string) $saved->getOwner());
-        $this->assertSame(Sid::SELF, (string) $saved->getGroup());
-        $this->assertSame($original->getDacl()->toBinary(), $saved->getDacl()->toBinary());
-        $this->assertSame($replacement->getSacl()->toBinary(), $saved->getSacl()->toBinary());
-        $this->assertSame(0xB015, $saved->getControlFlags());
+        $this->assertSame($replacement->toBinary(), $entry->getRawOriginal('ntsecuritydescriptor')[0]);
+        $this->assertSame(Sid::SELF, (string) $entry->securityDescriptor()->getGroup());
+        $this->assertSame($original->getDacl()->toBinary(), $entry->securityDescriptor()->getDacl()->toBinary());
+        $this->assertSame([], $entry->getDirty());
         $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_failed_writes_restore_controls_without_changing_local_attributes_or_firing_success_events()
+    public function test_save_detects_changes_to_all_four_sections()
+    {
+        $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setGroup(Sid::SELF)
+            ->setDacl(new Acl)->setSacl(new Acl);
+        $replacement = (new SecurityDescriptor)->setOwner(Sid::EVERYONE)->setGroup(Sid::EVERYONE)
+            ->setDacl((new Acl)->addAce(Ace::deny(Sid::SELF)))
+            ->setSacl((new Acl)->addAce(Ace::audit(Sid::SELF)));
+        $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('300302010f')]];
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$replacement->toBinary()]],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$original->toBinary()]]);
+        $entry->ntSecurityDescriptor = $replacement;
+
+        $entry->save();
+
+        $this->assertSame($replacement->toBinary(), $entry->getRawOriginal('ntsecuritydescriptor')[0]);
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_failed_save_restores_controls_and_keeps_all_changes_pending_without_success_events()
     {
         $previous = [['oid' => '1.2.3', 'isCritical' => false, 'value' => null]];
         $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
@@ -160,7 +191,10 @@ class SecurityDescriptorTest extends TestCase
             'isBound' => true,
             LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn($previous),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
-            LdapFake::operation('modReplace')->once()->with('cn=Jane', ['ntsecuritydescriptor' => [$descriptor->toBinary()]])->andThrow(new LdapRecordException('Insufficient access')),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'cn', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => ['Janet']],
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$descriptor->toBinary()]],
+            ])->andThrow(new LdapRecordException('Insufficient access')),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $previous)->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
@@ -170,11 +204,12 @@ class SecurityDescriptorTest extends TestCase
         Container::getInstance()->setDispatcher($dispatcher);
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'cn' => ['Jane']]);
         $entry->cn = 'Janet';
+        $entry->ntSecurityDescriptor = $descriptor;
         $attributes = $entry->getAttributes();
         $original = $entry->getOriginal();
 
         try {
-            $entry->saveSecurityDescriptor($descriptor);
+            $entry->save();
             $this->fail('The write should fail.');
         } catch (LdapRecordException $e) {
             $this->assertSame('Insufficient access', $e->getMessage());
@@ -182,96 +217,228 @@ class SecurityDescriptorTest extends TestCase
 
         $this->assertSame($attributes, $entry->getAttributes());
         $this->assertSame($original, $entry->getOriginal());
+        $this->assertSame([], $entry->getChanges());
+        $this->assertTrue($entry->isDirty('cn'));
+        $this->assertTrue($entry->isDirty('ntsecuritydescriptor'));
         $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_saving_a_null_dacl_preserves_its_present_flag()
+    public function test_save_preserves_the_distinction_between_null_and_empty_dacls()
     {
-        $descriptor = (new SecurityDescriptor)->setDacl(null);
+        $original = (new SecurityDescriptor)->setDacl(new Acl);
+        $replacement = (new SecurityDescriptor)->setDacl(null);
         $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')]];
         $ldap = (new LdapFake)->expect([
             'isBound' => true,
-            LdapFake::operation('getOption')->once()->andReturn([]),
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
-            LdapFake::operation('modReplace')->once()->with('cn=Jane', ['ntsecuritydescriptor' => [$descriptor->toBinary()]])->andReturnTrue(),
-            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
-        ]);
-        Container::addConnection(new Connection([], $ldap));
-        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane']);
-
-        $entry->saveSecurityDescriptor($descriptor);
-
-        $this->assertTrue($entry->securityDescriptor()->hasDacl());
-        $this->assertNull($entry->securityDescriptor()->getDacl());
-        $this->assertFalse($entry->isDirty('ntsecuritydescriptor'));
-        $ldap->assertMinimumExpectationCounts();
-    }
-
-    public function test_partial_writes_do_not_mark_assigned_but_unwritten_sections_as_saved()
-    {
-        $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setDacl(new Acl);
-        $replacement = (new SecurityDescriptor)->setOwner(Sid::EVERYONE)
-            ->setDacl((new Acl)->addAce(Ace::deny(Sid::SELF)));
-        $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')]];
-        $ldap = (new LdapFake)->expect([
-            'isBound' => true,
-            LdapFake::operation('getOption')->once()->andReturn([]),
-            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
-            LdapFake::operation('modReplace')->once()->with('cn=Jane', ['ntsecuritydescriptor' => [$replacement->toBinary()]])->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$replacement->toBinary()]],
+            ])->andReturnTrue(),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$original->toBinary()]]);
         $entry->ntSecurityDescriptor = $replacement;
 
-        $entry->saveSecurityDescriptor($replacement);
+        $entry->save();
 
-        $saved = new SecurityDescriptor($entry->getRawOriginal('ntsecuritydescriptor')[0]);
-        $this->assertSame(Sid::SELF, (string) $saved->getOwner());
-        $this->assertSame(Sid::EVERYONE, (string) $entry->securityDescriptor()->getOwner());
-        $this->assertSame($replacement->getDacl()->toBinary(), $saved->getDacl()->toBinary());
-        $this->assertTrue($entry->isDirty('ntsecuritydescriptor'));
+        $this->assertTrue($entry->securityDescriptor()->hasDacl());
+        $this->assertNull($entry->securityDescriptor()->getDacl());
+        $this->assertSame([], $entry->getDirty());
         $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_failed_control_application_cannot_write_an_unscoped_descriptor()
+    public function test_save_replaces_a_descriptor_when_the_attribute_was_not_loaded()
     {
-        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $descriptor = (new SecurityDescriptor)->setDacl((new Acl)->addAce(Ace::deny(Sid::SELF)));
         $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')]];
         $ldap = (new LdapFake)->expect([
             'isBound' => true,
-            LdapFake::operation('getOption')->once()->andReturn([]),
-            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnFalse(),
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$descriptor->toBinary()]],
+            ])->andReturnTrue(),
             LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
         ]);
         Container::addConnection(new Connection([], $ldap));
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane']);
 
+        $entry->save(['ntSecurityDescriptor' => [$descriptor->toBinary()]]);
+
+        $this->assertSame([$descriptor->toBinary()], $entry->getRawOriginal('ntsecuritydescriptor'));
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_failed_control_application_keeps_changes_pending_and_cannot_write_the_descriptor()
+    {
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')]];
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnFalse(),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane']);
+        $entry->ntSecurityDescriptor = $descriptor;
+        $original = $entry->getOriginal();
+
         try {
-            $entry->saveSecurityDescriptor($descriptor);
+            $entry->save();
             $this->fail('The control should fail.');
         } catch (LdapRecordException $e) {
             $this->assertSame('Unable to apply the security descriptor control.', $e->getMessage());
         }
 
-        $this->assertNull($entry->securityDescriptor());
+        $this->assertSame([$descriptor->toBinary()], $entry->getAttribute('ntsecuritydescriptor'));
+        $this->assertSame($original, $entry->getOriginal());
+        $this->assertTrue($entry->isDirty('ntsecuritydescriptor'));
         $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_saving_a_new_entry_throws_the_existing_model_exception()
+    public function test_save_does_not_apply_descriptor_controls_when_only_another_attribute_changes()
     {
-        $this->expectException(ModelDoesNotExistException::class);
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'cn', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => ['Janet']],
+            ])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'cn' => ['Jane'], 'ntsecuritydescriptor' => [$descriptor->toBinary()]]);
+        $entry->cn = 'Janet';
 
-        (new Entry)->saveSecurityDescriptor(new SecurityDescriptor);
+        $entry->save();
+
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
     }
 
-    public function test_saving_invalid_parts_does_not_change_local_state()
+    public function test_assigning_an_unchanged_descriptor_does_not_issue_a_write()
     {
         Container::addConnection(new Connection([], new LdapFake));
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$descriptor->toBinary()]]);
+        $entry->ntSecurityDescriptor = $entry->securityDescriptor();
+
+        $entry->save();
+
+        $this->assertSame([], $entry->getDirty());
+        $this->assertSame([], $entry->getChanges());
+    }
+
+    public function test_save_quietly_writes_the_descriptor_without_dispatching_events()
+    {
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020104')]];
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$descriptor->toBinary()]],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        Container::getInstance()->setDispatcher(m::mock(DispatcherInterface::class));
         $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane']);
 
-        $this->expectException(InvalidArgumentException::class);
+        $entry->saveQuietly(['ntSecurityDescriptor' => $descriptor]);
 
-        $entry->saveSecurityDescriptor(new SecurityDescriptor, 0);
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_save_detects_pending_descriptor_sections_after_serialization()
+    {
+        $original = (new SecurityDescriptor)->setOwner(Sid::SELF)->setDacl(new Acl);
+        $replacement = (new SecurityDescriptor($original->toBinary()))->setOwner(Sid::EVERYONE);
+        $controls = [['oid' => LdapInterface::OID_SERVER_SD_FLAGS, 'isCritical' => true, 'value' => hex2bin('3003020101')]];
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('getOption')->once()->with(LDAP_OPT_SERVER_CONTROLS)->andReturn([]),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, $controls)->andReturnTrue(),
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'ntsecuritydescriptor', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => [$replacement->toBinary()]],
+            ])->andReturnTrue(),
+            LdapFake::operation('setOption')->once()->with(LDAP_OPT_SERVER_CONTROLS, [])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$original->toBinary()]]);
+        $entry->ntSecurityDescriptor = $replacement;
+        $entry = unserialize(serialize($entry));
+
+        $entry->save();
+
+        $this->assertSame([$replacement->toBinary()], $entry->getRawOriginal('ntsecuritydescriptor'));
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_normalizing_descriptor_offsets_does_not_rewrite_unchanged_permissions()
+    {
+        $binary = hex2bin(trim(file_get_contents(__DIR__.'/../Attributes/SecurityDescriptor/fixtures/active-directory.hex')));
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('modifyBatch')->once()->with('cn=Jane', [
+                ['attrib' => 'cn', 'modtype' => LDAP_MODIFY_BATCH_REPLACE, 'values' => ['Janet']],
+            ])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$binary], 'cn' => ['Jane']]);
+        $entry->ntSecurityDescriptor = $entry->securityDescriptor();
+        $entry->cn = 'Janet';
+
+        $entry->save();
+
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
+    }
+
+    public function test_header_edits_are_not_silently_marked_as_saved()
+    {
+        Container::addConnection(new Connection([], new LdapFake));
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $entry = (new Entry)->setRawAttributes(['dn' => 'cn=Jane', 'ntsecuritydescriptor' => [$descriptor->toBinary()]]);
+        $original = $entry->getOriginal();
+        $entry->ntSecurityDescriptor = $entry->securityDescriptor()->setResourceManagerControl(0xAB);
+
+        try {
+            $entry->save();
+            $this->fail('The header edit should fail.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertSame('Only owner, group, DACL, and SACL changes can be saved.', $e->getMessage());
+        }
+
+        $this->assertSame($original, $entry->getOriginal());
+        $this->assertTrue($entry->isDirty('ntsecuritydescriptor'));
+    }
+
+    public function test_save_uses_the_normal_insert_path_for_new_entries_with_a_descriptor()
+    {
+        $descriptor = (new SecurityDescriptor)->setDacl(new Acl);
+        $ldap = (new LdapFake)->expect([
+            'isBound' => true,
+            LdapFake::operation('add')->once()->with('cn=Jane', [
+                'cn' => ['Jane'],
+                'objectclass' => ['top'],
+                'ntsecuritydescriptor' => [$descriptor->toBinary()],
+            ])->andReturnTrue(),
+        ]);
+        Container::addConnection(new Connection([], $ldap));
+        $entry = (new Entry(['cn' => 'Jane', 'objectclass' => 'top', 'ntSecurityDescriptor' => $descriptor]))->setDn('cn=Jane');
+
+        $entry->save();
+
+        $this->assertTrue($entry->exists);
+        $this->assertTrue($entry->wasRecentlyCreated);
+        $this->assertSame([], $entry->getDirty());
+        $ldap->assertMinimumExpectationCounts();
     }
 }

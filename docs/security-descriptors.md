@@ -16,7 +16,7 @@ $descriptor = $user->securityDescriptor();
 
 `securityDescriptor()` returns a fresh instance of the loaded descriptor, or
 `null` when the attribute was not returned. Changing that instance does not
-change the model until you assign it or save it explicitly.
+change the model until you assign it back to the attribute.
 
 ## Editing permissions
 
@@ -33,7 +33,8 @@ $descriptor->getDacl()->addAce(
 
 $descriptor->getDacl()->canonicalize();
 
-$user->saveSecurityDescriptor($descriptor);
+$user->ntSecurityDescriptor = $descriptor;
+$user->save();
 ```
 
 `toBinary()` preserves entry order. Calling `canonicalize()` explicitly places
@@ -49,14 +50,32 @@ Unsupported entry types, including callback entries, retain their binary payload
 Their layouts cannot be edited through the typed entry setters. Existing control
 bits, application data, audit entries, and optional object GUIDs are retained.
 
-## Saving selected sections
+## Saving changes
 
-`saveSecurityDescriptor()` immediately updates the DACL by default. It preserves
-the other loaded descriptor sections and other pending model attributes. The
-entry must already exist. The method fires the usual saving, updating, updated,
-and saved events, and restores the connection's previous controls after the write.
+Assign the edited descriptor to `ntSecurityDescriptor` and call `save()`. The model
+compares its owner, group, DACL, SACL, and section control flags with the original
+descriptor. It automatically applies the Active Directory control for the
+sections that changed. Editing only the DACL does not request an owner, group,
+or SACL update.
 
-Pass a combination of section constants to read or write other sections:
+Resource manager header edits are available through the binary utilities;
+`save()` accepts changes to the four sections and their associated flags.
+
+Other pending attributes are saved in the same LDAP modification request:
+
+```php
+$user->ntSecurityDescriptor = $descriptor;
+$user->description = 'Updated permissions';
+$user->save();
+```
+
+Saving uses the usual model events and change tracking. The connection's previous
+controls are restored after the write. If the write fails, the original attribute
+values remain unchanged and your edits remain pending for a retry. `saveQuietly()`
+also supports descriptor changes.
+
+Edit the loaded descriptor to retain its other sections and permissions. To edit
+the owner, group, or SACL, include the required sections when reading:
 
 ```php
 use LdapRecord\Models\Attributes\SecurityDescriptor;
@@ -69,19 +88,20 @@ $parts = SecurityDescriptor::OWNER_SECURITY_INFORMATION
 $user = User::query()->withSecurityDescriptor($parts)->findOrFail($dn);
 $descriptor = $user->securityDescriptor();
 
-// Make the required edits before saving.
-$user->saveSecurityDescriptor($descriptor, $parts);
+$descriptor->setOwner('S-1-5-21-100-200-300-500');
+
+$user->ntSecurityDescriptor = $descriptor;
+$user->save();
 ```
 
 Reading and writing each section requires the corresponding Active Directory
 permissions. SACL access usually requires additional privileges. LDAP errors
 propagate through LdapRecord's existing exception handling.
 
-You can also assign a descriptor to `$user->ntSecurityDescriptor`; the model stores
-its binary value. Ordinary `save()` retains its existing behavior and does not
-choose descriptor sections. Use `saveSecurityDescriptor()` for a scoped update.
-Serialization represents this attribute as base64 and restores its binary value
-when unserializing the model.
+The attribute accepts a `SecurityDescriptor`, a raw binary string, or the existing
+LDAP attribute array format. Storage remains binary internally. Serialization
+represents this attribute as base64 and restores its binary value when
+unserializing the model.
 
 ## Disabling password changes
 

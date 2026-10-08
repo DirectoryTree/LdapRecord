@@ -276,6 +276,28 @@ class SecurityDescriptor
     }
 
     /**
+     * Get the sections whose contents or control flags differ from the original.
+     */
+    public function getChangedParts(SecurityDescriptor $original): int
+    {
+        $parts = 0;
+        $binary = $original->toBinary();
+
+        foreach ([
+            static::OWNER_SECURITY_INFORMATION,
+            static::GROUP_SECURITY_INFORMATION,
+            static::DACL_SECURITY_INFORMATION,
+            static::SACL_SECURITY_INFORMATION,
+        ] as $part) {
+            if ((clone $original)->merge($this, $part)->toBinary() !== $binary) {
+                $parts |= $part;
+            }
+        }
+
+        return $parts;
+    }
+
+    /**
      * Encode the descriptor with byte offsets relative to its 20-byte header.
      */
     public function toBinary(): string

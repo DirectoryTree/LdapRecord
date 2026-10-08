@@ -80,10 +80,6 @@ Seamlessly access your Active Directory recycle bin and [restore deleted objects
 
 <p align="center">All security vulnerabilities will be promptly addressed.</p>
 
-Password parameters and model attribute inputs use PHP's `#[SensitiveParameter]`
-attribute to redact their argument values in stack traces on PHP 8.2 and newer.
-PHP 8.1 is still supported, but does not apply this redaction.
-
 ---
 
 <h3 align="center">Credits</h3>

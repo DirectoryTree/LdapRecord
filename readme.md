@@ -20,15 +20,3 @@
     <span> · </span>
     <a href="https://github.com/DirectoryTree/LdapRecord/discussions/new">Post a Question</a>
 </p>
-
----
-
-## Installation
-
-Install the package via Composer:
-
-```bash
-composer require directorytree/ldaprecord
-```
-
-See the [installation guide](https://ldaprecord.com/docs/core/v4/installation/) for requirements and setup, then follow the [quickstart](https://ldaprecord.com/docs/core/v4/quickstart/) to connect to your directory.

@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-    <a href="#installation">Installation</a>
+    <a href="https://ldaprecord.com/docs/core/v4/installation">Installation</a>
     <span> · </span>
     <a href="https://ldaprecord.com/docs/core/v4/">Documentation</a>
     <span> · </span>
